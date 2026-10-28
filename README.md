@@ -3,8 +3,8 @@
 A turn-based small-town planning sim. You're the new mayor of Millbrook, Pennsylvania. Each turn is a year: review proposals from residents and developers, negotiate the plans, win council votes, and watch the town grow or shrink because of what you approved. Every four years, voters decide if you keep the job.
 
 ## Play
-- **Full game (AI characters, cloud saves):** the Master Plan claude.ai artifact.
-- **GitHub Pages:** https://matthnj15-pixel.github.io/Master-Plan/ runs the stable game with quick options instead of AI conversations. Saves stay in your browser.
+- **Full game (AI characters, cloud saves):** the Master Plan claude.ai artifact. This is the primary way to play.
+- **GitHub Pages:** https://matthnj15-pixel.github.io/Master-Plan/ runs the stable game with quick options instead of AI conversations. Saves stay in your browser. AI on Pages would need separately billed API access, so it isn't planned for now.
 - **Dev builds:** https://matthnj15-pixel.github.io/Master-Plan/dev/ and the Master Plan Dev artifact run what's on the `dev` branch, with a separate save.
 
 ## Develop

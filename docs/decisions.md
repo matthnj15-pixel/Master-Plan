@@ -29,3 +29,4 @@ Decisions Nate made, with the date. New decisions go at the bottom.
 - **Workspace:** GitHub is the shared development workspace. Nate acts as PM and keeps ownership and control; Claude handles code, commits, and deployment through pull requests.
 - **Hosting:** GitHub Pages hosts a public build alongside the claude.ai artifact.
 - **Branching:** `main` is the stable game; `dev` is where new work lands first, with its own Pages page (`/dev/`), its own claude.ai artifact, and its own save. Feature flags control what's on in each channel.
+- **Where the game lives:** The repo is the source of truth for code and docs. The claude.ai artifact is the real, playable game because it has AI characters at no extra cost. GitHub Pages stays a no-AI copy; adding AI there would need separately billed API access, so it's out of scope for now.
