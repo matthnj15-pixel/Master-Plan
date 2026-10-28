@@ -1,7 +1,10 @@
 name: Deploy to GitHub Pages
+# Publishes both channels to one Pages site:
+#   /       stable game, built from main
+#   /dev/   dev game, built from dev
 on:
   push:
-    branches: [main]
+    branches: [main, dev]
   workflow_dispatch:
 permissions:
   contents: read
@@ -18,14 +21,30 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
+          path: stable
+      - uses: actions/checkout@v4
+        continue-on-error: true
+        with:
+          ref: dev
+          path: dev
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: npm test
-      - run: npm run build
+      - name: Build stable (main)
+        working-directory: stable
+        run: npm test && node scripts/build.mjs --channel stable --out ../site
+      - name: Build dev
+        run: |
+          if [ -f dev/package.json ]; then
+            cd dev && npm test && node scripts/build.mjs --channel dev --out ../site/dev
+          else
+            echo "No dev branch yet; skipping /dev/"
+          fi
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: site
       - id: deployment
         uses: actions/deploy-pages@v4

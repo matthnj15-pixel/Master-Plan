@@ -1,5 +1,7 @@
 /* ===== Master Plan engine: pure simulation, no DOM. Runs in the browser and in Node tests. ===== */
 const N = 24;
+// Feature flags come from the build (flags.json). In Node tests MP_BUILD is undefined, so every flag reads as off.
+const FLAGS=(typeof MP_BUILD!=='undefined'&&MP_BUILD&&MP_BUILD.flags)||{};
 const MAYOR_AUTHORITY = 300; // $K a mayor can approve without council
 
 function hashStr(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
@@ -547,5 +549,5 @@ function applyGrant(s,p){const g=grantInfo(s,p);if(!g)return null;p.grantPending
 function migrate(s){if(!s)return s;if(s.v===1){s.meters.safety=62;s.meters.afford=58;s.policies={};s.flags.floodRisk=0.06;
   for(const [id,pa] of Object.entries(PARCELS))if(pa.tiles)for(const [x,y] of pa.tiles){const c=s.grid[y*N+x];if(!c.site&&!c.b)c.site=id;}
   for(const h of s.history){if(h.safety===undefined)h.safety=62;if(h.afford===undefined)h.afford=58;}s.v=2;}return s;}
-const ENGINE={defaultPlan,PARCELS,initiativeRoles,parcelsAvailable,needsSite,makeInitiative,heuristicDraft,grantInfo,applyGrant,migrate,N,KINDS,PRESENTERS,COUNCIL,P_DEFS,SITES,THEMES,MAYOR_AUTHORITY,newGame,effectsOf,deliveryOdds,validatePlan,forecastVote,memberScore,lean,hearingOptions,applyLobby,approve,reject,table,resolveYear,econ,jobsMeter,snapshotStats,fundingOptions,electionResult,recordFacts,rand,clamp};
+const ENGINE={FLAGS,defaultPlan,PARCELS,initiativeRoles,parcelsAvailable,needsSite,makeInitiative,heuristicDraft,grantInfo,applyGrant,migrate,N,KINDS,PRESENTERS,COUNCIL,P_DEFS,SITES,THEMES,MAYOR_AUTHORITY,newGame,effectsOf,deliveryOdds,validatePlan,forecastVote,memberScore,lean,hearingOptions,applyLobby,approve,reject,table,resolveYear,econ,jobsMeter,snapshotStats,fundingOptions,electionResult,recordFacts,rand,clamp};
 if(typeof module!=='undefined')module.exports=ENGINE;

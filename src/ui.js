@@ -1,5 +1,9 @@
 (function(){
 const E=ENGINE,N=E.N;
+const BUILD=(typeof MP_BUILD!=='undefined'&&MP_BUILD)||{channel:'stable',version:'local',commit:'',flags:{},flagInfo:{}};
+const DEV=BUILD.channel==='dev';
+// Dev keeps its own save so experiments never touch the stable town.
+const SAVE_KEY=DEV?'masterplan.dev.save':'millbrook.v1',DB_DOC=DEV?'save-dev':'save';
 let S=null,view='iso',rot=0,tab='agenda',sheet=null,AI=null,aiState='checking',DB=null,UID=null,busy=false,selTile=null,lobbyOpen=null,confirmNew=false;
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -21,19 +25,19 @@ const PITCH={
 
 /* ---------- persistence ---------- */
 let saveT=null,saving=false,saveAgain=false;
-function save(){if(!S)return;S.savedAt=Date.now();try{localStorage.setItem('millbrook.v1',JSON.stringify(S));}catch(e){}
+function save(){if(!S)return;S.savedAt=Date.now();try{localStorage.setItem(SAVE_KEY,JSON.stringify(S));}catch(e){}
   clearTimeout(saveT);saveT=setTimeout(flush,900);}
 async function flush(){if(!DB||!UID)return;if(saving){saveAgain=true;return;}saving=true;
-  try{await DB.doc('data/users/'+UID+'/save').set({json:JSON.stringify(S),year:S.year,savedAt:S.savedAt});}catch(e){}
+  try{await DB.doc('data/users/'+UID+'/'+DB_DOC).set({json:JSON.stringify(S),year:S.year,savedAt:S.savedAt});}catch(e){}
   saving=false;if(saveAgain){saveAgain=false;flush();}}
-function loadLocal(){try{const t=localStorage.getItem('millbrook.v1');if(t){const s=JSON.parse(t);if(s&&(s.v===1||s.v===2))return s;}}catch(e){}return null;}
+function loadLocal(){try{const t=localStorage.getItem(SAVE_KEY);if(t){const s=JSON.parse(t);if(s&&(s.v===1||s.v===2))return s;}}catch(e){}return null;}
 
 async function initCaps(){
   if(!window.claude||!window.claude.use){aiState='off';renderBar();return;}
   claude.use('sample').then(a=>{AI=a;aiState=a?'on':'off';renderBar();}).catch(()=>{aiState='off';renderBar();});
   try{const [user,db]=await Promise.all([claude.use('user'),claude.use('db')]);
     if(user&&db){const id=await user.id();if(id){UID=id;DB=db;
-      const snap=await db.doc('data/users/'+id+'/save').get();
+      const snap=await db.doc('data/users/'+id+'/'+DB_DOC).get();
       if(snap.exists){const d=snap.data();if(d&&d.json){const st=JSON.parse(d.json);if(st&&(st.v===1||st.v===2)&&(st.savedAt||0)>(S.savedAt||0)){S=E.migrate(st);renderAll();}}}
       else save();}}}catch(e){}
 }
@@ -609,10 +613,18 @@ function electionSheet(){
 }
 function menuSheet(){
   const head=`<div class="eyebrow">Game</div><h2>Master Plan</h2>`;
-  const body=`<div class="note">Your town saves automatically${DB?' to your Claude account':' in this browser'}. AI characters: ${aiState==='on'?'on':'off'}.</div>
+  const body=`<div class="note">Version ${esc(BUILD.version)}${BUILD.commit?' ('+esc(BUILD.commit)+')':''}${DEV?' · dev build':''}. Your town saves automatically${DB?' to your Claude account':' in this browser'}${DEV?' in a separate dev save':''}. AI characters: ${aiState==='on'?'on':'off'}.</div>
+  ${devToolsHTML()}
   <div class="box"><b>How a year works</b><div class="note" style="margin-top:6px">Review the agenda, negotiate plans with whoever brought them, take big items to the council, then end the year. The Courier explains what changed and why. Elections come every four years. Two straight years in deficit ends your career.</div></div>
   ${confirmNew?`<div class="box"><b>Start over?</b><div class="note">This replaces your current town.</div><div class="chips" style="margin-top:8px"><button class="btn danger" data-act="newgameYes">Yes, start a new town</button><button class="btn" data-act="newgameNo">Keep playing</button></div></div>`:`<button class="btn" data-act="newgame">Start a new town</button>`}`;
   return[head,body];
+}
+function devToolsHTML(){
+  if(!DEV)return''; // the flag panel always shows on dev so a flag can be turned back on
+  const flagRows=Object.keys(BUILD.flags).map(k=>`<div class="row"><span><b>${esc(k)}</b><br><span class="note">${esc(BUILD.flagInfo?.[k]||'')}</span></span><span><button class="btn sm" data-flag="${esc(k)}">${BUILD.flags[k]?'On':'Off'}</button></span></div>`).join('');
+  return `<div class="box"><b>Dev tools</b><div class="note" style="margin:4px 0 10px">Only on the dev build. Changes here affect the dev save only.</div>
+  ${BUILD.flags.devTools?`<div class="chips"><button class="btn sm" data-dev="cash">Add $500K</button><button class="btn sm" data-dev="approval">Approval +10</button><button class="btn sm" data-dev="favors">+3 favors</button><button class="btn sm" data-dev="skip">End the year now</button></div>`:''}
+  <div class="sect"><span>Feature flags</span><span>reload to apply</span></div>${flagRows}</div>`;
 }
 function overSheet(){return[`<div class="eyebrow">State oversight</div><h2>Millbrook went broke</h2>`,`<div class="note">The reserve stayed below zero for two straight years. Pennsylvania appointed a recovery coordinator, and your career as mayor is over.</div><button class="btn primary" data-act="newgameYes">Start a new town</button>`];}
 
@@ -714,6 +726,9 @@ const RESP={record:'Look at the numbers. We fixed what was broken, the reserve i
 document.addEventListener('click',ev=>{
   const t=ev.target.closest('button,[data-open]');if(!t)return;const d=t.dataset;
   if(d.tab){tab=d.tab;renderPanel();return;}
+  if(d.dev&&BUILD.flags.devTools){if(d.dev==='cash')S.cash+=500;if(d.dev==='approval')S.meters.approval=Math.min(100,S.meters.approval+10);if(d.dev==='favors')S.capital+=3;
+    if(d.dev==='skip'){sheet=null;$('#sheetRoot').innerHTML='';endYear();return;}save();toast('Done.');renderAll();return;}
+  if(d.flag&&DEV){let o={};try{o=JSON.parse(localStorage.getItem('mp.flagOverrides')||'{}');}catch(e){}o[d.flag]=!BUILD.flags[d.flag];BUILD.flags[d.flag]=o[d.flag];try{localStorage.setItem('mp.flagOverrides',JSON.stringify(o));}catch(e){}toast(`${d.flag} is now ${o[d.flag]?'on':'off'}. Reload the page to apply it everywhere.`);renderSheet();return;}
   if(d.propose!==undefined){openSheet({type:'initiative',site:d.propose});return;}
   if(d.parcel!==undefined&&sheet?.type==='initiative'){sheet.text=$('#initDesc')?.value||'';sheet.site=d.parcel||null;if(d.parcel){selTile=null;}renderSheet();return;}
   if(d.example!==undefined){const t=$('#initDesc');if(t)t.value=EXAMPLES[+d.example];sheet.text=EXAMPLES[+d.example];return;}
@@ -766,6 +781,7 @@ function wire(){
   matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',drawMap);
 }
 function start(data){
+  if(DEV){const h1=document.querySelector('.brand h1');if(h1&&!document.querySelector('.devtag'))h1.insertAdjacentHTML('afterend',`<div class="devtag">Dev build · v${esc(BUILD.version)}${BUILD.commit?' · '+esc(BUILD.commit):''}</div>`);}
   S=E.migrate((data&&data.S)||loadLocal())||E.newGame();
   wire();renderAll();initCaps();
   if(S.phase==='election'&&S.election)openSheet({type:'election'});

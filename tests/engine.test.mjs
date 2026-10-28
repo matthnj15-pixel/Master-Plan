@@ -93,3 +93,13 @@ test('version 1 saves migrate to version 2', () => {
   assert.ok(E.parcelsAvailable(m).length >= 4);
   E.resolveYear(m);
 });
+
+test('feature flags come from the build, and default to off', async () => {
+  const { readFileSync } = await import('node:fs');
+  const vm = await import('node:vm');
+  const src = readFileSync(new URL('../src/engine.js', import.meta.url), 'utf8');
+  const on = { MP_BUILD: { flags: { devTools: true } }, module: { exports: {} } };
+  vm.runInNewContext(src, on);
+  assert.equal(on.module.exports.FLAGS.devTools, true);
+  assert.deepEqual(E.FLAGS, {});
+});

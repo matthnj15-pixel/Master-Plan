@@ -28,3 +28,4 @@ Decisions Nate made, with the date. New decisions go at the bottom.
 - **Name:** Master Plan.
 - **Workspace:** GitHub is the shared development workspace. Nate acts as PM and keeps ownership and control; Claude handles code, commits, and deployment through pull requests.
 - **Hosting:** GitHub Pages hosts a public build alongside the claude.ai artifact.
+- **Branching:** `main` is the stable game; `dev` is where new work lands first, with its own Pages page (`/dev/`), its own claude.ai artifact, and its own save. Feature flags control what's on in each channel.

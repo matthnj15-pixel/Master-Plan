@@ -1,0 +1,10 @@
+{
+  "_about": "Feature flags. Each flag is on or off per channel. New work merges to dev with stable:false, then a release flips stable to true. On the dev page you can override flags from the menu.",
+  "flags": {
+    "devTools": {
+      "description": "Testing tools in the game menu: add cash, skip ahead a year, toggle flags.",
+      "dev": true,
+      "stable": false
+    }
+  }
+}
