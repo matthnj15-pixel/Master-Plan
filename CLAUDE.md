@@ -35,3 +35,9 @@ Nate is the PM and owns the repo. He decides what to build and how it should beh
 There are two builds of the same code:
 - **claude.ai artifact** (`master-plan.html`): the full game. It uses three claude.ai artifact capabilities: `sample` (AI characters), and `db` plus `user` (save game under `data/users/<id>/save`, or `save-dev` on the dev build).
 - **GitHub Pages** (`index.html`): no claude.ai runtime, so AI characters fall back to quick options and saves stay in that browser. Never put an API key in the page to change this; a key in a public page is a key anyone can use.
+
+## Deploy targets
+- Stable artifact (from `main`): https://claude.ai/artifact/S6VNrMR4ovQZfmGs5az7qT
+- Dev artifact (from `dev`): https://claude.ai/artifact/3fycGF8m26LbRvbnuF864g
+- GitHub Pages: https://matthnj15-pixel.github.io/Master-Plan/ (stable) and `/dev/` (dev)
+Publish with the Artifact tool, passing the URL so the existing artifact updates in place.
