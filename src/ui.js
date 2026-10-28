@@ -204,10 +204,20 @@ function drawMap(){
   const cv=$('#map');const W=cv.clientWidth||cv.parentElement.clientWidth;if(!W)return;
   const dpr=window.devicePixelRatio||1;const ctx=cv.getContext('2d');
   const bg=getComputedStyle(document.documentElement).getPropertyValue('--map-bg').trim()||'#D9E3D0';
-  const H=view==='top'?W:Math.round(W/N/2*N+W/N*2.2);
-  cv.width=W*dpr;cv.height=H*dpr;cv.style.height=H+'px';cv.style.touchAction=zoom>1?'none':'manipulation';
+  const H=mapHeight(W);
+  cv.width=W*dpr;cv.height=H*dpr;cv.style.height=H+'px';
   ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
   if(view==='top')drawTop(ctx,W,H);else drawIso(ctx,W,H);
+  const d=cv.dataset;d.zoom=String(Math.round(zoom*1000)/1000);d.rot=String(rot);d.panx=String(Math.round(panX));d.pany=String(Math.round(panY));d.view=view;
+  const rb=document.querySelector('[data-map="rotate"]');if(rb)rb.disabled=view==='top';
+}
+// MP-055: the map is pinned at the top, at about a third of the screen (or shrunk), on phone-size screens.
+let mapShrunk=false;
+function mapHeight(W){
+  const natural=view==='top'?W:Math.round(W/N/2*N+W/N*2.2);
+  if(window.innerWidth>=900)return natural;
+  const vh=window.innerHeight||W*1.42;
+  return Math.round(Math.min(natural,vh*(mapShrunk?0.16:0.33)));
 }
 function clampPan(W,H,fullW,fullH){panX=E.clamp(panX,0,Math.max(0,fullW-W));panY=E.clamp(panY,0,Math.max(0,fullH-H));}
 function drawTop(ctx,W,H){
@@ -359,12 +369,39 @@ function onMapTap(px,py){
   $('#mapinfo').innerHTML=`<b>${esc(d)}</b>${parId?` · ${esc(E.PARCELS[parId].blurb)}`:''}${p?` · on your agenda: <button class="chip" data-open="${p.id}">${esc(p.title)}</button>`:''}${canInit?` <button class="chip" data-propose="${parId}">Propose something here</button>`:''}`;
   drawMap();
 }
+// MP-051 / MP-056: touch gestures on the map. One finger pans, two fingers pinch (1x to 3x) and twist
+// (street view rotates in 90 degree steps), double-tap zooms in. Gestures never reach the page.
+const ZMIN=1,ZMAX=3;
+function zoomAt(px,py,nz){nz=E.clamp(nz,ZMIN,ZMAX);if(nz<1.04)nz=1;const cx=(px+panX)/zoom,cy=(py+panY)/zoom;zoom=nz;panX=cx*nz-px;panY=cy*nz-py;drawMap();}
+function viewCenter(){const cv=$('#map');return[cv.clientWidth/2,cv.clientHeight/2];}
+function rotateBy(steps){if(view!=='iso'||!steps)return;const [w,h]=viewCenter();const c=tileAt(w,h);rot=((rot+steps)%4+4)%4;if(c)centerOn(c.x,c.y);drawMap();}
+function mapButton(kind){const [w,h]=viewCenter();
+  if(kind==='in')zoomAt(w,h,zoom*1.5);else if(kind==='out')zoomAt(w,h,zoom/1.5);
+  else if(kind==='center'){centerOn(10,11);drawMap();}else if(kind==='rotate')rotateBy(1);}
 function wireMap(){
-  const cv=$('#map');let down=null;
-  cv.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY,px:panX,py:panY,moved:false,id:e.pointerId};if(zoom>1)cv.setPointerCapture(e.pointerId);});
-  cv.addEventListener('pointermove',e=>{if(!down||zoom===1)return;const dx=e.clientX-down.x,dy=e.clientY-down.y;if(Math.abs(dx)+Math.abs(dy)>6)down.moved=true;if(down.moved){panX=down.px-dx;panY=down.py-dy;drawMap();}});
-  const end=e=>{if(!down)return;const r=cv.getBoundingClientRect();if(!down.moved)onMapTap(e.clientX-r.left,e.clientY-r.top);down=null;};
-  cv.addEventListener('pointerup',end);cv.addEventListener('pointercancel',()=>{down=null;});
+  const cv=$('#map');const pts=new Map();let g=null,lastTap=null;
+  const local=(p)=>{const r=cv.getBoundingClientRect();return[p.x-r.left,p.y-r.top];};
+  const start=()=>{const arr=[...pts.values()];
+    if(arr.length===1){g={mode:'pan',x:arr[0].x,y:arr[0].y,px:panX,py:panY,moved:false};}
+    else if(arr.length>=2){const [a,b]=arr;const [mx,my]=local({x:(a.x+b.x)/2,y:(a.y+b.y)/2});
+      g={mode:'pinch',d:Math.hypot(a.x-b.x,a.y-b.y)||1,ang:Math.atan2(b.y-a.y,b.x-a.x),z:zoom,cx:(mx+panX)/zoom,cy:(my+panY)/zoom,twist:0,moved:true};}};
+  cv.addEventListener('pointerdown',e=>{e.preventDefault();try{cv.setPointerCapture(e.pointerId);}catch(_){}pts.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pts.size<=2)start();});
+  cv.addEventListener('pointermove',e=>{if(!pts.has(e.pointerId)||!g)return;pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(g.mode==='pan'){const dx=e.clientX-g.x,dy=e.clientY-g.y;if(Math.abs(dx)+Math.abs(dy)>6)g.moved=true;if(g.moved){panX=g.px-dx;panY=g.py-dy;drawMap();}}
+    else if(g.mode==='pinch'&&pts.size>=2){const [a,b]=[...pts.values()];const [mx,my]=local({x:(a.x+b.x)/2,y:(a.y+b.y)/2});
+      let nz=E.clamp(g.z*Math.hypot(a.x-b.x,a.y-b.y)/g.d,ZMIN,ZMAX);if(nz<1.04)nz=1;zoom=nz;panX=g.cx*nz-mx;panY=g.cy*nz-my;
+      let da=(Math.atan2(b.y-a.y,b.x-a.x)-g.ang)*180/Math.PI;da=((da+540)%360)-180;g.twist=da;drawMap();}});
+  const end=e=>{if(!pts.has(e.pointerId))return;pts.delete(e.pointerId);if(!g)return;
+    if(g.mode==='pinch'){if(Math.abs(g.twist)>=35)rotateBy(Math.round(g.twist/90)||Math.sign(g.twist));g={mode:'done'};}
+    else if(g.mode==='pan'&&!g.moved&&e.type==='pointerup'){const [x,y]=local({x:e.clientX,y:e.clientY});const now=Date.now();
+      if(lastTap&&now-lastTap.t<320&&Math.hypot(x-lastTap.x,y-lastTap.y)<30){lastTap=null;zoomAt(x,y,zoom<ZMAX-0.01?zoom*1.8:1);}
+      else{lastTap={t:now,x,y};onMapTap(x,y);}}
+    if(!pts.size)g=null;};
+  cv.addEventListener('pointerup',end);cv.addEventListener('pointercancel',end);
+  // iOS Safari: keep pinch and double-tap on the map from zooming the whole page.
+  for(const t of ['gesturestart','gesturechange','gestureend'])cv.addEventListener(t,e=>e.preventDefault(),{passive:false});
+  cv.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
+  cv.addEventListener('touchstart',e=>{if(e.touches.length>1)e.preventDefault();},{passive:false});
 }
 
 /* ---------- plan drawing ---------- */
@@ -496,8 +533,8 @@ function proposalSheet(p){
     body+=`<div class="box"><div class="sect" style="margin-top:0"><span>Negotiate with ${esc(pr.name)}</span></div>${chatHTML(S.chats[chatKey],pr.name)}
     <div class="chips" style="margin:10px 0">${chips}</div>
     ${aiReady()?`<form class="composer" data-form="neg"><textarea id="negInput" rows="2" placeholder="Ask for changes in your own words…" aria-label="Your message"></textarea><button class="btn primary" ${busy?'disabled':''}>Send</button></form>`:`<div class="note">Type-your-own negotiation needs AI characters. The quick asks above work either way.</div>`}</div>`;
-    if(p.council)body+=`<div class="chips"><button class="btn primary" data-hear="${p.id}">Take it to council</button><button class="btn" data-table="${p.id}">Table to next year</button><button class="btn danger" data-reject="${p.id}">Reject</button></div>`;
-    else body+=`<div class="chips"><button class="btn primary" data-approve="cash" ${fund.cash?'':'disabled'}>Approve · pay ${fmtK(e.cost)}</button><button class="btn" data-approve="bond">Approve · bond ${fmtK(fund.bondAnnual)}/yr</button><button class="btn" data-table="${p.id}">Table</button><button class="btn danger" data-reject="${p.id}">Reject</button></div>`;
+    if(p.council)body+=`<div class="sh-actions"><button class="btn primary" data-hear="${p.id}">Take it to council</button><button class="btn" data-table="${p.id}">Table to next year</button><button class="btn danger" data-reject="${p.id}">Reject</button></div>`;
+    else body+=`<div class="sh-actions"><button class="btn primary" data-approve="cash" ${fund.cash?'':'disabled'}>Approve · pay ${fmtK(e.cost)}</button><button class="btn" data-approve="bond">Approve · bond ${fmtK(fund.bondAnnual)}/yr</button><button class="btn" data-table="${p.id}">Table</button><button class="btn danger" data-reject="${p.id}">Reject</button></div>`;
   }else body+=`<div class="msg sys">Status: ${esc(p.status)}</div>`;
   return[head,body];
 }
@@ -529,7 +566,7 @@ function hearingSheet(){
   body+=`</div><div class="box"><div class="sect" style="margin-top:0"><span>Pay for ${esc(champ.title)}</span><span>${fmtK(e.cost)}</span></div>
   <div class="seg" role="group"><button aria-pressed="${sheet.funding==='cash'}" data-fund="cash" ${fund.cash?'':'disabled'}>Cash from reserve</button><button aria-pressed="${sheet.funding==='bond'}" data-fund="bond">10-yr bond · ${fmtK(fund.bondAnnual)}/yr</button></div>
   <div class="note" style="margin-top:6px">If the council passes a different plan, it's paid the same way.</div></div>
-  <button class="btn primary" data-act="vote">Call the vote</button>`;
+  <div class="sh-actions"><button class="btn primary" data-act="vote">Call the vote</button></div>`;
   return[head,body];
 }
 function causeLabel(m){return{walk:'Walk',live:'Livability',conf:'Business',approval:'Approval',cash:'Budget',pop:'People',safety:'Safety',afford:'Housing'}[m]||m;}
@@ -538,11 +575,11 @@ function initiativeSheet(){
   const avail=E.parcelsAvailable(S);const sel=sheet.site||'';
   const head=`<div class="eyebrow">Mayor's initiative · one per year</div><h2>Propose your own idea</h2>`;
   let body=`<div class="note">Describe anything: a building, a park, a program, or a new rule. ${esc(E.PRESENTERS.planner.name)} turns it into a plan with real costs, and it goes to council like any other item.</div>
-  <form data-form="init" class="stack"><textarea id="initDesc" rows="4" style="width:100%;resize:vertical;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:10px;padding:10px 12px;font:inherit" placeholder="What do you want to build or change?" aria-label="Describe your idea">${esc(sheet.text||'')}</textarea>
+  <form data-form="init" class="stack initform"><textarea id="initDesc" rows="4" style="width:100%;resize:vertical;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:10px;padding:10px 12px;font:inherit" placeholder="What do you want to build or change?" aria-label="Describe your idea">${esc(sheet.text||'')}</textarea>
   <div class="chips">${EXAMPLES.map((x,i)=>`<button type="button" class="chip" data-example="${i}">${esc(x)}</button>`).join('')}</div>
   <div class="sect"><span>Where</span></div><div class="choice"><button type="button" data-parcel="" aria-pressed="${!sel}"><b>Let ${esc(E.PRESENTERS.planner.name.split(' ')[0])} pick</b><small>Programs and ordinances don't need a site</small></button>${avail.map(id=>{const pa=E.PARCELS[id];return`<button type="button" data-parcel="${id}" aria-pressed="${sel===id}"><b>${esc(pa.name)}</b><small>${esc(pa.blurb)}${pa.traits.includes('creek')?' · floodplain':''}${pa.traits.includes('neighbors')?' · neighbors nearby':''}</small></button>`;}).join('')}</div>
   ${busy?'<div class="thinking">Dana is drafting your plan…</div>':''}
-  <button class="btn primary" ${busy?'disabled':''}>Draft my plan</button></form>`;
+  <div class="sh-actions"><button class="btn primary" ${busy?'disabled':''}>Draft my plan</button></div></form>`;
   return[head,body];
 }
 async function draftInitiative(desc){
@@ -574,7 +611,7 @@ function reportSheet(){
   <div class="box"><div class="sect" style="margin-top:0"><span>Budget</span><span class="${cls(r.budget.net)}">${r.budget.net>=0?'+':'−'}${fmtK(Math.abs(r.budget.net))}</span></div>
   <div class="row"><span>Taxes collected</span><span>${fmtK(r.budget.propTax+r.budget.comTax)}</span></div><div class="row"><span>Services and upkeep</span><span>−${fmtK(r.budget.services+r.budget.upkeep)}</span></div>${r.budget.bonds?`<div class="row"><span>Bond payments</span><span>−${fmtK(r.budget.bonds)}</span></div>`:''}</div>`;
   const next=S.phase==='election'?'<button class="btn gold" data-act="election">Go to the polls</button>':S.phase==='bankrupt'?'<button class="btn danger" data-act="over">See what happened</button>':`<button class="btn primary" data-act="close">Start ${calYear(S.year)}</button>`;
-  body+=next;return[head,body];
+  body+=`<div class="sh-actions">${next}</div>`;return[head,body];
 }
 function fallbackHeadline(r){
   const named=r.causes.filter(c=>/opened|closed|bridge/i.test(c.r)).sort((a,b)=>Math.abs(b.v)-Math.abs(a.v))[0];
@@ -594,7 +631,7 @@ function electionSheet(){
   let body='';
   if(el.step==='theme'){
     body+=`<div class="note">Greg Marsh is running against you. Pick the message your campaign leads with. A theme your record supports gains votes; one it contradicts loses them.</div><div class="choice">${Object.entries(E.THEMES).map(([k,t])=>{const f=t.fit(S);const h=f>1.2?'Your record backs this up':f<-1?'Your record works against this':'Your record is mixed here';return`<button data-theme="${k}" aria-pressed="${el.theme===k}"><b>${esc(t.label)}</b><small>${h}</small></button>`;}).join('')}</div>
-    <button class="btn primary" data-act="toDebate" ${el.theme?'':'disabled'}>Continue to the debate</button>`;
+    <div class="sh-actions"><button class="btn primary" data-act="toDebate" ${el.theme?'':'disabled'}>Continue to the debate</button></div>`;
   }else if(el.step==='debate'){
     body+=`<div class="box"><div class="sect" style="margin-top:0"><span>Debate at Millbrook High</span></div>${el.attack?`<div class="msg them"><div class="who">Greg Marsh</div>${esc(el.attack)}</div>`:'<div class="thinking">Greg Marsh is sharpening his attack…</div>'}
     ${el.answer?`<div class="msg you" style="margin-top:8px">${esc(el.answer)}</div>`:''}${el.rejoinder?`<div class="msg them" style="margin-top:8px"><div class="who">Greg Marsh</div>${esc(el.rejoinder)}</div>`:''}${busy?'<div class="thinking">The crowd reacts…</div>':''}</div>`;
@@ -602,7 +639,7 @@ function electionSheet(){
       body+=`<div class="chips"><button class="chip" data-resp="record">Defend your record with numbers</button><button class="chip" data-resp="vision">Pivot to your vision</button><button class="chip" data-resp="attack">Hit back at Greg's votes</button></div>
       ${aiReady()?`<form class="composer" data-form="debate"><textarea id="debInput" rows="3" placeholder="Answer Greg in your own words…" aria-label="Your answer"></textarea><button class="btn primary" ${busy?'disabled':''}>Answer</button></form>`:''}`;
     }
-    if(el.answer&&!busy)body+=`<button class="btn gold" data-act="count">Count the votes</button>`;
+    if(el.answer&&!busy)body+=`<div class="sh-actions"><button class="btn gold" data-act="count">Count the votes</button></div>`;
   }else if(el.step==='result'){
     const r=el.result;
     body+=`<div class="box" style="text-align:center"><div class="eyebrow">Your share of the vote</div><div class="big ${r.won?'up':'dn'}">${r.share}%</div><div style="font-weight:800;font-size:18px;margin-top:6px">${r.won?'You won a second term':'Greg Marsh is the new mayor'}</div></div>
@@ -727,6 +764,7 @@ const RESP={record:'Look at the numbers. We fixed what was broken, the reserve i
 document.addEventListener('click',ev=>{
   const t=ev.target.closest('button,[data-open]');if(!t)return;const d=t.dataset;
   if(d.tab){tab=d.tab;renderPanel();return;}
+  if(d.map){mapButton(d.map);return;}
   if(d.dev&&BUILD.flags.devTools){if(d.dev==='cash')S.cash+=500;if(d.dev==='approval')S.meters.approval=Math.min(100,S.meters.approval+10);if(d.dev==='favors')S.capital+=3;
     if(d.dev==='skip'){sheet=null;$('#sheetRoot').innerHTML='';endYear();return;}save();toast('Done.');renderAll();return;}
   if(d.flag&&DEV){let o={};try{o=JSON.parse(localStorage.getItem('mp.flagOverrides')||'{}');}catch(e){}o[d.flag]=!BUILD.flags[d.flag];BUILD.flags[d.flag]=o[d.flag];try{localStorage.setItem('mp.flagOverrides',JSON.stringify(o));}catch(e){}toast(`${d.flag} is now ${o[d.flag]?'on':'off'}. Reload the page to apply it everywhere.`);renderSheet();return;}
@@ -761,6 +799,7 @@ document.addEventListener('click',ev=>{
   else if(a==='newgameNo'){confirmNew=false;renderSheet();}
   else if(a==='over'){openSheet({type:'over'});}
   else if(a==='initiative'){openSheet({type:'initiative'});}
+  else if(a==='shrinkMap'){mapShrunk=!mapShrunk;t.textContent=mapShrunk?'Expand map':'Shrink map';t.setAttribute('aria-pressed',String(mapShrunk));drawMap();}
 });
 document.addEventListener('submit',ev=>{ev.preventDefault();const f=ev.target.dataset.form;
   if(f==='neg'){const v=$('#negInput').value.trim();if(v)negotiate(S.proposals.find(q=>q.id===sheet.id),v.slice(0,600),null);}
@@ -771,11 +810,9 @@ document.addEventListener('submit',ev=>{ev.preventDefault();const f=ev.target.da
 document.addEventListener('keydown',ev=>{if(ev.key==='Enter'&&!ev.shiftKey&&ev.target.tagName==='TEXTAREA'){ev.preventDefault();ev.target.form?.requestSubmit();}if(ev.key==='Escape'&&sheet&&!['report','election','over'].includes(sheet.type))closeSheet();});
 function wire(){
   wireMap();
-  const setZoom=z=>{zoom=z;$('#z1').setAttribute('aria-pressed',z===1);$('#z2').setAttribute('aria-pressed',z===2);drawMap();if(z===2){centerOn(10,11);}drawMap();$('#mapinfo').innerHTML=z===2?'Close-up view. Drag the map to look around.':'Tap a building or a site. Gold outlines are on your agenda; white outlines are open parcels for your own ideas.';};
-  $('#z1').onclick=()=>setZoom(1);$('#z2').onclick=()=>setZoom(2);
-  $('#vIso').onclick=()=>{view='iso';$('#vIso').setAttribute('aria-pressed','true');$('#vTop').setAttribute('aria-pressed','false');$('#rotBtn').disabled=false;drawMap();};
-  $('#vTop').onclick=()=>{view='top';$('#vTop').setAttribute('aria-pressed','true');$('#vIso').setAttribute('aria-pressed','false');$('#rotBtn').disabled=true;drawMap();};
-  $('#rotBtn').onclick=()=>{rot=(rot+1)%4;if(zoom>1)centerOn(10,11);drawMap();};
+  $('#vIso').onclick=()=>{view='iso';$('#vIso').setAttribute('aria-pressed','true');$('#vTop').setAttribute('aria-pressed','false');drawMap();};
+  $('#vTop').onclick=()=>{view='top';$('#vTop').setAttribute('aria-pressed','true');$('#vIso').setAttribute('aria-pressed','false');drawMap();};
+  addEventListener('resize',()=>drawMap());
   $('#endBtn').onclick=endYear;
   $('#menuBtn').onclick=()=>{confirmNew=false;openSheet({type:'menu'});};
   let rw=0;new ResizeObserver(()=>{const w=$('#map').clientWidth;if(w!==rw){rw=w;drawMap();}}).observe($('.mapwrap'));

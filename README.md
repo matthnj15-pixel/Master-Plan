@@ -8,7 +8,7 @@ A turn-based small-town planning sim. You're the new mayor of Millbrook, Pennsyl
 - **Dev builds:** https://matthnj15-pixel.github.io/Master-Plan/dev/ and the Master Plan Dev artifact run what's on the `dev` branch, with a separate save.
 
 ## Develop
-Requires Node 20 or later. No dependencies.
+Requires Node 20 or later. Run `npm ci` once; the only dependency is Playwright, for the touch UI tests (`npx playwright install chromium`).
 
 ```
 npm test        # all tests plus the requirements traceability check

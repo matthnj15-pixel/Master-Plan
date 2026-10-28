@@ -59,9 +59,13 @@ What Nate asks for becomes a requirement here. Each requirement has an ID, accep
 | ID | Requirement | Acceptance criteria | Verify | Status |
 |---|---|---|---|---|
 | MP-050 | Plan view and a street view that rotates in 90° steps. | Both views draw the same town. Rotation cycles four directions. | Play-test | Accepted |
-| MP-051 | A 2x close-up with drag to pan, and no free zoom. | Zoom toggles between 1x and 2x only. | Play-test | Accepted |
+| MP-051 | Pinch to zoom and drag to pan the map. (Changed 2026-10-27: replaces "2x close-up, no free zoom.") | Pinching the map zooms only the map, from 1x to 3x, around the point between your fingers. Dragging pans. A gesture on the map never zooms the page. | Test | Accepted |
 | MP-052 | The map shows how the town is doing. | Traffic, pedestrians, streetlights, and vacancies on the map follow the meters. | Play-test | Accepted |
-| MP-053 | Works on a phone. | No sideways scrolling at 400px wide. All actions reachable by tap. | Play-test | Accepted |
+| MP-053 | Works on a phone. | No sideways scrolling at 400px wide. All actions reachable by tap. | Test | Accepted |
+| MP-054 | Touch first everywhere. | Every button and control is at least 44 × 44 points. Nothing depends on hover. Text is at least 12 points. | Test | Accepted |
+| MP-055 | Built for the iPhone Duo inner display in portrait. | No sideways scrolling at 669 × 951. Meters fit in two rows or fewer. The map stays pinned at the top while the agenda scrolls, using about 40% of the screen, with a control to shrink it. | Test | Accepted |
+| MP-056 | Map touch controls. | Double-tap zooms in on that spot. On-map buttons zoom in, zoom out, recenter on downtown, and rotate. A two-finger twist rotates the street view, snapping to the nearest 90°. Tapping a building or site shows its info. | Test | Accepted |
+| MP-057 | Main actions within thumb reach. | "End year" sits at the bottom of the screen. In every sheet, the main action buttons stay pinned to the bottom while the sheet scrolls. | Test | Accepted |
 
 ## Saves, channels, and security
 | ID | Requirement | Acceptance criteria | Verify | Status |
