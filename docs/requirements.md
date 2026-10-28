@@ -35,8 +35,9 @@ What Nate asks for becomes a requirement here. Each requirement has an ID, accep
 | MP-022 | Competing plans for one site are exclusive. | Approving one plan for a site rejects the competing plan. | Test | Accepted |
 | MP-023 | Big items need 3 of 5 council votes. | A motion with no option at 3 votes fails. | Test | Accepted |
 | MP-024 | The Old Mill fight is contested by default. | With no lobbying, the park-versus-commercial vote has no majority. Good arguments plus a favor can swing it. | Test | Accepted |
-| MP-025 | Lobbying is priced by the engine, not by how persuasive the AI finds you. | Argument credit is capped. Favors spend political capital. Hostile pitches lower relationship and lean. | Test | Accepted |
+| MP-025 | A pitch earns what it actually says. (Changed 2026-10-27: pitches were worth too much.) | The engine scores every pitch. Quick-tap pitches and vague pitches move a member's lean by 3 points or less. A specific pitch moves it by 10 points or less. A favor moves it by 15 or less. Favors spend political capital. Hostile pitches lower relationship and lean. The character's reply reflects the credit given. | Test | Accepted |
 | MP-026 | You negotiate plans by talking, and the plan drawing updates. | Agreed changes update the plan, its drawing, and its forecast. | Play-test | Accepted |
+| MP-028 | Each council member has a public statement on each plan. | In a hearing, every member shows what they support, what they oppose, and what would change their vote on that specific plan, built from their priorities and the plan's numbers. The statement updates when the plan changes. | Test | Accepted |
 | MP-027 | A named rival opposes you. | Greg Marsh leans against plans the mayor backs and runs against the mayor. | Test | Accepted |
 
 ## Your own initiatives
@@ -45,6 +46,9 @@ What Nate asks for becomes a requirement here. Each requirement has an ID, accep
 | MP-030 | One mayor's initiative per year. | A second initiative in the same year is refused. A new year allows one again. | Test | Accepted |
 | MP-031 | Initiatives are freeform but priced by the engine. | Any description becomes a plan made of fixed fields with an engine-computed cost and forecast, and it goes to council. | Test | Accepted |
 | MP-032 | Programs and ordinances need no site. | A policy-only initiative has no site and still has effects. | Test | Accepted |
+| MP-033 | Propose on any plots you choose. | Tap plots anywhere on the map to add or remove them; they don't need to touch. A Clear all control empties the selection. The planner drafts for exactly the plots chosen and never moves them. Each use has size rules (a suburb needs many plots), and more plots raise capacity and cost. | Test | Planned |
+| MP-034 | Redevelopment has consequences. | Building on occupied plots means demolition: it costs money, displaces residents or jobs, and moves approval, all shown in the forecast. | Test | Planned |
+| MP-035 | Impossible ideas can be proposed and are answered realistically. | Proposing to demolish something the borough doesn't own (the college) shows acquisition cost and backlash, the planner warns, and the council responds in character. | Test | Planned |
 
 ## Meters and systems
 | ID | Requirement | Acceptance criteria | Verify | Status |
@@ -63,7 +67,7 @@ What Nate asks for becomes a requirement here. Each requirement has an ID, accep
 | MP-052 | The map shows how the town is doing. | Traffic, pedestrians, streetlights, and vacancies on the map follow the meters. | Play-test | Accepted |
 | MP-053 | Works on a phone. | No sideways scrolling at 400px wide. All actions reachable by tap. | Test | Accepted |
 | MP-054 | Touch first everywhere. | Every button and control is at least 44 × 44 points. Nothing depends on hover. Text is at least 12 points. | Test | Accepted |
-| MP-055 | Built for the iPhone Duo inner display in portrait. | No sideways scrolling at 669 × 951. Meters fit in two rows or fewer. The map stays pinned at the top while the agenda scrolls, using about 40% of the screen, with a control to shrink it. | Test | Accepted |
+| MP-055 | Built for the iPhone Duo inner display in portrait, as one stacked page. (Changed 2026-10-27: no pinned map.) | No sideways scrolling at 669 × 951. Meters fit in two rows or fewer. The page scrolls as one stack: the map scrolls with everything else, and no content scrolls underneath another section. At 1x a swipe on the map scrolls the page; zoomed in, a drag pans the map. | Test | Accepted |
 | MP-056 | Map touch controls. | Double-tap zooms in on that spot. On-map buttons zoom in, zoom out, recenter on downtown, and rotate. A two-finger twist rotates the street view, snapping to the nearest 90°. Tapping a building or site shows its info. | Test | Accepted |
 | MP-057 | Main actions within thumb reach. | "End year" sits at the bottom of the screen. In every sheet, the main action buttons stay pinned to the bottom while the sheet scrolls. | Test | Accepted |
 
@@ -75,3 +79,11 @@ What Nate asks for becomes a requirement here. Each requirement has an ID, accep
 | MP-062 | Feature flags control what's on in each channel. | Flags come from the build. With no build info, every flag is off. | Test | Accepted |
 | MP-063 | No API keys ever ship in the page. | Built pages contain no API key or direct-API access header. | Test | Accepted |
 | MP-064 | The full game with AI runs as a claude.ai artifact; GitHub Pages runs without AI. | Pages build falls back to quick options with no errors. | Play-test | Accepted |
+
+## Plan design and history
+| ID | Requirement | Acceptance criteria | Verify | Status |
+|---|---|---|---|---|
+| MP-070 | Detailed plan drawings. | Each proposal shows a detailed site plan (footprints, rooflines, materials, trees, paths, benches, planters, lighting) and a street-level view. | Play-test | Planned |
+| MP-071 | Design by conversation. | Talking to the planner sets style, materials, colors, landscaping, and furnishings. The engine still prices the plan; higher design quality costs more and adds livability and property value. | Test | Planned |
+| MP-072 | Built results match the design. | What gets built on the map uses the approved plan's design. | Play-test | Planned |
+| MP-073 | One Plans tab holds the town's history. | Replaces "Built so far" and the past year-end reports. Each year lists every proposal with its final drawing, revisions, vote, and outcome. | Test | Planned |

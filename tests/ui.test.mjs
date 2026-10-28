@@ -139,20 +139,46 @@ test('MP-054 controls are at least 44 points and text at least 12 points, on eve
   await ctx.close();
 });
 
-test('MP-055 the layout fits the iPhone Duo inner display with a pinned map', async () => {
+test('MP-055 the page scrolls as one stack with nothing underneath anything', async () => {
   const { page, ctx, errors } = await open();
   assert.ok(await noSideScroll(page), 'no sideways scrolling at 669 wide');
   const rows = await page.$$eval('.meter', ms => new Set(ms.map(m => Math.round(m.getBoundingClientRect().top))).size);
   assert.ok(rows <= 2, `meters use ${rows} rows`);
-  const mapH = async () => page.$eval('.mapcard', m => m.getBoundingClientRect().height);
-  const h = await mapH();
-  assert.ok(h >= DUO.height * 0.3 && h <= DUO.height * 0.5, `pinned map is ${Math.round(h / DUO.height * 100)}% of the screen`);
-  await page.evaluate(() => window.scrollTo(0, 900));
-  await page.waitForTimeout(100);
-  const top = await page.$eval('.mapcard', m => m.getBoundingClientRect().top);
-  assert.ok(top >= -1 && top <= 4, `map stays pinned while scrolling (top ${top})`);
-  await page.click('[data-act="shrinkMap"]');
-  assert.ok(await mapH() < h * 0.75, 'shrink control makes the map smaller');
+  const pos = await page.$$eval('header, .meters, .mapcard, .panel, .tabs', els => els.map(e => getComputedStyle(e).position));
+  assert.ok(pos.every(p => p !== 'sticky' && p !== 'fixed'), `no pinned sections (${pos.join(', ')})`);
+  const top0 = await page.$eval('.mapcard', m => m.getBoundingClientRect().top);
+  await page.evaluate(() => window.scrollTo(0, 400));
+  await page.waitForTimeout(80);
+  const top1 = await page.$eval('.mapcard', m => m.getBoundingClientRect().top);
+  assert.ok(top1 < top0 - 100, 'the map scrolls with the page');
+  // Whatever is visible above the bottom bar is the content itself, never something covering it.
+  const covered = await page.evaluate(() => {
+    const bar = document.querySelector('.actionbar').getBoundingClientRect().top;
+    const bad = [];
+    for (const el of document.querySelectorAll('.panel .item, .panel .box, .panel .sect')) {
+      const r = el.getBoundingClientRect();
+      const y = r.top + Math.min(r.height / 2, 12);
+      if (y < 0 || y > bar - 2) continue;
+      const hit = document.elementFromPoint(r.left + 8, y);
+      if (hit && !el.contains(hit) && !hit.contains(el)) bad.push(el.textContent.trim().slice(0, 30));
+    }
+    return bad;
+  });
+  assert.deepEqual(covered, [], 'nothing covers the agenda');
+  assert.equal(await page.$eval('#map', c => getComputedStyle(c).touchAction), 'pan-y', 'at 1x a swipe on the map scrolls the page');
+  await page.click('[data-map="in"]');
+  assert.equal(await page.$eval('#map', c => getComputedStyle(c).touchAction), 'none', 'zoomed in, the map takes the drag');
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
+
+test('MP-028 the hearing shows every member\'s statement on the plan', async () => {
+  const { page, ctx, errors } = await open();
+  await page.click('[data-open="stripmall"]');
+  await page.click('#sheetRoot [data-hear]');
+  const statements = await page.$$eval('#sheetRoot .statement', els => els.map(e => e.textContent.trim()));
+  assert.equal(statements.length, 5);
+  assert.ok(statements.every(t => t.length > 20));
   assert.deepEqual(errors, []);
   await ctx.close();
 });

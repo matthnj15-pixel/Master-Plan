@@ -142,23 +142,61 @@ test('MP-023 MP-024 the Old Mill fight deadlocks until the mayor lobbies', () =>
   const before = E.forecastVote(s, park, 'park');
   assert.ok(Object.values(before.tally).every(n => n < 3) || before.tally.no >= 3);
   assert.equal(before.winner, null, 'no plan has 3 votes by default');
-  E.applyLobby(s, 'pryor', 'park', { addressed: ['cost', 'prop'], tone: 'respectful', offers: [{ type: 'favor' }] });
+  E.applyLobby(s, 'pryor', 'park', { addressed: ['cost', 'prop'], credit: 'strong', tone: 'respectful' });
+  E.applyLobby(s, 'pryor', 'park', { addressed: [], tone: 'respectful', offers: [{ type: 'favor' }] });
   const after = E.forecastVote(s, park, 'park');
   assert.equal(after.winner, 'park');
   assert.ok(after.tally.park >= 3);
 });
 
-test('MP-025 lobbying is capped and priced by the engine', () => {
-  const s = E.newGame(1);
-  const all = Object.keys(E.COUNCIL.find(m => m.id === 'okafor').pri);
-  const r = E.applyLobby(s, 'okafor', 'x', { addressed: all.concat(['made_up']), tone: 'respectful' });
-  assert.ok(r.points <= 6, 'argument credit is capped');
-  const cap = s.capital;
-  E.applyLobby(s, 'okafor', 'x', { addressed: [], tone: 'respectful', offers: [{ type: 'favor' }] });
-  assert.equal(s.capital, cap - 1, 'favors cost political capital');
-  const rel = s.council.weaver.rel;
-  const h = E.applyLobby(s, 'weaver', 'x', { addressed: [], tone: 'hostile' });
-  assert.ok(h.points < 0 && s.council.weaver.rel < rel);
+test('MP-025 a pitch earns what it actually says, within caps', () => {
+  const leanOf = (s, id, p) => E.lean(E.memberScore(s, E.COUNCIL.find(m => m.id === id), p, p.id));
+  const fresh = () => { const s = E.newGame(1); return { s, p: s.proposals.find(q => q.id === 'stripmall') }; };
+  const all = (id) => Object.keys(E.COUNCIL.find(m => m.id === id).pri);
+  for (const id of E.COUNCIL.map(m => m.id)) {
+    // Quick-tap and vague pitches: 3 points or less.
+    for (const ex of [{ addressed: all(id), credit: 'quick', tone: 'respectful' }, { addressed: all(id), credit: 'weak', tone: 'respectful' }, { addressed: all(id), tone: 'respectful' }]) {
+      const { s, p } = fresh(); const before = leanOf(s, id, p);
+      E.applyLobby(s, id, p.id, ex);
+      assert.ok(leanOf(s, id, p) - before <= 3, `${id} ${ex.credit || 'unrated'} pitch moved ${leanOf(s, id, p) - before}`);
+    }
+    // A specific pitch: 10 points or less, and more than a vague one when it addresses their priorities.
+    const { s, p } = fresh(); const before = leanOf(s, id, p);
+    E.applyLobby(s, id, p.id, { addressed: all(id).concat(['made_up']), credit: 'strong', tone: 'respectful' });
+    const moved = leanOf(s, id, p) - before;
+    assert.ok(moved <= 10, `${id} strong pitch moved ${moved}`);
+    assert.ok(moved > 0, `${id} strong pitch should help`);
+    // A favor: 15 points or less, and it spends capital.
+    const f = fresh(); const fb = leanOf(f.s, id, f.p); const cap = f.s.capital;
+    E.applyLobby(f.s, id, f.p.id, { addressed: [], tone: 'respectful', offers: [{ type: 'favor' }] });
+    assert.ok(leanOf(f.s, id, f.p) - fb <= 15);
+    assert.equal(f.s.capital, cap - 1, 'favors cost political capital');
+  }
+  const { s, p } = fresh(); const rel = s.council.weaver.rel;
+  const h = E.applyLobby(s, 'weaver', p.id, { addressed: [], tone: 'hostile' });
+  assert.ok(h.points < 0 && s.council.weaver.rel < rel, 'hostile pitches backfire');
+});
+
+test('MP-028 each member has an on-the-record statement that tracks the plan', () => {
+  const s = E.newGame(1234);
+  E.resolveYear(s);
+  const park = s.proposals.find(p => p.id === 'park');
+  for (const m of E.COUNCIL) {
+    const st = E.memberStatement(s, m, park, 'park');
+    assert.ok(['support', 'oppose', 'undecided'].includes(st.stance));
+    assert.ok(st.text.length > 20, `${m.name} has a statement`);
+    assert.ok(st.supports.length + st.opposes.length > 0);
+    assert.ok(typeof st.wouldChange === 'string');
+  }
+  const pryor = E.COUNCIL.find(m => m.id === 'pryor');
+  const st1 = E.memberStatement(s, pryor, park, 'park');
+  assert.ok(st1.opposes.some(x => /\$/.test(x)), 'Ellen Pryor objects to the cost in dollars');
+  park.plan = { ...park.plan, playground: false, trees: 1, parking: 0, paths: false };
+  const st2 = E.memberStatement(s, pryor, park, 'park');
+  assert.notEqual(st2.text, st1.text, 'the statement changes when the plan changes');
+  const marsh = E.COUNCIL.find(m => m.rival);
+  const strip = E.newGame(1).proposals.find(p => p.id === 'stripmall');
+  assert.ok(E.memberStatement(E.newGame(1), marsh, strip, null).supports.some(x => /job/i.test(x)), 'Greg Marsh backs the jobs');
 });
 
 test('MP-027 the rival leans against whatever the mayor backs', () => {

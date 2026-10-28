@@ -38,3 +38,12 @@ Decisions Nate made, with the date. New decisions go at the bottom.
 - **Pinned map:** The map stays at the top while the agenda scrolls, with a control to shrink it.
 - **UI tests:** Headless-browser tests at the Duo's screen size check touch targets, text size, layout, and gestures in CI.
 - **Later:** A graphics overhaul with real building models.
+
+## 2026-10-27: First playtest feedback
+- **Pitches:** Were worth too much (a half-hearted pitch moved a vote 22 points). Pitches now earn what they say, with caps (MP-025).
+- **Council statements:** Each member gets an on-the-record statement on each plan: support, oppose, and what would change their vote (MP-028).
+- **Any plots:** Your proposals can use any plots, touching or not, including occupied ones and things the borough doesn't own. Size rules and real consequences apply. A Clear all control resets the selection (MP-033 to MP-035).
+- **Layout:** The whole page scrolls as one stack. No section scrolls underneath another; the map is no longer pinned (MP-055).
+- **Plan design:** Planning is the main creative space: detailed drawings, design by conversation, and one Plans tab for the town's history (MP-070 to MP-073).
+- **Economics:** Deeper economics can wait.
+- **Release order:** 0.6 stacked page, pitch scoring, statements. 0.7 any-plot proposals. 0.8 plan design and the Plans tab.

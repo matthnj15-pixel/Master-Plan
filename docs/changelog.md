@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased (on dev)
+- Pitches earn what they say (MP-025): quick-tap and vague pitches move a member's lean by 3 points or less, specific ones by 10 or less, a favor by 15 or less. The AI judges how specific a typed pitch was, and the character's reply matches the credit.
+- Council members go on the record (MP-028): in a hearing, each member's statement says what they support, what they oppose, and what would change their vote. It updates as you change the plan.
+- The page scrolls as one stack (MP-055): the map is no longer pinned, nothing scrolls underneath anything, and at 1x a swipe on the map scrolls the page.
+
 ## 0.5.0 (2026-10-27)
 - Touch first for the iPhone Duo inner display: pinch to zoom the map from 1x to 3x without zooming the page, drag to pan, double-tap to zoom, and a two-finger twist to rotate (MP-051, MP-056).
 - On-map buttons to zoom in, zoom out, recenter, and rotate (MP-056).

@@ -323,20 +323,69 @@ function forecastVote(s,p,champion){
 }
 
 /* ---------- lobbying (engine prices what the AI extracted) ---------- */
+// MP-025: the engine prices every pitch. Credit depends on how specific the pitch was (judged by the AI
+// for typed pitches; quick-tap pitches are always "quick"), and each part has a cap on how far it can
+// move this member's lean on the plan the mayor backs.
+const PITCH={strong:{per:2.5,max:5,lean:10},weak:{per:0.75,max:1,lean:3},quick:{per:0.5,max:1,lean:3},none:{per:0,max:0,lean:0}};
+function lobbyLeanAt(s,m,p,targetId,pts){s.lobby[m.id]=s.lobby[m.id]||{};const keep=s.lobby[m.id][targetId]||0;s.lobby[m.id][targetId]=keep+pts;const l=lean(memberScore(s,m,p,targetId));s.lobby[m.id][targetId]=keep;return l;} // the same rounded lean the player sees
+function capPoints(s,m,p,targetId,pts,leanCap,base){
+  if(!p||pts<=0)return pts;if(base==null)base=lobbyLeanAt(s,m,p,targetId,0);
+  if(lobbyLeanAt(s,m,p,targetId,pts)-base<=leanCap)return pts;
+  let lo=0,hi=pts;for(let i=0;i<24;i++){const mid=(lo+hi)/2;if(lobbyLeanAt(s,m,p,targetId,mid)-base<=leanCap)lo=mid;else hi=mid;}return lo;}
 function applyLobby(s,memberId,targetId,ex){
   const m=COUNCIL.find(c=>c.id===memberId);const notes=[];let pts=0;
-  const addressed=(ex.addressed||[]).filter(k=>m.pri[k]);
-  const argPts=Math.min(6,addressed.length*2.5);if(argPts){pts+=argPts;notes.push(`+${r1(argPts)} for speaking to ${addressed.map(k=>m.pri[k]).join(' and ')}`);}
+  const p=(s.proposals||[]).find(q=>q.id===targetId);
+  const before=p?lobbyLeanAt(s,m,p,targetId,0):null;
+  if(ex.tone!=='hostile'&&ex.tone!=='pushy')s.council[memberId].rel=clamp(s.council[memberId].rel+1,0,100); // a respectful conversation helps the relationship a little
+  const add=(raw,leanCap,base)=>{const got=capPoints(s,m,p,targetId,raw,leanCap,base);s.lobby[memberId]=s.lobby[memberId]||{};s.lobby[memberId][targetId]=(s.lobby[memberId][targetId]||0)+got;pts+=got;return got;};
+  const addressed=[...new Set((ex.addressed||[]).filter(k=>m.pri[k]))];
+  const credit=PITCH[ex.credit]?ex.credit:'weak';const rule=PITCH[credit];
+  const raw=Math.min(rule.max,addressed.length*rule.per);
+  let ref=before; // each part's cap is measured from the lean just before it, counting the relationship boost
+  if(raw>0){const got=add(raw,rule.lean,ref);ref=null;notes.push(`${credit==='strong'?'Specific pitch':credit==='quick'?'Talking point':'Vague pitch'} on ${addressed.map(k=>m.pri[k]).join(' and ')} (+${r1(got)})`);}
+  else if(addressed.length===0||credit==='none')notes.push('The pitch did not speak to what they care about');
   for(const o of (ex.offers||[]).slice(0,2)){
-    if(o.type==='favor'){if(s.capital>0){s.capital--;pts+=5;notes.push('+5 for a political favor (1 favor spent)');}else notes.push('No favors left to spend');}
-    if(o.type==='earmark'){const amt=clamp(Math.round(Number(o.amount_k)||0),0,150);if(amt>0){if(s.cash>=amt){s.cash-=amt;const g=Math.min(5,amt/25);pts+=g;notes.push(`+${r1(g)} for $${amt}K earmarked for ${m.seat}`);}else notes.push('Not enough cash to earmark that');}}
+    if(o.type==='favor'){if(s.capital>0){s.capital--;const got=add(5,15,ref);ref=null;notes.push(`Political favor, 1 spent (+${r1(got)})`);}else notes.push('No favors left to spend');}
+    if(o.type==='earmark'){const amt=clamp(Math.round(Number(o.amount_k)||0),0,150);if(amt>0){if(s.cash>=amt){s.cash-=amt;const got=add(Math.min(5,amt/25),8,ref);ref=null;notes.push(`$${amt}K earmarked for ${m.seat} (+${r1(got)})`);}else notes.push('Not enough cash to earmark that');}}
   }
-  if(ex.tone==='hostile'){pts-=4;s.council[memberId].rel=clamp(s.council[memberId].rel-6,0,100);notes.push('-4: that came across as hostile');}
-  else if(ex.tone==='pushy'){pts-=1;notes.push('-1: a bit pushy');}
-  else{s.council[memberId].rel=clamp(s.council[memberId].rel+1,0,100);}
-  s.lobby[memberId]=s.lobby[memberId]||{};s.lobby[memberId][targetId]=r1((s.lobby[memberId][targetId]||0)+pts);
+  if(ex.tone==='hostile'){s.lobby[memberId]=s.lobby[memberId]||{};s.lobby[memberId][targetId]=(s.lobby[memberId][targetId]||0)-4;pts-=4;s.council[memberId].rel=clamp(s.council[memberId].rel-6,0,100);notes.push('That came across as hostile (-4)');}
+  else if(ex.tone==='pushy'){s.lobby[memberId]=s.lobby[memberId]||{};s.lobby[memberId][targetId]=(s.lobby[memberId][targetId]||0)-1;pts-=1;notes.push('A bit pushy (-1)');}
+  s.lobby[memberId]=s.lobby[memberId]||{};
   s.lobbyCount=s.lobbyCount||{};s.lobbyCount[memberId]=(s.lobbyCount[memberId]||0)+1;
-  return{points:r1(pts),notes};
+  return{points:r1(pts),notes,credit};
+}
+
+// MP-028: each member's on-the-record statement on a plan, built from their priorities and the plan's numbers.
+function memberStatement(s,m,p,champion){
+  const e=effectsOf(p),v=effVector(s,p);
+  const say={
+    jobs:x=>x>0?`adds about ${Math.round(e.jobs)} jobs`:'costs jobs',
+    cost:()=>`costs the borough $${Math.round(e.cost)}K`,
+    walk:x=>x>0?'makes Millbrook more walkable':'makes it harder to get around on foot',
+    live:x=>x>0?'improves quality of life':'hurts quality of life',
+    conf:x=>x>0?'boosts local business':'hurts business confidence',
+    stores:()=>`adds ${Math.round(e.units)} storefronts`,
+    prop:x=>x>0?'raises property values over time':'drags property values down',
+    approval:x=>x>0?'is what residents are asking for':'is not what residents want',
+    farm:()=>'paves over farmland',
+    downtown:()=>'pulls shoppers off Main Street',
+    housing:()=>`adds homes for about ${Math.round(e.housing)} people`,
+    safety:x=>x>0?'makes streets safer':'raises safety concerns',
+    afford:x=>x>0?'helps with housing costs':'pushes housing costs up',
+    flood:x=>x>0?'adds flood risk on Kish Creek':'reduces flood risk on Kish Creek'};
+  const lever={cost:'bring the cost down',walk:'cut the parking or add walking paths',farm:'keep it off farmland',downtown:'protect the Main Street shops',live:'add something for families',flood:'add stormwater work',safety:'add lighting or patrols',afford:'include homes people can afford',jobs:'bring real jobs with it',conf:'show how it helps local business',approval:'win over the neighbors',prop:'raise the design quality',stores:'add storefronts',housing:'add housing'};
+  const parts=Object.entries(m.w).map(([k,w])=>({k,c:w*(v[k]||0),x:v[k]||0})).filter(o=>Math.abs(o.c)>0.3&&say[o.k]);
+  const pos=parts.filter(o=>o.c>0).sort((a,b)=>b.c-a.c).slice(0,2),neg=parts.filter(o=>o.c<0).sort((a,b)=>a.c-b.c).slice(0,2);
+  const supports=pos.map(o=>say[o.k](o.x)),opposes=neg.map(o=>say[o.k](o.x));
+  const l=lean(memberScore(s,m,p,champion));
+  const stance=l>=60?'support':l<=40?'oppose':'undecided';
+  let wouldChange;
+  if(m.rival&&champion===p.id&&stance!=='support')wouldChange='Not much, as long as it is the mayor\'s plan.';
+  else if(stance==='support')wouldChange=neg.length?`I'd feel better if you ${lever[neg[0].k]}.`:'Nothing. I am voting yes.';
+  else wouldChange=neg.length?`I could get to yes if you ${lever[neg[0].k]}.`:`Give me a reason: ${Object.values(m.pri)[0]}.`;
+  const join=a=>a.length>1?a[0]+' and '+a[1]:a[0];
+  const text=`${stance==='support'?'I support this.':stance==='oppose'?'I oppose this.':'I have not decided.'}${supports.length?` It ${join(supports)}.`:''}${opposes.length?` ${supports.length?'But it':'It'} ${join(opposes)}.`:''} ${wouldChange}`;
+  return{stance,supports,opposes,wouldChange,text,lean:l};
 }
 
 /* ---------- decisions ---------- */
@@ -552,5 +601,5 @@ function applyGrant(s,p){const g=grantInfo(s,p);if(!g)return null;p.grantPending
 function migrate(s){if(!s)return s;if(s.v===1){s.meters.safety=62;s.meters.afford=58;s.policies={};s.flags.floodRisk=0.06;
   for(const [id,pa] of Object.entries(PARCELS))if(pa.tiles)for(const [x,y] of pa.tiles){const c=s.grid[y*N+x];if(!c.site&&!c.b)c.site=id;}
   for(const h of s.history){if(h.safety===undefined)h.safety=62;if(h.afford===undefined)h.afford=58;}s.v=2;}return s;}
-const ENGINE={canProposeInitiative,floodRisk,FLAGS,defaultPlan,PARCELS,initiativeRoles,parcelsAvailable,needsSite,makeInitiative,heuristicDraft,grantInfo,applyGrant,migrate,N,KINDS,PRESENTERS,COUNCIL,P_DEFS,SITES,THEMES,MAYOR_AUTHORITY,newGame,effectsOf,deliveryOdds,validatePlan,forecastVote,memberScore,lean,hearingOptions,applyLobby,approve,reject,table,resolveYear,econ,jobsMeter,snapshotStats,fundingOptions,electionResult,recordFacts,rand,clamp};
+const ENGINE={memberStatement,canProposeInitiative,floodRisk,FLAGS,defaultPlan,PARCELS,initiativeRoles,parcelsAvailable,needsSite,makeInitiative,heuristicDraft,grantInfo,applyGrant,migrate,N,KINDS,PRESENTERS,COUNCIL,P_DEFS,SITES,THEMES,MAYOR_AUTHORITY,newGame,effectsOf,deliveryOdds,validatePlan,forecastVote,memberScore,lean,hearingOptions,applyLobby,approve,reject,table,resolveYear,econ,jobsMeter,snapshotStats,fundingOptions,electionResult,recordFacts,rand,clamp};
 if(typeof module!=='undefined')module.exports=ENGINE;
