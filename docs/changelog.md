@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased (on dev)
+## 0.5.0 (2026-10-27)
 - Touch first for the iPhone Duo inner display: pinch to zoom the map from 1x to 3x without zooming the page, drag to pan, double-tap to zoom, and a two-finger twist to rotate (MP-051, MP-056).
 - On-map buttons to zoom in, zoom out, recenter, and rotate (MP-056).
 - The map stays pinned at the top while the agenda scrolls, with a Shrink map control (MP-055).
