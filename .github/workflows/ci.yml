@@ -1,7 +1,11 @@
 name: CI
+# Runs every test and the requirements traceability check.
+# A green run on dev also triggers the dev page deploy (see pages.yml).
 on:
   pull_request:
     branches: [main, dev]
+  push:
+    branches: [dev]
 jobs:
   test-and-build:
     runs-on: ubuntu-latest
@@ -11,8 +15,8 @@ jobs:
         with:
           node-version: 22
       - run: npm test
-      - run: node scripts/build.mjs --channel ${{ github.base_ref == 'main' && 'stable' || 'dev' }}
+      - run: node scripts/build.mjs --channel ${{ (github.base_ref || github.ref_name) == 'main' && 'stable' || 'dev' }}
       - uses: actions/upload-artifact@v4
         with:
-          name: master-plan-${{ github.base_ref == 'main' && 'stable' || 'dev' }}
+          name: master-plan-${{ (github.base_ref || github.ref_name) == 'main' && 'stable' || 'dev' }}
           path: dist/

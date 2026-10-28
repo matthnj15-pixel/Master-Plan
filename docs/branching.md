@@ -14,7 +14,7 @@ The goal: try new ideas freely without touching the game you're actually playing
 1. **You describe what you want.** Claude turns it into requirements in `docs/requirements.md` and confirms them with you.
 2. **Requirements become tests.** Claude writes tests named with the requirement IDs on a `feature/` branch, then builds until they pass.
 3. **Tests gate `dev`.** When every test and the traceability check pass, Claude merges into `dev` and updates the dev page and dev artifact. You play it there.
-4. **You gate `main`.** When `dev` is ready, Claude prepares a release pull request with a version bump, a changelog listing the requirements delivered, and the play-test checklist. You merge it, and the stable game updates.
+4. **You gate `main`.** When `dev` is ready, Claude opens the release pull request, writes its description, checks that its checks pass, with a version bump, a changelog listing the requirements delivered, and the play-test checklist. You merge it, and the stable game updates.
 
 ## Feature flags
 Flags live in `flags.json`, each with an on/off value per channel. Use them when something should ship to `dev` before it's ready for stable, or when you want to compare two versions of a rule.
@@ -29,4 +29,4 @@ Dev and stable never share a save. The dev page and dev artifact use their own s
 ## Settings Nate controls in GitHub
 - **Branch protection** on `main` only: require a pull request before merging. `dev` stays open so Claude can merge tested work.
 - **Pages:** Settings → Pages → Source: **GitHub Actions**.
-- **Pages environment:** Settings → Environments → `github-pages` → Deployment branches: allow both `main` and `dev`.
+- **Pages environment:** nothing to change. The dev page deploys through a workflow that runs from `main` after CI passes on `dev`, so the default `main`-only rule works.
