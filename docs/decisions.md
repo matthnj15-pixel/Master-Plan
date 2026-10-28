@@ -30,3 +30,4 @@ Decisions Nate made, with the date. New decisions go at the bottom.
 - **Hosting:** GitHub Pages hosts a public build alongside the claude.ai artifact.
 - **Branching:** `main` is the stable game; `dev` is where new work lands first, with its own Pages page (`/dev/`), its own claude.ai artifact, and its own save. Feature flags control what's on in each channel.
 - **Where the game lives:** The repo is the source of truth for code and docs. The claude.ai artifact is the real, playable game because it has AI characters at no extra cost. GitHub Pages stays a no-AI copy; adding AI there would need separately billed API access, so it's out of scope for now.
+- **Process:** Run it like real product work. Conversations become requirements (`docs/requirements.md`), requirements become tests, and tests must pass. Claude merges into `dev` when everything passes; releases to `main` need Nate's approval. Branch protection is on `main` only.

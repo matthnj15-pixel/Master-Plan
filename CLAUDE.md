@@ -3,12 +3,16 @@
 Nate is the PM and owns the repo. He decides what to build and how it should behave. Claude writes the code, tests, commits, and deploys. The full policy is in [docs/branching.md](docs/branching.md).
 
 ## How changes ship
-1. Branch from `dev` as `feature/<short-name>`. For an urgent fix to the stable game, branch from `main` as `hotfix/<short-name>`. Never push to `main` or `dev` directly.
-2. Run `npm test` and `npm run build -- --channel dev` before pushing. Both must pass.
-3. Push the branch and give Nate the pull request link (into `dev`, or into `main` for a hotfix). Describe the change in player terms, using the PR template.
-4. Nate reviews and merges. Merging to `dev` or `main` redeploys GitHub Pages: stable at the root, dev at `/dev/`.
-5. After a merge into `dev`, publish the dev build to the **Master Plan Dev** artifact. After a merge into `main`, publish the stable build to the **Master Plan** artifact. Always update the existing artifact so links don't change.
-6. Releases are a PR from `dev` into `main` that bumps `version` in `package.json` and adds an entry to `docs/changelog.md`. After a hotfix, merge `main` back into `dev`.
+Conversation becomes requirements, requirements become tests, and tests must pass.
+
+1. **Requirements first.** When Nate describes something, add or update rows in `docs/requirements.md` with an ID, acceptance criteria, a verification method, and status `Proposed`. Show Nate the rows and ask 2 to 4 questions if anything changes scope. Once he agrees, mark them `Accepted` (or `Planned` if not building yet).
+2. **Tests next.** Branch from `dev` as `feature/<short-name>`. Write tests named with the requirement IDs they verify (`test('MP-045 ...')`) before the code.
+3. **Build it** until `npm test` passes. `npm test` runs every test and the traceability check, which fails if an accepted, test-verified requirement has no test or a test names an unknown ID.
+4. **Merge into `dev` yourself** once `npm test` and `npm run build -- --channel dev` pass: merge the feature branch, push `dev`, publish the dev artifact, and tell Nate what changed, which IDs it covers, and how to play it.
+5. **Releases need Nate's approval.** Prepare a `dev` to `main` release: bump `version` in `package.json`, add a `docs/changelog.md` entry listing requirement IDs delivered, and run the play-test checklist for `Play-test` requirements touched. Give Nate the pull request link. Nate merges; only `main` is protected. Then publish the stable artifact.
+6. **Hotfixes** branch from `main` as `hotfix/<short-name>` and go to Nate as a pull request into `main`. After merging, merge `main` back into `dev`.
+
+Never change what a test checks just to make it pass. If a requirement turns out wrong, change the requirement with Nate first, then the test.
 
 ## Feature flags
 - Defined in `flags.json` with an on/off value per channel. The build injects them as `MP_BUILD.flags`; the engine exposes them as `ENGINE.FLAGS`.
@@ -20,8 +24,9 @@ Nate is the PM and owns the repo. He decides what to build and how it should beh
 - `src/ui.js`: rendering, the map, sheets, dev tools, and the AI calls.
 - `src/index.html`: page template with styles. `scripts/build.mjs --channel stable|dev --out <dir>` writes `master-plan.html` (artifact) and `index.html` (Pages).
 - `flags.json`: feature flags.
-- `tests/engine.test.mjs`: deterministic simulation tests (Node's built-in runner, no dependencies).
-- `docs/`: design handoff, decisions, roadmap, branching policy, changelog.
+- `docs/requirements.md`: the requirements baseline. `scripts/trace.mjs` checks it against the tests (`npm run trace` prints the matrix).
+- `tests/engine.test.mjs`, `tests/build.test.mjs`: deterministic simulation and build tests (Node's built-in runner, no dependencies). Test names start with requirement IDs.
+- `docs/`: requirements, design handoff, decisions, roadmap, branching policy, changelog.
 
 ## Design rules that must hold
 - **The AI talks; the simulation decides.** AI characters write dialogue and translate the player's words into plan fields. The engine prices every field and computes every outcome. Validate all AI output with `validatePlan` before use.

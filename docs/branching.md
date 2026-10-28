@@ -5,16 +5,16 @@ The goal: try new ideas freely without touching the game you're actually playing
 ## Branches
 | Branch | What it is | Who merges into it | Where it runs |
 |---|---|---|---|
-| `main` | The stable game | Nate, from a release PR (`dev` → `main`) or a hotfix | GitHub Pages root and the **Master Plan** claude.ai artifact |
-| `dev` | Everything that's been accepted but not released | Nate, from feature PRs | GitHub Pages `/dev/` and the **Master Plan Dev** claude.ai artifact |
-| `feature/<name>` | One change in progress | Claude opens it from `dev` | Built by CI on every PR |
+| `main` | The stable game. Protected. | Nate, from a release pull request (`dev` → `main`) or a hotfix | GitHub Pages root and the **Master Plan** claude.ai artifact |
+| `dev` | Everything accepted but not released | Claude, once all tests pass | GitHub Pages `/dev/` and the **Master Plan Dev** claude.ai artifact |
+| `feature/<name>` | One change in progress | Claude creates it from `dev` | Tested before merging |
 | `hotfix/<name>` | An urgent fix to the stable game | Claude opens it from `main` | Merged to `main`, then `main` is merged back into `dev` |
 
 ## The flow
-1. **You describe what you want.** Claude writes a short spec in the PR description: what changes for the player, why, and how to check it.
-2. **Claude builds it on a `feature/` branch** and opens a pull request into `dev`. CI runs the tests and builds the page.
-3. **You review and merge into `dev`.** The dev page and the dev artifact update. Play it there.
-4. **When `dev` is good, Claude opens a release PR** from `dev` into `main` with a version bump and changelog. You merge it, and the stable game updates.
+1. **You describe what you want.** Claude turns it into requirements in `docs/requirements.md` and confirms them with you.
+2. **Requirements become tests.** Claude writes tests named with the requirement IDs on a `feature/` branch, then builds until they pass.
+3. **Tests gate `dev`.** When every test and the traceability check pass, Claude merges into `dev` and updates the dev page and dev artifact. You play it there.
+4. **You gate `main`.** When `dev` is ready, Claude prepares a release pull request with a version bump, a changelog listing the requirements delivered, and the play-test checklist. You merge it, and the stable game updates.
 
 ## Feature flags
 Flags live in `flags.json`, each with an on/off value per channel. Use them when something should ship to `dev` before it's ready for stable, or when you want to compare two versions of a rule.
@@ -27,6 +27,6 @@ Flags live in `flags.json`, each with an on/off value per channel. Use them when
 Dev and stable never share a save. The dev page and dev artifact use their own save, so a broken experiment can't damage your real town. If an update changes the save format, it must include a migration and a test.
 
 ## Settings Nate controls in GitHub
-- **Branch protection** on `main` and `dev`: require a pull request and a passing CI check before merging.
+- **Branch protection** on `main` only: require a pull request before merging. `dev` stays open so Claude can merge tested work.
 - **Pages:** Settings → Pages → Source: **GitHub Actions**.
 - **Pages environment:** Settings → Environments → `github-pages` → Deployment branches: allow both `main` and `dev`.

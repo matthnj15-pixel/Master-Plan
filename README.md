@@ -11,7 +11,8 @@ A turn-based small-town planning sim. You're the new mayor of Millbrook, Pennsyl
 Requires Node 20 or later. No dependencies.
 
 ```
-npm test        # simulation tests
+npm test        # all tests plus the requirements traceability check
+npm run trace   # print the requirements-to-tests matrix
 npm run build                      # stable build into dist/
 npm run build -- --channel dev     # dev build (dev tools and dev flags on)
 ```
