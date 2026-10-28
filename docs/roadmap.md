@@ -8,6 +8,7 @@ Priorities are Nate's call. This list proposes an order.
 3. **Opposition mode.** After an election loss, play from one council seat, block or bargain with Greg Marsh's agenda, and run again in four years.
 
 ## Later
+- **Graphics overhaul.** Real building models and a higher-fidelity map, replacing today's drawn shapes.
 - **Term limit and successor.** After two terms, groom a successor who inherits approval, the rival, and unfinished projects.
 - **Generated proposals.** A pool of proposal templates that appear based on the town's state, so later years don't need hand-written schedules.
 - **Milestones.** A goal track (a "comprehensive plan" book) that unlocks new options as the town grows.

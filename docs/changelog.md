@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased (on dev)
+- Touch first for the iPhone Duo inner display: pinch to zoom the map from 1x to 3x without zooming the page, drag to pan, double-tap to zoom, and a two-finger twist to rotate (MP-051, MP-056).
+- On-map buttons to zoom in, zoom out, recenter, and rotate (MP-056).
+- The map stays pinned at the top while the agenda scrolls, with a Shrink map control (MP-055).
+- Every control is at least 44 points and all text at least 12 points (MP-054). Main sheet buttons stay pinned to the bottom (MP-057).
+- Headless touch tests at the Duo's screen size run in CI.
+
 ## 0.4.0 (2026-10-27)
 - Requirements baseline in `docs/requirements.md` (MP-001 to MP-064). `npm test` now fails if an accepted, test-verified requirement has no passing test.
 - 29 tests, each named for the requirements it verifies, including new coverage for bankruptcy, causality, the luxury store, housing growth, council votes, lobbying, the rival, safety, flooding, affordability, save separation, and keeping API keys out of the page.

@@ -42,11 +42,11 @@ jobs:
           node-version: 22
       - name: Build stable (main)
         working-directory: stable
-        run: npm test && node scripts/build.mjs --channel stable --out ../site
+        run: npm run test:core && node scripts/build.mjs --channel stable --out ../site
       - name: Build dev
         run: |
           if [ -f dev/package.json ]; then
-            cd dev && npm test && node scripts/build.mjs --channel dev --out ../site/dev
+            cd dev && npm run test:core && node scripts/build.mjs --channel dev --out ../site/dev
           else
             echo "No dev branch yet; skipping /dev/"
           fi

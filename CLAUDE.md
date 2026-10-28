@@ -26,7 +26,8 @@ Never change what a test checks just to make it pass. If a requirement turns out
 - `src/index.html`: page template with styles. `scripts/build.mjs --channel stable|dev --out <dir>` writes `master-plan.html` (artifact) and `index.html` (Pages).
 - `flags.json`: feature flags.
 - `docs/requirements.md`: the requirements baseline. `scripts/trace.mjs` checks it against the tests (`npm run trace` prints the matrix).
-- `tests/engine.test.mjs`, `tests/build.test.mjs`: deterministic simulation and build tests (Node's built-in runner, no dependencies). Test names start with requirement IDs.
+- `tests/engine.test.mjs`, `tests/build.test.mjs`: deterministic simulation and build tests (Node's built-in runner).
+- `tests/ui.test.mjs`: headless Chromium touch tests at the iPhone Duo inner display size (Playwright, the only dev dependency). Test names start with requirement IDs.
 - `docs/`: requirements, design handoff, decisions, roadmap, branching policy, changelog.
 
 ## Design rules that must hold
@@ -35,7 +36,7 @@ Never change what a test checks just to make it pass. If a requirement turns out
 - **Saves must survive updates.** If the state shape changes, bump `v` and extend `migrate()`, and add a test.
 - **Dev and stable never share a save.** Dev uses its own local key and database document.
 - **Same seed, same game.** Randomness goes through `rand(seed, key)`.
-- Mobile first: check at 400px wide.
+- **Touch first.** The primary device is the iPhone Duo inner display in portrait (about 669 × 951 points). Controls are at least 44 × 44 points, text at least 12 points, main actions within thumb reach. Also check 400px wide.
 
 ## Runtime
 There are two builds of the same code:

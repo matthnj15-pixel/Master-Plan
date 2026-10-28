@@ -31,3 +31,10 @@ Decisions Nate made, with the date. New decisions go at the bottom.
 - **Branching:** `main` is the stable game; `dev` is where new work lands first, with its own Pages page (`/dev/`), its own claude.ai artifact, and its own save. Feature flags control what's on in each channel.
 - **Where the game lives:** The repo is the source of truth for code and docs. The claude.ai artifact is the real, playable game because it has AI characters at no extra cost. GitHub Pages stays a no-AI copy; adding AI there would need separately billed API access, so it's out of scope for now.
 - **Process:** Run it like real product work. Conversations become requirements (`docs/requirements.md`), requirements become tests, and tests must pass. Claude merges into `dev` when everything passes; releases to `main` need Nate's approval. Branch protection is on `main` only.
+
+## 2026-10-27: Touch first
+- **Primary device:** Nate plays on the iPhone Duo inner display in portrait. Touch comes first in every design decision.
+- **Map gestures:** Pinch to zoom from 1x to 3x (replacing the earlier "2x, no free zoom" decision), drag to pan, double-tap to zoom, and a two-finger twist that rotates the street view in 90° steps. On-map buttons cover the same actions.
+- **Pinned map:** The map stays at the top while the agenda scrolls, with a control to shrink it.
+- **UI tests:** Headless-browser tests at the Duo's screen size check touch targets, text size, layout, and gestures in CI.
+- **Later:** A graphics overhaul with real building models.
