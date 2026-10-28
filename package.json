@@ -1,6 +1,6 @@
 {
   "name": "master-plan",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "description": "Turn-based small-town planning sim: you author the plan, the town grows in response.",
   "type": "module",

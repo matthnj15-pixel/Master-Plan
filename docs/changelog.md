@@ -1,11 +1,16 @@
 # Changelog
 
+## 0.4.0 (2026-10-27)
+- Requirements baseline in `docs/requirements.md` (MP-001 to MP-064). `npm test` now fails if an accepted, test-verified requirement has no passing test.
+- 29 tests, each named for the requirements it verifies, including new coverage for bankruptcy, causality, the luxury store, housing growth, council votes, lobbying, the rival, safety, flooding, affordability, save separation, and keeping API keys out of the page.
+- The engine enforces one mayor's initiative per year (MP-030).
+- The dev page deploys automatically after tests pass on `dev`.
+- Claude opens release pull requests, writes their descriptions, and checks them before handing them over. Claude merges into `dev` when tests pass; `main` needs Nate.
+
 ## 0.3.0 (2026-10-27)
 - Renamed the game to Master Plan.
 - Moved into GitHub with tests, a build script, CI, and a GitHub Pages deploy.
 - Stable and dev channels: a dev page and dev artifact with a separate save, feature flags, and in-game dev tools.
-- Requirements baseline (MP-001 to MP-064) with traceability: every accepted, test-verified requirement has a passing test.
-- The engine enforces one mayor's initiative per year (MP-030).
 
 ## 0.2.0 (2026-10-27)
 - Your own freeform proposals, drafted by the borough planner and priced by the engine.
