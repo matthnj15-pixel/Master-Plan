@@ -99,7 +99,7 @@ function itemHTML(p,i){
 function agendaHTML(){
   let h='';const props=S.proposals;let i=0;const seen=new Set();
   if(S.phase==='election')h+=`<div class="box"><b>Election day.</b><div class="note">Your first term is over. Make your case to Millbrook voters.</div><div style="margin-top:10px"><button class="btn gold" data-act="election">Go to the polls</button></div></div>`;
-  if(S.phase==='agenda')h+=S.initiativeYear!==S.year?`<div class="box"><b>Your initiative</b><div class="note" style="margin-top:4px">Put one idea of your own on the agenda each year. Describe it in your words and the borough planner turns it into a plan with real costs.</div><div style="margin-top:10px"><button class="btn gold" data-act="initiative">Propose an idea</button></div></div>`:`<div class="note">Your initiative for ${calYear(S.year)} is on the agenda.</div>`;
+  if(S.phase==='agenda')h+=E.canProposeInitiative(S)?`<div class="box"><b>Your initiative</b><div class="note" style="margin-top:4px">Put one idea of your own on the agenda each year. Describe it in your words and the borough planner turns it into a plan with real costs.</div><div style="margin-top:10px"><button class="btn gold" data-act="initiative">Propose an idea</button></div></div>`:`<div class="note">Your initiative for ${calYear(S.year)} is on the agenda.</div>`;
   h+=`<div class="sect"><span>${calYear(S.year)} agenda</span><span>${S.capital} political favor${S.capital===1?'':'s'}</span></div><div class="stack">`;
   if(!props.length)h+=`<div class="note">No new proposals this year. End the year to let the town grow.</div>`;
   for(const p of props){
@@ -355,7 +355,7 @@ function onMapTap(px,py){
   const parId=parcelSet().get(c.x+','+c.y);
   let d=c.b?(c.b.type==='initiative'?(S.built.find(b=>b.site===c.site&&b.kind==='initiative')?.title||'Your project'):DESC[c.b.type]||c.b.type):c.t==='bridge'?(S.flags.bridgeClosed?'Main St bridge · closed':'Bridge over Kish Creek'):c.road?'Road':c.t==='farm'?'Farmland':c.t==='forest'?'Woods':c.t==='water'?'Kish Creek':'Open land';
   if(parId)d=`Open parcel: ${E.PARCELS[parId].name}`;
-  const canInit=parId&&S.phase==='agenda'&&S.initiativeYear!==S.year;
+  const canInit=parId&&E.canProposeInitiative(S);
   $('#mapinfo').innerHTML=`<b>${esc(d)}</b>${parId?` · ${esc(E.PARCELS[parId].blurb)}`:''}${p?` · on your agenda: <button class="chip" data-open="${p.id}">${esc(p.title)}</button>`:''}${canInit?` <button class="chip" data-propose="${parId}">Propose something here</button>`:''}`;
   drawMap();
 }
@@ -560,6 +560,7 @@ Return only JSON: {"title": "name of at most 6 words", "summary": "one plain sen
   }
   if(!res||typeof res!=='object'||!res.plan){const h=E.heuristicDraft(desc);res={...h,site:chosen,reply:'Here is a first draft. Tell me what to change and I will redraw it.'};}
   const p=E.makeInitiative(S,{...res,site:chosen||res.site,desc});
+  if(!p){busy=false;toast('You already proposed an initiative this year.');closeSheet();return;}
   S.chats[p.id]=[{who:'you',text:desc},{who:'them',text:String(res.reply||'Here is my first draft.').slice(0,400)}];
   busy=false;save();sheet={type:'proposal',id:p.id};renderAll();
 }

@@ -453,8 +453,7 @@ function resolveYear(s){
   const load=s.pop+ec.parking*3+s.flags.students*0.5;
   if(load>ec.roadCap)add('live',-Math.min(4,(load-ec.roadCap)/500),'Traffic is outgrowing the roads');
   if(s.policies.impact_fees&&newHomes){const f=newHomes*8;s.cash+=f;s.lastBudget.net+=f;causes.push({m:'cash',v:f,r:`Impact fees on ${newHomes} new homes`});}
-  if(s.year>=2){let exposure=0,storm=0;for(const b of s.built){if(b.closed)continue;const fe=effectsOf(b);exposure+=fe.creek||0;storm+=fe.storm||0;}
-    const risk=clamp(0.05+ec.parking/3500+exposure*0.05-storm*0.04,0.02,0.35);s.flags.floodRisk=Math.round(risk*100)/100;
+  if(s.year>=2){const fr=floodRisk(s,ec);const exposure=fr.exposure,risk=fr.risk;s.flags.floodRisk=Math.round(risk*100)/100;
     if(rand(s.seed,'flood'+s.year)<risk){const dmg=60+exposure*130;s.cash-=dmg;causes.push({m:'cash',v:-dmg,r:`Kish Creek flooded${exposure?'. Creekside buildings took the worst of it':''}`});
       add('live',-3,'Flood cleanup closed streets for weeks');add('approval',exposure?-3:-1,'Residents blame the borough for the flooding');add('safety',-2,'Flood damage to roads and homes');
       s.reports.push({type:'event',text:'Kish Creek flooded.'});}}
@@ -521,7 +520,11 @@ function parcelsAvailable(s){return Object.entries(PARCELS).filter(([id,pa])=>{c
   if(s.proposals.some(p=>p.site===id&&(p.status==='open'||p.status==='tabled'))||s.pending.some(p=>p.site===id))return false;
   return tl.every(([x,y])=>{const c=s.grid[y*N+x];return c.site===id&&(!c.b||c.b.type==='lot');});}).map(([id])=>id);}
 function needsSite(pl){return !!(pl.homes||pl.shops||pl.green||pl.plaza||pl.parking||pl.civic!=='none'||pl.safety==='police_substation'||pl.safety==='fire_station'||pl.stormwater);}
+function floodRisk(s,ec){ec=ec||econ(s);let exposure=0,storm=0;for(const b of s.built){if(b.closed)continue;const fe=effectsOf(b);exposure+=fe.creek||0;storm+=fe.storm||0;}
+  return{risk:clamp(0.05+ec.parking/3500+exposure*0.05-storm*0.04,0.02,0.35),exposure,storm};}
+function canProposeInitiative(s){return s.phase==='agenda'&&s.initiativeYear!==s.year;}
 function makeInitiative(s,d){
+  if(!canProposeInitiative(s))return null; // MP-030: one initiative per year
   const v=validatePlan('initiative',defaultPlan('initiative'),d.plan||{});const avail=parcelsAvailable(s);
   let site='none';if(needsSite(v.plan))site=avail.includes(d.site)?d.site:(avail[0]||'none');
   const p={id:'init'+s.year,kind:'initiative',title:String(d.title||'Mayor\'s initiative').slice(0,60),presenter:'planner',site,council:true,
@@ -549,5 +552,5 @@ function applyGrant(s,p){const g=grantInfo(s,p);if(!g)return null;p.grantPending
 function migrate(s){if(!s)return s;if(s.v===1){s.meters.safety=62;s.meters.afford=58;s.policies={};s.flags.floodRisk=0.06;
   for(const [id,pa] of Object.entries(PARCELS))if(pa.tiles)for(const [x,y] of pa.tiles){const c=s.grid[y*N+x];if(!c.site&&!c.b)c.site=id;}
   for(const h of s.history){if(h.safety===undefined)h.safety=62;if(h.afford===undefined)h.afford=58;}s.v=2;}return s;}
-const ENGINE={FLAGS,defaultPlan,PARCELS,initiativeRoles,parcelsAvailable,needsSite,makeInitiative,heuristicDraft,grantInfo,applyGrant,migrate,N,KINDS,PRESENTERS,COUNCIL,P_DEFS,SITES,THEMES,MAYOR_AUTHORITY,newGame,effectsOf,deliveryOdds,validatePlan,forecastVote,memberScore,lean,hearingOptions,applyLobby,approve,reject,table,resolveYear,econ,jobsMeter,snapshotStats,fundingOptions,electionResult,recordFacts,rand,clamp};
+const ENGINE={canProposeInitiative,floodRisk,FLAGS,defaultPlan,PARCELS,initiativeRoles,parcelsAvailable,needsSite,makeInitiative,heuristicDraft,grantInfo,applyGrant,migrate,N,KINDS,PRESENTERS,COUNCIL,P_DEFS,SITES,THEMES,MAYOR_AUTHORITY,newGame,effectsOf,deliveryOdds,validatePlan,forecastVote,memberScore,lean,hearingOptions,applyLobby,approve,reject,table,resolveYear,econ,jobsMeter,snapshotStats,fundingOptions,electionResult,recordFacts,rand,clamp};
 if(typeof module!=='undefined')module.exports=ENGINE;

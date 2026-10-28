@@ -2,9 +2,16 @@ name: Deploy to GitHub Pages
 # Publishes both channels to one Pages site:
 #   /       stable game, built from main
 #   /dev/   dev game, built from dev
+# Runs on pushes to main, and after CI passes on dev. The dev path uses
+# workflow_run, which runs from main, so the github-pages environment only
+# needs to allow main.
 on:
   push:
-    branches: [main, dev]
+    branches: [main]
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [dev]
   workflow_dispatch:
 permissions:
   contents: read
@@ -15,6 +22,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   deploy:
+    if: github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push')
     runs-on: ubuntu-latest
     environment:
       name: github-pages
