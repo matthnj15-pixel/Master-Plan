@@ -3,6 +3,9 @@
 ## Unreleased (on dev)
 - Pitches earn what they say (MP-025): quick-tap and vague pitches move a member's lean by 3 points or less, specific ones by 10 or less, a favor by 15 or less. The AI judges how specific a typed pitch was, and the character's reply matches the credit.
 - Council members go on the record (MP-028): in a hearing, each member's statement says what they support, what they oppose, and what would change their vote. It updates as you change the plan.
+- Propose on any plots (MP-033): choose "Let my description decide" and say where ("on the old mill lot"), or choose plots on the map. Tap any plots, built or empty, touching or not; tap again to remove; Clear all resets. Roads and the creek can't be built on. Bigger plans need more plots, and the planner tells you when an idea won't fit.
+- Building over something has consequences (MP-034): homes displace residents, storefronts close, and landmarks come down, with costs and approval hits on the forecast and in the year-end report.
+- Impossible ideas get a realistic answer (MP-035): tearing down Penns Valley College gets drafted, priced, and voted down, with every member saying why on the record.
 - The page scrolls as one stack (MP-055): the map is no longer pinned, nothing scrolls underneath anything, and at 1x a swipe on the map scrolls the page.
 
 ## 0.5.0 (2026-10-27)

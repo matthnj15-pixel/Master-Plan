@@ -283,7 +283,7 @@ function proposalsFor(s,year){
 const SAFE_AFF={stripmall:p=>[-1,0],commerce:p=>[1,(p.stories-1)*0.8],studenthousing:p=>[-2,p.beds/150],subdivision:p=>[0,p.homes/30],park:p=>[1,0],boutique:p=>[0,0],bridge:p=>[p.scope==='full'?1:0,0]};
 function effectsOf(p){const e=KINDS[p.kind].effects(p.plan);const pr=PRESENTERS[p.presenter];if(p.emergency)e.cost*=1.6;
   if(e.safety===undefined){const sa=(SAFE_AFF[p.kind]||(()=>[0,0]))(p.plan);e.safety=sa[0];e.afford=sa[1];}
-  e.creek=0;const par=PARCELS[p.site];
+  e.creek=0;const par=p.traits?{traits:p.traits}:PARCELS[p.site];
   if(par&&par.traits.includes('creek')){const soft=p.kind==='park'||(p.kind==='initiative'&&!p.plan.homes&&!p.plan.shops&&p.plan.civic==='none'&&p.plan.parking<60);e.creek=soft?0:1;if(soft)e.storm=(e.storm||0)+0.5;}
   if(p.kind==='initiative'&&par){
     if(par.traits.includes('creek')){e.live+=1;e.notes=['Creek views, but anything built here sits in the floodplain'].concat(e.notes);}
@@ -291,16 +291,24 @@ function effectsOf(p){const e=KINDS[p.kind].effects(p.plan);const pr=PRESENTERS[
     if(par.traits.includes('main')&&p.plan.shops)e.walk+=1;
     if(par.traits.includes('edge')){e.walk-=1;}
   }
+  if(p.kind==='initiative'&&p.plots&&p.plots.length)e.cost+=p.plots.length*15; // MP-033: site prep for every plot
+  const d=p.demo;
+  if(d&&(d.cost||d.residents||d.landmarks.length||d.projects.length)){ // MP-034: demolition and acquisition
+    e.cost+=d.cost;e.approval+=d.approval;e.live+=d.live;e.conf+=d.conf;e.jobs-=d.untrackedJobs;e.farm+=d.farm;
+    if(d.warning)e.notes=[d.warning].concat(e.notes);
+    if(d.residents)e.notes=[`Displaces about ${d.residents} residents`].concat(e.notes);}
   if(p.grant)e.cost=e.cost*(1-p.grant);
   // low detail plans hide extra cost; shown as a range
   e.costHigh=Math.round(e.cost*(1+(100-pr.detail)/250));
   e.cost=Math.round(e.cost);return e;}
 function deliveryOdds(s,p){const pr=PRESENTERS[p.presenter];let o=0.45+pr.comp*0.004+pr.detail*0.002+(s.presenters[p.presenter].rel-50)*0.001;
   if(p.kind==='boutique'&&p.plan.clawback)o-=0.18;return clamp(o,0.3,0.96);}
-function effVector(s,p){const e=effectsOf(p);return{jobs:e.jobs/40,cost:e.cost/250,walk:e.walk,live:e.live,conf:e.conf,stores:e.units/3,prop:e.prop*400,approval:e.approval+(p.petition?2:0),farm:e.farm/2,downtown:e.downtown||0,housing:e.housing/100,safety:e.safety||0,afford:e.afford||0,flood:(e.creek||0)*2+e.parking/100-(e.storm||0)*2};}
+function effVector(s,p){const e=effectsOf(p);return{jobs:e.jobs/40,cost:e.cost/250,walk:e.walk,live:e.live,conf:e.conf,stores:e.units/3,prop:e.prop*400,approval:e.approval+(p.petition?2:0),farm:e.farm/2,downtown:e.downtown||0,housing:e.housing/100,safety:e.safety||0,afford:e.afford||0,flood:(e.creek||0)*2+e.parking/100-(e.storm||0)*2,
+  demolish:p.demo?(p.demo.residents/120+p.demo.landmarks.length*2+p.demo.projects.length*1.5+(p.demo.infeasible?8:0)):0};}
 function memberScore(s,m,p,champion){
   const v=effVector(s,p);let sc=0;
   for(const [k,w] of Object.entries(m.w))sc+=w*(v[k]||0);
+  sc-=v.demolish||0; // MP-034/035: nobody on the council likes tearing things down
   sc+=(s.council[m.id].rel-50)/10;
   if(p.petition)sc+=2.5; // public pressure
   if(m.rival&&p.presenter==='merchants')sc+=3;
@@ -360,7 +368,7 @@ function memberStatement(s,m,p,champion){
   const e=effectsOf(p),v=effVector(s,p);
   const say={
     jobs:x=>x>0?`adds about ${Math.round(e.jobs)} jobs`:'costs jobs',
-    cost:()=>`costs the borough $${Math.round(e.cost)}K`,
+    cost:()=>`costs the borough ${e.cost>=1000?'$'+(e.cost/1000).toFixed(1)+'M':'$'+Math.round(e.cost)+'K'}`,
     walk:x=>x>0?'makes Millbrook more walkable':'makes it harder to get around on foot',
     live:x=>x>0?'improves quality of life':'hurts quality of life',
     conf:x=>x>0?'boosts local business':'hurts business confidence',
@@ -373,9 +381,12 @@ function memberStatement(s,m,p,champion){
     safety:x=>x>0?'makes streets safer':'raises safety concerns',
     afford:x=>x>0?'helps with housing costs':'pushes housing costs up',
     flood:x=>x>0?'adds flood risk on Kish Creek':'reduces flood risk on Kish Creek'};
-  const lever={cost:'bring the cost down',walk:'cut the parking or add walking paths',farm:'keep it off farmland',downtown:'protect the Main Street shops',live:'add something for families',flood:'add stormwater work',safety:'add lighting or patrols',afford:'include homes people can afford',jobs:'bring real jobs with it',conf:'show how it helps local business',approval:'win over the neighbors',prop:'raise the design quality',stores:'add storefronts',housing:'add housing'};
+  const lever={demolish:'leave what is already there alone',cost:'bring the cost down',walk:'cut the parking or add walking paths',farm:'keep it off farmland',downtown:'protect the Main Street shops',live:'add something for families',flood:'add stormwater work',safety:'add lighting or patrols',afford:'include homes people can afford',jobs:'bring real jobs with it',conf:'show how it helps local business',approval:'win over the neighbors',prop:'raise the design quality',stores:'add storefronts',housing:'add housing'};
   const parts=Object.entries(m.w).map(([k,w])=>({k,c:w*(v[k]||0),x:v[k]||0})).filter(o=>Math.abs(o.c)>0.3&&say[o.k]);
-  const pos=parts.filter(o=>o.c>0).sort((a,b)=>b.c-a.c).slice(0,2),neg=parts.filter(o=>o.c<0).sort((a,b)=>a.c-b.c).slice(0,2);
+  if(v.demolish>0.3){const d=p.demo;const what=d.landmarks.concat(d.projects);
+    say.demolish=()=>what.length?`demolishes ${what.slice(0,2).join(' and ')}`:`displaces about ${d.residents} residents`;
+    lever.demolish='leave what is already there alone';parts.push({k:'demolish',c:-v.demolish*1.5,x:v.demolish});}
+  const pos=parts.filter(o=>o.c>0).sort((a,b)=>b.c-a.c).slice(0,2),neg=parts.filter(o=>o.c<0).sort((a,b)=>(b.k==='demolish')-(a.k==='demolish')||a.c-b.c).slice(0,2); // what gets torn down always leads
   const supports=pos.map(o=>say[o.k](o.x)),opposes=neg.map(o=>say[o.k](o.x));
   const l=lean(memberScore(s,m,p,champion));
   const stance=l>=60?'support':l<=40?'oppose':'undecided';
@@ -395,9 +406,16 @@ function approve(s,p,funding){
   if(funding==='bond'){s.bonds.push({name:p.title,annual:Math.round(e.cost*0.125),left:10});}
   else s.cash-=e.cost;
   p.status='approved';s.decided[p.id]='approved';
-  s.pending.push({id:p.id,kind:p.kind,title:p.title,presenter:p.presenter,site:p.site,plan:{...p.plan},cost:e.cost,costHigh:e.costHigh,funding,odds:deliveryOdds(s,p),year:s.year});
+  s.pending.push({id:p.id,kind:p.kind,title:p.title,presenter:p.presenter,site:p.site,plots:p.plots,traits:p.traits,demo:p.demo,plan:{...p.plan},cost:e.cost,costHigh:e.costHigh,funding,odds:deliveryOdds(s,p),year:s.year});
   s.presenters[p.presenter].rel=clamp(s.presenters[p.presenter].rel+8,0,100);
-  for(const t of (SITES[p.site]||[])){const c=s.grid[t[1]*N+t[0]];c.b={type:'construction',for:p.kind};}
+  const d=p.demo;
+  if(d){ // MP-034: what gets torn down stops counting now; people move out when construction starts
+    for(const b of s.built)if(!b.closed&&plotsOf(b).some(([x,y])=>plotsOf(p).some(([a,c])=>a===x&&c===y))){b.closed=true;b.demolished=s.year;}
+    if(d.collegeTiles){s.flags.collegeLost=(s.flags.collegeLost||0)+d.collegeTiles;}
+    s.shocks=s.shocks||[];
+    if(d.residents)s.shocks.push({v:0,r:`Displaced about ${d.residents} residents to build ${p.title}`,m:'pop'});
+    for(const t of d.landmarks.concat(d.projects))s.shocks.push({v:0,r:`Tore down ${t} for ${p.title}`,m:'approval'});}
+  for(const t of plotsOf(p)){const c=s.grid[t[1]*N+t[0]];c.b={type:'construction',for:p.kind};}
   if(p.group)for(const q of s.proposals.filter(q=>q.group===p.group&&q.id!==p.id&&q.status==='open')){q.status='rejected';s.decided[q.id]='rejected';s.presenters[q.presenter].rel=clamp(s.presenters[q.presenter].rel-10,0,100);s.shocks=(s.shocks||[]);if(q.petition)s.shocks.push({v:-2,r:`${q.title} supporters are upset their plan lost`});}
 }
 function reject(s,p){p.status='rejected';s.decided[p.id]='rejected';s.presenters[p.presenter].rel=clamp(s.presenters[p.presenter].rel-8,0,100);
@@ -411,6 +429,7 @@ function econ(s){
     if(t==='shop')units+=2; if(t==='house')housing+=62; if(t==='apt')housing+=200;}
   for(const b of s.built){if(b.closed)continue;const e=KINDS[b.kind].effects(b.plan);units+=e.units;housing+=e.housing;jobs+=e.jobs;upkeep+=e.upkeep;parking+=e.parking;}
   for(const c of g)if(c.b&&c.b.type==='shop')jobs+=10;
+  jobs-=(s.flags.collegeLost||0)*30; // college buildings torn down take their jobs with them
   const demand=s.pop/100*(1+s.flags.students/3000);
   const roadCap=6500*(s.flags.bridgeClosed?0.65:1);
   return{units,housing,jobs,upkeep,parking,demand,roadCap};
@@ -426,7 +445,7 @@ function resolveYear(s){
   if(s.taxRate!==s.prevTax){add('approval',s.taxRate==='raise'?-4:s.taxRate==='lower'?3:0,s.taxRate==='raise'?'Property tax increase':'Property tax cut');}
   s.prevTax=s.taxRate;
   // shocks from decisions
-  for(const sh of (s.shocks||[]))add('approval',sh.v,sh.r);s.shocks=[];
+  for(const sh of (s.shocks||[])){if(sh.v)add('approval',sh.v,sh.r);else causes.push({m:sh.m||'approval',v:0,r:sh.r});}s.shocks=[];
   // complete projects
   for(const pj of s.pending){
     const roll=rand(s.seed,pj.id+':deliver');const ok=roll<pj.odds;const e=effectsOf(pj);
@@ -436,7 +455,7 @@ function resolveYear(s){
       add('approval',-2,`${pj.title} came in late and over budget`);
     }
     s.built.push({...pj,done:s.year});
-    const tl=SITES[pj.site]||[];const roles=pj.kind==='initiative'?initiativeRoles(pj.plan,tl.length):[];
+    const tl=plotsOf(pj);const roles=pj.kind==='initiative'?initiativeRoles(pj.plan,tl.length):[];
     tl.forEach((t,i)=>{const c=s.grid[t[1]*N+t[0]];c.b=pj.kind==='bridge'?null:{type:pj.kind,plan:pj.plan,role:roles[i]};});
     if(pj.kind==='initiative'&&pj.plan.policy!=='none')s.policies[pj.plan.policy]=s.year;
     if(e.safety)add('safety',e.safety*0.5,`${pj.title} opened`);if(e.afford)add('afford',e.afford*0.5,`${pj.title} opened`);
@@ -572,13 +591,87 @@ function needsSite(pl){return !!(pl.homes||pl.shops||pl.green||pl.plaza||pl.park
 function floodRisk(s,ec){ec=ec||econ(s);let exposure=0,storm=0;for(const b of s.built){if(b.closed)continue;const fe=effectsOf(b);exposure+=fe.creek||0;storm+=fe.storm||0;}
   return{risk:clamp(0.05+ec.parking/3500+exposure*0.05-storm*0.04,0.02,0.35),exposure,storm};}
 function canProposeInitiative(s){return s.phase==='agenda'&&s.initiativeYear!==s.year;}
+// ---------- MP-033 to MP-035: any plots, named places, capacity, demolition ----------
+function plotsOf(p){return(p.plots&&p.plots.length)?p.plots:(SITES[p.site]||[]);}
+function canBuildOn(s,x,y){if(x<0||y<0||x>=N||y>=N)return false;const c=s.grid[y*N+x];return !c.road&&c.t!=='water'&&c.t!=='bridge'&&!(c.b&&c.b.type==='construction');}
+const PLACES={
+  oldmill:{name:'Old Mill lot',kw:['old mill','mill lot','mill commons','commons']},
+  downtown:{name:'Main Street storefronts',kw:['downtown','main street']},
+  borough_hall:{name:'Borough Hall',kw:['borough hall','town hall','city hall']},
+  school:{name:'Millbrook Elementary',kw:['elementary','demolish the school','tear down the school']},
+  school_lot:{name:'Lot behind the elementary school',kw:['behind the school','school lot']},
+  college:{name:'Penns Valley College campus',kw:['college','campus','university']},
+  campus_s:{name:'South of campus on College Ave',kw:['college ave','south of campus']},
+  creekside:{name:'Kish Creek bank',kw:['creek','riverfront','waterfront']},
+  east_end:{name:'East End field',kw:['east end','east side']},
+  pine_south:{name:'Pine Street field',kw:['pine street','pine st']},
+  route22:{name:'Route 22 frontage',kw:['route 22','highway']},
+  ridge:{name:'Ridge Road farmland',kw:['ridge road','farmland','dairy']}};
+function placePlots(s,id){
+  if(id==='college')return s.grid.filter(c=>c.b&&(c.b.type==='college'||c.b.type==='quad')).map(c=>[c.x,c.y]);
+  if(id==='school')return s.grid.filter(c=>c.b&&c.b.type==='school').map(c=>[c.x,c.y]);
+  if(id==='borough_hall')return s.grid.filter(c=>c.b&&c.b.type==='civic').map(c=>[c.x,c.y]);
+  if(id==='downtown')return s.grid.filter(c=>c.b&&['shop','vacant','boutique'].includes(c.b.type)&&(c.y===10||c.y===12)&&c.x>=8&&c.x<=13).map(c=>[c.x,c.y]);
+  return(SITES[id]||[]).slice();}
+function describePlace(s,id){const tl=placePlots(s,id);const kinds={};for(const [x,y] of tl){const b=s.grid[y*N+x].b;const k=b?(b.type==='initiative'?'your project':b.type):'open land';kinds[k]=(kinds[k]||0)+1;}
+  return`${PLACES[id].name} (${tl.length} plots: ${Object.entries(kinds).map(([k,n])=>`${n} ${k}`).join(', ')})`;}
+function plotTraits(s,plots){const t=new Set();
+  for(const [x,y] of plots){for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const n=s.grid[(y+dy)*N+(x+dx)];if(!n||x+dx<0||x+dx>=N)continue;if(n.t==='water')t.add('creek');if(n.b&&(n.b.type==='house'||n.b.type==='apt'))t.add('neighbors');}
+    if(y>=10&&y<=12&&x>=5&&x<=14)t.add('main');if(Math.hypot(x-10,y-11)>7.5)t.add('edge');}
+  return[...t];}
+// What it takes to clear the chosen plots. Owner, cost ($K), people, and what's lost.
+const OWNED={school:'the Millbrook Area School District',college:'Penns Valley College',quad:'Penns Valley College'};
+function demolitionOf(s,plots){
+  const d={cost:0,residents:0,storefronts:0,untrackedJobs:0,farm:0,live:0,conf:0,approval:0,landmarks:[],projects:[],infeasible:false,warning:null,collegeTiles:0};
+  const seen=new Set();
+  for(const [x,y] of plots){const c=s.grid[y*N+x],b=c.b;
+    if(c.t==='farm'&&!b){d.cost+=20;d.farm+=0.5;continue;}
+    if(c.t==='forest'&&!b){d.cost+=10;d.live-=0.3;continue;}
+    if(!b){d.cost+=10;continue;}
+    switch(b.type){
+      case'house':d.cost+=45;d.residents+=62;break;
+      case'apt':d.cost+=160;d.residents+=200;break;
+      case'shop':case'boutique':d.cost+=80;d.storefronts+=2;d.conf-=0.5;break;
+      case'vacant':case'lot':d.cost+=30;break;
+      case'civic':d.cost+=900;if(!seen.has('hall')){seen.add('hall');d.landmarks.push('Borough Hall');d.approval-=6;}break;
+      case'school':d.cost+=1200;if(!seen.has('school')){seen.add('school');d.landmarks.push('Millbrook Elementary');d.approval-=8;d.infeasible=true;}break;
+      case'college':case'quad':d.cost+=1800;d.collegeTiles++;d.untrackedJobs+=b.type==='college'?40:10;if(!seen.has('college')){seen.add('college');d.landmarks.push('Penns Valley College');d.infeasible=true;}d.approval-=1.5;break;
+      default:{const bt=s.built.find(q=>!q.closed&&plotsOf(q).some(([a,c2])=>a===x&&c2===y));const title=bt?bt.title:'an existing building';
+        d.cost+=50;if(!seen.has(title)){seen.add(title);d.projects.push(title);d.approval-=3;if(b.type==='park'){d.live-=4;}}}
+    }}
+  d.approval-=d.residents/100;d.approval=Math.max(-25,d.approval);
+  const owners=[...new Set(plots.map(([x,y])=>s.grid[y*N+x].b&&OWNED[s.grid[y*N+x].b.type]).filter(Boolean))];
+  if(owners.length)d.warning=`The borough doesn't own this. ${owners.join(' and ')} would have to sell, or the borough would have to acquire it by eminent domain.`;
+  d.cost=Math.round(d.cost);return d;}
+// Plans that don't fit the plots get scaled down, and the player is told why.
+function plotsNeeded(pl){return(pl.civic!=='none'?1:0)+((pl.safety==='police_substation'||pl.safety==='fire_station')?1:0)+Math.ceil(pl.shops/4)+Math.ceil(pl.homes/(pl.stories>2?60:30))+(pl.plaza?1:0)+Math.ceil(pl.parking/100)+(pl.stormwater?1:0);}
+function fitPlanToPlots(plan,n){
+  const pl={...plan},before={...plan},notes=[];if(!n)return{plan:pl,notes};
+  const steps=[()=>pl.parking>0&&(pl.parking=Math.max(0,pl.parking-20)),()=>pl.stormwater&&!(pl.stormwater=false),()=>pl.plaza&&!(pl.plaza=false),
+    ()=>pl.homes>0&&(pl.homes=Math.max(0,pl.homes-10)),()=>pl.shops>0&&(pl.shops=pl.shops-1),
+    ()=>(pl.safety==='police_substation'||pl.safety==='fire_station')&&(pl.safety='none'),()=>pl.civic!=='none'&&(pl.civic='none')];
+  let guard=0;while(plotsNeeded(pl)>n&&guard++<200){let did=false;for(const st of steps){if(plotsNeeded(pl)<=n)break;if(st()){did=true;break;}}if(!did)break;}
+  const sch=KINDS.initiative.params;
+  for(const k of Object.keys(pl))if(pl[k]!==before[k]){const s=sch[k];const f=v=>s.type==='bool'?(v?'yes':'no'):s.type==='enum'?s.labels[v]:v;notes.push(`${s.label} ${f(before[k])} → ${f(pl[k])}`);}
+  if(notes.length)notes.unshift(`${n} plot${n>1?'s':''} can't hold all of that, so the plan was scaled down`);
+  return{plan:pl,notes};}
+function refitInitiative(s,p){const f=fitPlanToPlots(p.plan,plotsOf(p).length);p.plan=f.plan;if(f.notes.length)p.fitNotes=f.notes;return f.notes;}
 function makeInitiative(s,d){
   if(!canProposeInitiative(s))return null; // MP-030: one initiative per year
-  const v=validatePlan('initiative',defaultPlan('initiative'),d.plan||{});const avail=parcelsAvailable(s);
-  let site='none';if(needsSite(v.plan))site=avail.includes(d.site)?d.site:(avail[0]||'none');
-  const p={id:'init'+s.year,kind:'initiative',title:String(d.title||'Mayor\'s initiative').slice(0,60),presenter:'planner',site,council:true,
-    blurb:String(d.summary||'').slice(0,320),plan:v.plan,year:s.year,status:'open',mine:true,desc:String(d.desc||'').slice(0,800),outOfScope:d.outOfScope?String(d.outOfScope).slice(0,300):null};
+  const v=validatePlan('initiative',defaultPlan('initiative'),d.plan||{});
+  const key=([x,y])=>x+','+y;const uniq=a=>{const m=new Map();for(const t of a||[])if(Array.isArray(t)&&canBuildOn(s,t[0],t[1]))m.set(key(t),[t[0],t[1]]);return[...m.values()];};
+  let plots=uniq(d.plots);
+  if(!plots.length&&d.place&&PLACES[d.place])plots=uniq(placePlots(s,d.place));
+  if(!plots.length&&!d.place&&d.site&&SITES[d.site])plots=uniq(SITES[d.site]);
+  if(!plots.length&&needsSite(v.plan)){const a=parcelsAvailable(s);if(a.length)plots=uniq(SITES[a[0]]);}
+  if(!needsSite(v.plan)&&!(d.plots&&d.plots.length)&&!d.place)plots=[];
+  const fit=fitPlanToPlots(v.plan,plots.length);
+  const demo=demolitionOf(s,plots);
+  const p={id:'init'+s.year,kind:'initiative',title:String(d.title||'Mayor\'s initiative').slice(0,60),presenter:'planner',site:plots.length?'custom':'none',plots,traits:plotTraits(s,plots),demo,
+    council:true,blurb:String(d.summary||'').slice(0,320),plan:fit.plan,fitNotes:fit.notes,year:s.year,status:'open',mine:true,desc:String(d.desc||'').slice(0,800),
+    outOfScope:[d.outOfScope?String(d.outOfScope).slice(0,300):null,demo.warning].filter(Boolean).join(' ')||null};
   s.proposals=s.proposals.filter(q=>q.id!==p.id);s.proposals.push(p);s.initiativeYear=s.year;return p;}
+function guessPlace(desc){const t=desc.toLowerCase();for(const [id,pl] of Object.entries(PLACES))if(pl.kw.some(k=>t.includes(k)))return id;return null;}
 function heuristicDraft(desc){const t=desc.toLowerCase();const pl={};const has=(...w)=>w.some(x=>t.includes(x));
   if(has('park','green','garden','tree','lawn','trail'))pl.green=2;if(has('plaza','square','string light','food truck'))pl.plaza=true;
   if(has('library'))pl.civic='library';else if(has('community center','rec center','youth center'))pl.civic='community_center';else if(has('farmers market','market'))pl.civic='farmers_market';else if(has('school'))pl.civic='school_annex';
@@ -590,7 +683,7 @@ function heuristicDraft(desc){const t=desc.toLowerCase();const pl={};const has=(
   if(has('speed','traffic calming','crosswalk','bike lane'))pl.policy='traffic_calming';else if(has('parking minimum','parking reform'))pl.policy='parking_reform';else if(has('community policing'))pl.policy='community_policing';else if(has('inspection','landlord'))pl.policy='rental_inspections';else if(has('impact fee'))pl.policy='impact_fees';else if(has('allow apartments','zoning'))pl.policy='downtown_apartments';
   if(!Object.keys(pl).length)pl.green=1;
   let first=desc.trim().split(/[.!?\n,]/)[0].split(/\s+(?:on|in|at|behind|by|near|along|for|to|so)\s+/i)[0];if(first.length>44)first=first.slice(0,44).replace(/\s+\S*$/,'');first=first||'Mayor\'s initiative';
-  return{title:first.charAt(0).toUpperCase()+first.slice(1),summary:desc.trim().slice(0,220),plan:pl};}
+  return{title:first.charAt(0).toUpperCase()+first.slice(1),summary:desc.trim().slice(0,220),plan:pl,place:guessPlace(desc)};}
 function grantInfo(s,p){if(p.grant||p.grantPending||p.grantDenied)return null;let agency=null,share=0,odds=0;
   if(p.kind==='bridge'){agency='PennDOT bridge program';share=0.8;odds=0.55;}
   else if(p.kind==='park'){agency='DCNR community parks grant';share=0.5;odds=0.6;}
@@ -601,5 +694,5 @@ function applyGrant(s,p){const g=grantInfo(s,p);if(!g)return null;p.grantPending
 function migrate(s){if(!s)return s;if(s.v===1){s.meters.safety=62;s.meters.afford=58;s.policies={};s.flags.floodRisk=0.06;
   for(const [id,pa] of Object.entries(PARCELS))if(pa.tiles)for(const [x,y] of pa.tiles){const c=s.grid[y*N+x];if(!c.site&&!c.b)c.site=id;}
   for(const h of s.history){if(h.safety===undefined)h.safety=62;if(h.afford===undefined)h.afford=58;}s.v=2;}return s;}
-const ENGINE={memberStatement,canProposeInitiative,floodRisk,FLAGS,defaultPlan,PARCELS,initiativeRoles,parcelsAvailable,needsSite,makeInitiative,heuristicDraft,grantInfo,applyGrant,migrate,N,KINDS,PRESENTERS,COUNCIL,P_DEFS,SITES,THEMES,MAYOR_AUTHORITY,newGame,effectsOf,deliveryOdds,validatePlan,forecastVote,memberScore,lean,hearingOptions,applyLobby,approve,reject,table,resolveYear,econ,jobsMeter,snapshotStats,fundingOptions,electionResult,recordFacts,rand,clamp};
+const ENGINE={plotsOf,canBuildOn,PLACES,placePlots,describePlace,plotTraits,demolitionOf,plotsNeeded,fitPlanToPlots,refitInitiative,guessPlace,memberStatement,canProposeInitiative,floodRisk,FLAGS,defaultPlan,PARCELS,initiativeRoles,parcelsAvailable,needsSite,makeInitiative,heuristicDraft,grantInfo,applyGrant,migrate,N,KINDS,PRESENTERS,COUNCIL,P_DEFS,SITES,THEMES,MAYOR_AUTHORITY,newGame,effectsOf,deliveryOdds,validatePlan,forecastVote,memberScore,lean,hearingOptions,applyLobby,approve,reject,table,resolveYear,econ,jobsMeter,snapshotStats,fundingOptions,electionResult,recordFacts,rand,clamp};
 if(typeof module!=='undefined')module.exports=ENGINE;

@@ -205,3 +205,29 @@ test('MP-057 main actions sit within thumb reach', async () => {
   assert.deepEqual(errors, []);
   await ctx.close();
 });
+
+test('MP-033 tap any plots to select them, tap again to remove, Clear all to reset', async () => {
+  const { page, ctx, cdp, errors } = await open();
+  await page.click('[data-act="initiative"]');
+  await page.click('#sheetRoot [data-act="pickPlots"]');
+  const tile = async (x, y) => page.$eval('#map', (c, [x, y]) => {
+    const r = c.getBoundingClientRect(), W = c.clientWidth, tw = W / 24, th = tw / 2;
+    return { x: r.left + W / 2 + (x - y) * tw / 2, y: r.top + tw * 1.7 + (x + y + 1) * th / 2 };
+  }, [x, y]);
+  const count = () => page.$eval('#plotCount', e => +e.dataset.count);
+  await tap(cdp, await tile(16, 13)); await page.waitForTimeout(350);
+  await tap(cdp, await tile(4, 13)); await page.waitForTimeout(350);
+  assert.equal(await count(), 2, 'two plots that do not touch');
+  await tap(cdp, await tile(16, 13)); await page.waitForTimeout(350);
+  assert.equal(await count(), 1, 'tapping again removes a plot');
+  await tap(cdp, await tile(9, 11)); await page.waitForTimeout(350);
+  assert.equal(await count(), 1, 'roads cannot be selected');
+  await page.click('[data-act="clearPlots"]');
+  assert.equal(await count(), 0, 'Clear all empties the selection');
+  await tap(cdp, await tile(16, 13)); await page.waitForTimeout(350);
+  await tap(cdp, await tile(17, 14)); await page.waitForTimeout(350);
+  await page.click('[data-act="plotsDone"]');
+  assert.match(await page.textContent('#sheetRoot'), /2 plots/);
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});

@@ -220,7 +220,7 @@ test('MP-031 a described idea becomes an engine-priced plan that goes to council
   const s = E.newGame(42);
   const draft = E.heuristicDraft('A farmers market with string lights and rain gardens');
   const p = E.makeInitiative(s, { ...draft, site: 'school_lot' });
-  assert.equal(p.site, 'school_lot');
+  assert.deepEqual(E.plotsOf(p).map(String).sort(), E.SITES.school_lot.map(String).sort(), 'it lands on the parcel chosen');
   assert.equal(p.council, true);
   const e = E.effectsOf(p);
   assert.ok(e.cost > 0 && e.safety > 0 && e.storm === 1);
@@ -299,4 +299,84 @@ test('MP-062 feature flags come from the build and default to off', () => {
   vm.runInNewContext(src, ctx);
   assert.equal(ctx.module.exports.FLAGS.devTools, true);
   assert.deepEqual(E.FLAGS, {});
+});
+
+// ---------- Any plots, demolition, impossible ideas (0.7) ----------
+const tilesOf = (s, pred) => s.grid.filter(pred).map(c => [c.x, c.y]);
+const sortP = (a) => a.map(p => p.join(',')).sort();
+
+test('MP-033 the plan uses exactly the plots chosen, anywhere except roads and the creek', () => {
+  const s = E.newGame(5);
+  const chosen = [[16, 13], [4, 13], [17, 14]]; // not touching each other
+  const p = E.makeInitiative(s, { title: 'Pocket parks', plan: { green: 2 }, plots: [...chosen, [9, 11], [2, 12]] }); // a road and the creek get dropped
+  assert.deepEqual(sortP(E.plotsOf(p)), sortP(chosen));
+  assert.equal(E.canBuildOn(s, 9, 11), false, 'roads are off limits');
+  assert.equal(E.canBuildOn(s, 2, 12), false, 'the creek is off limits');
+  const house = s.grid.find(c => c.b && c.b.type === 'house');
+  assert.equal(E.canBuildOn(s, house.x, house.y), true, 'built plots can be chosen');
+});
+
+test('MP-033 each plot holds a limited amount, and more plots cost more', () => {
+  const s1 = E.newGame(5), s2 = E.newGame(5);
+  const one = E.makeInitiative(s1, { title: 'Suburb', plan: { homes: 120 }, plots: [[16, 13]] });
+  assert.ok(one.plan.homes <= 30, `one plot can't hold a suburb (got ${one.plan.homes} homes)`);
+  assert.ok(one.fitNotes.length > 0, 'the player is told the plan was scaled down');
+  const four = E.makeInitiative(s2, { title: 'Suburb', plan: { homes: 120 }, plots: [[16, 13], [17, 13], [16, 14], [17, 14]] });
+  assert.equal(four.plan.homes, 120, 'four plots fit it');
+  const a = E.newGame(6), b = E.newGame(6);
+  const small = E.makeInitiative(a, { title: 'Green', plan: { green: 1 }, plots: [[16, 13]] });
+  const big = E.makeInitiative(b, { title: 'Green', plan: { green: 1 }, plots: [[16, 13], [17, 13], [18, 13]] });
+  assert.ok(E.effectsOf(big).cost > E.effectsOf(small).cost);
+});
+
+test('MP-033 letting the description decide puts the plan where you said, even on a built site', () => {
+  assert.equal(E.heuristicDraft('A community plaza on the old mill commons').place, 'oldmill');
+  const s = E.newGame(1234);
+  E.resolveYear(s);
+  E.approve(s, s.proposals.find(p => p.id === 'park'), 'bond'); // the Memorial Park now occupies the lot
+  E.resolveYear(s);
+  const p = E.makeInitiative(s, { title: 'Commons plaza', plan: { plaza: true, green: 2 }, place: 'oldmill' });
+  assert.deepEqual(sortP(E.plotsOf(p)), sortP(E.placePlots(s, 'oldmill')));
+  assert.ok(p.demo.projects.some(t => /Memorial Park/.test(t)), 'the forecast says the park would be torn down');
+});
+
+test('MP-034 building on occupied plots displaces people and shows the cost first', () => {
+  const s = E.newGame(7), s2 = E.newGame(7);
+  const homes = tilesOf(s, c => c.b && c.b.type === 'house').slice(0, 2);
+  const open = [[16, 13], [17, 13]];
+  const onHomes = E.makeInitiative(s, { title: 'Plaza', plan: { plaza: true, green: 1 }, plots: homes });
+  const onOpen = E.makeInitiative(s2, { title: 'Plaza', plan: { plaza: true, green: 1 }, plots: open });
+  assert.ok(onHomes.demo.residents >= 120, 'residents displaced');
+  assert.ok(E.effectsOf(onHomes).cost > E.effectsOf(onOpen).cost, 'demolition and acquisition cost money');
+  assert.ok(E.effectsOf(onHomes).approval < E.effectsOf(onOpen).approval, 'displacing neighbors costs approval');
+  E.approve(s, onHomes, 'bond');
+  const r = E.resolveYear(s);
+  for (const [x, y] of homes) assert.notEqual(s.grid[y * E.N + x].b?.type, 'house', 'the homes are gone');
+  assert.ok(r.causes.some(c => /isplaced/.test(c.r)), 'the report says who was displaced');
+});
+
+test('MP-034 tearing down a project you built removes its effects', () => {
+  const s = E.newGame(1234);
+  E.resolveYear(s);
+  E.approve(s, s.proposals.find(p => p.id === 'park'), 'bond');
+  E.resolveYear(s);
+  const p = E.makeInitiative(s, { title: 'Parking lot', plan: { parking: 200 }, place: 'oldmill' });
+  E.approve(s, p, 'bond');
+  assert.ok(s.built.find(b => b.kind === 'park').closed, 'the park stops counting once it is torn down');
+});
+
+test('MP-035 proposing to demolish the college is allowed and answered realistically', () => {
+  const s = E.newGame(9);
+  const p = E.makeInitiative(s, { title: 'Demolish the college', plan: { green: 1 }, place: 'college' });
+  assert.ok(p, 'the player can propose it');
+  assert.equal(p.demo.infeasible, true);
+  assert.ok(/acquire|own/i.test(p.demo.warning), 'the planner warns the borough does not own it');
+  assert.ok(E.effectsOf(p).cost > 5000, 'acquisition costs millions');
+  const fv = E.forecastVote(s, p, p.id);
+  assert.equal(fv.winner, null, 'the council votes it down');
+  for (const m of E.COUNCIL) {
+    const st = E.memberStatement(s, m, p, p.id);
+    assert.equal(st.stance, 'oppose', `${m.name} opposes it on the record`);
+    assert.ok(st.opposes.some(x => /Penns Valley College/.test(x)), `${m.name} names what it destroys`);
+  }
 });
