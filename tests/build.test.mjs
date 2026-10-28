@@ -42,3 +42,8 @@ test('MP-063 built pages contain no API key or direct API access', () => {
     assert.ok(!/api\.anthropic\.com/i.test(html), 'no direct API calls');
   }
 });
+
+test('MP-061 the dev badge shows the version in progress', () => {
+  const { version } = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
+  assert.equal(buildInfo(dev.artifact).version, version);
+});

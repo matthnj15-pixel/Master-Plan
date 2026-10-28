@@ -11,6 +11,7 @@ Conversation becomes requirements, requirements become tests, and tests must pas
 4. **Merge into `dev` yourself** once `npm test` and `npm run build -- --channel dev` pass: merge the feature branch, push `dev`, publish the dev artifact, and tell Nate what changed, which IDs it covers, and how to play it.
 5. **Releases need Nate's approval.** Open the `dev` to `main` pull request yourself, with a version bump in `package.json`, a `docs/changelog.md` entry listing requirement IDs delivered, and the play-test checklist run for `Play-test` requirements touched. Write the full description (what changed for the player, requirements delivered, checks, save compatibility); Nate reviews the description and merges. Only `main` is protected. Then publish the stable artifact.
    - **Check the pull request before handing it over.** Wait for its checks to finish. If any fail, find the cause and fix it, or explain plainly why it isn't a code problem. Never send Nate a red pull request without that explanation.
+   - **After a release merges,** set `dev`'s version to the next version with a `-dev` suffix (for example `0.7.0-dev`), so the dev build's badge shows what's in progress.
 6. **Hotfixes** branch from `main` as `hotfix/<short-name>` and go to Nate as a pull request into `main`. After merging, merge `main` back into `dev`.
 
 Never change what a test checks just to make it pass. If a requirement turns out wrong, change the requirement with Nate first, then the test.
