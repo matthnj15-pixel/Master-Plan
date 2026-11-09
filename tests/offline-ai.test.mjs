@@ -23,9 +23,14 @@ export async function CreateMLCEngine(model, options) {
   return {
     chat: { completions: { async create({ messages, response_format }) {
       if (response_format.type !== 'json_object') throw new Error('Expected JSON mode');
+      // The pinned runtime fails to initialize its grammar without a schema string.
+      const schema = JSON.parse(response_format.schema);
+      if (schema.type !== 'object' || schema.additionalProperties !== true) throw new Error('Expected an open object schema');
       const result = messages[0].content.includes("Mayor's description")
         ? { title: 'Old Mill Homes', place: 'oldmill', plan: { homes: 12 }, reply: 'Here is a plan for Old Mill.' }
-        : { reply: 'I can add a rain garden.', changes: { green: 9999 }, mood: 'neutral' };
+        : messages[0].content.includes('Add walkways with guardrails')
+          ? { reply: 'This plan can only change the repair scope.', changes: {}, mood: 'neutral' }
+          : { reply: 'I can add a rain garden.', changes: { green: 9999 }, mood: 'neutral' };
       return { choices: [{ message: { content: JSON.stringify(result) } }] };
     } } },
     async unload() {},
@@ -78,6 +83,13 @@ test('MP-065 opted-in dev Pages reopens offline and uses the saved model for fre
     page.on('pageerror', error => errors.push(String(error)));
     await page.goto(url);
     await page.getByText('Offline AI ready', { exact: false }).waitFor({ timeout: 10000 });
+    await page.getByRole('button', { name: /Main Street bridge repair/ }).click();
+    await page.getByText('This bridge plan supports two repair scopes:', { exact: false }).waitFor();
+    await page.fill('#negInput', 'Add walkways with guardrails');
+    await page.locator('[data-form="neg"] button').click();
+    await page.getByText('This plan can only change the repair scope.').waitFor({ timeout: 5000 });
+    assert.equal(await page.locator('#toastRoot').textContent(), '');
+    await page.getByRole('button', { name: 'Close' }).click();
     await page.click('[data-act="initiative"]');
     await page.fill('#initDesc', 'Build apartments at the Old Mill lot.');
     await page.click('[data-form="init"] button[type="submit"], [data-form="init"] .btn.primary');
@@ -88,6 +100,7 @@ test('MP-065 opted-in dev Pages reopens offline and uses the saved model for fre
     assert.deepEqual(errors, []);
     const town = await page.evaluate(() => JSON.parse(localStorage.getItem('masterplan.dev.save')));
     const proposal = town.proposals.find(item => item.title === 'Old Mill Homes');
+    assert.deepEqual(town.proposals.find(item => item.kind === 'bridge').plan, { scope: 'full' });
     assert.ok(proposal?.mine);
     assert.equal(proposal.plan.green, 3);
     await page.reload();
