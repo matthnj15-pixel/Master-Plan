@@ -5,6 +5,8 @@ const MODELS = new Map([
 const RUNTIME_URL = 'https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.87/lib/index.js';
 const RUNTIME_INTEGRITY = 'sha256-O/9MVc0vAgBxFRc0G6vOvnqRqO+FuYNCBDn88mg1pnQ=';
 const RUNTIME_CACHE = 'master-plan-offline-ai-runtime';
+// The pinned runtime passes this string directly to its WASM grammar compiler.
+const JSON_OBJECT_SCHEMA = JSON.stringify({ type: 'object', additionalProperties: true });
 
 async function cacheGame() {
   const registration = await navigator.serviceWorker.register('./offline-worker.js');
@@ -72,7 +74,7 @@ export async function startOfflineAI({ model, download, onProgress }) {
     async json(prompt) {
       const result = await engine.chat.completions.create({
         messages: [{ role: 'user', content: prompt }],
-        response_format: { type: 'json_object' },
+        response_format: { type: 'json_object', schema: JSON_OBJECT_SCHEMA },
         temperature: 0.2,
         max_tokens: 640,
       });
