@@ -42,7 +42,7 @@ Never change what a test checks just to make it pass. If a requirement turns out
 ## Runtime
 There are two builds of the same code:
 - **claude.ai artifact** (`master-plan.html`): the full game. It uses three claude.ai artifact capabilities: `sample` (AI characters), and `db` plus `user` (save game under `data/users/<id>/save`, or `save-dev` on the dev build).
-- **GitHub Pages** (`index.html`): no claude.ai runtime, so AI characters fall back to quick options and saves stay in that browser. Never put an API key in the page to change this; a key in a public page is a key anyone can use.
+- **GitHub Pages** (`index.html`): browser saves and quick options. Dev Pages can also run the optional downloaded WebLLM model with WebGPU. The game stays playable with quick options when that model is unavailable. Keep API keys out of both builds.
 
 ## GitHub access
 `gh` isn't authenticated here, but the GitHub REST API works through the session proxy with `curl` (send `Content-Type: application/json`). Use it to open pull requests, edit descriptions, comment, and read check runs and annotations.

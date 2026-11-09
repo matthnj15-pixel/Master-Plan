@@ -1,7 +1,7 @@
 // Builds the game for one release channel.
 // Usage: node scripts/build.mjs [--channel stable|dev] [--out dist]
 //   <out>/master-plan.html  claude.ai artifact (full game with AI characters and cloud saves)
-//   <out>/index.html        GitHub Pages page (no claude.ai runtime: quick options, browser saves)
+//   <out>/index.html        GitHub Pages page with browser saves and optional offline AI
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -36,5 +36,10 @@ if (channel === 'dev') html = html.replace('<title>Master Plan</title>', '<title
 
 mkdirSync(out, { recursive: true });
 writeFileSync(join(out, 'master-plan.html'), html);
-writeFileSync(join(out, 'index.html'), `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>body{margin:0;font:14px system-ui,sans-serif}[hidden]{display:none!important}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style></head><body>${html}</body></html>`);
+const webAI = flags.offlineAI ? '<script>window.MP_WEB_BUILD=true</script>' : '';
+if (flags.offlineAI) {
+  writeFileSync(join(out, 'offline-ai.js'), read('src/offline-ai.js'));
+  writeFileSync(join(out, 'offline-worker.js'), read('src/offline-worker.js').replace('/*BUILD_COMMIT*/', commit));
+}
+writeFileSync(join(out, 'index.html'), `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>body{margin:0;font:14px system-ui,sans-serif}[hidden]{display:none!important}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>${webAI}</head><body>${html}</body></html>`);
 console.log(`Built ${channel} v${version} (${commit}) into ${out} (${(html.length / 1024).toFixed(0)} KB). Flags on: ${Object.keys(flags).filter(k => flags[k]).join(', ') || 'none'}`);

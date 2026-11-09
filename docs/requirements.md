@@ -78,7 +78,9 @@ What Nate asks for becomes a requirement here. Each requirement has an ID, accep
 | MP-061 | Dev and stable never share a save. | Dev and stable builds use different save keys and database documents. | Test | Accepted |
 | MP-062 | Feature flags control what's on in each channel. | Flags come from the build. With no build info, every flag is off. | Test | Accepted |
 | MP-063 | No API keys ever ship in the page. | Built pages contain no API key or direct-API access header. | Test | Accepted |
-| MP-064 | The full game with AI runs as a claude.ai artifact; GitHub Pages runs without AI. | Pages build falls back to quick options with no errors. | Play-test | Accepted |
+| MP-064 | The Claude artifact uses its AI runtime and Pages offers quick options when AI is off. | The artifact uses Claude for AI and account saves. Pages falls back to quick options with no errors when its local model is off or unavailable. | Play-test | Accepted |
+| MP-065 | The dev Pages game can use a downloaded AI model in airplane mode. | Choose a model in the game menu. After a successful download, reopen the installed game offline and use freeform AI actions with the existing engine validation and browser save. Stable Pages leaves the feature off. | Test | Accepted |
+| MP-066 | Offline AI is responsive and preserves the mayor's intent on the iPhone Duo. | On the Duo, force-quit the Home Screen app and relaunch in airplane mode. Draft a freeform Old Mill initiative and negotiate a revision. Check the location, plan changes, response time, and whether Safari reloads. Compare 1.5B and 3B if both load. | Play-test | Accepted |
 
 ## Plan design and history
 | ID | Requirement | Acceptance criteria | Verify | Status |

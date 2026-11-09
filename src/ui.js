@@ -2,6 +2,9 @@
 const E=ENGINE,N=E.N;
 const BUILD=(typeof MP_BUILD!=='undefined'&&MP_BUILD)||{channel:'stable',version:'local',commit:'',flags:{},flagInfo:{}};
 const DEV=BUILD.channel==='dev';
+const WEB_AI=window.MP_WEB_BUILD && BUILD.flags.offlineAI;
+const WEB_AI_KEY='masterplan.offline-ai.'+BUILD.channel;
+let localLoading=false,localStatus='';
 // Dev keeps its own save so experiments never touch the stable town.
 const SAVE_KEY=DEV?'masterplan.dev.save':'millbrook.v1',DB_DOC=DEV?'save-dev':'save';
 let picking=null,pendingInit=null; // MP-033: plot picking mode on the map
@@ -34,13 +37,74 @@ async function flush(){if(!DB||!UID)return;if(saving){saveAgain=true;return;}sav
 function loadLocal(){try{const t=localStorage.getItem(SAVE_KEY);if(t){const s=JSON.parse(t);if(s&&(s.v===1||s.v===2))return s;}}catch(e){}return null;}
 
 async function initCaps(){
-  if(!window.claude||!window.claude.use){aiState='off';renderBar();return;}
+  if(!window.claude?.use){
+    let savedModel;
+    if(WEB_AI)try{savedModel=localStorage.getItem(WEB_AI_KEY);}catch{}
+    if(savedModel)void connectOfflineAI(savedModel,false);
+    else{aiState='off';renderBar();}
+    return;
+  }
   claude.use('sample').then(a=>{AI=a;aiState=a?'on':'off';renderBar();}).catch(()=>{aiState='off';renderBar();});
   try{const [user,db]=await Promise.all([claude.use('user'),claude.use('db')]);
     if(user&&db){const id=await user.id();if(id){UID=id;DB=db;
       const snap=await db.doc('data/users/'+id+'/'+DB_DOC).get();
       if(snap.exists){const d=snap.data();if(d&&d.json){const st=JSON.parse(d.json);if(st&&(st.v===1||st.v===2)&&(st.savedAt||0)>(S.savedAt||0)){S=E.migrate(st);renderAll();}}}
       else save();}}}catch(e){}
+}
+
+/* ---------- offline AI ---------- */
+function showAIStatus(){
+  renderBar();
+  if(sheet?.type==='menu')renderSheet();
+}
+function storeOfflineModel(model){
+  try{
+    if(model)localStorage.setItem(WEB_AI_KEY,model);
+    else localStorage.removeItem(WEB_AI_KEY);
+  }catch{}
+}
+async function connectOfflineAI(model,download){
+  if(!WEB_AI||window.claude?.use||localLoading||AI?.offline)return;
+  localLoading=true;aiState='checking';
+  localStatus=download?'Preparing the '+model+' model…':'Loading the saved '+model+' model…';
+  // If Safari terminates the page while loading, the next launch can recover.
+  storeOfflineModel(null);
+  showAIStatus();
+  try{
+    const {startOfflineAI}=await import('./offline-ai.js');
+    AI=await startOfflineAI({model,download,onProgress(percent){
+      const status='Preparing the '+model+' model… '+Math.min(100,Math.max(0,percent))+'%';
+      if(localStatus!==status){localStatus=status;showAIStatus();}
+    }});
+    aiState='on';localStatus=model+' model ready for offline play.';
+    storeOfflineModel(model);
+  }catch(error){
+    aiState='off';
+    localStatus=error.message?.slice(0,180)||'Could not start offline AI. Try again while online.';
+  }finally{
+    localLoading=false;showAIStatus();
+  }
+}
+async function turnOffOfflineAI(){
+  if(!AI?.offline||localLoading)return;
+  const provider=AI;
+  AI=null;localLoading=true;aiState='off';localStatus='Turning off offline AI…';
+  storeOfflineModel(null);showAIStatus();
+  try{await provider.unload();}catch{}
+  finally{
+    localLoading=false;localStatus='Offline AI is off. Your download is still saved.';
+    showAIStatus();
+  }
+}
+function offlineAIHTML(){
+  if(!WEB_AI||window.claude?.use)return'';
+  const buttons=AI?.offline
+    ? '<button class="btn" data-act="offlineOff">Turn off Offline AI</button>'
+    : '<button class="btn primary" data-offline-model="1.5B">Download 1.5B · 880 MB</button><button class="btn" data-offline-model="3B">Try 3B · 1.75 GB</button>';
+  return `<div class="box"><b>Offline AI</b>
+    <div class="note" role="status" style="margin-top:6px">${esc(localStatus||'Open from your Home Screen, then download a Qwen2.5 model on Wi-Fi for offline play.')}</div>
+    ${localLoading?'':`<div class="chips" style="margin-top:8px">${buttons}</div>`}
+  </div>`;
 }
 
 /* ---------- AI ---------- */
@@ -143,7 +207,7 @@ function renderBar(){
   if(picking){const n=picking.size;btn.hidden=true;
     $('#barnote').innerHTML=`<div class="pickbar"><span id="plotCount" data-count="${n}"><b>${n}</b> plot${n===1?'':'s'} selected</span><button class="btn sm" data-act="clearPlots">Clear all</button><button class="btn sm" data-act="plotsCancel">Cancel</button><button class="btn primary sm" data-act="plotsDone" ${n?'':'disabled'}>Done</button></div>`;return;}
   btn.hidden=false;
-  const ai=aiState==='on'?'AI characters on':aiState==='checking'?'Connecting AI characters…':'AI off: quick options only';
+  const ai=aiState==='on'?(AI?.offline?'Offline AI ready':'AI characters on'):aiState==='checking'?(localLoading?'Loading Offline AI…':'Connecting AI characters…'):'AI off: quick options only';
   if(S.phase==='election'){btn.textContent='Go to the polls';btn.className='btn gold';}
   else if(S.phase==='bankrupt'||S.phase==='lost'||S.phase==='ended'){btn.textContent='Start a new town';btn.className='btn primary';}
   else{btn.textContent=`End ${calYear(S.year)}`;btn.className='btn primary';}
@@ -685,6 +749,7 @@ function electionSheet(){
 function menuSheet(){
   const head=`<div class="eyebrow">Game</div><h2>Master Plan</h2>`;
   const body=`<div class="note">Version ${esc(BUILD.version)}${BUILD.commit?' ('+esc(BUILD.commit)+')':''}${DEV?' · dev build':''}. Your town saves automatically${DB?' to your Claude account':' in this browser'}${DEV?' in a separate dev save':''}. AI characters: ${aiState==='on'?'on':'off'}.</div>
+  ${offlineAIHTML()}
   ${devToolsHTML()}
   <div class="box"><b>How a year works</b><div class="note" style="margin-top:6px">Review the agenda, negotiate plans with whoever brought them, take big items to the council, then end the year. The Courier explains what changed and why. Elections come every four years. Two straight years in deficit ends your career.</div></div>
   ${confirmNew?`<div class="box"><b>Start over?</b><div class="note">This replaces your current town.</div><div class="chips" style="margin-top:8px"><button class="btn danger" data-act="newgameYes">Yes, start a new town</button><button class="btn" data-act="newgameNo">Keep playing</button></div></div>`:`<button class="btn" data-act="newgame">Start a new town</button>`}`;
@@ -799,6 +864,7 @@ const RESP={record:'Look at the numbers. We fixed what was broken, the reserve i
 /* ---------- events ---------- */
 document.addEventListener('click',ev=>{
   const t=ev.target.closest('button,[data-open]');if(!t)return;const d=t.dataset;
+  if(d.offlineModel){void connectOfflineAI(d.offlineModel,true);return;}
   if(d.tab){tab=d.tab;renderPanel();return;}
   if(d.map){mapButton(d.map);return;}
   if(d.where&&sheet?.type==='initiative'){sheet.text=$('#initDesc')?.value??sheet.text;sheet.where=d.where;renderSheet();return;}
@@ -827,6 +893,7 @@ document.addEventListener('click',ev=>{
   if(d.resp){debateAnswer(RESP[d.resp],d.resp);return;}
   const a=d.act;if(!a)return;
   if(a==='close'){closeSheet();}
+  else if(a==='offlineOff'){void turnOffOfflineAI();}
   else if(a==='vote')callVote();
   else if(a==='election'){openSheet({type:'election'});startElection();}
   else if(a==='toDebate'){S.election.step='debate';save();renderSheet();loadAttack();}

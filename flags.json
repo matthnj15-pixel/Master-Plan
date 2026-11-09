@@ -5,6 +5,11 @@
       "description": "Testing tools in the game menu: add cash, skip ahead a year, toggle flags.",
       "dev": true,
       "stable": false
+    },
+    "offlineAI": {
+      "description": "Download and run the on-device model in the dev web app.",
+      "dev": true,
+      "stable": false
     }
   }
 }
