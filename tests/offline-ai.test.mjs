@@ -28,9 +28,11 @@ export async function CreateMLCEngine(model, options) {
       if (schema.type !== 'object' || schema.additionalProperties !== true) throw new Error('Expected an open object schema');
       const result = messages[0].content.includes("Mayor's description")
         ? { title: 'Old Mill Homes', place: 'oldmill', plan: { homes: 12 }, reply: 'Here is a plan for Old Mill.' }
-        : messages[0].content.includes('Add walkways with guardrails')
-          ? { reply: 'This plan can only change the repair scope.', changes: {}, mood: 'neutral' }
-          : { reply: 'I can add a rain garden.', changes: { green: 9999 }, mood: 'neutral' };
+        : messages[0].content.includes('The mayor now says: "Add walkways with guardrails"')
+          ? { reply: 'I agree, let’s add walkways.', changes: { walkways: true }, mood: 'warmer' }
+          : messages[0].content.includes('The mayor now says: "Patch the deck for now"')
+            ? { reply: 'I can patch the deck.', changes: { scope: 'patch' }, mood: 'neutral' }
+            : { reply: 'I can add a rain garden.', changes: { green: 9999 }, mood: 'neutral' };
       return { choices: [{ message: { content: JSON.stringify(result) } }] };
     } } },
     async unload() {},
@@ -87,8 +89,16 @@ test('MP-065 opted-in dev Pages reopens offline and uses the saved model for fre
     await page.getByText('This bridge plan supports two repair scopes:', { exact: false }).waitFor();
     await page.fill('#negInput', 'Add walkways with guardrails');
     await page.locator('[data-form="neg"] button').click();
-    await page.getByText('This plan can only change the repair scope.').waitFor({ timeout: 5000 });
+    await page.getByText('No plan changes. The bridge plan can only switch', { exact: false }).waitFor({ timeout: 5000 });
+    assert.equal(await page.getByText('I agree, let’s add walkways.').count(), 0);
+    const bridgeAfterUnsupportedAsk = await page.evaluate(() => JSON.parse(localStorage.getItem('masterplan.dev.save')));
+    assert.deepEqual(bridgeAfterUnsupportedAsk.proposals.find(item => item.kind === 'bridge').plan, { scope: 'full' });
+    assert.equal(bridgeAfterUnsupportedAsk.presenters.engineer.rel, 60);
     assert.equal(await page.locator('#toastRoot').textContent(), '');
+    await page.fill('#negInput', 'Patch the deck for now');
+    await page.locator('[data-form="neg"] button').click();
+    await page.getByText('Plan updated: Repair scope → Patch the deck. Cost $260K → $120K.').waitFor({ timeout: 5000 });
+    await page.getByRole('button', { name: 'Approve · pay $120K', exact: true }).waitFor();
     await page.getByRole('button', { name: 'Close' }).click();
     await page.click('[data-act="initiative"]');
     await page.fill('#initDesc', 'Build apartments at the Old Mill lot.');
@@ -100,7 +110,7 @@ test('MP-065 opted-in dev Pages reopens offline and uses the saved model for fre
     assert.deepEqual(errors, []);
     const town = await page.evaluate(() => JSON.parse(localStorage.getItem('masterplan.dev.save')));
     const proposal = town.proposals.find(item => item.title === 'Old Mill Homes');
-    assert.deepEqual(town.proposals.find(item => item.kind === 'bridge').plan, { scope: 'full' });
+    assert.deepEqual(town.proposals.find(item => item.kind === 'bridge').plan, { scope: 'patch' });
     assert.ok(proposal?.mine);
     assert.equal(proposal.plan.green, 3);
     await page.reload();
