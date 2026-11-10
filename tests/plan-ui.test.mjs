@@ -30,6 +30,8 @@ test('MP-022 MP-026 MP-053 MP-054 MP-055 Old Mill preview is explicit, anchored 
     const saved=await page.evaluate(()=>localStorage.getItem('masterplan.dev.save'));
     await page.click('[data-compare="park"]');
     assert.match(await page.textContent('.plan-comparison'),/Reviewing: Old Mill Memorial Park/);
+    const position=await page.evaluate(()=>({top:document.querySelector('.plan-reviewed').getBoundingClientRect().top,header:document.querySelector('.sh-head').getBoundingClientRect().bottom}));
+    assert.ok(position.top>=position.header && position.top<position.header+100,'agenda comparison brings the reviewed/preview controls into view');
     const boxes=[],outlines=[];
     for(const id of ['park','commerce','existing','commerce','park']){
       await page.click(`[data-plan-preview="${id}"]`);

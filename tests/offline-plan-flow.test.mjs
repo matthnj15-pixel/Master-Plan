@@ -98,3 +98,19 @@ test('MP-026 MP-033 MP-065 offline selected separated plots beat model location 
  const nodes=await page.locator('svg.plan-illustration [data-plot]').evaluateAll(es=>es.map(e=>({plot:e.getAttribute('data-plot'),transform:e.getAttribute('transform')})));
  assert.deepEqual(nodes.map(n=>n.plot),['16,13','4,13']);assert.notEqual(nodes[0].transform,nodes[1].transform);assert.deepEqual(errors,[]);await ctx.close();
 });
+
+test('MP-015 MP-026 MP-032 MP-033 offline revisions clarify site-mode changes and keep the accepted plan intact',async()=>{
+ for(const policyFirst of [true,false]){
+  const {ctx,page,errors}=await open();
+  const initial=policyFirst?{title:'Parking Reform',place:'none',plan:{policy:'parking_reform'}}:draft;
+  await fixture(page,[initial]);await startDraft(page,policyFirst?'Drop parking minimums.':'Build homes and shops at the East End field.');
+  await page.getByRole('heading',{name:initial.title,exact:true}).waitFor();
+  const before=await readSave(page);
+  await fixture(page,[{changes:policyFirst?{homes:20}:{homes:0,shops:0,policy:'parking_reform'},reply:'Sure.',mood:'warmer'}]);
+  const intent=policyFirst?'Add twenty homes.':'Replace construction with a parking reform ordinance.';
+  await page.fill('#negInput',intent);await page.locator('[data-form="neg"] button').click();
+  await page.locator('.request-feedback').waitFor();assert.equal(await readSave(page),before);
+  assert.equal(await page.inputValue('#negInput'),intent);assert.match(await page.textContent('.request-feedback'),/site|plot|ordinance/i);
+  assert.deepEqual(errors,[]);await ctx.close();
+ }
+});

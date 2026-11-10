@@ -633,6 +633,7 @@ function planComparison(p){
   const existing=selected==='existing';
   const drawing=PLAN_RENDERER.render({state:S,proposal:preview,engine:E,existing});
   if(!drawing)return'';
+  if(!E.plotsOf(p).length)return `<section class="plan-comparison box" aria-label="No-site proposal"><p class="plan-reviewed"><b>Reviewing: ${esc(p.title)}</b></p>${drawing}</section>`;
   return `<section class="plan-comparison box" aria-label="Site plan comparison"><div class="eyebrow">Planning exhibit</div><p class="plan-reviewed"><b>Reviewing: ${esc(p.title)}</b></p>
     <div class="plan-switch" role="group" aria-label="Preview a site plan"><button class="btn" data-plan-preview="existing" aria-pressed="${existing}">Existing conditions</button>${options.map(q=>`<button class="btn" data-plan-preview="${q.id}" aria-pressed="${!existing&&q.id===preview.id}">${esc(q.title.replace('Old Mill ',''))}</button>`).join('')}</div>
     <p class="note plan-preview" aria-live="polite">Preview: ${existing?'Existing conditions':esc(preview.title)}. Switching this drawing does not change the proposal or vote.</p>${drawing}</section>`;
@@ -996,7 +997,12 @@ document.addEventListener('click',ev=>{
   if(d.parcel!==undefined&&sheet?.type==='initiative'){sheet.text=$('#initDesc')?.value||'';sheet.site=d.parcel||null;if(d.parcel){selTile=null;}renderSheet();return;}
   if(d.example!==undefined){cancelPlanRequest();const t=$('#initDesc');if(t)t.value=EXAMPLES[+d.example];sheet.text=EXAMPLES[+d.example];return;}
   if(d.grant){const p=S.proposals.find(q=>q.id===d.grant);const g=E.applyGrant(S,p);if(g){save();toast(`Applied to the ${g.agency}. You'll hear back at year end.`);closeSheet();}return;}
-  if(d.compare){openSheet({type:'proposal',id:d.compare});return;}
+  if(d.compare){
+    openSheet({type:'proposal',id:d.compare});
+    const pane=$('#sheetRoot .pane'),exhibit=$('.plan-comparison'),head=$('#sheetRoot .sh-head');
+    if(pane&&exhibit)pane.scrollTop+=exhibit.getBoundingClientRect().top-pane.getBoundingClientRect().top-(head?.offsetHeight||0)-16;
+    return;
+  }
   if(d.planPreview&&sheet?.type==='proposal'){sheet.preview=d.planPreview;renderSheet();return;}
   if(d.open){openSheet({type:'proposal',id:d.open});return;}
   if(d.hear){openSheet({type:'hearing',id:d.hear,champion:S.proposals.find(p=>p.id===d.hear).group?d.hear:null});return;}
