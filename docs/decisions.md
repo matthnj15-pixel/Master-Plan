@@ -47,3 +47,9 @@ Decisions Nate made, with the date. New decisions go at the bottom.
 - **Plan design:** Planning is the main creative space: detailed drawings, design by conversation, and one Plans tab for the town's history (MP-070 to MP-073).
 - **Economics:** Deeper economics can wait.
 - **Release order:** 0.6 stacked page, pitch scoring, statements. 0.7 any-plot proposals. 0.8 plan design and the Plans tab.
+
+## 2026-11-10: Light paper UI (MP-058)
+- Nate approved the lighter refinement of the Linea-inspired theme: warm paper, near-white cards, dark text, green primary actions and Host Grotesk, retaining Millbrook's seal, town map and Courier.
+- No decorative side highlight bars on callouts or council statements. Use quiet surfaces, headings and spacing. Cards and controls have modest 8–10px rounding; card padding is 20–24px and section spacing follows the heading hierarchy.
+- This is a visual update to the current game flow. The A/B/C exploration did not approve an agenda-first or site-notebook navigation change, new forecast/report mechanics, or the planned Plans history.
+- The game stays light regardless of the OS theme. Embed the openly licensed UI font in both build outputs so offline play does not need a font service. Preserve the single scrolling page, touch controls, persistent sheet actions, providers, engine outcomes and save format.

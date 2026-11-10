@@ -18,8 +18,8 @@ let browser;
 before(async () => { browser = await chromium.launch(); });
 after(async () => { await browser?.close(); });
 
-async function open(viewport = DUO) {
-  const ctx = await browser.newContext({ viewport, hasTouch: true, isMobile: true, deviceScaleFactor: 3 });
+async function open(viewport = DUO, contextOptions = {}) {
+  const ctx = await browser.newContext({ viewport, hasTouch: true, isMobile: true, deviceScaleFactor: 3, ...contextOptions });
   const page = await ctx.newPage();
   const errors = [];
   page.on('pageerror', e => errors.push(String(e)));
@@ -61,6 +61,39 @@ async function smallText(page) {
     .filter(t => t.size < 12));
 }
 const noSideScroll = (page) => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1);
+
+test('MP-058 the bundled font and readable light UI work offline with either OS theme', async () => {
+  let lightBackground;
+  const luminance = color => color.match(/[\d.]+/g).slice(0, 3).map(Number)
+    .map(v => v / 255).map(v => v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4)
+    .reduce((sum, v, i) => sum + v * [.2126, .7152, .0722][i], 0);
+  const contrast = (a, b) => { const [lo, hi] = [luminance(a), luminance(b)].sort((a, b) => a - b); return (hi + .05) / (lo + .05); };
+  for (const colorScheme of ['light', 'dark']) {
+    const { page, ctx, errors } = await open(DUO, { colorScheme });
+    const styles = await page.evaluate(async () => {
+      await document.fonts.ready;
+      const body = getComputedStyle(document.body), button = getComputedStyle(document.querySelector('#endBtn'));
+      return { font: [...document.fonts].some(f => f.family.includes('Host Grotesk') && f.status === 'loaded'),
+        fg: body.color, bg: body.backgroundColor, buttonFg: button.color, buttonBg: button.backgroundColor };
+    });
+    assert.ok(styles.font, 'Host Grotesk loads while remote font services are blocked');
+    assert.ok(contrast(styles.fg, styles.bg) >= 4.5, 'body text has AA contrast');
+    assert.ok(contrast(styles.buttonFg, styles.buttonBg) >= 4.5, 'primary action text has AA contrast');
+    if (colorScheme === 'light') lightBackground = styles.bg;
+    else assert.equal(styles.bg, lightBackground, 'OS dark preference does not darken the approved UI');
+    assert.deepEqual(errors, []);
+    await ctx.close();
+  }
+});
+
+test('MP-054 the narrow proposal close control retains its full touch target', async () => {
+  const { page, ctx, errors } = await open({ width: 400, height: 951 });
+  await page.click('[data-open="bridge"]');
+  const bounds = await page.locator('#sheetRoot [aria-label="Close"]').boundingBox();
+  assert.ok(bounds.width >= 44 && bounds.height >= 44, `Close target is ${bounds.width} × ${bounds.height}`);
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
 
 test('MP-051 pinching the map zooms the map, not the page', async () => {
   const { page, ctx, cdp, errors } = await open();

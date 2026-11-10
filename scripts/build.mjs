@@ -28,10 +28,14 @@ const prelude = `var MP_BUILD=${JSON.stringify(build)};
 `;
 
 const template = read('src/index.html');
-for (const marker of ['/*ENGINE*/', '/*UI*/']) {
+for (const marker of ['/*ENGINE*/', '/*UI*/', '/*HOST_GROTESK*/', '/*HOST_GROTESK_LICENSE*/']) {
   if (!template.includes(marker)) throw new Error(`src/index.html is missing the ${marker} marker`);
 }
-let html = template.replace('/*ENGINE*/', () => prelude + read('src/engine.js')).replace('/*UI*/', () => read('src/ui.js'));
+// Embed the UI font so Pages and the single-file artifact render offline alike.
+const font = readFileSync(join(root, 'src/fonts/host-grotesk-latin.woff2')).toString('base64');
+let html = template.replace('/*HOST_GROTESK_LICENSE*/', () => '/*\n' + read('src/fonts/OFL.txt') + '\n*/')
+  .replace('/*HOST_GROTESK*/', () => font)
+  .replace('/*ENGINE*/', () => prelude + read('src/engine.js')).replace('/*UI*/', () => read('src/ui.js'));
 if (channel === 'dev') html = html.replace('<title>Master Plan</title>', '<title>Master Plan Dev</title>');
 
 mkdirSync(out, { recursive: true });

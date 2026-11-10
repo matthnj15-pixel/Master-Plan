@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased (on dev)
+- Light paper UI (MP-058): near-white cards, quieter outlines, smaller corners, more room around headings and sections, green primary actions and an offline-bundled Host Grotesk font. Callouts and council statements no longer use decorative side bars. The town map, Courier, turn loop and saves stay compatible.
 - Pitches earn what they say (MP-025): quick-tap and vague pitches move a member's lean by 3 points or less, specific ones by 10 or less, a favor by 15 or less. The AI judges how specific a typed pitch was, and the character's reply matches the credit.
 - Council members go on the record (MP-028): in a hearing, each member's statement says what they support, what they oppose, and what would change their vote. It updates as you change the plan.
 - Propose on any plots (MP-033): choose "Let my description decide" and say where ("on the old mill lot"), or choose plots on the map. Tap any plots, built or empty, touching or not; tap again to remove; Clear all resets. Roads and the creek can't be built on. Bigger plans need more plots, and the planner tells you when an idea won't fit.
