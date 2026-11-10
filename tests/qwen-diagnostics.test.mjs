@@ -244,3 +244,30 @@ test('MP-075 a skipped midnight DST date ends at the next calendar midnight, exc
   assert.equal(snapshot.count,2);assert.deepEqual(snapshot.prepared.document.events.map(e=>e.timestamp),times.slice(0,2));
  }finally{if(previous===undefined)delete process.env.TZ;else process.env.TZ=previous;}
 });
+
+test('MP-075 record enqueue invalidates a prepared preview synchronously and subscriber snapshots wait for the write',async()=>{
+ const d=make();await d.snapshot();let notices=0,pending;
+ d.subscribe(()=>{notices++;if(!pending)pending=d.snapshot();});
+ const write=d.record('app.launch','observed');
+ assert.equal(notices,1,'prepared file must be invalidated during the same call');
+ await write;assert.equal((await pending).count,1,'queue is assigned before a subscriber can read');
+});
+
+test('MP-075 timeout while waiting in the actual provider queue reports queue rather than unstarted generation',async()=>{
+ const {readFileSync}=await import('node:fs');
+ const source=readFileSync(new URL('../src/offline-ai.js',import.meta.url),'utf8');
+ const {createOfflineProvider}=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
+ const {createPlanRunner}=require('../src/plan-requests.js'),engine=require('../src/engine.js');
+ const d=make(),modelId='Qwen2.5-1.5B-Instruct-q4f16_1-MLC';let release;
+ const provider=createOfflineProvider({chat:{completions:{async create(){await new Promise(resolve=>{release=resolve;});return {choices:[{message:{content:'{}'}}]};}}}},modelId,null,d);
+ const first=provider.json('Unrelated Qwen action');await new Promise(resolve=>setImmediate(resolve));
+ const runner=createPlanRunner({engine,timeoutMs:15,diagnostics:d});
+ const outcome=await runner.run({state:engine.newGame(12345),provider,intent:'Build homes at the Old Mill lot'});
+ assert.equal(outcome.status,'unavailable');
+ let snapshot=await d.snapshot(),summary=snapshot.prepared.document.attempts.find(x=>x.requestId===outcome.requestId);
+ assert.equal(summary.lastStage,'queue');assert.equal(summary.status,'complete');assert.deepEqual(summary.missingTerminalEvents,[]);
+ assert.equal(snapshot.prepared.document.events.some(e=>e.metadata.requestId===outcome.requestId&&e.name==='generation.started'),false);
+ release();await first;await new Promise(resolve=>setImmediate(resolve));
+ summary=(await d.snapshot()).prepared.document.attempts.find(x=>x.requestId===outcome.requestId);
+ assert.equal(summary.lastStage,'queue');assert.equal(summary.status,'complete');
+});

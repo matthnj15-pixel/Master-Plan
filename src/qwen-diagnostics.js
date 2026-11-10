@@ -197,12 +197,16 @@ function attemptSummaries(events){
   }
   const lastOpenEvent=list.findLast(event=>open.some(value=>value.event===event));
   const lastOpenStage=lastOpenEvent?open.find(value=>value.event===lastOpenEvent).stage:null;
+  const runtimeBoundary=list.findLast(event=>['request.queued','generation.started','generation.finished','engine.reload'].includes(event.name));
+  // The runner knows it handed off to the provider, but only the provider knows
+  // whether that call is still queued or waiting for a cached-engine reload.
+  const waitingStage=['unavailable','timeout','canceled','stale'].includes(final?.outcome)&&['queue','reload'].includes(runtimeBoundary?.metadata?.stage)?runtimeBoundary.metadata.stage:null;
   if(!isPlan&&!isShutdown&&!startup&&!startupId&&!interrupted&&found('request.queued')&&!found('generation.finished')&&!found('request.error')&&!found('request.timeout')&&!found('request.aborted'))missing.push('generation.finished or request.error');
   const incomplete=missing.length>0||missingContext.length>0;
   const completed=list.findLast(e=>['passed','success','ready','valid','invalid','malformed-json','unsupported','failed','applied','unchanged','not-applied'].includes(e.outcome)||e.name==='plan.dequeued');
   const model=list.find(e=>e.metadata?.modelId)?.metadata.modelId||null;
   const elapsed=list.filter(e=>typeof e.metadata?.durationMs==='number').map(e=>e.metadata.durationMs);
-  return {...(requestId?{requestId}:{}),...(startupId?{startupId}:{}),sessionId:first.sessionId,build:first.build,revision:first.revision,action:list.find(e=>e.metadata?.action)?.metadata.action||'other',modelId:model,runtimeVersion:list.find(e=>e.metadata?.runtimeVersion)?.metadata.runtimeVersion||null,firstRecordedAt:first.timestamp,lastRecordedAt:last.timestamp,lastEvent:last.name,lastStage:lastOpenStage||last.metadata?.stage||last.name,lastCompletedStage:completed?(completed.metadata?.stage||completed.name):null,outcome:last.outcome,status:incomplete?'incomplete':'complete',missingTerminalEvents:missing,missingContextEvents:missingContext,partialContext:missingContext.length>0,...(incomplete?{cause:'unknown'}:{}),observedDurationMs:Math.max(0,Date.parse(last.timestamp)-Date.parse(first.timestamp)),...(elapsed.length?{measuredDurationMs:Math.max(...elapsed)}:{}),...(application?{applied:application.metadata.applied===true}:{})};
+  return {...(requestId?{requestId}:{}),...(startupId?{startupId}:{}),sessionId:first.sessionId,build:first.build,revision:first.revision,action:list.find(e=>e.metadata?.action)?.metadata.action||'other',modelId:model,runtimeVersion:list.find(e=>e.metadata?.runtimeVersion)?.metadata.runtimeVersion||null,firstRecordedAt:first.timestamp,lastRecordedAt:last.timestamp,lastEvent:last.name,lastStage:lastOpenStage||waitingStage||last.metadata?.stage||last.name,lastCompletedStage:completed?(completed.metadata?.stage||completed.name):null,outcome:last.outcome,status:incomplete?'incomplete':'complete',missingTerminalEvents:missing,missingContextEvents:missingContext,partialContext:missingContext.length>0,...(incomplete?{cause:'unknown'}:{}),observedDurationMs:Math.max(0,Date.parse(last.timestamp)-Date.parse(first.timestamp)),...(elapsed.length?{measuredDurationMs:Math.max(...elapsed)}:{}),...(application?{applied:application.metadata.applied===true}:{})};
  });
 }
 function availableDates(events){return {oldest:events.length?localDate(events[0].timestamp):null,newest:events.length?localDate(events.at(-1).timestamp):null};}
@@ -245,9 +249,11 @@ function create({enabled=false,build={},now=()=>Date.now(),storage,indexedDB}={}
   try{
    if(!active||!names.has(name)||!outcomes.has(outcome))return Promise.resolve();
    const event={id:id(),timestamp:iso(now()),sessionId,sequence:++sequence,channel:build.channel,build:typeof build.version==='string'?build.version.slice(0,48):'unknown',revision:typeof build.commit==='string'?build.commit.slice(0,48):'unknown',name,outcome,context:technicalContext(),metadata:sanitizeMetadata(metadata)};
-   return serial(async()=>{
+   const pending=serial(async()=>{
     await updateStore(previous=>{const next=pruneEvents([...(previous.events||[]),event],previous.meta||{},now());return {events:next.events,meta:next.meta};});storageFailed=false;setStatus('Diagnostics storage ready.');emit();
    });
+   // Invalidate prepared UI files immediately, after assigning the write queue.
+   emit();return pending;
   }catch{failure();return Promise.resolve();}
  }
  async function snapshot(selection={}){
