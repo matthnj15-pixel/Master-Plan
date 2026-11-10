@@ -122,3 +122,12 @@ test('MP-010 MP-011 MP-015 a late event briefing never holds or modifies determi
  await new Promise(r=>setImmediate(r));E.resolveYear(state);E.resolveYear(control);assert.deepEqual(state,control);
  finish({sourceEventId:event.id,briefing:'A late optional briefing.'});const late=await pending;assert.equal(late.status,'stale');assert.deepEqual(state,control);
 });
+
+test('MP-015 MP-026 MP-033 shared illustrated fixtures use the same accepted mayoral revision and forecast',async()=>{
+ const {makePlanFixtures}=require('./fixtures/plans.cjs');const fixtures=makePlanFixtures(E);
+ const {state,mayoral,revision,park,commerce}=fixtures;const before=JSON.stringify(state),runner=createPlanRunner({engine:E});
+ assert.deepEqual(E.plotsOf(park),E.plotsOf(commerce));
+ const result=await runner.run({mode:'revise',state,proposal:mayoral,provider:provider({changes:{homes:30,parking:0,plaza:true}}),intent:'Add ten homes and a plaza; remove parking'});
+ assert.equal(result.status,'ready');assert.deepEqual(result.proposal.plan,revision.plan);assert.deepEqual(result.proposal.plots,mayoral.plots);
+ assert.deepEqual(result.forecast.after,E.effectsOf(revision));assert.equal(JSON.stringify(state),before);
+});
