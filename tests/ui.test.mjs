@@ -13,18 +13,22 @@ const root = new URL('..', import.meta.url).pathname;
 const out = mkdtempSync(join(tmpdir(), 'mp-ui-'));
 execFileSync('node', ['scripts/build.mjs', '--channel', 'stable', '--out', out], { cwd: root, stdio: 'pipe' });
 const url = 'file://' + join(out, 'index.html');
+const devOut = mkdtempSync(join(tmpdir(), 'mp-ui-dev-'));
+execFileSync('node', ['scripts/build.mjs', '--channel', 'dev', '--out', devOut], { cwd: root, stdio: 'pipe' });
+const devUrl = 'file://' + join(devOut, 'index.html');
 
 let browser;
 before(async () => { browser = await chromium.launch(); });
 after(async () => { await browser?.close(); });
 
-async function open(viewport = DUO, contextOptions = {}) {
+async function open(viewport = DUO, contextOptions = {}, entry = url, initScript) {
   const ctx = await browser.newContext({ viewport, hasTouch: true, isMobile: true, deviceScaleFactor: 3, ...contextOptions });
+  if (initScript) await ctx.addInitScript(initScript);
   const page = await ctx.newPage();
   const errors = [];
   page.on('pageerror', e => errors.push(String(e)));
   await page.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());
-  await page.goto(url);
+  await page.goto(entry);
   await page.waitForSelector('#map');
   await page.waitForTimeout(150);
   const cdp = await ctx.newCDPSession(page);
@@ -61,6 +65,88 @@ async function smallText(page) {
     .filter(t => t.size < 12));
 }
 const noSideScroll = (page) => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1);
+
+test('MP-074 MP-053 MP-055 MP-060 MP-061 both channel entries start Millbrooke, advance and reload their own current save', async () => {
+  for (const [channel, entry, saveKey, otherKey] of [
+    ['stable', url, 'millbrook.v1', 'masterplan.dev.save'],
+    ['dev', devUrl, 'masterplan.dev.save', 'millbrook.v1'],
+  ]) for (const width of [669, 400]) {
+    const { page, ctx, errors } = await open({ width, height: 951 }, {}, entry);
+    assert.equal(await page.locator('#scenarioName').count(), 1);
+    assert.equal(await page.textContent('#scenarioName'), 'Scenario 01 · Millbrooke');
+    assert.equal(await page.textContent('.brand h1'), 'Millbrooke, Pennsylvania');
+    assert.equal(await page.textContent('#yr'), '2027');
+    assert.match(await page.locator('#map').getAttribute('aria-label'), /Map of Millbrooke/);
+    assert.ok(await noSideScroll(page), `${channel} entry fits ${width}px`);
+    await page.evaluate(key => localStorage.setItem(key, 'other channel save'), otherKey);
+    await page.click('[data-open="bridge"]');
+    await page.click('[data-approve="cash"]');
+    await page.click('#endBtn');
+    assert.equal(await page.textContent('.courier .mast'), 'The Millbrooke Courier');
+    const saved = await page.evaluate(key => JSON.parse(localStorage.getItem(key)), saveKey);
+    assert.equal(saved.v, 3);
+    assert.equal(saved.scenarioId, 'millbrooke');
+    assert.equal(saved.year, 2);
+    assert.ok(saved.built.some(p => p.id === 'bridge'));
+    await page.reload();
+    assert.equal(await page.textContent('#yr'), '2028');
+    assert.equal(await page.textContent('.brand h1'), 'Millbrooke, Pennsylvania');
+    assert.deepEqual(await page.evaluate(key => JSON.parse(localStorage.getItem(key)), saveKey), saved);
+    assert.equal(await page.evaluate(key => localStorage.getItem(key), otherKey), 'other channel save');
+    assert.ok(await noSideScroll(page), `${channel} reload fits ${width}px`);
+    assert.deepEqual(errors, []);
+    await ctx.close();
+  }
+});
+
+test('MP-060 MP-061 MP-074 a newer current account save loads through the Claude adapter in each channel', async () => {
+  // This is an adapter mock, not evidence of an exercised Claude artifact.
+  const mockAccount = () => {
+    window.accountPaths = [];
+    window.accountWrites = [];
+    window.claude = {
+      hot: { snapshot(read) { window.readGame = read; } },
+      async use(capability) {
+        if (capability === 'user') return { id: async () => 'scenario-test' };
+        if (capability !== 'db') return null;
+        return { doc(path) {
+          window.accountPaths.push(path);
+          return {
+            async get() {
+              const s = ENGINE.newGame(2027);
+              ENGINE.approve(s, s.proposals.find(p => p.id === 'bridge'), 'cash');
+              ENGINE.resolveYear(s);
+              ENGINE.applyGrant(s, s.proposals.find(p => p.id === 'park'));
+              s.cash = 733;
+              s.savedAt = Date.now() + 60000;
+              return { exists: true, data: () => ({ json: JSON.stringify(s) }) };
+            },
+            async set(data) { window.accountWrites.push({ path, data }); },
+          };
+        } };
+      },
+    };
+  };
+  for (const [entry, doc] of [[url, 'save'], [devUrl, 'save-dev']]) {
+    const { page, ctx, errors } = await open({ width: 400, height: 951 }, {}, entry, mockAccount);
+    await page.waitForFunction(() => window.readGame?.().S.cash === 733);
+    const loaded = await page.evaluate(() => window.readGame().S);
+    assert.equal(loaded.v, 3);
+    assert.equal(loaded.year, 2);
+    assert.ok(loaded.built.some(p => p.id === 'bridge'));
+    assert.ok(loaded.proposals.some(p => p.id === 'park' && p.grantPending));
+    assert.equal(await page.textContent('#yr'), '2028');
+    assert.deepEqual(await page.evaluate(() => window.accountPaths), [`data/users/scenario-test/${doc}`]);
+    await page.click('#endBtn');
+    await page.waitForFunction(() => window.accountWrites.length > 0);
+    const written = await page.evaluate(() => window.accountWrites.at(-1));
+    assert.equal(written.path, `data/users/scenario-test/${doc}`);
+    assert.equal(JSON.parse(written.data.json).v, 3);
+    assert.equal(JSON.parse(written.data.json).scenarioId, 'millbrooke');
+    assert.deepEqual(errors, []);
+    await ctx.close();
+  }
+});
 
 test('MP-059 the annual agenda leads the town and its persistent review and map routes work', async () => {
   for (const width of [669, 400]) {
