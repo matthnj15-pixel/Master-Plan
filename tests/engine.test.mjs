@@ -287,7 +287,7 @@ test('MP-060 older saves migrate and keep playing', () => {
   for (const c of s.grid) if (c.site && E.PARCELS[c.site]?.tiles) c.site = null;
   for (const h of s.history) { delete h.safety; delete h.afford; }
   const m = E.migrate(s);
-  assert.equal(m.v, 2);
+  assert.equal(m.v, 3);
   assert.equal(m.meters.safety, 62);
   assert.ok(E.parcelsAvailable(m).length >= 4);
   E.resolveYear(m);
