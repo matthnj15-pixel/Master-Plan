@@ -215,7 +215,11 @@ async function refreshDiagnostics(){
     diagnosticsState.snapshot={retainedCount:0,count:0,availableDates:{},error:'Diagnostics storage is unavailable. You can keep playing.',warnings:[],status:'Diagnostics storage unavailable.'};
   }finally{if(refresh===diagnosticsRefresh){diagnosticsState.pending=false;syncDiagnostics();}}
 }
-function scheduleDiagnosticsRefresh(){clearTimeout(diagnosticsTimer);diagnosticsTimer=setTimeout(()=>void refreshDiagnostics(),30);}
+function scheduleDiagnosticsRefresh(){
+  ++diagnosticsRefresh; // An older in-flight snapshot must not restore a stale file.
+  diagnosticsState.pending=true;diagnosticsState.prepared=null;syncDiagnostics();
+  clearTimeout(diagnosticsTimer);diagnosticsTimer=setTimeout(()=>void refreshDiagnostics(),30);
+}
 function exportDiagnostics(){
   if(!diagnosticsExportReady())return;
   // The prepared file reaches share() in this click turn, preserving Safari user activation.

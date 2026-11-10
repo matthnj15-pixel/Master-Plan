@@ -120,6 +120,13 @@ test('MP-075 MP-065 cached Dev cold-reopens offline and exports sanitized correl
   });for(const secret of [sentinel,reply,save])assert.equal(stored.includes(secret),false);
   const second=await download(page);assert.equal(second.json.events.length,first.json.events.length);
   await page.close();page=await ctx.newPage();await page.goto(url);await page.getByText('Offline AI ready',{exact:false}).waitFor();await menu(page);const third=await download(page);assert.ok(third.json.events.length>=first.json.events.length);
+  const queued=await page.evaluate(()=>{
+   const requestId=window.MP_QWEN_DIAGNOSTICS.id();
+   void window.MP_QWEN_DIAGNOSTICS.record('request.queued','queued',{requestId,action:'other',stage:'queue'});
+   return {requestId,disabled:document.querySelector('[data-act="diagnosticsExport"]').disabled};
+  });
+  assert.equal(queued.disabled,true,'a new event immediately invalidates the prepared export');
+  const queuedLog=await download(page);assert.ok(events(queuedLog.json).some(e=>e.metadata.requestId===queued.requestId),'the refreshed export includes the newly queued event');
   const beforeShutdown=Number.parseInt(await page.locator('[data-diagnostics-preview]').textContent());
   await page.click('[data-act="offlineOff"]');await page.getByText('Offline AI is off. Your download is still saved.',{exact:true}).waitFor();
   await page.waitForFunction(count=>Number.parseInt(document.querySelector('[data-diagnostics-preview]').textContent)>count,beforeShutdown);
@@ -138,7 +145,7 @@ test('MP-075 startup failure, interrupted startup and retry preserve Diagnostics
   await page.evaluate(()=>{globalThis.__startup={hold:true,fail:'SECRET-STARTUP-FAILURE'};});await page.click('[data-act="offlineRetry"]');await page.waitForFunction(()=>__startup.called);assert.equal(await page.inputValue('#diagnosticsFrom'),'2000-01-01');
   await page.evaluate(()=>{__startup.hold=false;});await page.getByText('SECRET-STARTUP-FAILURE',{exact:true}).waitFor();
   await page.fill('#diagnosticsFrom',from);await page.evaluate(()=>Object.defineProperty(navigator,'canShare',{value:()=>false}));const log=await download(page);
-  assert.ok(events(log.json).some(e=>e.name==='startup.interrupted'&&e.outcome==='incomplete'));assert.ok(events(log.json).some(e=>e.name==='startup.retry'));assert.ok(events(log.json).some(e=>e.name==='startup.error'));
+  assert.ok(events(log.json).some(e=>e.name==='startup.interrupted'&&e.outcome==='incomplete'));assert.ok(events(log.json).some(e=>e.name==='startup.retry'));assert.ok(events(log.json).some(e=>e.name==='startup.error'));assert.ok(events(log.json).some(e=>e.name==='startup.initialization'&&e.outcome==='failed'));
   assert.equal(JSON.stringify(log.json).includes('SECRET-STARTUP-FAILURE'),false);assert.deepEqual(errors,[]);
  }finally{await ctx.close();}
 });
