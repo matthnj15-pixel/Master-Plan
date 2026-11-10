@@ -73,7 +73,7 @@ test('MP-026 MP-064 dev artifact keeps the existing Claude runtime path with pla
  const page=await ctx.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e)));
  await page.goto('file://'+join(out,'master-plan.html'));await page.getByText('AI characters on',{exact:false}).waitFor();
  await page.click('[data-open="bridge"]');await page.fill('#negInput','Patch the deck.');await page.locator('[data-form="neg"] button').click();
- await page.getByText('I can patch the deck.',{exact:true}).waitFor();
+ await page.locator('.chat .msg.them').filter({hasText:'I can patch the deck.'}).waitFor();
  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('masterplan.dev.save')));assert.equal(saved.proposals.find(p=>p.id==='bridge').plan.scope,'patch');
  const prompts=await page.evaluate(()=>__claudePrompts);assert.equal(prompts.length,1);assert.match(prompts[0],/You are role-playing/);assert.doesNotMatch(prompts[0],/Read-only snapshot/);
  assert.equal(await page.getByText('Download 1.5B · 880 MB',{exact:true}).count(),0);assert.deepEqual(errors,[]);await ctx.close();
