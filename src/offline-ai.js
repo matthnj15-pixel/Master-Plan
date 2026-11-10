@@ -7,30 +7,40 @@ const RUNTIME_INTEGRITY = 'sha256-O/9MVc0vAgBxFRc0G6vOvnqRqO+FuYNCBDn88mg1pnQ=';
 const RUNTIME_CACHE = 'master-plan-offline-ai-runtime';
 // The pinned runtime passes this string directly to its WASM grammar compiler.
 const JSON_OBJECT_SCHEMA = JSON.stringify({ type: 'object', additionalProperties: true });
+const startupFailure = (code, message) => Object.assign(new Error(message), {code});
+const clock = () => globalThis.performance?.now?.() ?? Date.now();
+// Never let observational storage participate in inference or startup control flow.
+function record(diagnostics, name, outcome, metadata) {
+  try { diagnostics?.record(name, outcome, metadata); } catch {}
+}
+function safeError(diagnostics, error, stage) {
+  try { return diagnostics?.error(error, stage); } catch {}
+}
 
 async function cacheGame() {
   const registration = await navigator.serviceWorker.register('./offline-worker.js');
   const worker = registration.installing ?? registration.waiting ?? registration.active;
-  if (!worker) throw new Error('Could not start offline game storage.');
+  if (!worker) throw startupFailure('shell-cache', 'Could not start offline game storage.');
   await new Promise((resolve, reject) => {
     function check() {
       if (!['activated', 'redundant'].includes(worker.state)) return;
       worker.removeEventListener('statechange', check);
       if (worker.state === 'activated') resolve();
-      else reject(new Error('Could not save the game files for offline play.'));
+      else reject(startupFailure('shell-cache', 'Could not save the game files for offline play.'));
     }
     worker.addEventListener('statechange', check);
     check();
   });
 }
 
-async function loadRuntime(download) {
+async function loadRuntime(download, check) {
   const cache = await caches.open(RUNTIME_CACHE);
   let response = await cache.match(RUNTIME_URL);
+  check('runtime-cache', !!response);
   if (!response) {
-    if (!download) throw new Error('The offline AI download is missing. Reconnect and download it again.');
+    if (!download) throw startupFailure('runtime-missing', 'The offline AI download is missing. Reconnect and download it again.');
     response = await fetch(RUNTIME_URL, { integrity: RUNTIME_INTEGRITY });
-    if (!response.ok) throw new Error('Could not download the offline AI runtime.');
+    if (!response.ok) throw startupFailure('runtime-download', 'Could not download the offline AI runtime.');
     await cache.put(RUNTIME_URL, response.clone());
   }
   // The pinned WebLLM distribution is a self-contained ES module. Loading the
@@ -43,39 +53,77 @@ async function loadRuntime(download) {
   }
 }
 
-export async function startOfflineAI({ model, download, onProgress }) {
+export async function startOfflineAI({ model, download, onProgress, diagnostics = globalThis.MP_QWEN_DIAGNOSTICS, startupId, attempt = 1 }) {
   const modelId = MODELS.get(model);
-  if (!modelId) throw new Error('Unknown offline model. Choose a model from the game menu.');
-  const adapter = await navigator.gpu?.requestAdapter();
-  if (!adapter?.features.has('shader-f16')) {
-    throw new Error('Offline AI needs Safari WebGPU with 16-bit shader support.');
-  }
-  if (!('serviceWorker' in navigator) || !('caches' in window)) {
-    throw new Error('Offline storage is unavailable in this browser.');
-  }
-  if (download) void navigator.storage?.persist?.().catch(() => {});
-  // A controlled offline launch must reuse the installed worker. Re-registering
-  // it can ask the browser to fetch the worker script over a disconnected network.
-  if (download || !navigator.serviceWorker.controller) await cacheGame();
-  const runtime = await loadRuntime(download);
-  async function requireCachedModel() {
-    if (!await runtime.hasModelInCache(modelId)) {
-      throw new Error('The offline model is missing. Reconnect and download it again.');
+  const started = clock();
+  let stage = 'startup';
+  const log = (name, outcome, extra = {}) => record(diagnostics, name, outcome, {
+    startupId,attempt,modelId,runtimeVersion:'0.2.87',download,stage,durationMs:clock()-started,...extra,
+  });
+  const check = (boundary, cached) => { stage = boundary; log('startup.check', 'observed', {cached}); };
+  try {
+    if (!modelId) throw startupFailure('unknown-model', 'Unknown offline model. Choose a model from the game menu.');
+    stage = 'webgpu';
+    const adapter = await navigator.gpu?.requestAdapter();
+    log('startup.check', adapter ? 'passed' : 'failed', {webgpu:!!adapter});
+    stage = 'shader-f16';
+    log('startup.check', adapter?.features.has('shader-f16') ? 'passed' : 'failed', {shaderF16:!!adapter?.features.has('shader-f16')});
+    if (!adapter?.features.has('shader-f16')) {
+      throw startupFailure('webgpu-unavailable', 'Offline AI needs Safari WebGPU with 16-bit shader support.');
     }
-  }
-  if (!download) await requireCachedModel();
+    stage = 'shell-cache';
+    if (!('serviceWorker' in navigator) || !('caches' in window)) {
+      throw startupFailure('offline-storage', 'Offline storage is unavailable in this browser.');
+    }
+    if (download) void navigator.storage?.persist?.().catch(() => {});
+    // A controlled offline launch must reuse the installed worker. Re-registering
+    // it can ask the browser to fetch the worker script over a disconnected network.
+    if (download || !navigator.serviceWorker.controller) await cacheGame();
+    // Observe the actual shell cache separately from service-worker control.
+    try { log('startup.check', 'observed', {cached:!!await caches.match(new URL('./', globalThis.location.href).href)}); }
+    catch (error) { log('startup.check', 'failed', {error:safeError(diagnostics,error,stage)}); }
+    stage = 'runtime-cache';
+    const runtime = await loadRuntime(download,check);
+    async function requireCachedModel(observeStartup = true) {
+      const cached = await runtime.hasModelInCache(modelId);
+      if (observeStartup) check('model-cache',cached);
+      if (!cached) {
+        throw startupFailure('model-missing', 'The offline model is missing. Reconnect and download it again.');
+      }
+    }
+    if (!download) await requireCachedModel();
 
-  const engine = await runtime.CreateMLCEngine(modelId, {
-    initProgressCallback: ({ progress }) => onProgress(Math.round(progress * 100)),
-  });
-  if (download && !await runtime.hasModelInCache(modelId)) {
-    await engine.unload();
-    throw new Error('Safari could not keep the model in offline storage.');
+    stage = 'initialization';
+    const initializing = clock();
+    log('startup.initialization', 'started');
+    let engine;
+    try {
+      engine = await runtime.CreateMLCEngine(modelId, {
+        initProgressCallback: ({ progress }) => onProgress(Math.round(progress * 100)),
+      });
+      log('startup.initialization', 'success', {durationMs:clock()-initializing});
+    } catch (error) {
+      log('startup.initialization', 'failed', {durationMs:clock()-initializing,error:safeError(diagnostics,error,stage)});
+      throw error;
+    }
+    if (download) {
+      const cached = await runtime.hasModelInCache(modelId);
+      check('model-cache',cached);
+      if (!cached) {
+        await engine.unload();
+        throw startupFailure('model-cache-write', 'Safari could not keep the model in offline storage.');
+      }
+    }
+    return createOfflineProvider(engine, modelId, async () => {
+      // Recovery belongs to the current inference request, not the old startup.
+      await requireCachedModel(false);
+      return runtime.CreateMLCEngine(modelId, { initProgressCallback() {} });
+    }, diagnostics);
+  } catch (error) {
+    log('startup.check', 'failed', {error:safeError(diagnostics,error,stage)});
+    try { error.offlineStage = stage; } catch {}
+    throw error;
   }
-  return createOfflineProvider(engine, modelId, async () => {
-    await requireCachedModel();
-    return runtime.CreateMLCEngine(modelId, { initProgressCallback() {} });
-  });
 }
 
 function providerFailure(code, stage, cause) {
@@ -94,7 +142,7 @@ function providerFailure(code, stage, cause) {
 // Every caller (plans, lobbying, headlines, and shutdown) shares this queue.
 // A caller timing out cannot start another GPU request while the first one is
 // still running; unload also waits for that request to settle.
-export function createOfflineProvider(engine, modelId, reloadCachedEngine) {
+export function createOfflineProvider(engine, modelId, reloadCachedEngine, diagnostics = globalThis.MP_QWEN_DIAGNOSTICS) {
   let tail = Promise.resolve(), closing = false, unloading;
   let structured = true, needsReload = false;
   const turningOff = () => Object.assign(new Error('Offline AI is turning off.'), { code: 'unavailable' });
@@ -128,19 +176,39 @@ export function createOfflineProvider(engine, modelId, reloadCachedEngine) {
   return {
     offline: true,
     modelId,
-    json(prompt, { signal } = {}) {
-      if (closing) return Promise.reject(turningOff());
+    json(prompt, { signal, requestId, action = 'other', attempt = 1 } = {}) {
+      try { requestId ||= diagnostics?.id(); } catch {}
+      const queued = clock();
+      let queueWaitMs = 0, generationAttempt = 0, stage = 'queue';
+      const log = (name,outcome,extra={}) => record(diagnostics,name,outcome,{
+        requestId,action,attempt,generationAttempt,stage,modelId,runtimeVersion:'0.2.87',queueWaitMs,...extra,
+      });
+      log('request.queued','queued');
+      const aborted = () => log(signal.reason?.code === 'timeout' ? 'request.timeout' : 'request.aborted',
+        signal.reason?.code === 'timeout' ? 'timeout' : 'canceled', {durationMs:clock()-queued,error:safeError(diagnostics,signal.reason,stage)});
+      signal?.addEventListener('abort',aborted,{once:true});
+      if (closing) {
+        signal?.removeEventListener('abort',aborted);
+        log('request.error','unavailable',{error:safeError(diagnostics,turningOff(),stage)});
+        return Promise.reject(turningOff());
+      }
       return enqueue(async () => {
+        queueWaitMs = clock()-queued;
         let reloaded = false;
         for (;;) {
           if (closing) throw turningOff();
           signal?.throwIfAborted();
           if (needsReload && reloadCachedEngine) {
+            stage = 'reload';
+            const reloadStart = clock();
+            log('engine.reload','started');
             try {
               engine = await reloadCachedEngine();
               needsReload = false;
               reloaded = true;
+              log('engine.reload','success',{durationMs:clock()-reloadStart});
             } catch (error) {
+              log('engine.reload','failed',{durationMs:clock()-reloadStart,error:safeError(diagnostics,error,'reload')});
               signal?.throwIfAborted();
               throw providerFailure('offline-reload', 'reload', error);
             }
@@ -148,13 +216,22 @@ export function createOfflineProvider(engine, modelId, reloadCachedEngine) {
             if (closing) throw turningOff();
           }
           let result;
+          stage = 'generation';
+          generationAttempt++;
+          const generationStart = clock();
+          log('generation.started','started');
           try {
             result = await generate(prompt, signal);
+            log('generation.finished','success', {inferenceMs:clock()-generationStart,durationMs:clock()-queued,
+              promptTokens:result?.usage?.prompt_tokens,completionTokens:result?.usage?.completion_tokens,
+              totalTokens:result?.usage?.total_tokens,finishReason:result?.choices?.[0]?.finish_reason});
           } catch (error) {
+            log('generation.finished',signal?.aborted ? 'canceled' : 'failed',{inferenceMs:clock()-generationStart,durationMs:clock()-queued,error:safeError(diagnostics,error,'generation')});
             signal?.throwIfAborted();
             if (structured && error?.name === 'GrammarMatcherInitError') {
               // Only the decoding constraint failed. Ask the same model for JSON text.
               structured = false;
+              log('grammar.fallback','started',{error:safeError(diagnostics,error,'generation')});
               continue;
             }
             if (error?.name === 'ModelNotLoadedError') {
@@ -165,12 +242,17 @@ export function createOfflineProvider(engine, modelId, reloadCachedEngine) {
             const code = needsReload || error?.name === 'DeviceLostError' ? 'offline-reload' : 'offline-inference';
             throw providerFailure(code, 'generation', error);
           }
+          stage = 'response';
           const content = result?.choices?.[0]?.message?.content;
           if (typeof content !== 'string') throw providerFailure('offline-inference', 'response');
           const fence = structured ? null : /^```(?:json)?\s+([\s\S]*?)\s*```$/i.exec(content.trim());
           return JSON.parse(fence ? fence[1] : content);
         }
-      });
+      }).catch(error => {
+        log('request.error', signal?.aborted ? 'canceled' : error instanceof SyntaxError ? 'malformed-json' : 'failed',
+          {durationMs:clock()-queued,error:safeError(diagnostics,error,stage)});
+        throw error;
+      }).finally(() => signal?.removeEventListener('abort',aborted));
     },
     unload() {
       if (!unloading) {

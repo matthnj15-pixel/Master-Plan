@@ -12,10 +12,17 @@ const PLAN_REQUESTS = (() => {
   const supported = 'homes, storefronts, parks/green space, plazas, libraries, community centers, farmers markets, safety facilities, stormwater, and the listed ordinances';
   const valueText = (schema, value) => schema.type === 'bool' ? value ? 'yes' : 'no' : schema.type === 'enum' ? schema.labels?.[value] || value : value;
 
-  function createPlanRunner({ engine: E, timeoutMs = 90000 } = {}) {
+  function createPlanRunner({ engine: E, timeoutMs = 90000, diagnostics } = {}) {
     if (!E?.validatePlan || !E?.makeInitiative) throw new Error('The plan runner needs the engine plan contract.');
     let nextId = 0;
     const records = new WeakMap();
+    const now = () => globalThis.performance?.now?.() ?? Date.now();
+    // Diagnostics are observational: even an unavailable logger cannot change a request.
+    const log = (record, name, outcome, metadata = {}) => {
+      try { diagnostics?.record(name, outcome, { requestId: record.requestId, action: record.mode, attempt: record.attempts || 0,
+        modelId: record.provider?.modelId, runtimeVersion: record.provider?.offline ? '0.2.87' : undefined, ...metadata }); } catch {}
+    };
+    const diagnosticError = (error, stage) => { try { return diagnostics?.error(error, stage); } catch {} };
 
     function namedSite(intent, places) {
       const lower = intent.toLowerCase();
@@ -91,6 +98,10 @@ const PLAN_REQUESTS = (() => {
         isCurrent: options.isCurrent, beforeKey: stateKey(state, proposal), used: false,
         targetCopy: proposal ? clone(proposal) : null,
       };
+      try { record.requestId = options.requestId || diagnostics?.id(); } catch {}
+      record.requestId ||= record.id;
+      record.started = now();
+      record.stage = 'validation';
       record.current = () => {
         if (record.used || options.signal?.aborted || (record.isCurrent && !record.isCurrent())) return false;
         if (stateKey(state, proposal) !== record.beforeKey) return false;
@@ -146,23 +157,30 @@ const PLAN_REQUESTS = (() => {
 
     function serialCall(record, prompt, signal) {
       const { provider } = record;
+      record.stage = 'queue';
+      const queued = now();
+      log(record, 'plan.queued', 'queued', {stage:'queue'});
       const previous = queues.get(provider) || Promise.resolve();
       const call = previous.catch(() => {}).then(() => {
+        log(record, 'plan.dequeued', 'started', {stage:'queue',queueWaitMs:now()-queued});
         signal.throwIfAborted();
         if (!record.current()) throw Object.assign(new Error('This request is stale.'), { code: 'stale' });
-        return provider.json(prompt, { modelTier: 'default', cache: false, signal });
+        record.stage = 'generation';
+        return provider.json(prompt, { modelTier: 'default', cache: false, signal,
+          requestId:record.requestId, action:record.mode, attempt:record.attempts });
       });
       queues.set(provider, call.catch(() => {}));
       return call;
     }
 
-    function timeBound(start, requestSignal) {
+    function timeBound(start, requestSignal, record) {
       const controller = new AbortController();
       const signal = requestSignal ? AbortSignal.any([requestSignal, controller.signal]) : controller.signal;
       let timer;
       const timeout = new Promise((_, reject) => {
         timer = setTimeout(() => {
           const error = Object.assign(new Error('The AI request timed out. Retry with the same model.'), { code: 'timeout' });
+          log(record, 'request.timeout', 'timeout', {stage:record.stage,durationMs:now()-record.started,error:diagnosticError(error,record.stage)});
           reject(error);
           controller.abort(error);
         }, timeoutMs);
@@ -171,7 +189,8 @@ const PLAN_REQUESTS = (() => {
     }
 
     function result(record, status, fields = {}) {
-      const out = freeze({ id: record.id, mode: record.mode, status, intent: record.intent, attempts: record.attempts || 0, constraints: [], snapshot: record.snapshot, ...fields });
+      log(record, 'plan.final', status, {stage:record.stage,durationMs:now()-record.started});
+      const out = freeze({ id: record.id, requestId:record.requestId, mode: record.mode, status, intent: record.intent, attempts: record.attempts || 0, constraints: [], snapshot: record.snapshot, ...fields });
       if (status === 'ready') records.set(out, record);
       return out;
     }
@@ -244,6 +263,8 @@ const PLAN_REQUESTS = (() => {
 
     async function run(options) {
       const record = capture(options);
+      log(record, 'plan.submitted', 'started', {stage:'validation',plotCount:record.pinned?.length || 0});
+      options.signal?.addEventListener('abort', () => log(record, 'request.aborted', 'canceled', {stage:record.stage,durationMs:now()-record.started}), {once:true});
       if (!['draft', 'revise', 'briefing'].includes(record.mode)) return result(record, 'invalid', { blocker: 'Unknown request mode.' });
       if (options.plots !== undefined && !Array.isArray(options.plots)) return result(record, 'invalid', { blocker: 'Chosen plots must be a list of tile coordinates.' });
       if (!record.current()) return result(record, 'stale', { blocker: 'This request no longer matches the open town and plan.' });
@@ -269,25 +290,35 @@ const PLAN_REQUESTS = (() => {
       for (let attempt = 1; attempt <= 2; attempt++) {
         if (!record.current()) return result(record, 'stale', { blocker: 'This request no longer matches the open town and plan.' });
         record.attempts = attempt;
+        if (attempt > 1) log(record, 'plan.repair', 'started', {stage:'repair',durationMs:now()-record.started});
         const prompt = promptFor(record, repair);
         let payload;
         try {
-          payload = await timeBound(signal => serialCall(record, prompt, signal), options.signal);
+          payload = await timeBound(signal => serialCall(record, prompt, signal), options.signal, record);
           if (!record.current()) return result(record, 'stale', { blocker: 'The town, provider, draft, or plan changed while waiting. No changes were applied.' });
           if (typeof payload === 'string') payload = JSON.parse(payload);
         } catch (error) {
           if (!record.current() || error?.code === 'stale') return result(record, 'stale', { blocker: 'The town, provider, draft, or plan changed while waiting. No changes were applied.' });
           if (error instanceof SyntaxError) {
+            record.stage = 'validation';
+            log(record, 'plan.validation', 'malformed-json', {stage:'validation',error:diagnosticError(error,'response'),durationMs:now()-record.started});
             repair = `Malformed JSON: ${error.message.slice(0, 150)}`;
             continue;
           }
+          if (['generation','reload','response'].includes(error?.diagnostic?.stage)) record.stage = error.diagnostic.stage;
           const classified = ['timeout', 'offline-inference', 'offline-reload'].includes(error?.code);
+          log(record, 'request.error', error?.code === 'timeout' ? 'timeout' : 'unavailable', {stage:record.stage,error:diagnosticError(error,record.stage),durationMs:now()-record.started});
           const blocker = classified ? error.message : 'The AI provider stopped before returning a plan. Retry with the same model.';
           const { name, stage } = (classified ? error.diagnostic : null) || {};
           const diagnostic = ['generation', 'reload', 'response'].includes(stage) && typeof name === 'string' && /^[A-Za-z][A-Za-z0-9]{0,47}$/.test(name);
           return result(record, 'unavailable', { blocker: diagnostic ? `${blocker} Qwen diagnostic: ${stage}/${name}.` : blocker });
         }
+        record.stage = 'validation';
         const checked = validateReply(record, payload);
+        log(record, 'plan.validation', checked.accepted ? 'valid' : checked.unsupported ? 'unsupported' : 'invalid', {
+          stage:'validation',durationMs:now()-record.started,
+          changedFieldCount:checked.accepted?.applied ? Object.keys(checked.accepted.applied).length : 0,
+        });
         if (checked.blocked) return result(record, 'invalid', {blocker:checked.blocked});
         if (checked.unsupported) return result(record, 'unsupported', { blocker: checked.unsupported });
         if (checked.accepted) return result(record, 'ready', checked.accepted);

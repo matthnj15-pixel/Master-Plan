@@ -8,6 +8,34 @@ const game=()=>E.newGame(12345);
 const provider=(...replies)=>({json:async()=>{const next=replies.shift();if(next instanceof Error)throw next;return next;}});
 const draft=(plan={homes:20},place='oldmill')=>({title:'Mayor’s homes',summary:'A plan',place,plan});
 
+test('MP-075 plan diagnostics correlate repair, validation and final without claiming application or logging intent',async()=>{
+ const events=[],calls=[];const diagnostics={id:()=> 'test-request-1',record:(name,outcome,metadata)=>events.push({name,outcome,metadata})};
+ const runner=createPlanRunner({engine:E,diagnostics}),state=game();
+ const result=await runner.run({state,intent:'PROMPT_SENTINEL homes at Old Mill',provider:{json:async(prompt,options)=>{
+  calls.push(options);return calls.length===1?{plan:{homes:'REPLY_SENTINEL'}}:draft();
+ }}});
+ assert.equal(result.status,'ready');assert.equal(result.requestId,'test-request-1');
+ assert.deepEqual(calls.map(c=>[c.requestId,c.action,c.attempt]),[['test-request-1','draft',1],['test-request-1','draft',2]]);
+ assert.ok(events.some(e=>e.name==='plan.validation'&&e.outcome==='invalid'));
+ assert.ok(events.some(e=>e.name==='plan.repair'&&e.metadata.attempt===2));
+ assert.ok(events.some(e=>e.name==='plan.validation'&&e.outcome==='valid'));
+ assert.ok(events.some(e=>e.name==='plan.final'&&e.outcome==='ready'));
+ assert.equal(events.some(e=>e.name==='plan.application'),false);
+ assert.doesNotMatch(JSON.stringify(events),/PROMPT_SENTINEL|REPLY_SENTINEL|Mayor|plots":/);
+ assert.ok(events.every(e=>e.metadata.requestId==='test-request-1'));
+});
+
+test('MP-075 plan diagnostics expose timeout, malformed JSON and unsupported intent separately',async()=>{
+ const events=[];let ids=0;const diagnostics={id:()=>`request-${++ids}`,record:(name,outcome,metadata)=>events.push({name,outcome,metadata})};
+ const runner=createPlanRunner({engine:E,diagnostics,timeoutMs:12});
+ await runner.run({state:game(),intent:'Homes at Old Mill',provider:provider(new SyntaxError('private reply'),{status:'unsupported'})});
+ await runner.run({state:game(),intent:'Homes at Old Mill',provider:{json:()=>new Promise(()=>{})}});
+ assert.ok(events.some(e=>e.name==='plan.validation'&&e.outcome==='malformed-json'));
+ assert.ok(events.some(e=>e.name==='plan.validation'&&e.outcome==='unsupported'));
+ assert.ok(events.some(e=>e.name==='request.timeout'&&e.metadata.durationMs>=0));
+ assert.doesNotMatch(JSON.stringify(events),/private reply/);
+});
+
 
 test('MP-031 MP-033 named site wins over model suggestion and costs come from the engine',async()=>{
  const state=game(), runner=createPlanRunner({engine:E});

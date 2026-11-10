@@ -4,6 +4,23 @@ import {readFileSync} from 'node:fs';
 const source=readFileSync(new URL('../src/offline-ai.js',import.meta.url),'utf8');
 const {createOfflineProvider}=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
 
+test('MP-075 shared provider records correlated queue, grammar recovery, generation timing and safe response metadata',async()=>{
+ const events=[];const diagnostics={id:()=> 'provider-request',record:(name,outcome,metadata)=>events.push({name,outcome,metadata})};
+ let calls=0;const engine={chat:{completions:{async create(){
+  if(++calls===1)throw Object.assign(new Error('PRIVATE_ERROR'),{name:'GrammarMatcherInitError'});
+  return {choices:[{message:{content:'{"reply":"REPLY_SENTINEL"}'},finish_reason:'stop'}],usage:{prompt_tokens:20,completion_tokens:6}};
+ }}}};
+ const ai=createOfflineProvider(engine,'Qwen2.5-1.5B-Instruct-q4f16_1-MLC',null,diagnostics);
+ assert.deepEqual(await ai.json('PROMPT_SENTINEL',{requestId:'plan-request',action:'revise',attempt:2}),{reply:'REPLY_SENTINEL'});
+ assert.ok(events.some(e=>e.name==='request.queued'));
+ assert.ok(events.some(e=>e.name==='grammar.fallback'));
+ const finished=events.find(e=>e.name==='generation.finished'&&e.outcome==='success');
+ assert.ok(finished.metadata.inferenceMs>=0);assert.ok(finished.metadata.queueWaitMs>=0);
+ assert.ok(events.every(e=>e.metadata.requestId==='plan-request'&&e.metadata.attempt===2));
+ assert.equal(finished.metadata.runtimeVersion,'0.2.87');
+ assert.doesNotMatch(JSON.stringify(events),/PROMPT_SENTINEL|REPLY_SENTINEL|PRIVATE_ERROR/);
+});
+
 test('MP-065 Qwen adapter serializes plan and other inference calls and keeps pinned JSON mode',async()=>{
  let active=0,maximum=0,calls=0,release;
  const engine={chat:{completions:{create:async options=>{

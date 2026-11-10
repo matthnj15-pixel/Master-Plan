@@ -40,7 +40,10 @@ if (channel === 'dev') html = html.replace('<title>Master Plan</title>', '<title
 
 mkdirSync(out, { recursive: true });
 writeFileSync(join(out, 'master-plan.html'), html);
-const webAI = flags.offlineAI ? '<script>window.MP_WEB_BUILD=true</script>' : '';
+// The diagnostics module is local to Dev Pages. Embedding it in the shell keeps
+// file export available offline even when Qwen is off or its module cannot load.
+const webAI = flags.offlineAI ? '<script>window.MP_WEB_BUILD=true;\n' +
+  (channel === 'dev' ? read('src/qwen-diagnostics.js') : '') + '\n</script>' : '';
 if (flags.offlineAI) {
   writeFileSync(join(out, 'offline-ai.js'), read('src/offline-ai.js'));
   writeFileSync(join(out, 'offline-worker.js'), read('src/offline-worker.js').replace('/*BUILD_COMMIT*/', commit));
