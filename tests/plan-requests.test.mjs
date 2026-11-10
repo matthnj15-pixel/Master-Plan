@@ -165,3 +165,36 @@ test('MP-033 explicit alternative creek sites require clarification while creek 
  const contextual=await runner.run({state,provider:provider(draft({homes:20,green:1})),intent});assert.equal(contextual.status,'ready');assert.deepEqual(contextual.draft.plots,E.SITES.oldmill);
  const selected=await runner.run({state,provider:provider(draft()),intent:'Build homes at Old Mill or the Kish Creek bank',plots:[[6,12]]});assert.equal(selected.status,'ready');assert.deepEqual(selected.draft.plots,[[6,12]]);
 });
+
+test('MP-015 MP-074 scenario prerequisites block a housing revision before inference without mutation',async()=>{
+ const {reconstruction}=await import('./fixtures/reconstruction.mjs');const state=E.newGame(12,reconstruction),proposal=state.proposals.find(p=>p.id==='housing'),runner=createPlanRunner({engine:E});
+ const original=JSON.stringify(state);let calls=0;
+ const result=await runner.run({mode:'revise',state,proposal,provider:{json:async()=>{calls++;return{changes:{homes:30}};}},intent:'Add ten recovery homes'});
+ assert.equal(result.status,'invalid');assert.match(result.blocker,/waterReady.*true/);assert.equal(calls,0);assert.equal(runner.accept(result,{apply:()=>assert.fail()}),false);assert.equal(JSON.stringify(state),original);
+});
+
+test('MP-015 MP-033 MP-074 request context and forecasts use the active scenario sites, map, date and facts',async()=>{
+ const {reconstruction}=await import('./fixtures/reconstruction.mjs');const input=structuredClone(reconstruction);input.people.presenters.planner.detail=90;
+ const state=E.newGame(13,input);state.facts.waterReady=true;
+ let prompt;const runner=createPlanRunner({engine:E});const result=await runner.run({state,provider:{json:async text=>{prompt=text;return draft({homes:20},'oldmill');}},intent:'Build homes at Recovery housing'});
+ assert.equal(result.status,'ready');assert.deepEqual(result.draft.plots,[[3,2]]);assert.equal(result.snapshot.scenarioId,reconstruction.id);assert.equal(result.snapshot.calendarYear,1946);assert.deepEqual(result.snapshot.map,{width:5,height:4});
+ assert.deepEqual(result.snapshot.legalSiteIds,['utility','housing']);assert.equal(result.snapshot.town.waterReady,true);assert.deepEqual(result.snapshot.editableFields.initiative.homes,{type:'int',min:0,max:200,step:10});
+ assert.deepEqual(result.forecast.after,E.effectsOf(result.proposal,state));assert.notEqual(result.forecast.after.costHigh,E.effectsOf(result.proposal).costHigh,'scenario presenter detail controls the cost range');
+ assert.doesNotMatch(prompt,/"legalPlots"|"grid"|"decided"|"history"/);assert.equal(result.snapshot.candidates.some(site=>site.id==='oldmill'),false);
+ const proposal=state.proposals.find(p=>p.id==='housing');const revised=await runner.run({mode:'revise',state,proposal,provider:provider({changes:{homes:30}}),intent:'Add ten homes'});
+ assert.equal(revised.status,'ready');assert.deepEqual(revised.snapshot.chosenPlots,[[3,2]]);assert.deepEqual(revised.forecast.after,E.effectsOf(revised.proposal,state));
+});
+
+test('MP-015 MP-074 changed scenario prerequisite facts make pending responses stale',async()=>{
+ const {reconstruction}=await import('./fixtures/reconstruction.mjs');const state=E.newGame(14,reconstruction);state.facts.waterReady=true;
+ const proposal=state.proposals.find(p=>p.id==='housing'),runner=createPlanRunner({engine:E});let finish;
+ const pending=runner.run({mode:'revise',state,proposal,provider:{json:()=>new Promise(resolve=>finish=resolve)},intent:'Add ten homes'});
+ await new Promise(r=>setImmediate(r));state.facts.waterReady=false;finish({changes:{homes:30}});const result=await pending;
+ assert.equal(result.status,'stale');assert.equal(proposal.plan.homes,20);assert.equal(runner.accept(result,{apply:()=>assert.fail()}),false);
+});
+
+test('MP-015 MP-033 malformed selected plot containers return a bounded invalid outcome',async()=>{
+ const state=game(),runner=createPlanRunner({engine:E});let calls=0;
+ const result=await runner.run({state,provider:{json:async()=>{calls++;return draft();}},intent:'Homes',plots:{not:'an array'}});
+ assert.equal(result.status,'invalid');assert.match(result.blocker,/list of tile coordinates/);assert.equal(calls,0);
+});

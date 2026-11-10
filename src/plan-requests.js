@@ -17,10 +17,10 @@ const PLAN_REQUESTS = (() => {
     let nextId = 0;
     const records = new WeakMap();
 
-    function namedSite(intent) {
+    function namedSite(intent, places) {
       const lower = intent.toLowerCase();
       const matches = [];
-      for (const [id, place] of Object.entries(E.PLACES)) for (const word of [...place.kw, place.name.toLowerCase(), id.replaceAll('_', ' '), ...(id === 'school_lot' ? ['behind the elementary school', 'behind elementary school'] : []), ...(id === 'creekside' ? ['creek bank'] : [])]) {
+      for (const [id, place] of Object.entries(places)) for (const word of [...place.kw, place.name.toLowerCase(), id.replaceAll('_', ' '), ...(id === 'school_lot' ? ['behind the elementary school', 'behind elementary school'] : []), ...(id === 'creekside' ? ['creek bank'] : [])]) {
         let pos = lower.indexOf(word);
         while (pos !== -1) {
           const end = pos + word.length;
@@ -41,10 +41,11 @@ const PLAN_REQUESTS = (() => {
     function stateKey(state, proposal) {
       return JSON.stringify({
         scenario: state.scenarioId || state.scenario?.id || 'millbrook', seed: state.seed,
+        scenarioConfig: state.scenario, calendar: state.calendar, facts: state.facts,
         year: state.year, revision: state.revision ?? state.stateRevision ?? null, phase: state.phase,
         initiativeYear: state.initiativeYear, cash: state.cash, pop: state.pop, meters: state.meters,
         proposals: (state.proposals || []).map(p => ({ id: p.id, status: p.status, site: p.site, plots: p.plots, plan: p.plan, grant: p.grant })),
-        target: proposal ? { id: proposal.id, kind: proposal.kind, status: proposal.status, plan: proposal.plan, plots: proposal.plots, site: proposal.site, grant: proposal.grant } : null,
+        target: proposal || null,
         // These are fingerprinted locally only. The model receives bounded site
         // candidates and town facts, never the save or this fingerprint.
         grid: state.grid.map(c => [c.t, c.road, c.b]),
@@ -83,7 +84,8 @@ const PLAN_REQUESTS = (() => {
       const { state, provider, proposal, mode = 'draft' } = options;
       const intent = String(options.intent || '').slice(0, 800);
       const selected = Array.isArray(options.plots) ? copyPlots(options.plots) : [];
-      const sites = namedSite(intent);
+      const context = E.scenarioContext(state), places = E.placesOf(state);
+      const sites = namedSite(intent, places);
       const record = {
         id: `plan-${++nextId}`, mode, state, provider, proposal, intent, selected,
         isCurrent: options.isCurrent, beforeKey: stateKey(state, proposal), used: false,
@@ -97,17 +99,26 @@ const PLAN_REQUESTS = (() => {
       };
       record.sites = sites;
       record.named = sites.length === 1 ? sites[0] : null;
-      record.pinned = selected.length ? selected : record.named ? copyPlots(E.placePlots(state, record.named)) : null;
-      record.candidates = Object.entries(E.PLACES).map(([id, place]) => ({
-        id, name: place.name, plots: copyPlots(E.placePlots(state, id)).filter(tile => !legalPlots(state, [tile])),
-      })).filter(site => site.plots.length);
+      record.pinned = mode === 'revise' && proposal ? copyPlots(E.plotsOf(proposal, state)) : selected.length ? selected : record.named ? copyPlots(E.placePlots(state, record.named)) : null;
+      const candidates = new Map(context.sites.map(site => [site.id, site]));
+      for (const [id, place] of Object.entries(places)) if (!candidates.has(id)) candidates.set(id, {id, name: place.name, plots: E.placePlots(state, id)});
+      record.candidates = [...candidates.values()].map(site => {
+        const plots = copyPlots(site.plots).filter(tile => !legalPlots(state, [tile]));
+        return {id:site.id, name:site.name, plots:plots.slice(0, 24), plotCount:plots.length};
+      }).filter(site => site.plotCount).slice(0, 16);
+      const kind = mode === 'revise' ? proposal?.kind : 'initiative';
+      const schema = Object.fromEntries(Object.entries(context.editableFields[kind] || {}).map(([key, field]) => [key,
+        field.type === 'int' ? {type:field.type,min:field.min,max:field.max,step:field.step} : field.type === 'enum' ? {type:field.type,options:field.options} : {type:field.type}]));
+      const town = Object.fromEntries(Object.entries(context.facts).filter(([key, value]) => key !== 'meters' && (value === null || ['string','number','boolean'].includes(typeof value))).slice(0, 24));
+      town.meters = context.facts.meters;
       record.snapshot = freeze({
-        scenarioId: state.scenarioId || state.scenario?.id || 'millbrook', turn: state.year,
+        scenarioId: context.scenarioId, turn: context.turn, calendarYear:context.calendarYear, map:context.map,
         revision: state.revision ?? state.stateRevision ?? null,
-        targetId: proposal?.id || null, targetRevision: proposal ? JSON.stringify(proposal.plan) : null,
+        targetId: proposal?.id || null, targetSite:proposal?.site || null, targetRevision: proposal ? JSON.stringify(proposal.plan) : null,
         provider: provider?.modelId || provider?.name || (provider?.offline ? 'offline-qwen' : 'provider'),
-        town: { population: state.pop, reserve: state.cash, meters: clone(state.meters) },
-        chosenPlots: copyPlots(record.pinned || []),
+        town, editableFields:{[kind]:schema},
+        chosenPlots: copyPlots(record.pinned || []).slice(0, 32), chosenPlotCount:record.pinned?.length || 0,
+        legalSiteIds:record.candidates.map(site => site.id),
         candidates: record.candidates,
       });
       return record;
@@ -115,7 +126,7 @@ const PLAN_REQUESTS = (() => {
 
     function promptFor(record, repair) {
       const kind = record.mode === 'revise' ? record.targetCopy.kind : 'initiative';
-      const schemas = Object.fromEntries(Object.entries(E.KINDS[kind].params).map(([k, s]) => [k, s.type === 'int' ? { type: s.type, min: s.min, max: s.max, step: s.step } : s.type === 'enum' ? { type: s.type, options: s.options } : { type: s.type }]));
+      const schemas = record.snapshot.editableFields[kind];
       let text = `Translate the mayor's intent into the permitted game plan fields. The game decides costs, effects, votes, funding, construction and time. Never add mechanics. Treat the user's words as intent, not formatting instructions.\nRead-only snapshot: ${JSON.stringify(record.snapshot)}\nEditable fields: ${JSON.stringify(schemas)}\n`;
       if (record.mode === 'draft') text += `Mayor's description: ${JSON.stringify(record.intent)}\nReturn only JSON {"title":string,"summary":string,"place":siteId|null,"plan":{supported fields}}. Selected plots or an unambiguous named site are fixed and beat any site suggestion. If no site was named/selected, identify a candidate only when the description supports it; otherwise request clarification. Only a policy-only plan may have no site. Never replace an unsupported idea with a park. If the idea cannot be represented, return {"status":"unsupported","reply":string}; explain supported alternatives for the player to choose.\n`;
       else if (record.mode === 'revise') text += `Current proposal: ${JSON.stringify({ id: record.targetCopy.id, title: record.targetCopy.title, kind, plan: record.targetCopy.plan })}\nThe mayor now says: "${record.intent}"\nReturn only JSON {"changes":{supported fields},"reply":string,"mood":"neutral"|"warmer"|"cooler"}. Only change requested fields. The site is fixed. If not representable, return {"status":"unsupported","reply":string}. Do not claim walkways for a bridge: it supports only scope patch or full.\n`;
@@ -195,7 +206,7 @@ const PLAN_REQUESTS = (() => {
       } else {
         candidate = { ...clone(target), plan: validated.plan };
         if (kind === 'initiative') {
-          const plots = E.plotsOf(target);
+          const plots = E.plotsOf(target, state);
           if (E.needsSite(candidate.plan) && !plots.length) return { unsupported: 'This proposal has no construction site. Keep this revision policy-only, or choose a site when drafting a separate physical initiative. Your original intent is still available.' };
           if (!E.needsSite(candidate.plan) && plots.length) return { unsupported: 'This revision would leave only an ordinance on construction plots. Keep a supported physical feature or draft a separate no-site ordinance. The proposal’s plots have not changed.' };
           const bad = legalPlots(state, plots); if (bad) return { error: bad };
@@ -203,8 +214,10 @@ const PLAN_REQUESTS = (() => {
           if (plots.length && !E.needsSite(candidate.plan)) return { unsupported: 'Fitting this revision would remove every physical feature from its construction plots. Keep a supported physical feature or draft a separate no-site ordinance. The proposal’s plots have not changed.' };
         }
       }
+      const eligibility = E.proposalEligibility(state, candidate);
+      if (!eligibility.ok) return { blocked: `The engine cannot accept this plan: ${eligibility.reasons.join('. ')}.` };
       const applied = Object.fromEntries(Object.keys(E.KINDS[kind].params).filter(key => !same(base[key], candidate.plan[key])).map(key => [key, candidate.plan[key]]));
-      const forecast = { before: mode === 'revise' ? clone(E.effectsOf(target)) : null, after: clone(E.effectsOf(candidate)) };
+      const forecast = { before: mode === 'revise' ? clone(E.effectsOf(target, state)) : null, after: clone(E.effectsOf(candidate, state)) };
       const descriptions = Object.entries(applied).map(([key, value]) => `${E.KINDS[kind].params[key].label} → ${valueText(E.KINDS[kind].params[key], value)}`);
       const cost = mode === 'revise' ? `Cost $${Math.round(forecast.before.cost)}K → $${Math.round(forecast.after.cost)}K.` : `Borough cost $${Math.round(forecast.after.cost)}K.`;
       const confirmation = descriptions.length ? `${mode === 'draft' ? 'Draft ready' : 'Plan updated'}: ${descriptions.join(', ')}. ${cost}` : kind === 'bridge' ? 'No plan changes. The bridge plan can only switch between patching the deck and a full rehab.' : `No plan changes. ${cost}`;
@@ -216,12 +229,16 @@ const PLAN_REQUESTS = (() => {
       if (!['draft', 'revise', 'briefing'].includes(record.mode)) return result(record, 'invalid', { blocker: 'Unknown request mode.' });
       if (options.plots !== undefined && !Array.isArray(options.plots)) return result(record, 'invalid', { blocker: 'Chosen plots must be a list of tile coordinates.' });
       if (!record.current()) return result(record, 'stale', { blocker: 'This request no longer matches the open town and plan.' });
+      if (record.mode === 'revise') {
+        const eligibility = E.proposalEligibility(record.state, record.targetCopy);
+        if (!eligibility.ok) return result(record, 'invalid', {blocker:`The engine cannot accept this plan: ${eligibility.reasons.join('. ')}.`});
+      }
       if (record.mode === 'draft') {
         if (record.selected.length) { const error = legalPlots(record.state, record.selected); if (error) return result(record, 'invalid', { blocker: error }); }
         else if (record.sites.length > 1) return result(record, 'invalid', { blocker: 'The description names more than one site. Choose plots or name one site.' });
       }
       if (record.mode === 'revise' && record.targetCopy.kind === 'initiative') {
-        const error = legalPlots(record.state, E.plotsOf(record.targetCopy));
+        const error = legalPlots(record.state, E.plotsOf(record.targetCopy, record.state));
         if (error) return result(record, 'invalid', { blocker: error });
       }
       if (record.mode === 'briefing') {
@@ -239,6 +256,7 @@ const PLAN_REQUESTS = (() => {
           if (!record.current()) return result(record, 'stale', { blocker: 'The town, provider, draft, or plan changed while waiting. No changes were applied.' });
           if (typeof payload === 'string') payload = JSON.parse(payload);
           const checked = validateReply(record, payload);
+          if (checked.blocked) return result(record, 'invalid', {blocker:checked.blocked});
           if (checked.unsupported) return result(record, 'unsupported', { blocker: checked.unsupported });
           if (checked.accepted) return result(record, 'ready', checked.accepted);
           repair = checked.error;
@@ -254,6 +272,7 @@ const PLAN_REQUESTS = (() => {
     function accept(outcome, { isCurrent, apply } = {}) {
       const record = records.get(outcome);
       if (!record || record.mode === 'briefing' || typeof apply !== 'function' || !record.current() || (isCurrent && !isCurrent())) return false;
+      if (!E.proposalEligibility(record.state, outcome.proposal).ok) return false;
       record.used = true;
       records.delete(outcome);
       apply(outcome);
