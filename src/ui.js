@@ -3,7 +3,14 @@ const E=ENGINE,N=E.N;
 const BUILD=(typeof MP_BUILD!=='undefined'&&MP_BUILD)||{channel:'stable',version:'local',commit:'',flags:{},flagInfo:{}};
 const DEV=BUILD.channel==='dev';
 const WEB_AI=window.MP_WEB_BUILD && BUILD.flags.offlineAI;
-const planRunner=PLAN_REQUESTS.createPlanRunner({engine:E});
+const diagnostics=window.MP_DIAGNOSTICS?.create({enabled:DEV&&!!window.MP_WEB_BUILD&&!window.claude?.use,build:BUILD});
+if(diagnostics)window.MP_QWEN_DIAGNOSTICS=diagnostics;
+const planRunner=PLAN_REQUESTS.createPlanRunner({engine:E,diagnostics});
+const diagnosticsState={from:'',through:'',initialized:false,snapshot:null,prepared:null,pending:false,delivery:''};
+let diagnosticsRefresh=0,diagnosticsTimer;
+const qwenModelId=model=>({'1.5B':'Qwen2.5-1.5B-Instruct-q4f16_1-MLC','3B':'Qwen2.5-3B-Instruct-q4f16_1-MLC'}[model]);
+const diagnosticTime=()=>performance.now();
+const diagnosticDuration=start=>Math.max(0,Math.round(performance.now()-start));
 let activePlanRequest=null;
 const WEB_AI_KEY='masterplan.offline-ai.'+BUILD.channel;
 const WEB_AI_STARTING_KEY=WEB_AI_KEY+'.starting';
@@ -49,6 +56,9 @@ async function initCaps(){
       offlineModel=localStorage.getItem(WEB_AI_KEY);
       interrupted=localStorage.getItem(WEB_AI_STARTING_KEY)==='1';
     }catch{}
+    diagnostics?.record('app.launch','observed',{stage:'launch'});
+    diagnostics?.record('model.choice',offlineModel?'selected':'off',{runtimeVersion:'0.2.87',modelId:qwenModelId(offlineModel)});
+    if(interrupted)diagnostics?.record('startup.interrupted','incomplete',{stage:'startup',modelId:qwenModelId(offlineModel),previousSession:true});
     if(offlineModel&&!interrupted)void connectOfflineAI(offlineModel,false);
     else{
       aiState='off';
@@ -68,7 +78,11 @@ async function initCaps(){
 /* ---------- offline AI ---------- */
 function showAIStatus(){
   renderBar();
-  if(sheet?.type==='menu')renderSheet();
+  if(sheet?.type==='menu'){
+    const status=$('#offlineAIStatus'),controls=$('#offlineAIControls');
+    if(status&&controls){status.textContent=localStatus||'Open from your Home Screen, then download a Qwen2.5 model on Wi-Fi for offline play.';controls.innerHTML=offlineControlsHTML();}
+    else renderSheet();
+  }
   const status=$('#planQwenStatus');
   if(status){
     status.hidden=!!aiReady();
@@ -78,6 +92,7 @@ function showAIStatus(){
 }
 function storeOfflineModel(model){
   offlineModel=model;
+  diagnostics?.record('model.choice',model?'selected':'off',{runtimeVersion:'0.2.87',modelId:qwenModelId(model)});
   try{
     if(model)localStorage.setItem(WEB_AI_KEY,model);
     else localStorage.removeItem(WEB_AI_KEY);
@@ -91,6 +106,8 @@ function markOfflineStartup(starting){
 }
 async function connectOfflineAI(model,download){
   if(!WEB_AI||window.claude?.use||localLoading||AI?.offline)return;
+  const startupId=diagnostics?.id(),started=diagnosticTime(),modelId=qwenModelId(model);
+  diagnostics?.record('startup.begin','started',{startupId,modelId,runtimeVersion:'0.2.87',download,stage:'startup'});
   localLoading=true;aiState='checking';
   localStatus=download?'Preparing the '+model+' model…':'Loading the saved '+model+' model…';
   // Keep the model choice if Safari terminates the page. Require a manual retry after interrupted startup.
@@ -99,12 +116,14 @@ async function connectOfflineAI(model,download){
   showAIStatus();
   try{
     const {startOfflineAI}=await import('./offline-ai.js');
-    AI=await startOfflineAI({model,download,onProgress(percent){
+    AI=await startOfflineAI({model,download,diagnostics,startupId,onProgress(percent){
       const status='Preparing the '+model+' model… '+Math.min(100,Math.max(0,percent))+'%';
       if(localStatus!==status){localStatus=status;showAIStatus();}
     }});
     aiState='on';localStatus=model+' model ready for offline play.';
+    diagnostics?.record('startup.ready','ready',{startupId,modelId,runtimeVersion:'0.2.87',download,stage:'startup',durationMs:diagnosticDuration(started)});
   }catch(error){
+    diagnostics?.record('startup.error','failed',{startupId,modelId,runtimeVersion:'0.2.87',download,stage:error?.offlineStage||'startup',durationMs:diagnosticDuration(started),error:diagnostics.error(error,error?.offlineStage||'startup')});
     aiState='off';
     localStatus=error?.message?.slice(0,180)||'Could not start offline AI. Try again while online.';
   }finally{
@@ -114,25 +133,99 @@ async function connectOfflineAI(model,download){
 }
 async function turnOffOfflineAI(){
   if(!offlineModel||localLoading)return;
-  const provider=AI;
+  const provider=AI,started=diagnosticTime(),modelId=qwenModelId(offlineModel);
+  diagnostics?.record('shutdown.begin','started',{modelId,runtimeVersion:'0.2.87',stage:'shutdown'});
+  let shutdownOutcome='success';
   cancelPlanRequest();AI=null;localLoading=true;aiState='off';localStatus='Turning off offline AI…';
   storeOfflineModel(null);markOfflineStartup(false);showAIStatus();
-  try{await provider?.unload();}catch{}
+  try{await provider?.unload();}catch(error){shutdownOutcome='failed';diagnostics?.record('shutdown.finish','failed',{modelId,runtimeVersion:'0.2.87',stage:'shutdown',durationMs:diagnosticDuration(started),error:diagnostics.error(error,'shutdown')});}
   finally{
+    if(shutdownOutcome==='success')diagnostics?.record('shutdown.finish','success',{modelId,runtimeVersion:'0.2.87',stage:'shutdown',durationMs:diagnosticDuration(started)});
     localLoading=false;localStatus='Offline AI is off. Your download is still saved.';
     showAIStatus();
   }
 }
 const retryOfflineButton='<button type="button" class="btn" data-act="offlineRetry">Retry cached Qwen</button>';
-function offlineAIHTML(){
-  if(!WEB_AI||window.claude?.use)return'';
-  const buttons=(offlineModel?'<button class="btn" data-act="offlineOff">Turn off Offline AI</button>':'')+(AI?.offline?'':
+function offlineControlsHTML(){
+  if(localLoading)return'';
+  return (offlineModel?'<button class="btn" data-act="offlineOff">Turn off Offline AI</button>':'')+(AI?.offline?'':
     (offlineModel?retryOfflineButton:'')+'<button class="btn primary" data-offline-model="1.5B">Download 1.5B · 880 MB</button><button class="btn" data-offline-model="3B">Try 3B · 1.75 GB</button>');
+}
+function offlineAIHTML(){
+  if((!WEB_AI&&!diagnostics)||window.claude?.use)return'';
   return `<div class="box"><b>Offline AI</b>
-    <div class="note" role="status" style="margin-top:6px">${esc(localStatus||'Open from your Home Screen, then download a Qwen2.5 model on Wi-Fi for offline play.')}</div>
-    ${localLoading?'':`<div class="chips" style="margin-top:8px">${buttons}</div>`}
+    <div id="offlineAIStatus" class="note" role="status" style="margin-top:6px">${esc(localStatus||'Open from your Home Screen, then download a Qwen2.5 model on Wi-Fi for offline play.')}</div>
+    <div id="offlineAIControls" class="chips" style="margin-top:8px">${WEB_AI?offlineControlsHTML():''}</div>
+    ${diagnosticsHTML()}
   </div>`;
 }
+function diagnosticsHTML(){
+  if(!diagnostics)return'';
+  return `<section id="qwenDiagnostics" class="diagnostics" aria-labelledby="diagnosticsHeading">
+    <h3 id="diagnosticsHeading">Diagnostics</h3>
+    <p class="note" data-diagnostics-range>${esc(diagnosticsRangeText())}</p>
+    <div class="diagnostics-dates">
+      <label for="diagnosticsFrom">From<input id="diagnosticsFrom" type="date" value="${esc(diagnosticsState.from)}"></label>
+      <label for="diagnosticsThrough">Through<input id="diagnosticsThrough" type="date" value="${esc(diagnosticsState.through)}"></label>
+    </div>
+    <p class="note">Both dates are included, using this device’s local timezone.</p>
+    <p class="note" data-diagnostics-preview role="status">${esc(diagnosticsPreviewText())}</p>
+    <p class="note" data-diagnostics-warnings>${esc((diagnosticsState.snapshot?.warnings||[]).join(' '))}</p>
+    <p class="note" data-diagnostics-storage>${esc(diagnosticsState.snapshot?.status||'Checking diagnostics storage…')}</p>
+    <div class="diagnostics-actions"><button type="button" class="btn primary" data-act="diagnosticsExport" ${diagnosticsExportReady()?'':'disabled'}>Export log</button></div>
+    <p class="note" data-diagnostics-delivery role="status">${esc(diagnosticsState.delivery)}</p>
+    <p class="note">Logs stay on this device until you choose a file destination. Export keeps records available for another range.</p>
+  </section>`;
+}
+function diagnosticsRangeText(){
+  const s=diagnosticsState.snapshot;if(!s)return'Checking retained events…';
+  const dates=s.availableDates;
+  return `${s.retainedCount} retained events. ${dates?.oldest?`Oldest: ${dates.oldest}. Newest: ${dates.newest}.`:'No retained dates available.'} Records are kept for the previous 168 hours, subject to the storage cap.`;
+}
+function diagnosticsPreviewText(){
+  if(diagnosticsState.pending)return'Counting matching events…';
+  const s=diagnosticsState.snapshot;if(!s)return'Checking available dates…';
+  return s.error||(!s.count?'No diagnostic events in the selected date range.':`${s.count} matching ${s.count===1?'event':'events'} ready to export.`);
+}
+function diagnosticsExportReady(){return !diagnosticsState.pending&&!!diagnosticsState.prepared&&diagnosticsState.snapshot?.count>0&&!diagnosticsState.snapshot?.error;}
+function syncDiagnostics(){
+  const panel=$('#qwenDiagnostics');if(!panel)return;
+  panel.querySelector('[data-diagnostics-range]').textContent=diagnosticsRangeText();
+  panel.querySelector('[data-diagnostics-preview]').textContent=diagnosticsPreviewText();
+  panel.querySelector('[data-diagnostics-warnings]').textContent=(diagnosticsState.snapshot?.warnings||[]).join(' ');
+  panel.querySelector('[data-diagnostics-storage]').textContent=diagnosticsState.snapshot?.status||'Checking diagnostics storage…';
+  panel.querySelector('[data-diagnostics-delivery]').textContent=diagnosticsState.delivery;
+  panel.querySelector('[data-act="diagnosticsExport"]').disabled=!diagnosticsExportReady();
+  for(const [id,key] of [['diagnosticsFrom','from'],['diagnosticsThrough','through']]){
+    const input=panel.querySelector('#'+id);if(input!==document.activeElement&&input.value!==diagnosticsState[key])input.value=diagnosticsState[key];
+  }
+}
+async function refreshDiagnostics(){
+  if(!diagnostics)return;
+  const refresh=++diagnosticsRefresh;
+  diagnosticsState.pending=true;diagnosticsState.prepared=null;syncDiagnostics();
+  try{
+    const selection=diagnosticsState.initialized?{from:diagnosticsState.from,through:diagnosticsState.through}:{};
+    const snapshot=await diagnostics.snapshot(selection);
+    if(refresh!==diagnosticsRefresh)return;
+    if(!diagnosticsState.initialized){diagnosticsState.from=snapshot.from||'';diagnosticsState.through=snapshot.through||'';diagnosticsState.initialized=true;}
+    diagnosticsState.snapshot=snapshot;diagnosticsState.prepared=snapshot.prepared;
+  }catch{
+    if(refresh!==diagnosticsRefresh)return;
+    diagnosticsState.snapshot={retainedCount:0,count:0,availableDates:{},error:'Diagnostics storage is unavailable. You can keep playing.',warnings:[],status:'Diagnostics storage unavailable.'};
+  }finally{if(refresh===diagnosticsRefresh){diagnosticsState.pending=false;syncDiagnostics();}}
+}
+function scheduleDiagnosticsRefresh(){clearTimeout(diagnosticsTimer);diagnosticsTimer=setTimeout(()=>void refreshDiagnostics(),30);}
+function exportDiagnostics(){
+  if(!diagnosticsExportReady())return;
+  // The prepared file reaches share() in this click turn, preserving Safari user activation.
+  const delivery=diagnostics.deliver(diagnosticsState.prepared);
+  diagnosticsState.delivery='Opening file action…';syncDiagnostics();
+  Promise.resolve(delivery).then(result=>{
+    diagnosticsState.delivery=result?.method==='canceled'?'File action canceled. Records are still available.':result?.method==='shared'?'File shared. Records are still available.':'Log downloaded. Records are still available.';syncDiagnostics();
+  }).catch(()=>{diagnosticsState.delivery='Could not deliver the log. Try Export log again.';syncDiagnostics();});
+}
+if(diagnostics){diagnostics.subscribe(scheduleDiagnosticsRefresh);scheduleDiagnosticsRefresh();}
 function qwenPlanSelected(){return WEB_AI&&BUILD.flags.planRequests&&!!offlineModel;}
 function qwenWaitingHTML(){
   return `<div class="msg sys" role="status">${esc(localStatus||'Qwen is waiting to load.')}</div>${localLoading?'':`<div class="chips" style="margin-top:8px">${retryOfflineButton}</div>`}`;
@@ -614,7 +707,7 @@ function drawPlan(cv,p){
 
 /* ---------- sheets ---------- */
 function cancelPlanRequest(){if(activePlanRequest){activePlanRequest.abort();activePlanRequest=null;busy=false;}}
-function openSheet(s){cancelPlanRequest();sheet=s;lobbyOpen=null;renderSheet();}
+function openSheet(s){cancelPlanRequest();sheet=s;lobbyOpen=null;renderSheet();if(s.type==='menu')void refreshDiagnostics();}
 function closeSheet(){cancelPlanRequest();sheet=null;$('#sheetRoot').innerHTML='';renderAll();}
 function renderSheet(){
   const root=$('#sheetRoot');if(!sheet){root.innerHTML='';return;}
@@ -810,7 +903,7 @@ function initiativeSheet(){
 }
 async function runOfflinePlan(mode,intent,proposal){
   if(busy||!sheet)return;
-  const origin=sheet,town=S,provider=AI,ticket=new AbortController();
+  const origin=sheet,town=S,provider=AI,ticket=new AbortController(),started=diagnosticTime();
   let showRevision=false;
   activePlanRequest=ticket;busy=true;origin.requestFeedback='';
   if(mode==='draft')origin.text=intent;else origin.negText=intent;
@@ -819,19 +912,26 @@ async function runOfflinePlan(mode,intent,proposal){
   renderSheet();
   try{
     const outcome=await planRunner.run({mode,state:town,provider,intent,proposal,plots,isCurrent,signal:ticket.signal});
-    if(!isCurrent())return;
+    if(!isCurrent()){
+      if(outcome.status==='ready')diagnostics?.record('plan.application','not-applied',{requestId:outcome.requestId,action:mode,modelId:provider.modelId,runtimeVersion:'0.2.87',stage:'application',applied:false,durationMs:diagnosticDuration(started)});
+      return;
+    }
     if(outcome.status==='ready'){
+      let reachedState=false,changedFieldCount=0;
       const accepted=planRunner.accept(outcome,{isCurrent,apply(){
         if(mode==='draft'){
           const p=E.makeInitiative(town,outcome.draft);
           if(!p)return;
+          reachedState=true;changedFieldCount=Object.keys(outcome.applied).length;
           town.chats[p.id]=[{who:'you',text:intent},{who:'sys',text:outcome.confirmation}];
           if(outcome.constraints.length)town.chats[p.id].push({who:'sys',text:outcome.constraints.join('. ')});
           sheet={type:'proposal',id:p.id,qwenDraft:true};
         }else{
-          const changed=Object.keys(outcome.applied).length>0;
+          changedFieldCount=Object.keys(outcome.applied).length;
+          const changed=changedFieldCount>0;
           const before=changed?revisionSnapshot(town,proposal):null;
           proposal.plan={...outcome.proposal.plan};
+          reachedState=changed;
           if(outcome.proposal.fitNotes)proposal.fitNotes=[...outcome.proposal.fitNotes];
           const log=town.chats[proposal.id]||(town.chats[proposal.id]=[]);
           log.push({who:'you',text:intent},{who:'sys',text:outcome.confirmation});
@@ -848,6 +948,7 @@ async function runOfflinePlan(mode,intent,proposal){
         }
         save();
       }});
+      diagnostics?.record('plan.application',accepted?(reachedState?'applied':mode==='revise'?'unchanged':'not-applied'):'not-applied',{requestId:outcome.requestId,action:mode,modelId:provider.modelId,runtimeVersion:'0.2.87',stage:'application',applied:accepted&&reachedState,changedFieldCount:accepted?changedFieldCount:0,plotCount:mode==='draft'?outcome.draft?.plots?.length:proposal?.plots?.length,durationMs:diagnosticDuration(started)});
       if(!accepted)origin.requestFeedback='This request no longer matches the current town or plan. No changes applied.';
     }else{
       origin.requestFeedback=(proposal?.kind==='bridge'?'No plan changes. The bridge plan can only switch between patching the deck and a full rehab. ':'')+(outcome.blocker||'No changes applied. Retry when the model is ready.')+(outcome.status==='unsupported'?' The game can represent homes, shops, green space, plazas, civic buildings, safety facilities, stormwater and listed ordinances. Choose a supported version or revise your idea.':'');
@@ -1124,7 +1225,8 @@ document.addEventListener('click',ev=>{
   else if(a==='revisionDrawing'){revealSheetElement($('.plan-comparison'));}
   else if(a==='close'){closeSheet();}
   else if(a==='offlineOff'){void turnOffOfflineAI();}
-  else if(a==='offlineRetry'&&offlineModel){void connectOfflineAI(offlineModel,false);}
+  else if(a==='offlineRetry'&&offlineModel){diagnostics?.record('startup.retry','started',{stage:'startup',runtimeVersion:'0.2.87',modelId:qwenModelId(offlineModel)});void connectOfflineAI(offlineModel,false);}
+  else if(a==='diagnosticsExport'){exportDiagnostics();}
   else if(a==='vote')callVote();
   else if(a==='election'){openSheet({type:'election'});startElection();}
   else if(a==='toDebate'){S.election.step='debate';save();renderSheet();loadAttack();}
@@ -1143,6 +1245,9 @@ document.addEventListener('click',ev=>{
 document.addEventListener('toggle',ev=>{if(ev.target.matches?.('.plan-details')&&ev.target.open)ev.target.querySelectorAll('canvas.plan').forEach(cv=>{const p=S.proposals.find(q=>q.id===cv.dataset.p);if(p)drawPlan(cv,p);});},true);
 document.addEventListener('input',ev=>{
   if(!sheet)return;
+  if(ev.target.id==='diagnosticsFrom'||ev.target.id==='diagnosticsThrough'){
+    diagnosticsState[ev.target.id==='diagnosticsFrom'?'from':'through']=ev.target.value;diagnosticsState.initialized=true;diagnosticsState.delivery='';void refreshDiagnostics();return;
+  }
   if(ev.target.id==='initDesc')sheet.text=ev.target.value;
   if(ev.target.id==='negInput')sheet.negText=ev.target.value;
   if(activePlanRequest&&['initDesc','negInput'].includes(ev.target.id)){
