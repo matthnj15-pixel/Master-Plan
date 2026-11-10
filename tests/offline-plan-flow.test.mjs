@@ -13,7 +13,14 @@ execFileSync('node',['scripts/build.mjs','--channel','dev','--out',out],{cwd:roo
 const runtimeURL='https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.87/lib/index.js';
 const runtime=`
 export async function hasModelInCache(){return true;}
-export async function CreateMLCEngine(){return{chat:{completions:{async create({messages}){
+export async function CreateMLCEngine(){
+ const start=globalThis.__qwenStartFixture;
+ if(start){
+  start.calls++;
+  while(start.hold)await new Promise(r=>setTimeout(r,15));
+  if(start.error)throw new Error(start.error);
+ }
+ return{chat:{completions:{async create({messages}){
  if(messages[0].content.includes('Courier'))return new Promise(()=>{});
  const f=globalThis.__qwenFixture;f.calls++;while(f.hold)await new Promise(r=>setTimeout(r,15));
  if(f.error)throw new Error(f.error);const value=f.responses.shift();
@@ -40,6 +47,51 @@ const draft={title:'East End Homes',place:'east_end',summary:'Homes and shops.',
 const readSave=page=>page.evaluate(()=>localStorage.getItem('masterplan.dev.save'));
 async function startDraft(page,text='Build homes and shops at the East End field.'){
  await page.click('[data-act="initiative"]');await page.fill('#initDesc',text);await page.locator('[data-form="init"] .btn.primary').click();
+}
+
+test('MP-031 MP-065 a saved Qwen model must finish startup before drafting and a failed startup can retry the same intent',async()=>{
+ const {ctx,page,errors}=await open();
+ try{
+  await ctx.addInitScript(()=>{globalThis.__qwenStartFixture={calls:0,hold:true,error:'Test model startup failure.'};});
+  await page.reload();
+  await page.waitForFunction(()=>__qwenStartFixture.calls===1);
+  const description='Build apartments and a corner shop at the East End field.';
+  await page.click('[data-act="initiative"]');
+  await page.fill('#initDesc',description);
+  const submit=page.locator('[data-form="init"] .btn.primary');
+  assert.equal(await submit.isEnabled(),false);
+  await page.locator('[data-form="init"]').evaluate(form=>form.requestSubmit());
+  assert.equal(await readSave(page),null);
+  await page.evaluate(()=>{__qwenStartFixture.hold=false;});
+  const retry=page.locator('[data-act="offlineRetry"]');
+  await retry.waitFor();
+  assert.equal(await page.inputValue('#initDesc'),description);
+  assert.equal(await readSave(page),null);
+  await fixture(page,[draft]);
+  await page.evaluate(()=>{__qwenStartFixture.error='';});
+  await retry.click();
+  await page.getByText('Offline AI ready',{exact:false}).waitFor();
+  await submit.click();
+  await page.getByRole('heading',{name:draft.title,exact:true}).waitFor();
+  assert.equal(await page.evaluate(()=>__qwenFixture.calls),1);
+  assert.deepEqual(errors,[]);
+ }finally{await ctx.close();}
+});
+async function choosePlots(ctx,page,description,plots){
+ await page.click('[data-act="initiative"]');
+ await page.fill('#initDesc',description);
+ await page.click('[data-act="pickPlots"]');
+ const cdp=await ctx.newCDPSession(page);
+ for(const plot of plots){
+  const point=await page.$eval('#map',(canvas,[x,y])=>{
+   const bounds=canvas.getBoundingClientRect(),width=canvas.clientWidth,tile=width/24;
+   return{x:bounds.left+width/2+(x-y)*tile/2,y:bounds.top+tile*1.7+(x+y+1)*tile/4};
+  },plot);
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{...point,id:1}]});
+  await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+  await page.waitForTimeout(350);
+ }
+ await page.click('[data-act="plotsDone"]');
 }
 
 test('MP-015 MP-026 MP-031 MP-033 MP-065 offline draft repair, intent recovery and revision use one accepted plan',async()=>{
@@ -89,14 +141,77 @@ test('MP-015 MP-026 MP-065 stale negotiation preserves a newer quick edit and it
 
 test('MP-026 MP-033 MP-065 offline selected separated plots beat model location and stay separated in the drawing',async()=>{
  const {ctx,page,errors}=await open(669);await fixture(page,[{...draft,place:'oldmill'}]);
- await page.click('[data-act="initiative"]');await page.fill('#initDesc','Twenty homes and two shops on my selected plots.');await page.click('[data-act="pickPlots"]');
- const cdp=await ctx.newCDPSession(page);
- async function tileTap(x,y){const pt=await page.$eval('#map',(c,[x,y])=>{const r=c.getBoundingClientRect(),w=c.clientWidth,tw=w/24;return{x:r.left+w/2+(x-y)*tw/2,y:r.top+tw*1.7+(x+y+1)*tw/4};},[x,y]);await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{...pt,id:1}]});await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await page.waitForTimeout(350);}
- await tileTap(16,13);await tileTap(4,13);await page.click('[data-act="plotsDone"]');await page.locator('[data-form="init"] .btn.primary').click();
+ await choosePlots(ctx,page,'Twenty homes and two shops on my selected plots.',[[16,13],[4,13]]);
+ await page.locator('[data-form="init"] .btn.primary').click();
  await page.getByRole('heading',{name:'East End Homes',exact:true}).waitFor();
  const p=JSON.parse(await readSave(page)).proposals.find(p=>p.mine);assert.deepEqual(p.plots,[[16,13],[4,13]]);
  const nodes=await page.locator('svg.plan-illustration [data-plot]').evaluateAll(es=>es.map(e=>({plot:e.getAttribute('data-plot'),transform:e.getAttribute('transform')})));
  assert.deepEqual(nodes.map(n=>n.plot),['16,13','4,13']);assert.notEqual(nodes[0].transform,nodes[1].transform);assert.deepEqual(errors,[]);await ctx.close();
+});
+
+test('MP-023 MP-026 MP-031 MP-033 MP-059 MP-060 MP-065 offline mayoral proposal shows each revised forecast and commits the latest plan on the chosen plots',async()=>{
+ const {ctx,page,errors}=await open(669);
+ try{
+  await page.evaluate(()=>localStorage.setItem('masterplan.dev.save',JSON.stringify(ENGINE.newGame(2027))));
+  await page.reload();
+  await page.getByText('Offline AI ready',{exact:false}).waitFor();
+  const plots=[[16,13],[17,13],[18,13],[16,14],[17,14],[18,14]];
+  const title='Cider & Lantern Commons';
+  const description=`${title}, a covered farmers market, 20 affordable homes and 60 parking spaces on my selected plots.`;
+  await fixture(page,[{title,summary:description,plan:{civic:'farmers_market',homes:20,affordable:true,parking:60}},{changes:{stormwater:true}},{changes:{parking:20}}]);
+  await choosePlots(ctx,page,description,plots);
+  await page.locator('[data-form="init"] .btn.primary').click();
+  await page.getByRole('heading',{name:title,exact:true}).waitFor();
+  await page.getByText('Drafted with Qwen',{exact:false}).waitFor();
+  const drawing=page.locator('svg.plan-illustration');
+  const footprint=()=>drawing.locator('[data-plot]').evaluateAll(nodes=>nodes.map(node=>node.getAttribute('data-plot')).sort());
+  const chosen=plots.map(plot=>plot.join(',')).sort();
+  assert.deepEqual(await footprint(),chosen);
+  const firstDrawing=await drawing.getAttribute('data-revision');
+  assert.match(await page.textContent('[data-summary="funding"]'),/\$760K/);
+  assert.match(await page.textContent('[data-summary="votes"]'),/2 of 5/);
+
+  const revision=page.locator('[data-summary="revision"]');
+  const field=name=>revision.locator(`[data-revision-field="${name}"]`).first().textContent();
+  async function revise(text,confirmation){
+   await page.fill('#negInput',text);
+   await page.locator('[data-form="neg"] button').click();
+   await page.getByText(confirmation,{exact:false}).waitFor();
+  }
+  await page.getByRole('button',{name:'Edit with Qwen'}).click();
+  await revise('Add a stormwater basin.','Cost $760K → $900K.');
+  assert.match(await field('cost'),/\$760K.*→ \$900K/);
+  assert.match(await field('live'),/\+2\.0 → \+2\.5|\+2 → \+2\.5/);
+  assert.ok(await revision.locator('[data-revision-field="lean"]').count()>0);
+  assert.deepEqual(await footprint(),chosen);
+  const basinDrawing=await drawing.getAttribute('data-revision');
+  assert.notEqual(basinDrawing,firstDrawing);
+
+  await revise('Reduce parking to 20 spaces.','Cost $900K → $800K.');
+  assert.match(await field('votes'),/2 of 5 → 3 of 5/);
+  assert.match(await field('walk'),/−1\.5 → −0\.5|-1\.5 → -0\.5/);
+  assert.notEqual(await drawing.getAttribute('data-revision'),basinDrawing);
+  assert.deepEqual(await footprint(),chosen);
+  assert.equal(await page.evaluate(()=>__qwenFixture.calls),3);
+  let state=JSON.parse(await readSave(page));
+  assert.equal(state.cash,900);
+  assert.deepEqual(state.pending,[]);
+
+  await page.getByRole('button',{name:'Take it to council'}).click();
+  await page.getByRole('button',{name:'Call the vote'}).click();
+  await page.getByText('Motion carries',{exact:true}).waitFor();
+  state=JSON.parse(await readSave(page));
+  const pending=state.pending.find(project=>project.title===title);
+  assert.deepEqual(pending.plots,plots);
+  assert.equal(pending.plan.stormwater,true);
+  assert.equal(pending.plan.parking,20);
+  assert.equal(pending.cost,800);
+  assert.equal(state.cash,100);
+  assert.ok(plots.every(([x,y])=>state.grid[y*24+x].b.type==='construction'));
+  await page.reload();
+  assert.deepEqual(JSON.parse(await readSave(page)).pending.find(project=>project.title===title),pending);
+  assert.deepEqual(errors,[]);
+ }finally{await ctx.close();}
 });
 
 test('MP-015 MP-026 MP-032 MP-033 offline revisions clarify site-mode changes and keep the accepted plan intact',async()=>{

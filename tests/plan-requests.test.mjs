@@ -97,6 +97,37 @@ test('MP-065 one provider serializes requests, including a late call after timeo
  const second=runner.run({state,provider:ai,intent:'Homes at Old Mill'});const a=await first;assert.equal(a.status,'unavailable');assert.equal(calls,1);release();await second;assert.equal(max,1);
 });
 
+test('MP-015 MP-065 timed-out Qwen inference is interrupted and a subsequent AI retry can draft', async () => {
+ const state=game(),runner=createPlanRunner({engine:E,timeoutMs:20});
+ let calls=0,interrupted=false;
+ const ai={offline:true,json:(_prompt,{signal})=>{
+  if(++calls===2)return draft();
+  return new Promise((_,reject)=>signal.addEventListener('abort',()=>{
+   interrupted=true;
+   reject(signal.reason);
+  },{once:true}));
+ }};
+ const failed=await runner.run({state,provider:ai,intent:'Homes at Old Mill'});
+ assert.match(failed.blocker,/timed out/);
+ assert.equal(interrupted,true);
+ assert.equal(state.initiativeYear,undefined);
+ const retried=await runner.run({state,provider:ai,intent:'Homes at Old Mill'});
+ assert.equal(retried.status,'ready');
+ assert.equal(calls,2);
+});
+
+test('MP-015 MP-065 Qwen failure can surface safe recovery detail and never silently drafts', async () => {
+ const state=game(),runner=createPlanRunner({engine:E});
+ const intent='Homes at Old Mill';
+ const error=Object.assign(new Error('Qwen could not reload the model. Retry with the saved model.',{cause:new Error('private runtime stack')}),{code:'offline-reload',diagnostic:{stage:'reload',name:'DeviceLostError'}});
+ const failed=await runner.run({state,provider:provider(error),intent});
+ assert.equal(failed.status,'unavailable');
+ assert.equal(failed.intent,intent);
+ assert.equal(failed.attempts,1);
+ assert.equal(failed.blocker,`${error.message} Qwen diagnostic: reload/DeviceLostError.`);
+ assert.equal(state.initiativeYear,undefined);
+});
+
 test('MP-010 MP-011 MP-015 optional event briefing is read-only and traces the source fixture',async()=>{
  const state=game(),runner=createPlanRunner({engine:E}),before=JSON.stringify(state),event={id:'fixture:year2:oldmill',reason:'Old Mill is eligible for review',eligible:true};
  const result=await runner.run({mode:'briefing',state,event,provider:provider({sourceEventId:event.id,briefing:'Compare park access with storefront jobs.'}),intent:'Explain the opportunity'});
