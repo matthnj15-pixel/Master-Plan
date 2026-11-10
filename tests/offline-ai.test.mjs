@@ -22,6 +22,7 @@ export async function CreateMLCEngine(model, options) {
   options.initProgressCallback({ progress: 1 });
   return {
     chat: { completions: { async create({ messages, response_format }) {
+      globalThis.__qwenCalls=(globalThis.__qwenCalls||0)+1;
       const fixture=globalThis.__qwenFixture;
       if(fixture){
         fixture.calls=(fixture.calls||0)+1;
@@ -76,6 +77,13 @@ test('MP-065 opted-in dev Pages reopens offline and uses the saved model for fre
     await page.goto(url);
     assert.match(await page.textContent('#barnote'), /AI off/);
     assert.equal(await page.evaluate(() => navigator.serviceWorker.getRegistrations().then(r => r.length)), 0);
+    // Load a real persisted town before installation so failures can prove no save write.
+    const originalSave = await page.evaluate(() => {
+      const json = JSON.stringify(ENGINE.newGame(654321));
+      localStorage.setItem('masterplan.dev.save', json);
+      return json;
+    });
+    await page.reload();
     await page.evaluate(async ({ url, source }) => {
       const cache = await caches.open('master-plan-offline-ai-runtime');
       await cache.put(url, new Response(source));
@@ -99,7 +107,9 @@ test('MP-065 opted-in dev Pages reopens offline and uses the saved model for fre
     await page.locator('[data-form="neg"] button').click();
     await page.getByText('No plan changes. The bridge plan can only switch', { exact: false }).waitFor({ timeout: 5000 });
     assert.equal(await page.getByText('I agree, let’s add walkways.').count(), 0);
-    const bridgeAfterUnsupportedAsk = await page.evaluate(() => JSON.parse(localStorage.getItem('masterplan.dev.save')));
+    const unchangedSave = await page.evaluate(() => localStorage.getItem('masterplan.dev.save'));
+    assert.equal(unchangedSave, originalSave, 'unsupported bridge replies cannot write to the saved town');
+    const bridgeAfterUnsupportedAsk = JSON.parse(unchangedSave);
     assert.deepEqual(bridgeAfterUnsupportedAsk.proposals.find(item => item.kind === 'bridge').plan, { scope: 'full' });
     assert.equal(bridgeAfterUnsupportedAsk.presenters.engineer.rel, 60);
     assert.equal(await page.locator('#toastRoot').textContent(), '');
@@ -112,10 +122,12 @@ test('MP-065 opted-in dev Pages reopens offline and uses the saved model for fre
     await page.fill('#initDesc', 'Build apartments at the Old Mill lot.');
     await page.click('[data-form="init"] button[type="submit"], [data-form="init"] .btn.primary');
     await page.getByRole('heading', {name:'Old Mill Homes',exact:true}).waitFor({timeout:5000});
+    const callsBeforeRevision = await page.evaluate(() => globalThis.__qwenCalls);
     await page.fill('#negInput', 'Please add a rain garden.');
     await page.locator('[data-form="neg"] button').click();
     await page.getByText('Plan updated:',{exact:false}).waitFor({timeout:5000});
     await page.waitForFunction(()=>JSON.parse(localStorage.getItem('masterplan.dev.save')).proposals.some(p=>p.mine&&p.plan.green===3));
+    assert.equal(await page.evaluate(() => globalThis.__qwenCalls), callsBeforeRevision + 2, 'out-of-range green reply uses exactly one repair');
     assert.deepEqual(errors, []);
     const town = await page.evaluate(() => JSON.parse(localStorage.getItem('masterplan.dev.save')));
     const proposal = town.proposals.find(item => item.title === 'Old Mill Homes');
