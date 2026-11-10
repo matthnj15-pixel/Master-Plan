@@ -2,7 +2,7 @@
 
 ## Kickoff and Planner
 
-Acceptance authority: Nate's November 9, 2026 launch brief. Base: `4e008e6` (`origin/dev` at kickoff on November 10). No open PRs or engine branch existed at kickoff. Read `AGENTS.md`, `CLAUDE.md`, requirements, decisions, branching rules and mechanics/preferences research in `docs/design-handoff.md`. Visual/interaction reference: `site/index.html`, `site/style.css`, `site/showcase.js` (Old Mill teaser).
+Acceptance authority: Nate's November 9, 2026 launch brief. Base: `4e008e6` (`origin/dev` at kickoff on November 10). No open PRs or engine branch existed at kickoff. Epic A subsequently merged as `3570a48`; Epic B was rebased onto that exact dev revision before final combined review. Read `AGENTS.md`, `CLAUDE.md`, requirements, decisions, branching rules and mechanics/preferences research in `docs/design-handoff.md`. Visual/interaction reference: `site/index.html`, `site/style.css`, `site/showcase.js` (Old Mill teaser).
 
 Goal: a dev Pages player can compare illustrated alternatives, draft offline and revise with Qwen while seeing the exact engine-accepted difference. Morning play-test readiness includes a green PR, verified dev deployment and a physical-device checklist; mocked integration is separate from device evidence.
 
@@ -38,7 +38,7 @@ The acceptance matrix is recorded in `docs/requirements.md` under Epic B. MP-070
 
 ### Engine dependency
 
-Use the current UI compatibility adapter while Epic A is open. Recheck latest dev and open PRs before final integration. If engine contracts/shared paths change, rebase onto merged engine dev and re-review. Optional turn events are covered by a deterministic source-event fixture until an eligible engine contract exists; this is not evidence of post-election gameplay.
+Epic A merged as `3570a48` during final remote refresh. The branch was rebased onto it, preserving MP-074, scenario labels, v3 save loading and its untouched engine. Request and renderer adapters consume state-aware engine reads and the detached `scenarioContext` boundary; the original Millbrooke flows run against the combined branch. Epic A provides no eligible turn-event opportunity contract yet, so that optional seam remains a deterministic source-event fixture, not post-election gameplay. Recheck latest dev before merge and re-review any further contract changes.
 
 ## Evidence ledger
 
@@ -50,7 +50,7 @@ The real Pages shell, service worker and pinned provider adapter were tested wit
 
 An unmocked Chromium install-path check at both widths reported WebGPU present but no adapter/shader-f16, then displayed “Offline AI needs Safari WebGPU with 16-bit shader support.” No real model download/generation or 1.5B-versus-3B performance is claimed. Model IDs remain `Qwen2.5-1.5B-Instruct-q4f16_1-MLC` and `Qwen2.5-3B-Instruct-q4f16_1-MLC`, runtime WebLLM `0.2.87`. Hosted Claude Dev artifact publishing/runtime access was unavailable; it was not republished.
 
-Optional event evidence uses source `fixture:year2:oldmill`, eligibility true, reason “Old Mill is eligible for review,” and a late eligible fixture against engine base `4e008e6`. No Epic A opportunity contract was available; no combined-branch or post-election behavior is claimed.
+Optional event evidence uses source `fixture:year2:oldmill`, eligibility true, reason “Old Mill is eligible for review,” and a late eligible fixture originally against engine base `4e008e6`, then repeated on combined engine `3570a48`. No Epic A turn-event opportunity contract was available; no post-election behavior is claimed. The final plan flow is verified on the combined engine branch using the real scenario snapshot boundary.
 
 The epic PR carries the final branch/merge SHAs, GitHub CI and Pages deployment records, verified dev URL and any remaining blocker. Stable release approval remains with Nate.
 

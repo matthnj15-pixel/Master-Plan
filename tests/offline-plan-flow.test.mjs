@@ -14,7 +14,7 @@ const runtimeURL='https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.87/lib/index.
 const runtime=`
 export async function hasModelInCache(){return true;}
 export async function CreateMLCEngine(){return{chat:{completions:{async create({messages}){
- if(messages[0].content.includes('The Millbrook Courier'))return new Promise(()=>{});
+ if(messages[0].content.includes('Courier'))return new Promise(()=>{});
  const f=globalThis.__qwenFixture;f.calls++;while(f.hold)await new Promise(r=>setTimeout(r,15));
  if(f.error)throw new Error(f.error);const value=f.responses.shift();
  return {choices:[{message:{content:typeof value==='string'?value:JSON.stringify(value)}}]};
