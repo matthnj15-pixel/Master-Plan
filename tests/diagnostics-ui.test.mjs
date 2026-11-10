@@ -31,11 +31,13 @@ before(async()=>{
  browser=await chromium.launch();
 });
 after(async()=>{await browser?.close();if(server?.listening)await new Promise(r=>server.close(r));rmSync(out,{recursive:true,force:true});});
-async function open(width=400,setup){
- const ctx=await browser.newContext({viewport:{width,height:951},hasTouch:true,isMobile:true,acceptDownloads:true});
+async function open(width=400,setup,{time,timezoneId='UTC'}={}){
+ const ctx=await browser.newContext({viewport:{width,height:951},hasTouch:true,isMobile:true,acceptDownloads:true,timezoneId});
  await ctx.addInitScript(()=>Object.defineProperty(navigator,'gpu',{value:{async requestAdapter(){return {features:new Set(['shader-f16'])};}}}));
  if(setup)await ctx.addInitScript(setup);
- const page=await ctx.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e)));await page.goto(url);
+ const page=await ctx.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e)));
+ if(time)await page.clock.install({time:new Date(time)});
+ await page.goto(url);
  return {ctx,page,errors};
 }
 async function install(page){
@@ -67,6 +69,29 @@ test('MP-075 MP-053 MP-054 diagnostics remain reachable with Qwen off and date c
  }
 });
 
+test('MP-075 untouched date defaults follow local midnight while edited and missing dates survive background writes',async()=>{
+ const {ctx,page,errors}=await open(400,undefined,{time:'2026-11-11T04:59:59Z',timezoneId:'America/New_York'});
+ async function observedAt(time,date){
+  await page.clock.setSystemTime(new Date(time));
+  await page.evaluate(()=>window.MP_QWEN_DIAGNOSTICS.record('app.launch','observed',{stage:'launch'}));
+  await page.waitForFunction(date=>document.querySelector('[data-diagnostics-range]').textContent.includes(`Newest: ${date}`),date);
+ }
+ try{
+  await menu(page);assert.equal(await page.inputValue('#diagnosticsThrough'),'2026-11-10');
+  await observedAt('2026-11-11T05:00:01Z','2026-11-11');
+  assert.equal(await page.inputValue('#diagnosticsFrom'),'2026-11-10');
+  assert.equal(await page.inputValue('#diagnosticsThrough'),'2026-11-11','untouched range extends to the new local day');
+  await page.fill('#diagnosticsThrough','2026-11-10');
+  await observedAt('2026-11-12T05:00:01Z','2026-11-12');
+  assert.equal(await page.inputValue('#diagnosticsThrough'),'2026-11-10','a user-selected date stays fixed');
+  await page.fill('#diagnosticsFrom','');
+  await observedAt('2026-11-13T05:00:01Z','2026-11-13');
+  assert.equal(await page.inputValue('#diagnosticsFrom'),'');
+  await page.getByText(/choose both.*date|enter both.*date/i).waitFor();
+  assert.equal(await page.locator('[data-act="diagnosticsExport"]').isDisabled(),true);assert.deepEqual(errors,[]);
+ }finally{await ctx.close();}
+});
+
 test('MP-075 MP-065 cached Dev cold-reopens offline and exports sanitized correlated attempts twice without consuming records',async()=>{
  const {ctx,page:initial,errors}=await open(400,()=>{
   Object.defineProperty(navigator,'canShare',{value:()=>false});
@@ -95,6 +120,11 @@ test('MP-075 MP-065 cached Dev cold-reopens offline and exports sanitized correl
   });for(const secret of [sentinel,reply,save])assert.equal(stored.includes(secret),false);
   const second=await download(page);assert.equal(second.json.events.length,first.json.events.length);
   await page.close();page=await ctx.newPage();await page.goto(url);await page.getByText('Offline AI ready',{exact:false}).waitFor();await menu(page);const third=await download(page);assert.ok(third.json.events.length>=first.json.events.length);
+  const beforeShutdown=Number.parseInt(await page.locator('[data-diagnostics-preview]').textContent());
+  await page.click('[data-act="offlineOff"]');await page.getByText('Offline AI is off. Your download is still saved.',{exact:true}).waitFor();
+  await page.waitForFunction(count=>Number.parseInt(document.querySelector('[data-diagnostics-preview]').textContent)>count,beforeShutdown);
+  const fourth=await download(page),shutdown=events(fourth.json).filter(e=>e.name==='shutdown.begin'||e.name==='shutdown.finish');
+  assert.equal(shutdown.length,2);assert.ok(shutdown[0].metadata.requestId);assert.equal(shutdown[0].metadata.requestId,shutdown[1].metadata.requestId);assert.ok(shutdown.every(e=>e.metadata.action==='other'));
   assert.deepEqual(errors,[]);
  }finally{await ctx.close();}
 });

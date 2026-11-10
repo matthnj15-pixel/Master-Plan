@@ -6,7 +6,7 @@ const WEB_AI=window.MP_WEB_BUILD && BUILD.flags.offlineAI;
 const diagnostics=window.MP_DIAGNOSTICS?.create({enabled:DEV&&!!window.MP_WEB_BUILD&&!window.claude?.use,build:BUILD});
 if(diagnostics)window.MP_QWEN_DIAGNOSTICS=diagnostics;
 const planRunner=PLAN_REQUESTS.createPlanRunner({engine:E,diagnostics});
-const diagnosticsState={from:'',through:'',initialized:false,snapshot:null,prepared:null,pending:false,delivery:''};
+const diagnosticsState={from:'',through:'',customDates:false,snapshot:null,prepared:null,pending:false,delivery:''};
 let diagnosticsRefresh=0,diagnosticsTimer;
 const qwenModelId=model=>({'1.5B':'Qwen2.5-1.5B-Instruct-q4f16_1-MLC','3B':'Qwen2.5-3B-Instruct-q4f16_1-MLC'}[model]);
 const diagnosticTime=()=>performance.now();
@@ -133,14 +133,14 @@ async function connectOfflineAI(model,download){
 }
 async function turnOffOfflineAI(){
   if(!offlineModel||localLoading)return;
-  const provider=AI,started=diagnosticTime(),modelId=qwenModelId(offlineModel);
-  diagnostics?.record('shutdown.begin','started',{modelId,runtimeVersion:'0.2.87',stage:'shutdown'});
+  const provider=AI,started=diagnosticTime(),modelId=qwenModelId(offlineModel),requestId=diagnostics?.id();
+  diagnostics?.record('shutdown.begin','started',{requestId,action:'other',modelId,runtimeVersion:'0.2.87',stage:'shutdown'});
   let shutdownOutcome='success';
   cancelPlanRequest();AI=null;localLoading=true;aiState='off';localStatus='Turning off offline AI…';
   storeOfflineModel(null);markOfflineStartup(false);showAIStatus();
-  try{await provider?.unload();}catch(error){shutdownOutcome='failed';diagnostics?.record('shutdown.finish','failed',{modelId,runtimeVersion:'0.2.87',stage:'shutdown',durationMs:diagnosticDuration(started),error:diagnostics.error(error,'shutdown')});}
+  try{await provider?.unload();}catch(error){shutdownOutcome='failed';diagnostics?.record('shutdown.finish','failed',{requestId,action:'other',modelId,runtimeVersion:'0.2.87',stage:'shutdown',durationMs:diagnosticDuration(started),error:diagnostics.error(error,'shutdown')});}
   finally{
-    if(shutdownOutcome==='success')diagnostics?.record('shutdown.finish','success',{modelId,runtimeVersion:'0.2.87',stage:'shutdown',durationMs:diagnosticDuration(started)});
+    if(shutdownOutcome==='success')diagnostics?.record('shutdown.finish','success',{requestId,action:'other',modelId,runtimeVersion:'0.2.87',stage:'shutdown',durationMs:diagnosticDuration(started)});
     localLoading=false;localStatus='Offline AI is off. Your download is still saved.';
     showAIStatus();
   }
@@ -205,10 +205,10 @@ async function refreshDiagnostics(){
   const refresh=++diagnosticsRefresh;
   diagnosticsState.pending=true;diagnosticsState.prepared=null;syncDiagnostics();
   try{
-    const selection=diagnosticsState.initialized?{from:diagnosticsState.from,through:diagnosticsState.through}:{};
+    const selection=diagnosticsState.customDates?{from:diagnosticsState.from,through:diagnosticsState.through}:{};
     const snapshot=await diagnostics.snapshot(selection);
     if(refresh!==diagnosticsRefresh)return;
-    if(!diagnosticsState.initialized){diagnosticsState.from=snapshot.from||'';diagnosticsState.through=snapshot.through||'';diagnosticsState.initialized=true;}
+    if(!diagnosticsState.customDates){diagnosticsState.from=snapshot.from||'';diagnosticsState.through=snapshot.through||'';}
     diagnosticsState.snapshot=snapshot;diagnosticsState.prepared=snapshot.prepared;
   }catch{
     if(refresh!==diagnosticsRefresh)return;
@@ -1246,7 +1246,7 @@ document.addEventListener('toggle',ev=>{if(ev.target.matches?.('.plan-details')&
 document.addEventListener('input',ev=>{
   if(!sheet)return;
   if(ev.target.id==='diagnosticsFrom'||ev.target.id==='diagnosticsThrough'){
-    diagnosticsState[ev.target.id==='diagnosticsFrom'?'from':'through']=ev.target.value;diagnosticsState.initialized=true;diagnosticsState.delivery='';void refreshDiagnostics();return;
+    diagnosticsState[ev.target.id==='diagnosticsFrom'?'from':'through']=ev.target.value;diagnosticsState.customDates=true;diagnosticsState.delivery='';void refreshDiagnostics();return;
   }
   if(ev.target.id==='initDesc')sheet.text=ev.target.value;
   if(ev.target.id==='negInput')sheet.negText=ev.target.value;
