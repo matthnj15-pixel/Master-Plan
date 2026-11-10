@@ -53,9 +53,9 @@ function dateRange(from,through){
  if(!start||!end)return {error:'Choose valid calendar dates.'};
  if(start>end)return {error:'From must be on or before Through.'};
  // Calendar arithmetic, not a fixed 24-hour duration: local days can span DST.
- end.setDate(end.getDate()+1);
+ const nextMidnight=new Date(end.getFullYear(),end.getMonth(),end.getDate()+1);
  let timezone='unknown';try{timezone=Intl.DateTimeFormat().resolvedOptions().timeZone||timezone;}catch{}
- return {from,through,timezone,startUtc:start.toISOString(),endExclusiveUtc:end.toISOString(),startOffsetMinutes:-start.getTimezoneOffset(),endOffsetMinutes:-end.getTimezoneOffset()};
+ return {from,through,timezone,startUtc:start.toISOString(),endExclusiveUtc:nextMidnight.toISOString(),startOffsetMinutes:-start.getTimezoneOffset(),endOffsetMinutes:-nextMidnight.getTimezoneOffset()};
 }
 function safeError(error,stage){
  let result={...unknown};
@@ -161,24 +161,48 @@ function attemptSummaries(events){
  }
  return [...groups.values()].map(list=>{
   const first=list[0],last=list.at(-1),m=first.metadata||{},requestId=m.requestId,startupId=m.startupId;
-  const found=name=>list.findLast(e=>e.name===name),application=found('plan.application'),final=found('plan.final'),start=found('plan.submitted'),startup=found('startup.begin'),interrupted=found('startup.interrupted');
+  const found=name=>list.findLast(e=>e.name===name),application=found('plan.application'),final=found('plan.final'),start=found('plan.submitted'),startup=found('startup.begin'),interrupted=found('startup.interrupted'),shutdown=found('shutdown.begin'),shutdownFinish=found('shutdown.finish');
   const missing=[],missingContext=[];
-  const isPlan=list.some(e=>e.name.startsWith('plan.'));
-  if(isPlan){if(!start)missingContext.push('plan.submitted');if(!final)missing.push('plan.final');else if(final.outcome==='ready'&&!application)missing.push('plan.application');}
+  const isPlan=list.some(e=>e.name.startsWith('plan.')),isShutdown=!!(shutdown||shutdownFinish);
+  if(isShutdown){if(!shutdown)missingContext.push('shutdown.begin');if(!shutdownFinish)missing.push('shutdown.finish');}
+  else if(isPlan){if(!start)missingContext.push('plan.submitted');if(!final)missing.push('plan.final');else if(final.outcome==='ready'&&!application)missing.push('plan.application');}
   else if(startup||startupId||interrupted){
    if(!startup)missingContext.push('startup.begin');
    if(!found('startup.ready')&&!found('startup.error'))missing.push('startup.ready or startup.error');
   }
   else if(!found('request.queued'))missingContext.push('request.queued');
-  const activeGenerations=new Set();
-  for(const event of list){const info=event.metadata||{},key=`${info.attempt||0}:${info.generationAttempt||0}`;if(event.name==='generation.started')activeGenerations.add(key);if(event.name==='generation.finished')activeGenerations.delete(key);}
-  if(activeGenerations.size)missing.push('generation.finished');
-  if(!isPlan&&!startup&&!startupId&&!interrupted&&found('request.queued')&&!found('generation.finished')&&!found('request.error')&&!found('request.timeout')&&!found('request.aborted'))missing.push('generation.finished or request.error');
+  // A runner timeout does not settle the underlying runtime stage. Track every
+  // started boundary independently so a later plan.final cannot hide it.
+  const activeStages=new Map();
+  for(const event of list){
+   const info=event.metadata||{},key=`${info.attempt||0}:${info.generationAttempt||0}`;
+   if(event.name==='generation.started')activeStages.set('generation:'+key,{event,stage:'generation'});
+   if(event.name==='generation.finished')activeStages.delete('generation:'+key);
+   if(event.name==='engine.reload'){
+    if(event.outcome==='started')activeStages.set('reload:'+key,{event,stage:'reload'});
+    if(['success','failed'].includes(event.outcome))activeStages.delete('reload:'+key);
+   }
+   if(event.name==='startup.initialization'){
+    if(event.outcome==='started')activeStages.set('initialization',{event,stage:'initialization'});
+    if(['success','failed'].includes(event.outcome))activeStages.delete('initialization');
+   }
+   if(event.name==='shutdown.begin')activeStages.set('shutdown',{event,stage:'shutdown'});
+   if(event.name==='shutdown.finish')activeStages.delete('shutdown');
+  }
+  const open=[...activeStages.values()];
+  for(const stage of new Set(open.map(value=>value.stage))){
+   if(stage==='generation')missing.push('generation.finished');
+   if(stage==='reload')missing.push('engine.reload success or failed');
+   if(stage==='initialization')missing.push('startup.initialization success or failed');
+  }
+  const lastOpenEvent=list.findLast(event=>open.some(value=>value.event===event));
+  const lastOpenStage=lastOpenEvent?open.find(value=>value.event===lastOpenEvent).stage:null;
+  if(!isPlan&&!isShutdown&&!startup&&!startupId&&!interrupted&&found('request.queued')&&!found('generation.finished')&&!found('request.error')&&!found('request.timeout')&&!found('request.aborted'))missing.push('generation.finished or request.error');
   const incomplete=missing.length>0||missingContext.length>0;
   const completed=list.findLast(e=>['passed','success','ready','valid','invalid','malformed-json','unsupported','failed','applied','unchanged','not-applied'].includes(e.outcome)||e.name==='plan.dequeued');
   const model=list.find(e=>e.metadata?.modelId)?.metadata.modelId||null;
   const elapsed=list.filter(e=>typeof e.metadata?.durationMs==='number').map(e=>e.metadata.durationMs);
-  return {...(requestId?{requestId}:{}),...(startupId?{startupId}:{}),sessionId:first.sessionId,build:first.build,revision:first.revision,action:list.find(e=>e.metadata?.action)?.metadata.action||'other',modelId:model,runtimeVersion:list.find(e=>e.metadata?.runtimeVersion)?.metadata.runtimeVersion||null,firstRecordedAt:first.timestamp,lastRecordedAt:last.timestamp,lastEvent:last.name,lastStage:last.metadata?.stage||last.name,lastCompletedStage:completed?(completed.metadata?.stage||completed.name):null,outcome:last.outcome,status:incomplete?'incomplete':'complete',missingTerminalEvents:missing,missingContextEvents:missingContext,partialContext:missingContext.length>0,...(incomplete?{cause:'unknown'}:{}),observedDurationMs:Math.max(0,Date.parse(last.timestamp)-Date.parse(first.timestamp)),...(elapsed.length?{measuredDurationMs:Math.max(...elapsed)}:{}),...(application?{applied:application.metadata.applied===true}:{})};
+  return {...(requestId?{requestId}:{}),...(startupId?{startupId}:{}),sessionId:first.sessionId,build:first.build,revision:first.revision,action:list.find(e=>e.metadata?.action)?.metadata.action||'other',modelId:model,runtimeVersion:list.find(e=>e.metadata?.runtimeVersion)?.metadata.runtimeVersion||null,firstRecordedAt:first.timestamp,lastRecordedAt:last.timestamp,lastEvent:last.name,lastStage:lastOpenStage||last.metadata?.stage||last.name,lastCompletedStage:completed?(completed.metadata?.stage||completed.name):null,outcome:last.outcome,status:incomplete?'incomplete':'complete',missingTerminalEvents:missing,missingContextEvents:missingContext,partialContext:missingContext.length>0,...(incomplete?{cause:'unknown'}:{}),observedDurationMs:Math.max(0,Date.parse(last.timestamp)-Date.parse(first.timestamp)),...(elapsed.length?{measuredDurationMs:Math.max(...elapsed)}:{}),...(application?{applied:application.metadata.applied===true}:{})};
  });
 }
 function availableDates(events){return {oldest:events.length?localDate(events[0].timestamp):null,newest:events.length?localDate(events.at(-1).timestamp):null};}

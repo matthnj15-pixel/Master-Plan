@@ -190,3 +190,57 @@ test('MP-075 a successful read cannot clear a quota write failure until a bounde
  assert.match(recovered.status,/ready/i);assert.equal(recovered.retainedCount,1);
  assert.ok(!JSON.stringify(recovered).includes('private quota details'));
 });
+
+test('MP-075 a hanging actual cached-engine reload remains incomplete after the plan runner times out',async()=>{
+ const {readFileSync}=await import('node:fs');
+ const source=readFileSync(new URL('../src/offline-ai.js',import.meta.url),'utf8');
+ const {createOfflineProvider}=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
+ const {createPlanRunner}=require('../src/plan-requests.js'),engine=require('../src/engine.js');
+ const d=make(),modelId='Qwen2.5-1.5B-Instruct-q4f16_1-MLC';let rejectReload;
+ const unloaded={chat:{completions:{async create(){throw Object.assign(new Error('private runtime text'),{name:'ModelNotLoadedError'});}}}};
+ const provider=createOfflineProvider(unloaded,modelId,()=>new Promise((_,reject)=>{rejectReload=reject;}),d);
+ const runner=createPlanRunner({engine,timeoutMs:15,diagnostics:d}),state=engine.newGame(12345);
+ const outcome=await runner.run({state,provider,intent:'Build homes at the Old Mill lot'});
+ assert.equal(outcome.status,'unavailable');assert.equal(typeof rejectReload,'function');
+ let attempt=(await d.snapshot()).prepared.document.attempts.find(x=>x.requestId===outcome.requestId);
+ assert.equal(attempt.status,'incomplete');assert.equal(attempt.lastStage,'reload');
+ assert.ok(attempt.missingTerminalEvents.includes('engine.reload success or failed'));
+ assert.equal(attempt.lastCompletedStage,'generation');
+ rejectReload(Object.assign(new Error('private reload text'),{name:'DeviceLostError'}));
+ await new Promise(resolve=>setImmediate(resolve));
+ attempt=(await d.snapshot()).prepared.document.attempts.find(x=>x.requestId===outcome.requestId);
+ assert.equal(attempt.status,'complete');assert.equal(attempt.lastStage,'reload');
+ assert.deepEqual(attempt.missingTerminalEvents,[]);
+});
+
+test('MP-075 shutdown and initialization starts require their own terminal stage even after outer results',async()=>{
+ const d=make(),requestId=d.id(),startupId=d.id();
+ await d.record('shutdown.begin','started',{requestId,action:'other',stage:'shutdown'});
+ let summary=(await d.snapshot()).prepared.document.attempts.find(x=>x.requestId===requestId);
+ assert.equal(summary.status,'incomplete');assert.deepEqual(summary.missingTerminalEvents,['shutdown.finish']);assert.deepEqual(summary.missingContextEvents,[]);
+ await d.record('shutdown.finish','success',{requestId,action:'other',stage:'shutdown'});
+ summary=(await d.snapshot()).prepared.document.attempts.find(x=>x.requestId===requestId);
+ assert.equal(summary.status,'complete');
+ await d.record('startup.begin','started',{startupId,stage:'startup'});
+ await d.record('startup.initialization','started',{startupId,stage:'initialization'});
+ await d.record('startup.error','failed',{startupId,stage:'startup'});
+ summary=(await d.snapshot()).prepared.document.attempts.find(x=>x.startupId===startupId);
+ assert.equal(summary.status,'incomplete');assert.equal(summary.lastStage,'initialization');
+ await d.record('startup.initialization','failed',{startupId,stage:'initialization'});
+ summary=(await d.snapshot()).prepared.document.attempts.find(x=>x.startupId===startupId);
+ assert.equal(summary.status,'complete');
+});
+
+test('MP-075 a skipped midnight DST date ends at the next calendar midnight, excluding its first hour',async()=>{
+ const previous=process.env.TZ;process.env.TZ='America/Santiago';
+ try{
+  const range=D.dateRange('2026-09-06','2026-09-06');
+  assert.equal(range.startUtc,'2026-09-06T04:00:00.000Z');
+  assert.equal(range.endExclusiveUtc,'2026-09-07T03:00:00.000Z');
+  const times=['2026-09-06T04:00:00.000Z','2026-09-07T02:59:59.999Z','2026-09-07T03:00:00.000Z','2026-09-07T03:30:00.000Z'];
+  const events=times.map((timestamp,i)=>({id:String(i),timestamp,sessionId:'fixture-session',name:'app.launch',metadata:{},revision:'base'}));
+  const d=make({storage:memory({events,meta:{}}),now:()=>Date.parse('2026-09-07T12:00:00Z')});
+  const snapshot=await d.snapshot({from:'2026-09-06',through:'2026-09-06'});
+  assert.equal(snapshot.count,2);assert.deepEqual(snapshot.prepared.document.events.map(e=>e.timestamp),times.slice(0,2));
+ }finally{if(previous===undefined)delete process.env.TZ;else process.env.TZ=previous;}
+});
