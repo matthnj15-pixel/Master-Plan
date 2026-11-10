@@ -1045,6 +1045,7 @@ document.addEventListener('input',ev=>{
   if(ev.target.id==='negInput')sheet.negText=ev.target.value;
   if(activePlanRequest&&['initDesc','negInput'].includes(ev.target.id)){
     cancelPlanRequest();sheet.requestFeedback='Your message changed while the AI was working. Send it again when ready.';
+    const status=$('#sheetRoot .thinking');if(status){status.className='msg sys request-feedback';status.textContent=sheet.requestFeedback;status.setAttribute('role','status');}
     const submit=ev.target.form?.querySelector('button[type="submit"], button.btn.primary');if(submit)submit.disabled=false;
   }
 });
