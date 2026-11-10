@@ -9,6 +9,10 @@ Use [CLAUDE.md](CLAUDE.md) for the game's architecture, product rules, and play 
 - Keep stable and dev saves separate. When the save schema changes, migrate and test an older save. Gate experimental behavior in `flags.json` and verify the stable path with the flag off.
 - Preserve portrait touch controls at 669 × 951 and check layout at 400 px wide. Keep tap targets at least 44 × 44 CSS px and primary sheet actions within thumb reach.
 
+## Codex team
+
+For substantial work, apply the [Codex team workflow](docs/codex-team.md) and explicitly delegate by role when the session supports it. Assign a single writer per file and use separate worktrees for concurrent writers. The coordinating Codex owns integration and remote changes.
+
 ## Verification and handoff
 
 - Run `npm test` with Playwright Chromium installed. It covers the engine, builds, touch UI, and requirements traceability. Run `npm run build -- --channel dev` and check the stable build when shared code or packaging changes. Record the commands, results, and GitHub CI status in the PR.

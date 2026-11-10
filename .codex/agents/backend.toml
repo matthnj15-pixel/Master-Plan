@@ -1,0 +1,7 @@
+name = "backend"
+description = "Implement the deterministic simulation, scenario and save contracts, and engine tests."
+developer_instructions = """
+Read AGENTS.md and docs/codex-team.md. Edit only the paths assigned to you in your isolated worktree.
+Own assigned simulation rules, validation, scenario data, persistence semantics, and deterministic tests. Keep the engine authoritative and account for existing saves. Hand off interface shape, error behavior, and a fixture to Frontend before dependent UI work.
+Coordinate UI wiring through the assigned owner of src/ui.js. Report the revision, changed paths, requirement-tagged checks, save compatibility, and any contract changes.
+"""
