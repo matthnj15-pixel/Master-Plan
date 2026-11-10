@@ -178,3 +178,15 @@ test('MP-075 a retained export spans build updates with the original revision on
  const doc=(await b.snapshot()).prepared.document;assert.equal(doc.eventCount,2);
  assert.deepEqual(doc.events.map(e=>e.revision),['old1234','new5678']);assert.notEqual(doc.events[0].sessionId,doc.events[1].sessionId);
 });
+
+test('MP-075 a successful read cannot clear a quota write failure until a bounded write succeeds',async()=>{
+ const base=memory({events:[],meta:{capacityTrimmedEvents:0}});let failWrites=false,writes=0;
+ const storage={read:base.read,async write(...args){writes++;if(failWrites)throw new Error('private quota details');return base.write(...args);}};
+ const d=make({storage});assert.match((await d.snapshot()).status,/ready/i);
+ failWrites=true;await d.record('app.launch','observed');assert.equal(writes,1);
+ const after=await d.snapshot();assert.match(after.status,/unavailable/i);
+ assert.equal(writes,1,'the successful read made no write and cannot claim writable storage');
+ failWrites=false;await d.record('app.launch','observed');const recovered=await d.snapshot();
+ assert.match(recovered.status,/ready/i);assert.equal(recovered.retainedCount,1);
+ assert.ok(!JSON.stringify(recovered).includes('private quota details'));
+});

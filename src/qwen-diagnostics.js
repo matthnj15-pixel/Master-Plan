@@ -188,18 +188,21 @@ function exportDocument(all,meta,range,now){
 }
 function create({enabled=false,build={},now=()=>Date.now(),storage,indexedDB}={}){
  const active=enabled&&build.channel==='dev',sessionId=id(),listeners=new Set();
- let sequence=0;
+ let sequence=0,storageFailed=false;
  let status=active?'Opening diagnostic storage…':'Diagnostics are off.',queue=Promise.resolve();
  let database=indexedDB;
  if(active&&!storage&&database===undefined)try{database=root.indexedDB;}catch{}
  const store=active?(storage||indexedStorage(database,build.channel)):null;
  const emit=()=>{for(const fn of listeners)try{fn({status});}catch{}};
  const setStatus=value=>{if(status!==value){status=value;emit();}};
- const failure=()=>setStatus('Diagnostics storage unavailable. Gameplay and saves still work.');
+ const failure=()=>{storageFailed=true;setStatus('Diagnostics storage unavailable. Gameplay and saves still work.');};
  function serial(work){const task=queue.catch(()=>{}).then(work).catch(()=>{failure();return null;});queue=task.then(()=>{});return task;}
  async function updateStore(transform){
   if(store.update)return store.update(transform);
-  const previous=await store.read(),next=transform(previous);await store.write(next,previous);return next;
+  const previous=await store.read(),next=transform(previous);
+  const oldIds=new Set(previous.events.map(e=>e.id));
+  if(next.events.length!==previous.events.length||next.events.some(e=>!oldIds.has(e.id))||JSON.stringify(next.meta)!==JSON.stringify(previous.meta))await store.write(next,previous);
+  return next;
  }
  async function readPruned(){
   let changed=false;
@@ -209,7 +212,9 @@ function create({enabled=false,build={},now=()=>Date.now(),storage,indexedDB}={}
    changed=pruned.events.length!==(previous.events||[]).length||JSON.stringify(previous.meta||{})!==JSON.stringify(pruned.meta);
    return {events:pruned.events,meta:pruned.meta};
   });
-  setStatus('Diagnostics storage ready.');if(changed)emit();return next;
+  // A successful read does not prove a failed quota write has recovered.
+  if(changed||!storageFailed){storageFailed=false;setStatus('Diagnostics storage ready.');}
+  if(changed)emit();return next;
  }
  if(active)serial(readPruned);
  function record(name,outcome,metadata={}){
@@ -217,7 +222,7 @@ function create({enabled=false,build={},now=()=>Date.now(),storage,indexedDB}={}
    if(!active||!names.has(name)||!outcomes.has(outcome))return Promise.resolve();
    const event={id:id(),timestamp:iso(now()),sessionId,sequence:++sequence,channel:build.channel,build:typeof build.version==='string'?build.version.slice(0,48):'unknown',revision:typeof build.commit==='string'?build.commit.slice(0,48):'unknown',name,outcome,context:technicalContext(),metadata:sanitizeMetadata(metadata)};
    return serial(async()=>{
-    await updateStore(previous=>{const next=pruneEvents([...(previous.events||[]),event],previous.meta||{},now());return {events:next.events,meta:next.meta};});setStatus('Diagnostics storage ready.');emit();
+    await updateStore(previous=>{const next=pruneEvents([...(previous.events||[]),event],previous.meta||{},now());return {events:next.events,meta:next.meta};});storageFailed=false;setStatus('Diagnostics storage ready.');emit();
    });
   }catch{failure();return Promise.resolve();}
  }
