@@ -19,6 +19,20 @@ function build(channel) {
 const buildInfo = (html) => JSON.parse(html.match(/var MP_BUILD=(\{.*?\});\n/)[1]);
 const stable = build('stable'), dev = build('dev');
 
+test('MP-058 every Pages and artifact build carries the complete offline UI font', () => {
+  const font = readFileSync(join(root, 'src/fonts/host-grotesk-latin.woff2'));
+  const license = readFileSync(join(root, 'src/fonts/OFL.txt'), 'utf8').trim();
+  assert.equal(font.subarray(0, 4).toString(), 'wOF2');
+  for (const html of [stable.artifact, stable.pages, dev.artifact, dev.pages]) {
+    const embedded = html.match(/url\(data:font\/woff2;base64,([A-Za-z0-9+/=]+)\)/);
+    assert.ok(embedded, 'font is available without a network request');
+    assert.deepEqual(Buffer.from(embedded[1], 'base64'), font, 'font survives packaging intact');
+    assert.doesNotMatch(html, /\/\*HOST_GROTESK\*\//);
+    assert.ok(html.includes(license), 'copyright and full font license travel with the standalone HTML');
+  }
+  assert.match(license, /SIL OPEN FONT LICENSE/);
+});
+
 test('MP-061 dev and stable builds never share a save', () => {
   assert.equal(buildInfo(stable.artifact).channel, 'stable');
   assert.equal(buildInfo(dev.artifact).channel, 'dev');

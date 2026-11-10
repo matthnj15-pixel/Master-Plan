@@ -490,7 +490,7 @@ function wireMap(){
 /* ---------- plan drawing ---------- */
 function drawPlan(cv,p){
   const W=cv.clientWidth||600,H=200,dpr=window.devicePixelRatio||1;cv.width=W*dpr;cv.height=H*dpr;const x=cv.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);
-  const pl=p.plan;const label=(t,lx,ly,col)=>{x.font='600 11px Overpass, system-ui, sans-serif';x.fillStyle=col||'#1E1B16';x.fillText(t,lx,ly);};
+  const pl=p.plan;const label=(t,lx,ly,col)=>{x.font='600 12px "Host Grotesk", system-ui, sans-serif';x.fillStyle=col||'#1E1B16';x.fillText(t,lx,ly);};
   const rect=(a,b,w,h,c)=>{x.fillStyle=c;x.fillRect(a,b,w,h);};
   const tree=(a,b,r)=>{x.fillStyle='rgba(0,0,0,.18)';x.beginPath();x.arc(a+2,b+2,r,0,7);x.fill();x.fillStyle='#3E7B3A';x.beginPath();x.arc(a,b,r,0,7);x.fill();};
   const stalls=(a,b,w,h,n)=>{rect(a,b,w,h,'#7B7E7A');x.strokeStyle='rgba(255,255,255,.7)';x.lineWidth=1;const cols=Math.max(1,Math.ceil(n/2));for(let i=0;i<=cols;i++){const xx=a+i*w/cols;x.beginPath();x.moveTo(xx,b);x.lineTo(xx,b+h*.4);x.moveTo(xx,b+h*.6);x.lineTo(xx,b+h);x.stroke();}};
@@ -543,7 +543,7 @@ function drawPlan(cv,p){
     const tl=E.plotsOf(p);
     if(!tl.length){rect(0,0,W,H,'#E9E4D6');const pw=Math.min(260,W-40);rect(W/2-pw/2,12,pw,H-24,'#FBF8F0');x.strokeStyle='#C9C1AE';x.strokeRect(W/2-pw/2,12,pw,H-24);
       x.textAlign='center';x.fillStyle='#1E1B16';x.font='700 13px "Old Standard TT", Georgia, serif';x.fillText('BOROUGH OF MILLBROOK',W/2,36);x.font='italic 12px "Old Standard TT", Georgia, serif';x.fillText(`Ordinance No. ${calYear(S.year)}-${String(S.year+2).padStart(2,'0')}`,W/2,54);
-      x.font='600 12px Overpass, system-ui, sans-serif';const lab=E.KINDS.initiative.params.policy.labels[pl.policy];x.fillText(pl.policy!=='none'?lab:(pl.safety==='streetlights'?'Streetlight program':p.title),W/2,78);x.textAlign='left';
+      x.font='600 12px "Host Grotesk", system-ui, sans-serif';const lab=E.KINDS.initiative.params.policy.labels[pl.policy];x.fillText(pl.policy!=='none'?lab:(pl.safety==='streetlights'?'Streetlight program':p.title),W/2,78);x.textAlign='left';
       for(let i=0;i<5;i++)rect(W/2-pw/2+18,94+i*14,pw-36-(i%2)*30,5,'#D9D2C2');}
     else{const roles=E.initiativeRoles(pl,tl.length);const xs=tl.map(t=>t[0]),ys=tl.map(t=>t[1]);let mx=Math.min(...xs),my=Math.min(...ys),cols=Math.max(...xs)-mx+1,rows=Math.max(...ys)-my+1;
       let pos=tl.map(([x,y])=>[x-mx,y-my]);
@@ -664,7 +664,7 @@ function initiativeSheet(){
   const head=`<div class="eyebrow">Mayor's initiative · one per year</div><h2>Propose your own idea</h2>`;
   const plotInfo=plots.length?`<div class="note" style="margin-top:6px"><b>${plots.length} plot${plots.length>1?'s':''} selected:</b> ${esc(plotSummary(plots))}${demo.residents?` · displaces about ${demo.residents} residents`:''}${demo.landmarks.length||demo.projects.length?` · tears down ${esc(demo.landmarks.concat(demo.projects).join(' and '))}`:''}</div>${demo.warning?`<div class="msg sys" style="margin-top:6px">${esc(demo.warning)}</div>`:''}`:'';
   let body=`<div class="note">Describe anything: a building, a park, a program, a new rule, even tearing something down. ${esc(E.PRESENTERS.planner.name)} turns it into a plan with real costs, and it goes to council like any other item.</div>
-  <form data-form="init" class="stack initform"><textarea id="initDesc" rows="4" style="width:100%;resize:vertical;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:10px;padding:10px 12px;font:inherit" placeholder="What do you want to build or change, and where?" aria-label="Describe your idea">${esc(sheet.text||'')}</textarea>
+  <form data-form="init" class="stack initform"><textarea id="initDesc" rows="4" style="width:100%;resize:vertical;border:1px solid var(--control-line);background:var(--surface);color:var(--fg);border-radius:8px;padding:14px 16px;font:inherit" placeholder="What do you want to build or change, and where?" aria-label="Describe your idea">${esc(sheet.text||'')}</textarea>
   <div class="chips">${EXAMPLES.map((x,i)=>`<button type="button" class="chip" data-example="${i}">${esc(x)}</button>`).join('')}</div>
   <div class="sect"><span>Where</span></div><div class="choice">
     <button type="button" data-where="describe" aria-pressed="${where==='describe'}"><b>Let my description decide</b><small>Say where in your idea, like "on the old mill lot." Built sites count. Programs and rules need no site.</small></button>
