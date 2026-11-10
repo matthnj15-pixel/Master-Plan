@@ -10,7 +10,11 @@ const root = new URL('..', import.meta.url).pathname;
 function build(channel) {
   const out = mkdtempSync(join(tmpdir(), `mp-${channel}-`));
   execFileSync('node', ['scripts/build.mjs', '--channel', channel, '--out', out], { cwd: root, stdio: 'pipe' });
-  return { artifact: readFileSync(join(out, 'master-plan.html'), 'utf8'), pages: readFileSync(join(out, 'index.html'), 'utf8') };
+  return {
+    out,
+    artifact: readFileSync(join(out, 'master-plan.html'), 'utf8'),
+    pages: readFileSync(join(out, 'index.html'), 'utf8'),
+  };
 }
 const buildInfo = (html) => JSON.parse(html.match(/var MP_BUILD=(\{.*?\});\n/)[1]);
 const stable = build('stable'), dev = build('dev');
@@ -46,4 +50,17 @@ test('MP-063 built pages contain no API key or direct API access', () => {
 test('MP-061 the dev badge shows the version in progress', () => {
   const { version } = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
   assert.equal(buildInfo(dev.artifact).version, version);
+});
+
+test('Pages builds include the showcase beside the game entry point', () => {
+  for (const build of [stable, dev]) {
+    const about = join(build.out, 'about');
+    const html = readFileSync(join(about, 'index.html'), 'utf8');
+    assert.match(html, /<title>Master Plan \| A Town Planning Game<\/title>/);
+    assert.match(html, /href="\.\.\/"/);
+    for (const asset of ['style.css', 'showcase.js', 'assets/mark.svg', 'assets/millbrook.webp']) {
+      assert.ok(readFileSync(join(about, asset)).length, asset);
+    }
+    assert.doesNotMatch(build.artifact, /showcase\.js/);
+  }
 });
