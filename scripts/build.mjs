@@ -2,7 +2,7 @@
 // Usage: node scripts/build.mjs [--channel stable|dev] [--out dist]
 //   <out>/master-plan.html  claude.ai artifact (full game with AI characters and cloud saves)
 //   <out>/index.html        GitHub Pages page with browser saves and optional offline AI
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { cpSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { execSync } from 'node:child_process';
@@ -42,4 +42,5 @@ if (flags.offlineAI) {
   writeFileSync(join(out, 'offline-worker.js'), read('src/offline-worker.js').replace('/*BUILD_COMMIT*/', commit));
 }
 writeFileSync(join(out, 'index.html'), `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>body{margin:0;font:14px system-ui,sans-serif}[hidden]{display:none!important}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>${webAI}</head><body>${html}</body></html>`);
+cpSync(join(root, 'site'), join(out, 'about'), { recursive: true });
 console.log(`Built ${channel} v${version} (${commit}) into ${out} (${(html.length / 1024).toFixed(0)} KB). Flags on: ${Object.keys(flags).filter(k => flags[k]).join(', ') || 'none'}`);
