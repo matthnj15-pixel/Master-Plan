@@ -19,6 +19,14 @@ function build(channel) {
 const buildInfo = (html) => JSON.parse(html.match(/var MP_BUILD=(\{.*?\});\n/)[1]);
 const stable = build('stable'), dev = build('dev');
 
+test('MP-075 diagnostics ship inside only the Dev Pages offline shell',()=>{
+  const marker='master-plan-qwen-diagnostics:';
+  assert.ok(dev.pages.includes(marker),'Dev Pages embeds the local diagnostics store in cached HTML');
+  for(const page of [dev.artifact,stable.artifact,stable.pages])assert.equal(page.includes(marker),false,'Stable and Claude artifacts do not ship the diagnostics store');
+  const worker=readFileSync(join(dev.out,'offline-worker.js'),'utf8');
+  assert.ok(worker.includes('shell.href'),'normal worker caches the HTML carrying diagnostics');
+});
+
 test('MP-058 every Pages and artifact build carries the complete offline UI font', () => {
   const font = readFileSync(join(root, 'src/fonts/host-grotesk-latin.woff2'));
   const license = readFileSync(join(root, 'src/fonts/OFL.txt'), 'utf8').trim();
