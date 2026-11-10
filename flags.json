@@ -10,6 +10,16 @@
       "description": "Download and run the on-device model in the dev web app.",
       "dev": true,
       "stable": false
+    },
+    "planRequests": {
+      "description": "Bounded offline plan drafting and revision requests.",
+      "dev": true,
+      "stable": false
+    },
+    "planDrawings": {
+      "description": "Illustrated site plans and read-only Old Mill comparison.",
+      "dev": true,
+      "stable": false
     }
   }
 }

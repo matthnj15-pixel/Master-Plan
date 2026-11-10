@@ -22,17 +22,25 @@ export async function CreateMLCEngine(model, options) {
   options.initProgressCallback({ progress: 1 });
   return {
     chat: { completions: { async create({ messages, response_format }) {
+      const fixture=globalThis.__qwenFixture;
+      if(fixture){
+        fixture.calls=(fixture.calls||0)+1;
+        while(fixture.hold)await new Promise(resolve=>setTimeout(resolve,15));
+        if(fixture.error)throw new Error(fixture.error);
+        const value=fixture.responses?.shift();
+        if(value!==undefined)return {choices:[{message:{content:typeof value==='string'?value:JSON.stringify(value)}}]};
+      }
       if (response_format.type !== 'json_object') throw new Error('Expected JSON mode');
       // The pinned runtime fails to initialize its grammar without a schema string.
       const schema = JSON.parse(response_format.schema);
       if (schema.type !== 'object' || schema.additionalProperties !== true) throw new Error('Expected an open object schema');
       const result = messages[0].content.includes("Mayor's description")
-        ? { title: 'Old Mill Homes', place: 'oldmill', plan: { homes: 12 }, reply: 'Here is a plan for Old Mill.' }
+        ? { title: 'Old Mill Homes', place: 'oldmill', plan: { homes: 20 }, reply: 'Here is a plan for Old Mill.' }
         : messages[0].content.includes('The mayor now says: "Add walkways with guardrails"')
           ? { reply: 'I agree, let’s add walkways.', changes: { walkways: true }, mood: 'warmer' }
           : messages[0].content.includes('The mayor now says: "Patch the deck for now"')
             ? { reply: 'I can patch the deck.', changes: { scope: 'patch' }, mood: 'neutral' }
-            : { reply: 'I can add a rain garden.', changes: { green: 9999 }, mood: 'neutral' };
+            : messages[0].content.includes('One repair attempt') ? {reply:'I can add a rain garden.',changes:{green:3},mood:'neutral'} : { reply: 'I can add a rain garden.', changes: { green: 9999 }, mood: 'neutral' };
       return { choices: [{ message: { content: JSON.stringify(result) } }] };
     } } },
     async unload() {},
@@ -103,10 +111,11 @@ test('MP-065 opted-in dev Pages reopens offline and uses the saved model for fre
     await page.click('[data-act="initiative"]');
     await page.fill('#initDesc', 'Build apartments at the Old Mill lot.');
     await page.click('[data-form="init"] button[type="submit"], [data-form="init"] .btn.primary');
-    await page.getByText('Here is a plan for Old Mill.').waitFor({ timeout: 5000 });
+    await page.getByRole('heading', {name:'Old Mill Homes',exact:true}).waitFor({timeout:5000});
     await page.fill('#negInput', 'Please add a rain garden.');
     await page.locator('[data-form="neg"] button').click();
-    await page.getByText('I can add a rain garden.').waitFor({ timeout: 5000 });
+    await page.getByText('Plan updated:',{exact:false}).waitFor({timeout:5000});
+    await page.waitForFunction(()=>JSON.parse(localStorage.getItem('masterplan.dev.save')).proposals.some(p=>p.mine&&p.plan.green===3));
     assert.deepEqual(errors, []);
     const town = await page.evaluate(() => JSON.parse(localStorage.getItem('masterplan.dev.save')));
     const proposal = town.proposals.find(item => item.title === 'Old Mill Homes');

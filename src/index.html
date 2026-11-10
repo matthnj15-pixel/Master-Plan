@@ -115,6 +115,24 @@ details{background:var(--surface);border:1px solid var(--line);border-radius:8px
 .sh-actions .btn{flex:1 1 auto}
 .initform{flex:1 0 auto}
 .box{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:24px}
+/* Site-plan exhibits use actual grid coordinates; HTML keys remain legible on narrow screens. */
+.plan-comparison{min-width:0;padding:18px}
+.plan-reviewed{margin:8px 0 14px;overflow-wrap:anywhere}
+.plan-switch{display:flex;flex-wrap:wrap;gap:8px}
+.plan-switch .btn{flex:1 1 120px;white-space:normal}
+.plan-switch [aria-pressed="true"]{border-color:var(--accent-ink);background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--accent-ink)}
+.plan-preview{margin:14px 0}
+.plan-exhibit{margin:0;min-width:0;overflow:hidden;border:1px solid var(--line);border-radius:8px;background:#f6f2e8}
+.plan-exhibit-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;padding:12px 14px;font:12px var(--mono,monospace);text-transform:uppercase;letter-spacing:.06em}
+svg.plan-illustration{display:block;width:100%;height:auto;max-height:430px;background:#eee9db}
+.plan-legend,.plan-counts{display:flex;flex-wrap:wrap;gap:10px 16px;padding:12px 14px;font-size:13px;line-height:1.5;overflow-wrap:anywhere}
+.plan-legend{border-top:1px solid var(--line)}
+.plan-legend span{display:inline-flex;align-items:center;gap:6px}
+.plan-legend i{display:inline-block;width:12px;height:12px;border:1px solid #777}
+.plan-price{margin:0;padding:0 14px 12px;font-size:13px}
+.plan-caption{padding:0 14px 14px;font-size:12px;color:var(--muted);line-height:1.5}
+.plan-no-site{padding:20px;font-size:14px}
+.request-feedback{overflow-wrap:anywhere}
 canvas.plan{width:100%;height:200px;display:block;border-radius:8px}
 .stats3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
 .stats3 .l{font-size:12px;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);font-weight:600}
