@@ -60,3 +60,11 @@ Decisions Nate made, with the date. New decisions go at the bottom.
 - Lead proposal decisions with the actual vote gap and funding consequences. Keep the existing council, funding, quick asks, grants and optional site-plan details available.
 - Lead the Courier report with before/after results and a cash reconciliation, then show engine causes grouped into decisions/projects and town response. Retain zero-valued events and all nine measures. Read existing history/reports; do not change engine outcomes or persist a new save shape.
 - This supersedes the earlier statement that the agenda-first choice was still open. Site-notebook history and heuristic intent changes remain separate scope.
+
+## 2026-11-10: Scenario foundation (MP-074)
+- Nate's Epic A assignment supplies the product decision: Master Plan is the game; **Scenario 01 · Millbrooke** is its first campaign. Millbrooke is an established fictional Pennsylvania borough. Use the final **e** in new campaign content and keep a stable internal scenario ID separate from display names.
+- The first foundation preserves 2027, annual turns, the existing 32-year horizon and four-year elections while moving campaign inputs behind a scenario boundary. The exact long-term endpoint and pacing remain open for later prototypes.
+- Prove the boundary with a small test-only reconstruction input: a different date, map and recovery authority; housing requires a utility repair to complete. This is an architectural probe, not a second playable campaign.
+- Preserve supported save progress and stable/dev save identifiers, including the historic `millbrook.v1` browser key. Display-name changes do not rewrite historical records.
+- Epic A owns authoritative simulation, scenario data, eligibility, calendars and saves. Epic B owns provider orchestration and proposal drawings and can work against fixtures. The engine continues to validate plans and compute forecasts and outcomes. The showcase remains a separate follow-up.
+- Acceptance source is Nate's Scenario 01 · Millbrooke assignment dated November 9, 2026. No new pacing, defeat-role, agenda-growth or proposal-design behavior is accepted by this foundation.

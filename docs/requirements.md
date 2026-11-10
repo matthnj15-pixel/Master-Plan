@@ -91,3 +91,10 @@ What Nate asks for becomes a requirement here. Each requirement has an ID, accep
 | MP-071 | Design by conversation. | Talking to the planner sets style, materials, colors, landscaping, and furnishings. The engine still prices the plan; higher design quality costs more and adds livability and property value. | Test | Planned |
 | MP-072 | Built results match the design. | What gets built on the map uses the approved plan's design. | Play-test | Planned |
 | MP-073 | One Plans tab holds the town's history. | Replaces "Built so far" and the past year-end reports. Each year lists every proposal with its final drawing, revisions, vote, and outcome. | Test | Planned |
+
+## Scenario engine
+| ID | Requirement | Acceptance criteria | Verify | Status |
+|---|---|---|---|---|
+| MP-074 | Campaigns load through a scenario boundary. | Normal new game loads Scenario 01 · Millbrooke, a fictional Pennsylvania borough, with a stable internal ID and a 2027 start. Scenario input owns display metadata, starting state and map, calendar defaults, opening proposal definitions and the decision route. Preserve the existing annual calendar, horizon, seeded first-term outcomes, approvals and reports except approved names. The same engine loads a tiny deterministic reconstruction fixture with another date, map and approving authority: housing stays blocked until an approved utility repair completes through common validation and project resolution. Persist scenario identity and distinguish calendar year from turn ordinal; migrate supported older saves without losing progress, parcels, projects, finances or pending decisions. Supply Epic B a read-only scenario/turn, legal-site geometry, town-facts and editable-fields contract; validation and forecasts remain engine-owned. | Test | Accepted |
+
+MP-074 acceptance source: Nate’s Epic A · New game engine assignment (Scenario 01 · Millbrooke, November 9, 2026), applied November 10, 2026. The foundation above is authorized; pacing prototypes and later feasibility/agenda changes require their own proposed requirements.
