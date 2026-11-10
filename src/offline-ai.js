@@ -53,12 +53,12 @@ async function loadRuntime(download, check) {
   }
 }
 
-export async function startOfflineAI({ model, download, onProgress, diagnostics = globalThis.MP_QWEN_DIAGNOSTICS, startupId }) {
+export async function startOfflineAI({ model, download, onProgress, diagnostics = globalThis.MP_QWEN_DIAGNOSTICS, startupId, attempt = 1 }) {
   const modelId = MODELS.get(model);
   const started = clock();
   let stage = 'startup';
   const log = (name, outcome, extra = {}) => record(diagnostics, name, outcome, {
-    startupId,modelId,runtimeVersion:'0.2.87',download,stage,durationMs:clock()-started,...extra,
+    startupId,attempt,modelId,runtimeVersion:'0.2.87',download,stage,durationMs:clock()-started,...extra,
   });
   const check = (boundary, cached) => { stage = boundary; log('startup.check', 'observed', {cached}); };
   try {
@@ -84,9 +84,9 @@ export async function startOfflineAI({ model, download, onProgress, diagnostics 
     catch (error) { log('startup.check', 'failed', {error:safeError(diagnostics,error,stage)}); }
     stage = 'runtime-cache';
     const runtime = await loadRuntime(download,check);
-    async function requireCachedModel() {
+    async function requireCachedModel(observeStartup = true) {
       const cached = await runtime.hasModelInCache(modelId);
-      check('model-cache',cached);
+      if (observeStartup) check('model-cache',cached);
       if (!cached) {
         throw startupFailure('model-missing', 'The offline model is missing. Reconnect and download it again.');
       }
@@ -96,10 +96,16 @@ export async function startOfflineAI({ model, download, onProgress, diagnostics 
     stage = 'initialization';
     const initializing = clock();
     log('startup.initialization', 'started');
-    const engine = await runtime.CreateMLCEngine(modelId, {
-      initProgressCallback: ({ progress }) => onProgress(Math.round(progress * 100)),
-    });
-    log('startup.initialization', 'success', {durationMs:clock()-initializing});
+    let engine;
+    try {
+      engine = await runtime.CreateMLCEngine(modelId, {
+        initProgressCallback: ({ progress }) => onProgress(Math.round(progress * 100)),
+      });
+      log('startup.initialization', 'success', {durationMs:clock()-initializing});
+    } catch (error) {
+      log('startup.initialization', 'failed', {durationMs:clock()-initializing,error:safeError(diagnostics,error,stage)});
+      throw error;
+    }
     if (download) {
       const cached = await runtime.hasModelInCache(modelId);
       check('model-cache',cached);
@@ -109,7 +115,8 @@ export async function startOfflineAI({ model, download, onProgress, diagnostics 
       }
     }
     return createOfflineProvider(engine, modelId, async () => {
-      await requireCachedModel();
+      // Recovery belongs to the current inference request, not the old startup.
+      await requireCachedModel(false);
       return runtime.CreateMLCEngine(modelId, { initProgressCallback() {} });
     }, diagnostics);
   } catch (error) {
