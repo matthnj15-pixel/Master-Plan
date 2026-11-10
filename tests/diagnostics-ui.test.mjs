@@ -144,8 +144,15 @@ test('MP-075 startup failure, interrupted startup and retry preserve Diagnostics
   const from=await page.inputValue('#diagnosticsFrom');await page.fill('#diagnosticsFrom','2000-01-01');
   await page.evaluate(()=>{globalThis.__startup={hold:true,fail:'SECRET-STARTUP-FAILURE'};});await page.click('[data-act="offlineRetry"]');await page.waitForFunction(()=>__startup.called);assert.equal(await page.inputValue('#diagnosticsFrom'),'2000-01-01');
   await page.evaluate(()=>{__startup.hold=false;});await page.getByText('SECRET-STARTUP-FAILURE',{exact:true}).waitFor();
+  await page.evaluate(()=>{__startup.fail='';});await page.click('[data-act="offlineRetry"]');await page.getByText('1.5B model ready for offline play.',{exact:true}).waitFor();
   await page.fill('#diagnosticsFrom',from);await page.evaluate(()=>Object.defineProperty(navigator,'canShare',{value:()=>false}));const log=await download(page);
   assert.ok(events(log.json).some(e=>e.name==='startup.interrupted'&&e.outcome==='incomplete'));assert.ok(events(log.json).some(e=>e.name==='startup.retry'));assert.ok(events(log.json).some(e=>e.name==='startup.error'));assert.ok(events(log.json).some(e=>e.name==='startup.initialization'&&e.outcome==='failed'));
+  const startupEvents=events(log.json).filter(e=>['startup.begin','startup.check','startup.initialization','startup.ready','startup.error'].includes(e.name));
+  assert.ok(startupEvents.every(e=>Number.isInteger(e.metadata.attempt)&&e.metadata.attempt>0),'every startup stage identifies its attempt');
+  for(const id of new Set(startupEvents.map(e=>e.metadata.startupId))){const attempts=new Set(startupEvents.filter(e=>e.metadata.startupId===id).map(e=>e.metadata.attempt));assert.equal(attempts.size,1,'a startup keeps the same attempt across checks and terminal events');}
+  const retry=events(log.json).filter(e=>e.name==='startup.retry').at(-1);assert.equal(retry.metadata.attempt,2,'retry advances the failed startup attempt');
+  const begin=startupEvents.find(e=>e.name==='startup.begin'&&e.sessionId===retry.sessionId&&e.metadata.attempt===retry.metadata.attempt);assert.ok(begin);
+  assert.ok(startupEvents.some(e=>e.name==='startup.ready'&&e.metadata.startupId===begin.metadata.startupId&&e.metadata.attempt===2));
   assert.equal(JSON.stringify(log.json).includes('SECRET-STARTUP-FAILURE'),false);assert.deepEqual(errors,[]);
  }finally{await ctx.close();}
 });

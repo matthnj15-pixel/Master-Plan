@@ -14,7 +14,7 @@ const diagnosticDuration=start=>Math.max(0,Math.round(performance.now()-start));
 let activePlanRequest=null;
 const WEB_AI_KEY='masterplan.offline-ai.'+BUILD.channel;
 const WEB_AI_STARTING_KEY=WEB_AI_KEY+'.starting';
-let offlineModel=null,localLoading=false,localStatus='';
+let offlineModel=null,localLoading=false,localStatus='',offlineStartupAttempts=0;
 // Dev keeps its own save so experiments never touch the stable town.
 const SAVE_KEY=DEV?'masterplan.dev.save':'millbrook.v1',DB_DOC=DEV?'save-dev':'save';
 let picking=null,pendingInit=null; // MP-033: plot picking mode on the map
@@ -106,8 +106,8 @@ function markOfflineStartup(starting){
 }
 async function connectOfflineAI(model,download){
   if(!WEB_AI||window.claude?.use||localLoading||AI?.offline)return;
-  const startupId=diagnostics?.id(),started=diagnosticTime(),modelId=qwenModelId(model);
-  diagnostics?.record('startup.begin','started',{startupId,modelId,runtimeVersion:'0.2.87',download,stage:'startup'});
+  const attempt=++offlineStartupAttempts,startupId=diagnostics?.id(),started=diagnosticTime(),modelId=qwenModelId(model);
+  diagnostics?.record('startup.begin','started',{startupId,attempt,modelId,runtimeVersion:'0.2.87',download,stage:'startup'});
   localLoading=true;aiState='checking';
   localStatus=download?'Preparing the '+model+' model…':'Loading the saved '+model+' model…';
   // Keep the model choice if Safari terminates the page. Require a manual retry after interrupted startup.
@@ -116,14 +116,14 @@ async function connectOfflineAI(model,download){
   showAIStatus();
   try{
     const {startOfflineAI}=await import('./offline-ai.js');
-    AI=await startOfflineAI({model,download,diagnostics,startupId,onProgress(percent){
+    AI=await startOfflineAI({model,download,diagnostics,startupId,attempt,onProgress(percent){
       const status='Preparing the '+model+' model… '+Math.min(100,Math.max(0,percent))+'%';
       if(localStatus!==status){localStatus=status;showAIStatus();}
     }});
     aiState='on';localStatus=model+' model ready for offline play.';
-    diagnostics?.record('startup.ready','ready',{startupId,modelId,runtimeVersion:'0.2.87',download,stage:'startup',durationMs:diagnosticDuration(started)});
+    diagnostics?.record('startup.ready','ready',{startupId,attempt,modelId,runtimeVersion:'0.2.87',download,stage:'startup',durationMs:diagnosticDuration(started)});
   }catch(error){
-    diagnostics?.record('startup.error','failed',{startupId,modelId,runtimeVersion:'0.2.87',download,stage:error?.offlineStage||'startup',durationMs:diagnosticDuration(started),error:diagnostics.error(error,error?.offlineStage||'startup')});
+    diagnostics?.record('startup.error','failed',{startupId,attempt,modelId,runtimeVersion:'0.2.87',download,stage:error?.offlineStage||'startup',durationMs:diagnosticDuration(started),error:diagnostics.error(error,error?.offlineStage||'startup')});
     aiState='off';
     localStatus=error?.message?.slice(0,180)||'Could not start offline AI. Try again while online.';
   }finally{
@@ -1229,7 +1229,7 @@ document.addEventListener('click',ev=>{
   else if(a==='revisionDrawing'){revealSheetElement($('.plan-comparison'));}
   else if(a==='close'){closeSheet();}
   else if(a==='offlineOff'){void turnOffOfflineAI();}
-  else if(a==='offlineRetry'&&offlineModel){diagnostics?.record('startup.retry','started',{stage:'startup',runtimeVersion:'0.2.87',modelId:qwenModelId(offlineModel)});void connectOfflineAI(offlineModel,false);}
+  else if(a==='offlineRetry'&&offlineModel){diagnostics?.record('startup.retry','started',{attempt:offlineStartupAttempts+1,stage:'startup',runtimeVersion:'0.2.87',modelId:qwenModelId(offlineModel)});void connectOfflineAI(offlineModel,false);}
   else if(a==='diagnosticsExport'){exportDiagnostics();}
   else if(a==='vote')callVote();
   else if(a==='election'){openSheet({type:'election'});startElection();}
