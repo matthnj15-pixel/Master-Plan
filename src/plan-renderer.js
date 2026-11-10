@@ -107,7 +107,7 @@ const PLAN_RENDERER = (() => {
   }
   function counts(E,p,existing,plots,state) {
     if(existing) {
-      const kinds={};for(const [x,y] of plots){const cell=state.grid[y*E.N+x],k=cell?.b?.type||'open plots';kinds[k]=(kinds[k]||0)+1;}
+      const map=E.mapSize(state),kinds={};for(const [x,y] of plots){const cell=state.grid[y*map.width+x],k=cell?.b?.type||'open plots';kinds[k]=(kinds[k]||0)+1;}
       const names={lot:'vacant mill plots',house:'house plots',apt:'apartment plots',shop:'store plots',farm:'farm plots'};
       return Object.entries(kinds).map(([k,n])=>pill(names[k]||k.replaceAll('_',' '),n)).join('');
     }
@@ -135,23 +135,23 @@ const PLAN_RENDERER = (() => {
   }
   function render({state,proposal:p,engine:E,existing=false}) {
     if(!E||!p||!['park','commerce','initiative'].includes(p.kind))return null;
-    const plots=E.plotsOf(p),effects=E.effectsOf(p);
+    const map=E.mapSize(state),plots=E.plotsOf(p,state),effects=E.effectsOf(p,state);
     const revision=fingerprint({plan:Object.fromEntries(Object.entries(p.plan).sort(([a],[b])=>a.localeCompare(b))),plots,existing});
     const price=existing?'':` data-plan-cost="${effects.cost}"`;
     if(!plots.length) return `<section class="plan-no-site"${price}><b>No site · program or ordinance</b><p>${esc(p.title)}</p><div class="plan-counts">${counts(E,p,false,plots,state)}</div><p class="plan-caption">Applies borough-wide. No parcel or construction footprint is implied. Engine cost ${fmt(effects.cost)}; upkeep ${fmt(effects.upkeep)}/year.</p></section>`;
     const xs=plots.map(t=>t[0]),ys=plots.map(t=>t[1]);
-    const left=Math.max(0,Math.min(...xs)-1),right=Math.min(E.N-1,Math.max(...xs)+1);
-    const top=Math.max(0,Math.min(...ys)-1),bottom=Math.min(E.N-1,Math.max(...ys)+1);
-    const locatorLeft=Math.max(0,Math.min(...xs)-4),locatorRight=Math.min(E.N-1,Math.max(...xs)+3);
-    const locatorTop=Math.max(0,Math.min(...ys)-3),locatorBottom=Math.min(E.N-1,Math.max(...ys)+3);
+    const left=Math.max(0,Math.min(...xs)-1),right=Math.min(map.width-1,Math.max(...xs)+1);
+    const top=Math.max(0,Math.min(...ys)-1),bottom=Math.min(map.height-1,Math.max(...ys)+1);
+    const locatorLeft=Math.max(0,Math.min(...xs)-4),locatorRight=Math.min(map.width-1,Math.max(...xs)+3);
+    const locatorTop=Math.max(0,Math.min(...ys)-3),locatorBottom=Math.min(map.height-1,Math.max(...ys)+3);
     const selected=new Set(plots.map(key));
     let context='';
     for(let y=top;y<=bottom;y++)for(let x=left;x<=right;x++){
-      const cell=state.grid[y*E.N+x];if(cell)context+=contextTile(cell,!existing&&selected.has(`${x},${y}`));
+      const cell=state.grid[y*map.width+x];if(cell)context+=contextTile(cell,!existing&&selected.has(`${x},${y}`));
     }
     let locatorContext='';
     for(let y=locatorTop;y<=locatorBottom;y++)for(let x=locatorLeft;x<=locatorRight;x++){
-      const cell=state.grid[y*E.N+x];if(cell)locatorContext+=contextTile(cell,false).replaceAll('data-context=', 'data-locator-context=');
+      const cell=state.grid[y*map.width+x];if(cell)locatorContext+=contextTile(cell,false).replaceAll('data-context=', 'data-locator-context=');
     }
     const locator=`<div class="plan-locator-row" style="display:flex;align-items:center;gap:14px;margin-top:14px"><svg class="plan-locator" viewBox="${locatorLeft*TILE} ${locatorTop*TILE} ${(locatorRight-locatorLeft+1)*TILE} ${(locatorBottom-locatorTop+1)*TILE}" role="img" aria-label="Site locator in the current town grid" style="display:block;flex:0 0 120px;width:120px;height:auto;border-radius:4px">${locatorContext}${plots.map(([x,y])=>`<rect data-locator-plot="${x},${y}" x="${x*TILE}" y="${y*TILE}" width="50" height="50" fill="${C.outline}" fill-opacity=".22"/>`).join('')}<path d="${boundary(plots)}" fill="none" stroke="${C.outline}" stroke-width="5"/></svg><p class="plan-caption" style="min-width:0;margin:0"><b>Town context</b><br>Same north-up grid; outlined site highlighted. One square is one town plot. Water and streets follow the current town.</p></div>`;
     const roles=p.kind==='initiative'?E.initiativeRoles(p.plan,plots.length):[];

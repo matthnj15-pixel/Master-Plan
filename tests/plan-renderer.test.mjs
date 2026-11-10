@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
 import {createRequire} from 'node:module';
+import {reconstruction} from './fixtures/reconstruction.mjs';
 const require = createRequire(import.meta.url);
 const E = require('../src/engine.js');
 const R = require('../src/plan-renderer.js');
@@ -79,6 +80,28 @@ test('MP-015 MP-026 accepted landscaping and streetlights remain visible when ev
   const html=R.render({state,proposal,engine:E});
   assert.match(html,/data-feature="tree"/);
   assert.match(html,/data-feature="streetlights"/);
+});
+
+test('MP-026 MP-074 reconstruction exhibits read scenario sites, dimensions, cell indices and engine prices', () => {
+  const state=E.newGame(2304,reconstruction);
+  const proposal=state.proposals.find(p=>p.id==='housing');
+  const before=JSON.stringify(state),html=R.render({state,proposal,engine:E});
+  assert.deepEqual(E.mapSize(state),{width:5,height:4});
+  assert.deepEqual(plots(html),['3,2'],'scenario site is illustrated even before its prerequisite is satisfied');
+  assert.equal(viewBox(html),'100 50 150 150','primary viewport fits the actual rectangular map');
+  const contexts=[...html.matchAll(/data-context="(\d+),(\d+)" data-terrain="([^"]+)" data-road="([^"]+)" data-building="([^"]*)"/g)];
+  assert.equal(contexts.length,9);
+  for(const [,x,y,terrain,road,building] of contexts){
+    const cell=state.grid[Number(y)*5+Number(x)];
+    assert.ok(Number(x)<5&&Number(y)<4,'context never escapes this scenario');
+    assert.equal(terrain,cell.t);assert.equal(road,String(cell.road));assert.equal(building,cell.b?.type||'');
+  }
+  assert.match(html,/class="plan-locator" viewBox="0 0 250 200"/);
+  assert.match(html,new RegExp(`data-plan-cost="${E.effectsOf(proposal,state).cost}"`));
+  const occupied={...proposal,plots:[[3,3]]};
+  const existing=R.render({state,proposal:occupied,engine:E,existing:true});
+  assert.match(plainText(existing),/1 house plots/,'existing uses map width when counting current buildings');
+  assert.equal(JSON.stringify(state),before,'blocked proposal drawing remains read-only');
 });
 
 test('MP-053 MP-054 MP-055 isolated plan exhibits remain legible at 400 and 669px portrait widths', async () => {
