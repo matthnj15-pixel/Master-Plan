@@ -31,7 +31,7 @@ async function open(viewport = DUO, contextOptions = {}) {
   return { page, ctx, cdp, errors };
 }
 const mapState = (page) => page.$eval('#map', c => ({ zoom: +c.dataset.zoom, rot: +c.dataset.rot, panx: +c.dataset.panx, pany: +c.dataset.pany, view: c.dataset.view }));
-async function mapCenter(page) { const b = await page.$eval('#map', c => { const r = c.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }); return b; }
+async function mapCenter(page) { await page.locator('#map').scrollIntoViewIfNeeded(); const b = await page.$eval('#map', c => { const r = c.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }); return b; }
 async function touch(cdp, type, points) {
   await cdp.send('Input.dispatchTouchEvent', { type, touchPoints: points.map((p, i) => ({ x: p.x, y: p.y, id: i + 1, radiusX: 2, radiusY: 2, force: 1 })) });
 }
@@ -62,6 +62,124 @@ async function smallText(page) {
 }
 const noSideScroll = (page) => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1);
 
+test('MP-059 the annual agenda leads the town and its persistent review and map routes work', async () => {
+  for (const width of [669, 400]) {
+    const { page, ctx, errors } = await open({ width, height: 951 });
+    const order = await page.evaluate(() => {
+      const top = s => document.querySelector(s).getBoundingClientRect().top;
+      return { agenda: top('.panel'), meters: top('#meters'), map: top('.mapcard'), first: document.querySelector('#panel [data-open]').getBoundingClientRect().bottom, footer: top('.actionbar') };
+    });
+    assert.ok(order.agenda < order.meters && order.meters < order.map, 'reading and visual order lead with the agenda');
+    assert.ok(order.first < order.footer, 'the first proposal is visible before scrolling past any map');
+    assert.equal(await page.locator('#meters .meter').count(), 9);
+    await page.click('#reviewBtn');
+    assert.match(await page.textContent('#sheetRoot h2'), /Main Street bridge/);
+    await page.click('#sheetRoot [data-act="close"]');
+    await page.click('[data-act="showMap"]');
+    const map = await page.locator('#map').boundingBox();
+    const footerTop = await page.locator('.actionbar').evaluate(e => e.getBoundingClientRect().top);
+    assert.ok(map.y >= 0 && map.y + map.height <= footerTop, 'View town brings the whole map above the action bar');
+    assert.ok(await noSideScroll(page));
+    assert.deepEqual(errors, []);
+    await ctx.close();
+  }
+});
+
+test('MP-059 proposal summaries update from engine votes and funding when plans change', async () => {
+  const { page, ctx, errors } = await open();
+  await page.click('[data-open="bridge"]'); await page.click('[data-approve="cash"]');
+  await page.click('#endBtn'); await page.click('#sheetRoot [data-act="close"]');
+  await page.click('[data-open="park"]');
+  const cashBefore = await page.textContent('[data-summary="cash-after"]');
+  await page.locator('.plan-details summary').click();
+  await page.click('#sheetRoot [data-chip="1"]');
+  assert.equal(await page.locator('.plan-details').getAttribute('open'), '', 'an open drawing stays open through negotiation');
+  assert.ok(await page.locator('canvas.plan').evaluate(e => e.width === Math.round(e.clientWidth * devicePixelRatio)), 'negotiation redraws at the visible canvas width');
+  const expected = await page.evaluate(() => {
+    const s = JSON.parse(localStorage.getItem('millbrook.v1')), p = s.proposals.find(p => p.id === 'park');
+    return { cash: s.cash - ENGINE.effectsOf(p).cost, votes: ENGINE.forecastVote(s, p, p.id).tally.park || 0 };
+  });
+  assert.notEqual(await page.textContent('[data-summary="cash-after"]'), cashBefore, 'negotiated cost changes the remaining cash');
+  assert.equal(await page.textContent('[data-summary="cash-after"]'), `$${Math.round(expected.cash)}K`);
+  assert.match(await page.textContent('[data-summary="votes"]'), new RegExp(`${expected.votes} of 5`));
+  const beforePlan = await page.evaluate(() => !!(document.querySelector('.decision-summary').compareDocumentPosition(document.querySelector('canvas.plan')) & Node.DOCUMENT_POSITION_FOLLOWING));
+  assert.ok(beforePlan, 'decision summary precedes the optional drawing');
+  await page.click('#sheetRoot [data-hear]');
+  await page.click('[data-champ="commerce"]');
+  assert.equal(await page.locator('[data-fund="cash"]').isDisabled(), true);
+  assert.match(await page.textContent('[data-summary="funding"]'), /not enough cash/i);
+  await page.click('[data-fund="bond"]');
+  assert.match(await page.textContent('[data-summary="funding"]'), /bond/i);
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
+
+test('MP-059 the Courier reconciles cash and bonds and retains all engine causes', async () => {
+  for (const funding of ['cash', 'bond']) {
+    const { page, ctx, errors } = await open({ width: 400, height: 951 });
+    await page.evaluate(() => localStorage.setItem('millbrook.v1', JSON.stringify(ENGINE.newGame(68790))));
+    await page.reload();
+    await page.click('[data-open="bridge"]'); await page.click(`[data-approve="${funding}"]`);
+    await page.click('#endBtn');
+    const report = await page.evaluate(() => JSON.parse(localStorage.getItem('millbrook.v1')).reports.at(-1));
+    assert.equal(await page.textContent('[data-ledger="opening"]'), '$900K');
+    assert.equal(await page.textContent('[data-ledger="decisions"]'), funding === 'cash' ? '−$260K' : '$0K');
+    const closing = `$${report.after.cash.toLocaleString('en-US')}K`;
+    assert.equal(await page.textContent('[data-ledger="closing"]'), closing);
+    if (funding === 'bond') assert.ok(report.after.cash > 1000 && report.after.cash % 10 !== 0, 'exercises an exact-to-K balance above $1M');
+    assert.equal(await page.locator('#sheetRoot .cause').count(), report.causes.length, 'zero-valued events remain visible');
+    assert.equal(await page.locator('.report-measures [data-meter]').count(), 9);
+    await page.locator('#sheetRoot .pane').evaluate(e => e.scrollTop = e.scrollHeight);
+    const actions = await page.locator('#sheetRoot .sh-actions').boundingBox();
+    assert.ok(actions.y + actions.height >= 911, 'next year remains reachable');
+    assert.ok(await noSideScroll(page));
+    assert.deepEqual(errors, []);
+    await ctx.close();
+  }
+});
+
+test('MP-059 long authored proposal names fit inside the narrow council sheet', async () => {
+  const { page, ctx, errors } = await open({ width: 400, height: 951 });
+  const title = 'Neighborhood Recreation Center and Community Gardens';
+  await page.evaluate(title => {
+    const s = ENGINE.newGame(68790);
+    ENGINE.makeInitiative(s, { title, plan: { green: 2, plaza: true }, place: 'oldmill' });
+    localStorage.setItem('millbrook.v1', JSON.stringify(s));
+  }, title);
+  await page.reload();
+  await page.click('#panel [data-open="init1"]'); await page.click('#sheetRoot [data-hear]');
+  assert.ok((await page.textContent('.tally')).includes(title));
+  const overflow = await page.$$eval('.pane,.member,.tally,.pane .seg', els => els
+    .filter(e => e.scrollWidth > e.clientWidth + 1)
+    .map(e => ({ kind: e.className, width: e.clientWidth, scrollWidth: e.scrollWidth })));
+  assert.deepEqual(overflow, [], 'including inner sheet containers, not only the document');
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
+
+test('MP-059 missing opening history and year-end overruns are reconciled honestly', async () => {
+  const { page, ctx, errors } = await open({ width: 400, height: 951 });
+  await page.evaluate(() => {
+    const seed = Array.from({ length: 100 }, (_, i) => i).find(seed => {
+      const s = ENGINE.newGame(seed), p = s.proposals.find(p => p.id === 'bridge');
+      return ENGINE.rand(seed, 'bridge:deliver') >= ENGINE.deliveryOdds(s, p);
+    });
+    const s = ENGINE.newGame(seed); s.history = [];
+    localStorage.setItem('millbrook.v1', JSON.stringify(s));
+  });
+  await page.reload(); await page.click('#panel [data-open="bridge"]'); await page.click('[data-approve="cash"]');
+  await page.click('#endBtn');
+  const r = await page.evaluate(() => JSON.parse(localStorage.getItem('millbrook.v1')).reports.at(-1));
+  assert.match(await page.textContent('[aria-label="Cash reconciliation"]'), /Before year-end resolution/);
+  assert.equal(await page.locator('[data-ledger="decisions"]').count(), 0, 'no invented full-year spending without an opening snapshot');
+  const other = Math.round(r.after.cash - r.before.cash - r.budget.net);
+  assert.ok(other < 0, 'the chosen engine seed incurs an overrun');
+  assert.equal(await page.textContent('[data-ledger="other"]'), `−$${Math.abs(other)}K`);
+  assert.equal(await page.locator('#sheetRoot .cause').count(), r.causes.length);
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
+
 test('MP-058 the bundled font and readable light UI work offline with either OS theme', async () => {
   let lightBackground;
   const luminance = color => color.match(/[\d.]+/g).slice(0, 3).map(Number)
@@ -72,7 +190,7 @@ test('MP-058 the bundled font and readable light UI work offline with either OS 
     const { page, ctx, errors } = await open(DUO, { colorScheme });
     const styles = await page.evaluate(async () => {
       await document.fonts.ready;
-      const body = getComputedStyle(document.body), button = getComputedStyle(document.querySelector('#endBtn'));
+      const body = getComputedStyle(document.body), button = getComputedStyle(document.querySelector('.actionbar .btn.primary'));
       return { font: [...document.fonts].some(f => f.family.includes('Host Grotesk') && f.status === 'loaded'),
         fg: body.color, bg: body.backgroundColor, buttonFg: button.color, buttonBg: button.backgroundColor };
     });

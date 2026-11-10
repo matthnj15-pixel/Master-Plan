@@ -6,7 +6,7 @@ Use warm paper and near-white surfaces with dark text. Keep card outlines quiet,
 
 Do not add decorative side highlight bars or accent stripes to callouts or council statements. Plain surfaces, clear headings and spacing should establish their hierarchy. Preserve semantic map outlines, chart marks and visible keyboard focus.
 
-The approved change is presentation only. Keep the existing map/agenda navigation, the one-page scroll behavior, nine meters, engine forecasts, council/funding flow and turn resolution. The exploration's agenda-first layout, site notebook, report regrouping and intent-checking ideas remain separate decisions.
+The styling remains presentation only. Nate subsequently confirmed B, Council desk (MP-059): agenda first, then town measures and map; votes/funding before proposal details; before/after results and a cash reconciliation in the Courier. Keep the one-page scroll behavior, nine meters, engine forecasts, council/funding rules and turn resolution. Site-notebook history and heuristic intent changes remain separate decisions.
 
 ## Font and licensing
 
@@ -28,3 +28,11 @@ Browser captures and automated touch checks are distinct from real iPhone Duo/Sa
 - The recorded seed-68790 Old Mill sequence ended at the identical engine snapshot at both widths: population 3,342, reserve $449K, walkability 55, livability 60.8 and approval 55.2.
 - Independent read-only review found no outstanding blockers after the font-license fix. `git diff --check` passed.
 - These checks used local Chromium builds and disposable saves. Physical Duo/Safari, hosted Claude runtime and GitHub CI have not been run for this local feature-branch commit. No release or deployment is implied.
+
+### Council desk layout verification (MP-059)
+
+- `npm test`: 55 passed. New browser regressions cover agenda/Review/View town routes at both widths, engine-derived negotiated funding and council tallies, persistent open drawings, exact cash/bond reconciliation above $1M, missing opening history, overrun costs, zero-valued causes and long authored proposal names inside narrow sheet containers.
+- Both channels build successfully. Local Chromium play-throughs checked 32 states/outcomes at 669 × 951 and 400 × 951, including proposal details, council, funding, initiatives, budget, year-end and offline artifact font loading.
+- The seed-68790 Old Mill sequence still produces the identical recorded engine outcome: 3,342 people, $449K reserve, walkability 55, livability 60.8 and approval 55.2. The report now shows $810K − $545K + $184K = $449K.
+- All sampled controls retain their touch targets, no callout side bars or script errors appeared, and disclosure drawings redraw at their visible width. Map gesture checks still pass after scrolling to the map in the agenda-first page.
+- Engine, provider, save schema, dependencies and feature flags are unchanged. Browser checks use disposable saves; physical Duo/Safari and hosted Claude runtime remain separate release checks. GitHub CI and deployment status are recorded in the feature PR.

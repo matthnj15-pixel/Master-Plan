@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased (on dev)
+- Council desk layout (MP-059): the agenda leads the map, proposal decisions lead with votes and funding, and the Courier reconciles the year's reserve while keeping every recorded cause. Existing game rules and saves are preserved.
 - Light paper UI (MP-058): near-white cards, quieter outlines, smaller corners, more room around headings and sections, green primary actions and an offline-bundled Host Grotesk font. Callouts and council statements no longer use decorative side bars. The town map, Courier, turn loop and saves stay compatible.
 - Pitches earn what they say (MP-025): quick-tap and vague pitches move a member's lean by 3 points or less, specific ones by 10 or less, a favor by 15 or less. The AI judges how specific a typed pitch was, and the character's reply matches the credit.
 - Council members go on the record (MP-028): in a hearing, each member's statement says what they support, what they oppose, and what would change their vote. It updates as you change the plan.

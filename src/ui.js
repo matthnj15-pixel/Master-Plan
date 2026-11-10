@@ -150,6 +150,8 @@ function renderMeters(){
 /* ---------- panel ---------- */
 function openProposals(){return S.proposals.filter(p=>p.status==='open');}
 function renderPanel(){
+  $('#deskTitle').textContent=tab==='agenda'?`${calYear(S.year)} agenda`:tab==='council'?'Borough council':'Budget and services';
+  $('#deskNote').textContent=tab==='agenda'?(S.phase==='agenda'?`${openProposals().length} open proposal${openProposals().length===1?'':'s'}. Review the year's work, or bring an idea of your own.`:'Review your town and the next step in your term.'):'Decisions, people and resources for the year ahead.';
   document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===tab?'true':'false'));
   const el=$('#panel');
   if(tab==='agenda')el.innerHTML=agendaHTML();
@@ -164,8 +166,7 @@ function itemHTML(p,i){
 function agendaHTML(){
   let h='';const props=S.proposals;let i=0;const seen=new Set();
   if(S.phase==='election')h+=`<div class="box"><b>Election day.</b><div class="note">Your first term is over. Make your case to Millbrook voters.</div><div style="margin-top:10px"><button class="btn gold" data-act="election">Go to the polls</button></div></div>`;
-  if(S.phase==='agenda')h+=E.canProposeInitiative(S)?`<div class="box"><b>Your initiative</b><div class="note" style="margin-top:4px">Put one idea of your own on the agenda each year. Describe it in your words and the borough planner turns it into a plan with real costs.</div><div style="margin-top:10px"><button class="btn gold" data-act="initiative">Propose an idea</button></div></div>`:`<div class="note">Your initiative for ${calYear(S.year)} is on the agenda.</div>`;
-  h+=`<div class="sect"><span>${calYear(S.year)} agenda</span><span>${S.capital} political favor${S.capital===1?'':'s'}</span></div><div class="stack">`;
+  h+=`<div class="sect"><span>Proposals to review</span><span>${S.capital} political favor${S.capital===1?'':'s'}</span></div><div class="stack">`;
   if(!props.length)h+=`<div class="note">No new proposals this year. End the year to let the town grow.</div>`;
   for(const p of props){
     if(seen.has(p.id))continue;
@@ -174,6 +175,7 @@ function agendaHTML(){
     else{seen.add(p.id);h+=itemHTML(p,i++);}
   }
   h+='</div>';
+  if(S.phase==='agenda')h+=E.canProposeInitiative(S)?`<button class="item initiative-item" data-act="initiative"><span class="no">+</span><span class="grow"><span class="t">Bring your own idea</span><span class="m">One initiative available this year. Choose plots or describe what to change.</span></span></button>`:`<p class="note">Your initiative for ${calYear(S.year)} is on the agenda.</p>`;
   const pend=S.pending;
   if(pend.length)h+=`<div class="sect"><span>Under construction</span></div><div class="stack">${pend.map(pj=>`<div class="row"><span>${esc(pj.title)}</span><span>${Math.round(pj.odds*100)}% on time</span></div>`).join('')}</div>`;
   const built=S.built;
@@ -203,6 +205,9 @@ function budgetHTML(){
 }
 function renderBar(){
   const open=openProposals().length;
+  const review=$('#reviewBtn'),next=S.phase==='agenda'&&!picking?openProposals()[0]:null;
+  review.hidden=!next;if(next)review.dataset.open=next.id;else delete review.dataset.open;
+  document.querySelector('.actionbar .in').classList.toggle('single-action',!next);
   const btn=$('#endBtn');
   if(picking){const n=picking.size;btn.hidden=true;
     $('#barnote').innerHTML=`<div class="pickbar"><span id="plotCount" data-count="${n}"><b>${n}</b> plot${n===1?'':'s'} selected</span><button class="btn sm" data-act="clearPlots">Clear all</button><button class="btn sm" data-act="plotsCancel">Cancel</button><button class="btn primary sm" data-act="plotsDone" ${n?'':'disabled'}>Done</button></div>`;return;}
@@ -210,7 +215,7 @@ function renderBar(){
   const ai=aiState==='on'?(AI?.offline?'Offline AI ready':'AI characters on'):aiState==='checking'?(localLoading?'Loading Offline AI…':'Connecting AI characters…'):'AI off: quick options only';
   if(S.phase==='election'){btn.textContent='Go to the polls';btn.className='btn gold';}
   else if(S.phase==='bankrupt'||S.phase==='lost'||S.phase==='ended'){btn.textContent='Start a new town';btn.className='btn primary';}
-  else{btn.textContent=`End ${calYear(S.year)}`;btn.className='btn primary';}
+  else{btn.textContent=`End ${calYear(S.year)}`;btn.className=next?'btn':'btn primary';}
   $('#barnote').innerHTML=S.phase==='agenda'?`${open?`<b>${open}</b> open item${open>1?'s':''} will lapse.`:'Agenda clear.'} <span style="opacity:.8">· ${ai}</span>`:`<span style="opacity:.8">${ai}</span>`;
 }
 
@@ -576,7 +581,9 @@ function openSheet(s){sheet=s;lobbyOpen=null;renderSheet();}
 function closeSheet(){sheet=null;$('#sheetRoot').innerHTML='';renderAll();}
 function renderSheet(){
   const root=$('#sheetRoot');if(!sheet){root.innerHTML='';return;}
-  const key=sheet.type+':'+(sheet.id||'');const prevScroll=root.dataset.key===key?(root.querySelector('.pane')?.scrollTop||0):0;root.dataset.key=key;
+  const key=sheet.type+':'+(sheet.id||''),sameSheet=root.dataset.key===key;
+  const prevScroll=sameSheet?(root.querySelector('.pane')?.scrollTop||0):0;
+  const openDetails=sameSheet?[...root.querySelectorAll('details')].map((el,i)=>el.open?i:-1):[];root.dataset.key=key;
   let head='',body='';
   if(sheet.type==='proposal'){[head,body]=proposalSheet(S.proposals.find(p=>p.id===sheet.id));}
   else if(sheet.type==='hearing'){[head,body]=hearingSheet();}
@@ -586,11 +593,26 @@ function renderSheet(){
   else if(sheet.type==='over'){[head,body]=overSheet();}
   else if(sheet.type==='initiative'){[head,body]=initiativeSheet();}
   root.innerHTML=`<div class="sheet" role="dialog" aria-modal="true"><div class="pane"><div class="sh-head"><div style="min-width:0">${head}</div>${sheet.type==='report'||sheet.type==='election'||sheet.type==='over'?'':'<button class="iconbtn" data-act="close" aria-label="Close"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>'}</div><div class="sh-body">${body}</div></div></div>`;
+  root.querySelectorAll('details').forEach((el,i)=>{el.open=openDetails.includes(i);});
   const pane=root.querySelector('.pane');pane.scrollTop=prevScroll;
   root.querySelectorAll('canvas.plan').forEach(cv=>{const p=S.proposals.find(q=>q.id===cv.dataset.p);if(p)drawPlan(cv,p);});
   root.querySelectorAll('.chat').forEach(c=>c.scrollTop=c.scrollHeight);
 }
 function fcRow(label,v,unit,invert,dec=1){if(!v)return'';return`<div><span>${label}</span><b class="${cls(v,invert)}">${sgn(v,dec)}${unit||''}</b></div>`;}
+function voteSummary(p){
+  if(!p.council||p.status!=='open')return'';
+  const fv=E.forecastVote(S,p,p.id),yes=fv.tally[p.id]||0;
+  const tallies=fv.options.map(id=>`${S.proposals.find(q=>q.id===id)?.title||id}: ${fv.tally[id]||0}`).concat(`No: ${fv.tally.no||0}`);
+  const winner=S.proposals.find(q=>q.id===fv.winner);
+  const note=fv.winner===p.id?'This plan would pass.':winner?`${winner.title} would pass instead.`:`This plan needs ${Math.max(0,3-yes)} more vote${3-yes===1?'':'s'}. No plan has a majority.`;
+  return`<section class="box decision-summary" aria-label="Council forecast"><div class="summary-heading"><b>Council forecast</b><span class="pill council">Needs 3 of 5</span></div><div class="summary-number" data-summary="votes">${yes} of 5 <span>prefer this plan</span></div><p class="note">${esc(tallies.join(' · '))}</p><p class="note">${esc(note)}${fv.options.length>1?' Supporting a plan and preferring it to its competitor are different.':''}</p></section>`;
+}
+function fundingSummary(p){
+  const e=E.effectsOf(p),fund=E.fundingOptions(S,p),left=S.cash-e.cost;
+  return`<section class="box decision-summary" data-summary="funding" aria-label="Funding forecast"><div class="summary-heading"><div><div class="eyebrow">Borough cost</div><div class="summary-number">${fmtK(e.cost)}${e.costHigh>e.cost*1.05?` <span>to ${fmtK(e.costHigh)}</span>`:''}</div></div><span class="pill ok">${Math.round(E.deliveryOdds(S,p)*100)}% delivery odds</span></div>
+  <div class="summary-stats"><div><span>Reserve now</span><b>${fmtK(S.cash)}</b></div><div><span>After cash payment</span><b class="${left<0?'dn':''}" data-summary="cash-after">${fmtK(left)}</b></div><div><span>Upkeep each year</span><b>${fmtK(e.upkeep)}</b></div></div>
+  <p class="note">${fund.cash?'Cash balance is before annual income and expenses.':'Not enough cash for this plan. Cash approval is unavailable; a bond remains available.'}${e.costHigh>e.cost*1.05?` At the high cost estimate, ${fmtK(S.cash-e.costHigh)} would remain.`:''} A 10-year bond is ${fmtK(fund.bondAnnual)}/yr, plus upkeep.</p></section>`;
+}
 function planChips(p){const sch=E.KINDS[p.kind].params;const def=p.kind==='initiative'?E.defaultPlan('initiative'):null;return Object.entries(sch).filter(([k])=>!def||k==='quality'||p.plan[k]!==def[k]).map(([k,s])=>{const v=p.plan[k];const t=s.type==='bool'?(v?'Yes':'No'):s.type==='enum'?(s.labels?.[v]||v):v;return`<span>${esc(s.label)}: <b>${esc(t)}</b></span>`;}).join('');}
 function chatHTML(arr,who){return `<div class="chat" aria-live="polite">${(arr||[]).map(m=>m.who==='sys'?`<div class="msg sys">${esc(m.text)}</div>`:`<div class="msg ${m.who}">${m.who==='them'?`<div class="who">${esc(who)}</div>`:''}${esc(m.text)}</div>`).join('')}${busy?'<div class="thinking">Thinking…</div>':''}</div>`;}
 function proposalSheet(p){
@@ -601,7 +623,11 @@ function proposalSheet(p){
   const fund=E.fundingOptions(S,p);
   const head=`<div class="eyebrow">${p.mine?'Your initiative · drafted by '+esc(pr.name):(p.council?'Council item':'Within your authority')+' · '+esc(pr.role)}</div><h2>${esc(p.title)}</h2>`;
   const g=open?E.grantInfo(S,p):null;const site=E.PARCELS[p.site];
-  let body=`<canvas class="plan" data-p="${p.id}" aria-label="Site plan drawing"></canvas>
+  let body=`${open?voteSummary(p)+fundingSummary(p):''}
+  <div class="box"><div class="sect" style="margin-top:0"><span>Forecast</span><span>${fmtK(e.cost)}${e.costHigh>e.cost*1.05?' to '+fmtK(e.costHigh):''}</span></div>
+  <div class="fc">${fcRow('Upkeep/yr',-e.upkeep,'K',false,0)}${fcRow('Jobs',e.jobs,'',false,0)}${fcRow('Storefronts',e.units,'',false,0)}${fcRow('Residents housed',e.housing,'',false,0)}${fcRow('Walkability',e.walk,'')}${fcRow('Livability',e.live,'')}${fcRow('Business',e.conf+(e.downtown||0)/2,'')}${p.demo&&p.demo.residents?fcRow('Residents displaced',-p.demo.residents,'',false,0):''}${p.demo&&p.demo.storefronts?fcRow('Storefronts lost',-p.demo.storefronts,'',false,0):''}${fcRow('Safety',e.safety,'')}${fcRow('Affordability',e.afford,'')}${fcRow('Flood risk',(e.creek||0)*5+e.parking/35-(e.storm||0)*4,'%',true,0)}${fcRow('Approval',e.approval,'')}${fcRow('Property value/yr',e.prop*100,'%',false,1)}${fcRow('Farm fields',-e.farm,'',false,0)}</div>
+  <div class="note" style="margin-top:8px">${e.notes.map(esc).join('. ')}.</div>${p.demo&&(p.demo.landmarks.length||p.demo.projects.length)?`<div class="msg sys" style="margin-top:8px">Tears down ${esc(p.demo.landmarks.concat(p.demo.projects).join(' and '))}.</div>`:''}</div>
+
   ${rival?`<div class="msg sys">Competes with <b>${esc(rival.title)}</b> for the same lot.</div>`:''}
   <div class="note">${esc(p.blurb)}${p.blurb&&!/[.!?]$/.test(p.blurb.trim())?'.':''}${p.petition?` <b>${p.petition} residents signed a petition for it.</b>`:''}${p.plots&&p.plots.length?` <b>Site:</b> ${p.plots.length} plot${p.plots.length>1?'s':''} (${esc(plotSummary(p.plots))}).`:site?` <b>Site:</b> ${esc(site.name)}, ${esc(site.blurb.toLowerCase())}.`:p.kind==='initiative'?' <b>No site:</b> this is a program or ordinance.':''}</div>
   ${p.outOfScope?`<div class="msg sys">${esc(p.outOfScope)}</div>`:''}
@@ -609,10 +635,9 @@ function proposalSheet(p){
   ${g?`<div class="box"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><div style="min-width:0"><b>Apply for a ${esc(g.agency)}</b><div class="note">Covers ${Math.round(g.share*100)}% if awarded. ${Math.round(g.odds*100)}% odds. Applying tables this item until next year, and the decision comes with your year-end report.</div></div><button class="btn sm" data-grant="${p.id}">Apply and wait</button></div></div>`:''}
   <div class="box"><div class="stats3"><div><div class="l">Relationship</div><div class="v">${Math.round(rel)}</div></div><div><div class="l">Competency</div><div class="v">${pr.comp}</div></div><div><div class="l">Plan detail</div><div class="v">${pr.detail}</div></div></div>
   <div class="note" style="margin-top:8px">${Math.round(odds*100)}% chance ${esc(pr.name)}'s team delivers on time and on budget.${pr.detail<60?' This plan is thin on detail, so the real cost could run higher.':''}</div></div>
-  <div><div class="sect" style="margin-top:0"><span>The plan</span></div><div class="planlist">${planChips(p)}</div></div>
-  <div class="box"><div class="sect" style="margin-top:0"><span>Forecast</span><span>${fmtK(e.cost)}${e.costHigh>e.cost*1.05?' to '+fmtK(e.costHigh):''}</span></div>
-  <div class="fc">${fcRow('Upkeep/yr',-e.upkeep,'K',false,0)}${fcRow('Jobs',e.jobs,'',false,0)}${fcRow('Storefronts',e.units,'',false,0)}${fcRow('Residents housed',e.housing,'',false,0)}${fcRow('Walkability',e.walk,'')}${fcRow('Livability',e.live,'')}${fcRow('Business',e.conf+(e.downtown||0)/2,'')}${p.demo&&p.demo.residents?fcRow('Residents displaced',-p.demo.residents,'',false,0):''}${p.demo&&p.demo.storefronts?fcRow('Storefronts lost',-p.demo.storefronts,'',false,0):''}${fcRow('Safety',e.safety,'')}${fcRow('Affordability',e.afford,'')}${fcRow('Flood risk',(e.creek||0)*5+e.parking/35-(e.storm||0)*4,'%',true,0)}${fcRow('Approval',e.approval,'')}${fcRow('Property value/yr',e.prop*100,'%',false,1)}${fcRow('Farm fields',-e.farm,'',false,0)}</div>
-  <div class="note" style="margin-top:8px">${e.notes.map(esc).join('. ')}.</div>${p.demo&&(p.demo.landmarks.length||p.demo.projects.length)?`<div class="msg sys" style="margin-top:8px">Tears down ${esc(p.demo.landmarks.concat(p.demo.projects).join(' and '))}.</div>`:''}</div>`;
+
+  <details class="plan-details"><summary>See the site plan and proposal details</summary><div class="details-content"><canvas class="plan" data-p="${p.id}" aria-label="Site plan drawing"></canvas>  <div><div class="sect" style="margin-top:0"><span>The plan</span></div><div class="planlist">${planChips(p)}</div></div>
+</div></details>`;
   if(open){
     const chips=E.KINDS[p.kind].chips.map((c,i)=>`<button class="chip" data-chip="${i}">${esc(c.label)}</button>`).join('');
     body+=`<div class="box"><div class="sect" style="margin-top:0"><span>Negotiate with ${esc(pr.name)}</span></div>${chatHTML(S.chats[chatKey],pr.name)}
@@ -638,11 +663,14 @@ function hearingSheet(){
   let body='';
   if(opts.length>1)body+=`<div><div class="sect" style="margin-top:0"><span>The plan you back</span></div><div class="seg" role="group">${opts.map(o=>`<button aria-pressed="${o.id===champ.id}" data-champ="${o.id}">${esc(o.title)}</button>`).join('')}</div><div class="note" style="margin-top:6px">Greg Marsh pushes back on whatever you back. Lobbying only helps the plan you back.</div></div>`;
   const tallyTxt=fv.options.map(id=>`<span class="pill ${fv.winner===id?'ok':''}">${esc(opts.find(o=>o.id===id).title)}: ${fv.tally[id]||0}</span>`).join('')+`<span class="pill">No: ${fv.tally.no||0}</span>`;
-  body+=`<div class="box"><div class="sect" style="margin-top:0"><span>If the vote were today</span></div><div class="tally">${tallyTxt}</div><div class="note" style="margin-top:6px">${fv.winner?`${esc(opts.find(o=>o.id===fv.winner).title)} would pass${fv.winner!==champ.id?', not the plan you back':''}.`:'No plan has 3 votes. The motion would fail and both plans would be tabled.'}</div></div>`;
+  body+=`<div class="box"><div class="sect" style="margin-top:0"><span>If the vote were today</span></div><div class="tally">${tallyTxt}</div><div class="note" style="margin-top:6px">${fv.winner?`${esc(opts.find(o=>o.id===fv.winner).title)} would pass${fv.winner!==champ.id?', not the plan you back':''}.`:opts.length>1?'No plan has 3 votes. The motion would fail and both plans would be tabled.':'This plan has fewer than 3 votes. The motion would fail.'}</div></div>`;
+  body+=`${fundingSummary(champ)}<div class="box"><div class="sect" style="margin-top:0"><span>Pay for ${esc(champ.title)}</span><span>${fmtK(e.cost)}</span></div>
+  <div class="seg" role="group"><button aria-pressed="${sheet.funding==='cash'}" data-fund="cash" ${fund.cash?'':'disabled'}>Cash from reserve</button><button aria-pressed="${sheet.funding==='bond'}" data-fund="bond">10-yr bond · ${fmtK(fund.bondAnnual)}/yr</button></div>
+  <div class="note" style="margin-top:6px">If the council passes a different plan, it's paid the same way.</div></div>`;
   body+=`<div class="sect"><span>Make your case</span><span>${S.capital} favor${S.capital===1?'':'s'} · ${fmtK(S.cash)}</span></div><div class="stack">`;
   for(const v of fv.votes){const m=E.COUNCIL.find(c=>c.id===v.member);const used=(S.lobbyCount&&S.lobbyCount[m.id])||0;const left=Math.max(0,2-used);
     const isOpen=lobbyOpen===m.id;const ck='lobby:'+m.id+':'+champ.id;
-    body+=`<div class="member"><div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><div><div class="nm">${esc(m.name)}${m.rival?'<span class="tag">Rival</span>':''}</div><div class="note">${esc(m.seat)} · cares about ${Object.values(m.pri).slice(0,3).map(esc).join(', ')}</div></div><span class="pill ${v.vote===champ.id?'ok':v.vote==='no'?'':'no'}">${v.vote==='no'?'Voting no':esc(opts.find(o=>o.id===v.vote).title.split(' ').slice(-1)[0])}</span></div>
+    body+=`<div class="member"><div class="member-head" style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><div><div class="nm">${esc(m.name)}${m.rival?'<span class="tag">Rival</span>':''}</div><div class="note">${esc(m.seat)} · cares about ${Object.values(m.pri).slice(0,3).map(esc).join(', ')}</div></div><span class="pill ${v.vote===champ.id?'ok':v.vote==='no'?'':'no'}">${v.vote==='no'?'Voting no':'Prefers '+esc(opts.find(o=>o.id===v.vote).title)}</span></div>
     <p class="statement"><span class="eyebrow">On the record</span> “${esc(E.memberStatement(S,m,champ,champ.id).text)}”</p>
     <div class="leans">${v.leans.map(l=>`<div class="lean"><span>${esc(opts.find(o=>o.id===l.id).title.replace('Old Mill ',''))}</span><div class="bar"><i class="${l.lean>=50?'yes':''}" style="width:${l.lean}%"></i></div><span>${l.lean}%</span></div>`).join('')}</div>
     ${isOpen?`<div style="margin-top:10px">${chatHTML(S.chats[ck],m.name)}
@@ -650,9 +678,7 @@ function hearingSheet(){
       ${left&&aiReady()?`<form class="composer" data-form="lobby"><textarea id="lobbyInput" rows="2" placeholder="Make your pitch to ${esc(m.name.split(' ').slice(-1)[0])}…" aria-label="Your pitch"></textarea><button class="btn primary" ${busy?'disabled':''}>Send</button></form>`:''}
       <div class="note">${left?`${left} pitch${left>1?'es':''} left this year.`:'No pitches left this year. Favors and earmarks still work.'}</div></div>`
       :`<div style="margin-top:8px"><button class="btn sm" data-lobby="${m.id}">Talk to ${esc(m.name.split(' ').slice(-1)[0])}</button></div>`}</div>`;}
-  body+=`</div><div class="box"><div class="sect" style="margin-top:0"><span>Pay for ${esc(champ.title)}</span><span>${fmtK(e.cost)}</span></div>
-  <div class="seg" role="group"><button aria-pressed="${sheet.funding==='cash'}" data-fund="cash" ${fund.cash?'':'disabled'}>Cash from reserve</button><button aria-pressed="${sheet.funding==='bond'}" data-fund="bond">10-yr bond · ${fmtK(fund.bondAnnual)}/yr</button></div>
-  <div class="note" style="margin-top:6px">If the council passes a different plan, it's paid the same way.</div></div>
+  body+=`</div>
   <div class="sh-actions"><button class="btn primary" data-act="vote">Call the vote</button></div>`;
   return[head,body];
 }
@@ -702,12 +728,31 @@ Return only JSON: {"title": "name of at most 6 words", "summary": "one plain sen
 function reportSheet(){
   const r=S.reports.filter(x=>x.after).slice(-1)[0];
   const head=`<div class="eyebrow">Year-end report</div><h2>${calYear(r.year)} in review</h2>`;
-  const big=r.causes.filter(c=>c.v||c.m==='pop').slice().sort((a,b)=>Math.abs(b.v)-Math.abs(a.v));
+  const prior=S.reports.filter(x=>x.after&&x.year===r.year-1).at(-1);
+  const opening=prior?.after||(r.year===1&&S.history.length>=2?S.history[0]:null);
+  const before=opening||r.before;
+  const ledgerMoney=v=>(v<0?'−':'')+'$'+Math.abs(Math.round(v)).toLocaleString('en-US')+'K';
+  const value=(key,v)=>!Number.isFinite(v)?'—':key==='cash'?ledgerMoney(v):key==='pop'?Math.round(v).toLocaleString():String(Math.round(v*10)/10);
+  const moneyDelta=v=>v>0?'+'+ledgerMoney(v):ledgerMoney(v);
+  const decisions=r.before.cash-before.cash,other=r.after.cash-r.before.cash-r.budget.net;
+  const titles=[...S.built,...Object.values(E.P_DEFS)].map(p=>p.title).filter(Boolean);
+  const isProject=c=>titles.some(title=>c.r.includes(title))||/^(Ribbon cutting:|Displaced |Tore down |You rejected |Grant |No clawback:|Clawback |Property tax |Impact fees )/.test(c.r);
+  const causes=items=>items.map(c=>`<div class="cause"><span class="k">${causeLabel(c.m)}</span><span>${esc(c.r)}</span><span class="n ${cls(c.v)}">${c.v?(c.m==='cash'?moneyDelta(c.v):sgn(c.v,c.m==='pop'?0:1)):''}</span></div>`).join('');
+  const projects=r.causes.filter(isProject),response=r.causes.filter(c=>!isProject(c));
   const hl=r.headline||fallbackHeadline(r);
   let body=`<div class="courier"><div class="mast">The Millbrook Courier</div><div class="dl"><span>December 31, ${calYear(r.year)}</span><span>Price 50¢</span></div><h3>${esc(hl.headline)}</h3><p>${esc(hl.lede)}</p>${r.headlineLoading?'<p class="thinking" style="margin-top:6px">Updating the story…</p>':''}</div>
-  <div class="box"><div class="sect" style="margin-top:0"><span>What changed and why</span></div>${big.map(c=>`<div class="cause"><span class="k">${causeLabel(c.m)}</span><span>${esc(c.r)}</span><span class="n ${cls(c.v)}">${c.v?(c.m==='cash'?(c.v>0?'+':'−')+fmtK(Math.abs(c.v)):sgn(c.v,c.m==='pop'?0:1)):''}</span></div>`).join('')}</div>
-  <div class="box"><div class="sect" style="margin-top:0"><span>Budget</span><span class="${cls(r.budget.net)}">${r.budget.net>=0?'+':'−'}${fmtK(Math.abs(r.budget.net))}</span></div>
-  <div class="row"><span>Taxes collected</span><span>${fmtK(r.budget.propTax+r.budget.comTax)}</span></div><div class="row"><span>Services and upkeep</span><span>−${fmtK(r.budget.services+r.budget.upkeep)}</span></div>${r.budget.bonds?`<div class="row"><span>Bond payments</span><span>−${fmtK(r.budget.bonds)}</span></div>`:''}</div>`;
+  <div class="report-highlights">${['walk','live','pop'].map(key=>`<div class="box"><span class="note">${METER_LABEL[key]}</span><b>${value(key,before[key])} → ${value(key,r.after[key])}</b><span class="note ${cls(r.after[key]-before[key])}">${sgn(r.after[key]-before[key],key==='pop'?0:1)} net</span></div>`).join('')}</div>
+  <section class="box" aria-label="Cash reconciliation"><div class="summary-heading"><b>Follow the money</b><span class="pill">Net ${moneyDelta(r.after.cash-before.cash)}</span></div>
+  <div class="row"><span>${opening?'Start of '+calYear(r.year):'Before year-end resolution'}</span><span data-ledger="opening">${ledgerMoney(before.cash)}</span></div>
+  ${opening?`<div class="row"><span>Decisions and payments before year end</span><span data-ledger="decisions">${moneyDelta(decisions)}</span></div>`:''}
+  <div class="row"><span>Annual budget, including bond payments</span><span data-ledger="budget">${moneyDelta(r.budget.net)}</span></div>
+  ${Math.abs(other)>=.5?`<div class="row"><span>Other year-end changes</span><span data-ledger="other">${moneyDelta(other)}</span></div>`:''}
+  <div class="row"><b>Reserve at year end</b><b data-ledger="closing">${ledgerMoney(r.after.cash)}</b></div>
+  <p class="note">${opening?'The annual surplus is separate from cash paid for decisions.':'Showing the recorded balance before year-end resolution; an opening-year balance is not available.'}</p></section>
+  ${projects.length?`<section class="box"><h3>Decisions and projects</h3>${causes(projects)}</section>`:''}
+  ${response.length?`<section class="box"><h3>The town responded</h3>${causes(response)}</section>`:''}
+  <details class="report-measures"><summary>All nine town measures</summary><div class="details-content">${Object.keys(METER_LABEL).map(key=>`<div class="row" data-meter="${key}"><span>${METER_LABEL[key]}</span><span>${value(key,before[key])} → ${value(key,r.after[key])}</span></div>`).join('')}<p class="note">Jobs is the town's jobs score relative to its population, rather than a count of positions.</p></div></details>
+  <details><summary>Annual budget detail</summary><div class="details-content"><div class="row"><span>Taxes collected</span><span>${fmtK(r.budget.propTax+r.budget.comTax)}</span></div><div class="row"><span>Services and upkeep</span><span>−${fmtK(r.budget.services+r.budget.upkeep)}</span></div><div class="row"><span>Bond payments</span><span>−${fmtK(r.budget.bonds)}</span></div></div></details>`;
   const next=S.phase==='election'?'<button class="btn gold" data-act="election">Go to the polls</button>':S.phase==='bankrupt'?'<button class="btn danger" data-act="over">See what happened</button>':`<button class="btn primary" data-act="close">Start ${calYear(S.year)}</button>`;
   body+=`<div class="sh-actions">${next}</div>`;return[head,body];
 }
@@ -897,7 +942,8 @@ document.addEventListener('click',ev=>{
   if(d.theme){S.election.theme=d.theme;renderSheet();return;}
   if(d.resp){debateAnswer(RESP[d.resp],d.resp);return;}
   const a=d.act;if(!a)return;
-  if(a==='close'){closeSheet();}
+  if(a==='showMap'){$('#map').scrollIntoView({block:'center'});}
+  else if(a==='close'){closeSheet();}
   else if(a==='offlineOff'){void turnOffOfflineAI();}
   else if(a==='vote')callVote();
   else if(a==='election'){openSheet({type:'election'});startElection();}
@@ -914,6 +960,7 @@ document.addEventListener('click',ev=>{
   else if(a==='plotsDone'){finishPicking(true);}
   else if(a==='plotsCancel'){finishPicking(false);}
 });
+document.addEventListener('toggle',ev=>{if(ev.target.matches?.('.plan-details')&&ev.target.open)ev.target.querySelectorAll('canvas.plan').forEach(cv=>{const p=S.proposals.find(q=>q.id===cv.dataset.p);if(p)drawPlan(cv,p);});},true);
 document.addEventListener('submit',ev=>{ev.preventDefault();const f=ev.target.dataset.form;
   if(f==='neg'){const v=$('#negInput').value.trim();if(v)negotiate(S.proposals.find(q=>q.id===sheet.id),v.slice(0,600),null);}
   if(f==='lobby'){const v=$('#lobbyInput').value.trim();if(v)lobby(lobbyOpen,v.slice(0,600),null);}
