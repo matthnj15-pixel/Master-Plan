@@ -131,3 +131,37 @@ test('MP-015 MP-026 MP-033 shared illustrated fixtures use the same accepted may
  assert.equal(result.status,'ready');assert.deepEqual(result.proposal.plan,revision.plan);assert.deepEqual(result.proposal.plots,mayoral.plots);
  assert.deepEqual(result.forecast.after,E.effectsOf(revision));assert.equal(JSON.stringify(state),before);
 });
+
+test('MP-015 MP-032 MP-033 revisions cannot convert a no-site ordinance into unsited construction',async()=>{
+ const state=game(),proposal=E.makeInitiative(state,{title:'Parking reform',plan:{policy:'parking_reform'}}),runner=createPlanRunner({engine:E});
+ const original=JSON.stringify(state),intent='Add twenty homes to this ordinance';
+ const result=await runner.run({mode:'revise',state,proposal,provider:provider({changes:{homes:20},mood:'warmer'}),intent});
+ assert.equal(result.status,'unsupported');assert.match(result.blocker,/no (?:construction )?site/i);assert.equal(result.intent,intent);
+ assert.equal(runner.accept(result,{apply:()=>assert.fail('unsited construction cannot commit')}),false);assert.equal(JSON.stringify(state),original);
+});
+
+test('MP-015 MP-032 MP-033 revisions cannot leave demolition plots attached to a policy-only proposal',async()=>{
+ const state=game(),plots=E.SITES.oldmill,proposal=E.makeInitiative(state,{title:'Old Mill Homes',plots,plan:{homes:20}}),runner=createPlanRunner({engine:E});
+ const original=JSON.stringify(state),intent='Remove the homes and enact parking reform instead';
+ const result=await runner.run({mode:'revise',state,proposal,provider:provider({changes:{homes:0,policy:'parking_reform'}}),intent});
+ assert.equal(result.status,'unsupported');assert.match(result.blocker,/ordinance|policy-only/i);assert.equal(result.intent,intent);
+ assert.equal(runner.accept(result,{apply:()=>assert.fail('policy-only plot demolition cannot commit')}),false);assert.equal(JSON.stringify(state),original);
+});
+
+test('MP-015 MP-033 physical initiative revisions recheck fixed plot legality before inference',async()=>{
+ const state=game(),proposal=E.makeInitiative(state,{title:'Old Mill Homes',plots:E.SITES.oldmill,plan:{homes:20}}),runner=createPlanRunner({engine:E});
+ state.grid[12*E.N+6].road=true;const original=JSON.stringify(state);let calls=0;
+ const result=await runner.run({mode:'revise',state,proposal,provider:{json:async()=>{calls++;return{changes:{homes:30}};}},intent:'Add ten homes'});
+ assert.equal(result.status,'invalid');assert.match(result.blocker,/plot.*cannot be used/i);assert.equal(calls,0);assert.equal(JSON.stringify(state),original);
+});
+
+test('MP-033 explicit alternative creek sites require clarification while creek buffers remain context',async()=>{
+ const state=game(),runner=createPlanRunner({engine:E});
+ for(const intent of ['Build homes at the Old Mill lot or the Kish Creek bank','Build homes at Old Mill or creek bank','Build homes at Old Mill or the creek']){
+  let calls=0;const result=await runner.run({state,provider:{json:async()=>{calls++;return draft();}},intent});
+  assert.equal(result.status,'invalid',intent);assert.match(result.blocker,/more than one site/i);assert.equal(calls,0);
+ }
+ const intent='Build homes at the Old Mill lot with a creek buffer';
+ const contextual=await runner.run({state,provider:provider(draft({homes:20,green:1})),intent});assert.equal(contextual.status,'ready');assert.deepEqual(contextual.draft.plots,E.SITES.oldmill);
+ const selected=await runner.run({state,provider:provider(draft()),intent:'Build homes at Old Mill or the Kish Creek bank',plots:[[6,12]]});assert.equal(selected.status,'ready');assert.deepEqual(selected.draft.plots,[[6,12]]);
+});

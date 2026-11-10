@@ -20,7 +20,7 @@ const PLAN_REQUESTS = (() => {
     function namedSite(intent) {
       const lower = intent.toLowerCase();
       const matches = [];
-      for (const [id, place] of Object.entries(E.PLACES)) for (const word of [...place.kw, id.replaceAll('_', ' '), ...(id === 'school_lot' ? ['behind the elementary school', 'behind elementary school'] : [])]) {
+      for (const [id, place] of Object.entries(E.PLACES)) for (const word of [...place.kw, place.name.toLowerCase(), id.replaceAll('_', ' '), ...(id === 'school_lot' ? ['behind the elementary school', 'behind elementary school'] : []), ...(id === 'creekside' ? ['creek bank'] : [])]) {
         let pos = lower.indexOf(word);
         while (pos !== -1) {
           const end = pos + word.length;
@@ -32,7 +32,9 @@ const PLAN_REQUESTS = (() => {
       // the generic keyword contained inside it. A creek buffer is context when
       // a different named parcel has already been identified.
       let filtered = matches.filter(m => !matches.some(n => n.id !== m.id && n.pos <= m.pos && n.end >= m.end && n.word.length > m.word.length));
-      if (filtered.some(m => m.id !== 'creekside')) filtered = filtered.filter(m => m.id !== 'creekside' || !['creek', 'riverfront', 'waterfront'].includes(m.word));
+      if (filtered.some(m => m.id !== 'creekside')) filtered = filtered.filter(m =>
+        m.id !== 'creekside' || !['creek', 'riverfront', 'waterfront'].includes(m.word) ||
+        /\b(?:or|and)\s+(?:the\s+)?(?:kish\s+)?$/.test(lower.slice(0, m.pos)));
       return [...new Set(filtered.map(m => m.id))];
     }
 
@@ -192,7 +194,14 @@ const PLAN_REQUESTS = (() => {
         constraints.push(...(candidate.fitNotes || []));
       } else {
         candidate = { ...clone(target), plan: validated.plan };
-        if (kind === 'initiative') constraints.push(...E.refitInitiative(state, candidate));
+        if (kind === 'initiative') {
+          const plots = E.plotsOf(target);
+          if (E.needsSite(candidate.plan) && !plots.length) return { unsupported: 'This proposal has no construction site. Keep this revision policy-only, or choose a site when drafting a separate physical initiative. Your original intent is still available.' };
+          if (!E.needsSite(candidate.plan) && plots.length) return { unsupported: 'This revision would leave only an ordinance on construction plots. Keep a supported physical feature or draft a separate no-site ordinance. The proposal’s plots have not changed.' };
+          const bad = legalPlots(state, plots); if (bad) return { error: bad };
+          constraints.push(...E.refitInitiative(state, candidate));
+          if (plots.length && !E.needsSite(candidate.plan)) return { unsupported: 'Fitting this revision would remove every physical feature from its construction plots. Keep a supported physical feature or draft a separate no-site ordinance. The proposal’s plots have not changed.' };
+        }
       }
       const applied = Object.fromEntries(Object.keys(E.KINDS[kind].params).filter(key => !same(base[key], candidate.plan[key])).map(key => [key, candidate.plan[key]]));
       const forecast = { before: mode === 'revise' ? clone(E.effectsOf(target)) : null, after: clone(E.effectsOf(candidate)) };
@@ -210,6 +219,10 @@ const PLAN_REQUESTS = (() => {
       if (record.mode === 'draft') {
         if (record.selected.length) { const error = legalPlots(record.state, record.selected); if (error) return result(record, 'invalid', { blocker: error }); }
         else if (record.sites.length > 1) return result(record, 'invalid', { blocker: 'The description names more than one site. Choose plots or name one site.' });
+      }
+      if (record.mode === 'revise' && record.targetCopy.kind === 'initiative') {
+        const error = legalPlots(record.state, E.plotsOf(record.targetCopy));
+        if (error) return result(record, 'invalid', { blocker: error });
       }
       if (record.mode === 'briefing') {
         const event = options.event;
