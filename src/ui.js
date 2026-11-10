@@ -6,7 +6,8 @@ const WEB_AI=window.MP_WEB_BUILD && BUILD.flags.offlineAI;
 const planRunner=PLAN_REQUESTS.createPlanRunner({engine:E});
 let activePlanRequest=null;
 const WEB_AI_KEY='masterplan.offline-ai.'+BUILD.channel;
-let localLoading=false,localStatus='';
+const WEB_AI_STARTING_KEY=WEB_AI_KEY+'.starting';
+let offlineModel=null,localLoading=false,localStatus='';
 // Dev keeps its own save so experiments never touch the stable town.
 const SAVE_KEY=DEV?'masterplan.dev.save':'millbrook.v1',DB_DOC=DEV?'save-dev':'save';
 let picking=null,pendingInit=null; // MP-033: plot picking mode on the map
@@ -43,10 +44,17 @@ function loadLocal(){try{const t=localStorage.getItem(SAVE_KEY);if(t){const s=JS
 
 async function initCaps(){
   if(!window.claude?.use){
-    let savedModel;
-    if(WEB_AI)try{savedModel=localStorage.getItem(WEB_AI_KEY);}catch{}
-    if(savedModel)void connectOfflineAI(savedModel,false);
-    else{aiState='off';renderBar();}
+    let interrupted=false;
+    if(WEB_AI)try{
+      offlineModel=localStorage.getItem(WEB_AI_KEY);
+      interrupted=localStorage.getItem(WEB_AI_STARTING_KEY)==='1';
+    }catch{}
+    if(offlineModel&&!interrupted)void connectOfflineAI(offlineModel,false);
+    else{
+      aiState='off';
+      if(offlineModel)localStatus='Qwen startup was interrupted. Retry the cached model when ready.';
+      renderBar();
+    }
     return;
   }
   claude.use('sample').then(a=>{AI=a;aiState=a?'on':'off';renderBar();}).catch(()=>{aiState='off';renderBar();});
@@ -61,19 +69,33 @@ async function initCaps(){
 function showAIStatus(){
   renderBar();
   if(sheet?.type==='menu')renderSheet();
+  const status=$('#planQwenStatus');
+  if(status){
+    status.hidden=!!aiReady();
+    status.innerHTML=status.hidden?'':qwenWaitingHTML();
+    $('#sheetRoot [data-qwen-submit]').disabled=busy||!aiReady();
+  }
 }
 function storeOfflineModel(model){
+  offlineModel=model;
   try{
     if(model)localStorage.setItem(WEB_AI_KEY,model);
     else localStorage.removeItem(WEB_AI_KEY);
+  }catch{}
+}
+function markOfflineStartup(starting){
+  try{
+    if(starting)localStorage.setItem(WEB_AI_STARTING_KEY,'1');
+    else localStorage.removeItem(WEB_AI_STARTING_KEY);
   }catch{}
 }
 async function connectOfflineAI(model,download){
   if(!WEB_AI||window.claude?.use||localLoading||AI?.offline)return;
   localLoading=true;aiState='checking';
   localStatus=download?'Preparing the '+model+' model…':'Loading the saved '+model+' model…';
-  // If Safari terminates the page while loading, the next launch can recover.
-  storeOfflineModel(null);
+  // Keep the model choice if Safari terminates the page. Require a manual retry after interrupted startup.
+  markOfflineStartup(true);
+  storeOfflineModel(model);
   showAIStatus();
   try{
     const {startOfflineAI}=await import('./offline-ai.js');
@@ -82,35 +104,40 @@ async function connectOfflineAI(model,download){
       if(localStatus!==status){localStatus=status;showAIStatus();}
     }});
     aiState='on';localStatus=model+' model ready for offline play.';
-    storeOfflineModel(model);
   }catch(error){
     aiState='off';
-    localStatus=error.message?.slice(0,180)||'Could not start offline AI. Try again while online.';
+    localStatus=error?.message?.slice(0,180)||'Could not start offline AI. Try again while online.';
   }finally{
+    markOfflineStartup(false);
     localLoading=false;showAIStatus();
   }
 }
 async function turnOffOfflineAI(){
-  if(!AI?.offline||localLoading)return;
+  if(!offlineModel||localLoading)return;
   const provider=AI;
   cancelPlanRequest();AI=null;localLoading=true;aiState='off';localStatus='Turning off offline AI…';
-  storeOfflineModel(null);showAIStatus();
-  try{await provider.unload();}catch{}
+  storeOfflineModel(null);markOfflineStartup(false);showAIStatus();
+  try{await provider?.unload();}catch{}
   finally{
     localLoading=false;localStatus='Offline AI is off. Your download is still saved.';
     showAIStatus();
   }
 }
+const retryOfflineButton='<button type="button" class="btn" data-act="offlineRetry">Retry cached Qwen</button>';
 function offlineAIHTML(){
   if(!WEB_AI||window.claude?.use)return'';
-  const buttons=AI?.offline
-    ? '<button class="btn" data-act="offlineOff">Turn off Offline AI</button>'
-    : '<button class="btn primary" data-offline-model="1.5B">Download 1.5B · 880 MB</button><button class="btn" data-offline-model="3B">Try 3B · 1.75 GB</button>';
+  const buttons=(offlineModel?'<button class="btn" data-act="offlineOff">Turn off Offline AI</button>':'')+(AI?.offline?'':
+    (offlineModel?retryOfflineButton:'')+'<button class="btn primary" data-offline-model="1.5B">Download 1.5B · 880 MB</button><button class="btn" data-offline-model="3B">Try 3B · 1.75 GB</button>');
   return `<div class="box"><b>Offline AI</b>
     <div class="note" role="status" style="margin-top:6px">${esc(localStatus||'Open from your Home Screen, then download a Qwen2.5 model on Wi-Fi for offline play.')}</div>
     ${localLoading?'':`<div class="chips" style="margin-top:8px">${buttons}</div>`}
   </div>`;
 }
+function qwenPlanSelected(){return WEB_AI&&BUILD.flags.planRequests&&!!offlineModel;}
+function qwenWaitingHTML(){
+  return `<div class="msg sys" role="status">${esc(localStatus||'Qwen is waiting to load.')}</div>${localLoading?'':`<div class="chips" style="margin-top:8px">${retryOfflineButton}</div>`}`;
+}
+function qwenPlanStatus(){return `<div id="planQwenStatus" ${aiReady()?'hidden':''}>${aiReady()?'':qwenWaitingHTML()}</div>`;}
 
 /* ---------- AI ---------- */
 function aiReady(){return AI&&aiState==='on';}
@@ -221,7 +248,7 @@ function renderBar(){
   if(picking){const n=picking.size;btn.hidden=true;
     $('#barnote').innerHTML=`<div class="pickbar"><span id="plotCount" data-count="${n}"><b>${n}</b> plot${n===1?'':'s'} selected</span><button class="btn sm" data-act="clearPlots">Clear all</button><button class="btn sm" data-act="plotsCancel">Cancel</button><button class="btn primary sm" data-act="plotsDone" ${n?'':'disabled'}>Done</button></div>`;return;}
   btn.hidden=false;
-  const ai=aiState==='on'?(AI?.offline?'Offline AI ready':'AI characters on'):aiState==='checking'?(localLoading?'Loading Offline AI…':'Connecting AI characters…'):'AI off: quick options only';
+  const ai=aiState==='on'?(AI?.offline?'Offline AI ready':'AI characters on'):aiState==='checking'?(localLoading?'Loading Offline AI…':'Connecting AI characters…'):qwenPlanSelected()?'Offline AI needs a retry':'AI off: quick options only';
   if(S.phase==='election'){btn.textContent='Go to the polls';btn.className='btn gold';}
   else if(S.phase==='bankrupt'||S.phase==='lost'||S.phase==='ended'){btn.textContent='Start a new town';btn.className='btn primary';}
   else{btn.textContent=`End ${calYear(S.year)}`;btn.className=next?'btn':'btn primary';}
@@ -586,7 +613,7 @@ function drawPlan(cv,p){
 }
 
 /* ---------- sheets ---------- */
-function cancelPlanRequest(){if(activePlanRequest){activePlanRequest=null;busy=false;}}
+function cancelPlanRequest(){if(activePlanRequest){activePlanRequest.abort();activePlanRequest=null;busy=false;}}
 function openSheet(s){cancelPlanRequest();sheet=s;lobbyOpen=null;renderSheet();}
 function closeSheet(){cancelPlanRequest();sheet=null;$('#sheetRoot').innerHTML='';renderAll();}
 function renderSheet(){
@@ -608,7 +635,54 @@ function renderSheet(){
   root.querySelectorAll('canvas.plan').forEach(cv=>{const p=S.proposals.find(q=>q.id===cv.dataset.p);if(p)drawPlan(cv,p);});
   root.querySelectorAll('.chat').forEach(c=>c.scrollTop=c.scrollHeight);
 }
+function revealSheetElement(target){
+  const pane=$('#sheetRoot .pane'),head=$('#sheetRoot .sh-head');
+  if(pane&&target)pane.scrollTop+=target.getBoundingClientRect().top-pane.getBoundingClientRect().top-(head?.offsetHeight||0)-16;
+}
 function fcRow(label,v,unit,invert,dec=1){if(!v)return'';return`<div><span>${label}</span><b class="${cls(v,invert)}">${sgn(v,dec)}${unit||''}</b></div>`;}
+function forecastRows(p,e){
+  return [
+    ['upkeep','Upkeep/yr',-e.upkeep,'K',false,0],['jobs','Jobs',e.jobs,'',false,0],['units','Storefronts',e.units,'',false,0],
+    ['housing','Residents housed',e.housing,'',false,0],['walk','Walkability',e.walk],['live','Livability',e.live],
+    ['conf','Business',e.conf+(e.downtown||0)/2],['displaced','Residents displaced',-(p.demo?.residents||0),'',false,0],
+    ['lost','Storefronts lost',-(p.demo?.storefronts||0),'',false,0],['safety','Safety',e.safety],['afford','Affordability',e.afford],
+    ['flood','Flood risk',(e.creek||0)*5+e.parking/35-(e.storm||0)*4,'%',true,0],['approval','Approval',e.approval],
+    ['prop','Property value/yr',e.prop*100,'%'],['farm','Farm fields',-e.farm,'',false,0],
+  ];
+}
+function revisionSnapshot(town,p){
+  const effects=E.effectsOf(p,town),vote=p.council?E.forecastVote(town,p,p.id):null;
+  return {
+    cost:effects.cost,costHigh:effects.costHigh,delivery:Math.round(E.deliveryOdds(town,p)*100),
+    metrics:forecastRows(p,effects),
+    votes:vote?{count:vote.tally[p.id]||0,total:vote.votes.length,leans:vote.votes.map(v=>[v.member,v.leans.find(l=>l.id===p.id).lean])}:null,
+  };
+}
+function revisionSummary(revision,hasDrawing){
+  if(!revision)return '';
+  const {before,after}=revision;
+  const row=(key,label,from,to)=>`<div data-revision-field="${key}"><dt>${esc(label)}</dt><dd>${esc(from)} → ${esc(to)}</dd></div>`;
+  const cost=s=>fmtK(s.cost)+(s.costHigh>s.cost*1.05?` to ${fmtK(s.costHigh)}`:'');
+  let rows=row('cost','Borough cost',cost(before),cost(after));
+  if(after.votes){
+    const vote=s=>`${s.votes.count} of ${s.votes.total}`;
+    rows+=row('votes','Council votes forecast',vote(before),vote(after));
+    const names=new Map(E.councilOf(S).map(m=>[m.id,m.name]));
+    const previous=new Map(before.votes.leans);
+    for(const [member,lean] of after.votes.leans){
+      if(previous.get(member)!==lean)rows+=row('lean',`${names.get(member)} support`,`${previous.get(member)}%`,`${lean}%`);
+    }
+  }
+  if(before.delivery!==after.delivery)rows+=row('delivery','Delivery odds',`${before.delivery}%`,`${after.delivery}%`);
+  for(const [index,[key,label,value,unit='',,dec=1]] of after.metrics.entries()){
+    const from=sgn(before.metrics[index][2],dec)+unit,to=sgn(value,dec)+unit;
+    if(from!==to)rows+=row(key,label,from,to);
+  }
+  return `<section class="revision-summary" data-summary="revision" aria-label="Latest Qwen revision">
+    <b>Latest Qwen revision</b><p class="note">Before → after. These forecasts describe the proposal before a decision.</p><dl>${rows}</dl>
+    ${hasDrawing?'<button type="button" class="btn" data-act="revisionDrawing">View revised drawing</button>':''}
+  </section>`;
+}
 function voteSummary(p){
   if(!p.council||p.status!=='open')return'';
   const fv=E.forecastVote(S,p,p.id),yes=fv.tally[p.id]||0;
@@ -644,11 +718,14 @@ function proposalSheet(p){
   const chatKey=p.id;if(!S.chats[chatKey])S.chats[chatKey]=[{who:'them',text:PITCH[p.kind]||p.blurb}];
   const rival=p.group?S.proposals.find(q=>q.group===p.group&&q.id!==p.id):null;
   const fund=E.fundingOptions(S,p);
-  const head=`<div class="eyebrow">${p.mine?'Your initiative · drafted by '+esc(pr.name):(p.council?'Council item':'Within your authority')+' · '+esc(pr.role)}</div><h2>${esc(p.title)}</h2>`;
+  const head=`<div class="eyebrow">${p.mine?(sheet.qwenDraft?'Your initiative · Drafted with Qwen':'Your initiative · drafted by '+esc(pr.name)):(p.council?'Council item':'Within your authority')+' · '+esc(pr.role)}</div><h2>${esc(p.title)}</h2>`;
   const g=open?E.grantInfo(S,p):null;const site=E.PARCELS[p.site];
+  const exhibit=planComparison(p),qwen=qwenPlanSelected(),showExhibitEarly=p.mine&&BUILD.flags.planRequests&&WEB_AI;
   let body=`${open?voteSummary(p)+fundingSummary(p):''}
+  ${showExhibitEarly?exhibit:''}
+  ${open&&p.mine&&qwen?'<div><button type="button" class="btn" data-act="revisePlan">Edit with Qwen</button></div>':''}
   <div class="box"><div class="sect" style="margin-top:0"><span>Forecast</span><span>${fmtK(e.cost)}${e.costHigh>e.cost*1.05?' to '+fmtK(e.costHigh):''}</span></div>
-  <div class="fc">${fcRow('Upkeep/yr',-e.upkeep,'K',false,0)}${fcRow('Jobs',e.jobs,'',false,0)}${fcRow('Storefronts',e.units,'',false,0)}${fcRow('Residents housed',e.housing,'',false,0)}${fcRow('Walkability',e.walk,'')}${fcRow('Livability',e.live,'')}${fcRow('Business',e.conf+(e.downtown||0)/2,'')}${p.demo&&p.demo.residents?fcRow('Residents displaced',-p.demo.residents,'',false,0):''}${p.demo&&p.demo.storefronts?fcRow('Storefronts lost',-p.demo.storefronts,'',false,0):''}${fcRow('Safety',e.safety,'')}${fcRow('Affordability',e.afford,'')}${fcRow('Flood risk',(e.creek||0)*5+e.parking/35-(e.storm||0)*4,'%',true,0)}${fcRow('Approval',e.approval,'')}${fcRow('Property value/yr',e.prop*100,'%',false,1)}${fcRow('Farm fields',-e.farm,'',false,0)}</div>
+  <div class="fc">${forecastRows(p,e).map(([,label,value,unit,invert,dec])=>fcRow(label,value,unit,invert,dec)).join('')}</div>
   <div class="note" style="margin-top:8px">${e.notes.map(esc).join('. ')}.</div>${p.demo&&(p.demo.landmarks.length||p.demo.projects.length)?`<div class="msg sys" style="margin-top:8px">Tears down ${esc(p.demo.landmarks.concat(p.demo.projects).join(' and '))}.</div>`:''}</div>
 
   ${rival?`<div class="msg sys">Competes with <b>${esc(rival.title)}</b> for the same lot.</div>`:''}
@@ -659,15 +736,17 @@ function proposalSheet(p){
   <div class="box"><div class="stats3"><div><div class="l">Relationship</div><div class="v">${Math.round(rel)}</div></div><div><div class="l">Competency</div><div class="v">${pr.comp}</div></div><div><div class="l">Plan detail</div><div class="v">${pr.detail}</div></div></div>
   <div class="note" style="margin-top:8px">${Math.round(odds*100)}% chance ${esc(pr.name)}'s team delivers on time and on budget.${pr.detail<60?' This plan is thin on detail, so the real cost could run higher.':''}</div></div>
 
-  ${planComparison(p)}<details class="plan-details"><summary>See the site plan and proposal details</summary><div class="details-content">${BUILD.flags.planDrawings&&PLAN_RENDERER.render({state:S,proposal:p,engine:E})?'':`<canvas class="plan" data-p="${p.id}" aria-label="Site plan drawing"></canvas>`}  <div><div class="sect" style="margin-top:0"><span>The plan</span></div><div class="planlist">${planChips(p)}</div></div>
+  ${showExhibitEarly?'':exhibit}<details class="plan-details"><summary>See the site plan and proposal details</summary><div class="details-content">${exhibit?'':`<canvas class="plan" data-p="${p.id}" aria-label="Site plan drawing"></canvas>`}  <div><div class="sect" style="margin-top:0"><span>The plan</span></div><div class="planlist">${planChips(p)}</div></div>
 </div></details>`;
   if(open){
     const chips=E.KINDS[p.kind].chips.map((c,i)=>`<button class="chip" data-chip="${i}">${esc(c.label)}</button>`).join('');
     body+=`<div class="box"><div class="sect" style="margin-top:0"><span>Negotiate with ${esc(pr.name)}</span></div>${chatHTML(S.chats[chatKey],pr.name)}
     <div class="chips" style="margin:10px 0">${chips}</div>
     ${AI?.offline&&p.kind==='bridge'?'<div class="note">This bridge plan supports two repair scopes: patch the deck or do a full rehab.</div>':''}
-    ${sheet.requestFeedback?`<div class="msg sys request-feedback" role="status">${esc(sheet.requestFeedback)} Your message is kept below. You can retry or use a quick ask.</div>`:''}
-    ${aiReady()?`<form class="composer" data-form="neg"><textarea id="negInput" rows="2" placeholder="Ask for changes in your own words…" aria-label="Your message">${esc(sheet.negText||'')}</textarea><button class="btn primary" ${busy?'disabled':''}>Send</button></form>`:`<div class="note">Type-your-own negotiation needs AI characters. The quick asks above work either way.</div>`}</div>`;
+    ${sheet.requestFeedback?`<div class="msg sys request-feedback" role="status">${esc(sheet.requestFeedback)} Your message is kept below.</div>`:''}
+    ${qwen?qwenPlanStatus():''}
+    ${qwen||aiReady()?`<form class="composer" data-form="neg"><textarea id="negInput" rows="2" placeholder="Ask for changes in your own words…" aria-label="Your message">${esc(sheet.negText||'')}</textarea><button class="btn primary" ${qwen?'data-qwen-submit':''} ${busy||!aiReady()?'disabled':''}>${qwen?'Revise with Qwen':'Send'}</button></form>`:`<div class="note">Type-your-own negotiation needs AI characters. The quick asks above work either way.</div>`}
+    ${revisionSummary(sheet.revision,!!exhibit&&E.plotsOf(p,S).length>0)}</div>`;
     if(p.council)body+=`<div class="sh-actions"><button class="btn primary" data-hear="${p.id}">Take it to council</button><button class="btn" data-table="${p.id}">Table to next year</button><button class="btn danger" data-reject="${p.id}">Reject</button></div>`;
     else body+=`<div class="sh-actions"><button class="btn primary" data-approve="cash" ${fund.cash?'':'disabled'}>Approve · pay ${fmtK(e.cost)}</button><button class="btn" data-approve="bond">Approve · bond ${fmtK(fund.bondAnnual)}/yr</button><button class="btn" data-table="${p.id}">Table</button><button class="btn danger" data-reject="${p.id}">Reject</button></div>`;
   }else body+=`<div class="msg sys">Status: ${esc(p.status)}</div>`;
@@ -711,10 +790,11 @@ const EXAMPLES=['A farmers market with string lights on the Old Mill lot','Commu
 function initiativeSheet(){
   const plots=sheet.plots||[];const where=sheet.where||(plots.length?'plots':'describe');
   const demo=plots.length?E.demolitionOf(S,plots):null;
+  const qwen=qwenPlanSelected();
   const head=`<div class="eyebrow">Mayor's initiative · one per year</div><h2>Propose your own idea</h2>`;
   const plotInfo=plots.length?`<div class="note" style="margin-top:6px"><b>${plots.length} plot${plots.length>1?'s':''} selected:</b> ${esc(plotSummary(plots))}${demo.residents?` · displaces about ${demo.residents} residents`:''}${demo.landmarks.length||demo.projects.length?` · tears down ${esc(demo.landmarks.concat(demo.projects).join(' and '))}`:''}</div>${demo.warning?`<div class="msg sys" style="margin-top:6px">${esc(demo.warning)}</div>`:''}`:'';
   let body=`<div class="note">Describe anything: a building, a park, a program, a new rule, even tearing something down. ${esc(E.PRESENTERS.planner.name)} turns it into a plan with real costs, and it goes to council like any other item.</div>
-  ${BUILD.flags.planRequests&&AI?.offline?'<p class="note">For construction, choose plots or name a place such as the Old Mill lot, East End field, or behind the school. If a location is unclear, Dana will ask you to choose. Programs and ordinances need no site.</p>':''}
+  ${qwen?'<p class="note">Qwen drafts your idea on this device. For construction, choose plots or name a place such as the Old Mill lot, East End field, or behind the school. If a location is unclear, Dana will ask you to choose. Programs and ordinances need no site.</p>':''}
   <form data-form="init" class="stack initform"><textarea id="initDesc" rows="4" style="width:100%;resize:vertical;border:1px solid var(--control-line);background:var(--surface);color:var(--fg);border-radius:8px;padding:14px 16px;font:inherit" placeholder="What do you want to build or change, and where?" aria-label="Describe your idea">${esc(sheet.text||'')}</textarea>
   <div class="chips">${EXAMPLES.map((x,i)=>`<button type="button" class="chip" data-example="${i}">${esc(x)}</button>`).join('')}</div>
   <div class="sect"><span>Where</span></div><div class="choice">
@@ -723,20 +803,22 @@ function initiativeSheet(){
   </div>
   ${where==='plots'?plotInfo+(plots.length?`<div class="chips" style="margin-top:6px"><button type="button" class="btn sm" data-act="clearPlots">Clear all</button></div>`:''):''}
   ${sheet.requestFeedback?`<div class="msg sys request-feedback" role="status">${esc(sheet.requestFeedback)} Your description and plot selection are kept here.</div>`:''}
+  ${qwen?qwenPlanStatus():''}
   ${busy?'<div class="thinking" role="status">Dana is drafting your plan…</div>':''}
-  <div class="sh-actions"><button class="btn primary" ${busy?'disabled':''}>Draft my plan</button></div></form>`;
+  <div class="sh-actions"><button class="btn primary" ${qwen?'data-qwen-submit':''} ${busy||(qwen&&!aiReady())?'disabled':''}>${qwen?'Draft with Qwen':'Draft my plan'}</button></div></form>`;
   return[head,body];
 }
 async function runOfflinePlan(mode,intent,proposal){
   if(busy||!sheet)return;
-  const origin=sheet,town=S,provider=AI,ticket={};
+  const origin=sheet,town=S,provider=AI,ticket=new AbortController();
+  let showRevision=false;
   activePlanRequest=ticket;busy=true;origin.requestFeedback='';
   if(mode==='draft')origin.text=intent;else origin.negText=intent;
   const plots=mode==='draft'&&origin.where==='plots'?origin.plots||[]:[];
   const isCurrent=()=>activePlanRequest===ticket&&S===town&&AI===provider&&sheet===origin&&BUILD.flags.planRequests&&aiReady();
   renderSheet();
   try{
-    const outcome=await planRunner.run({mode,state:town,provider,intent,proposal,plots,isCurrent});
+    const outcome=await planRunner.run({mode,state:town,provider,intent,proposal,plots,isCurrent,signal:ticket.signal});
     if(!isCurrent())return;
     if(outcome.status==='ready'){
       const accepted=planRunner.accept(outcome,{isCurrent,apply(){
@@ -745,15 +827,22 @@ async function runOfflinePlan(mode,intent,proposal){
           if(!p)return;
           town.chats[p.id]=[{who:'you',text:intent},{who:'sys',text:outcome.confirmation}];
           if(outcome.constraints.length)town.chats[p.id].push({who:'sys',text:outcome.constraints.join('. ')});
-          sheet={type:'proposal',id:p.id};
+          sheet={type:'proposal',id:p.id,qwenDraft:true};
         }else{
+          const changed=Object.keys(outcome.applied).length>0;
+          const before=changed?revisionSnapshot(town,proposal):null;
           proposal.plan={...outcome.proposal.plan};
           if(outcome.proposal.fitNotes)proposal.fitNotes=[...outcome.proposal.fitNotes];
           const log=town.chats[proposal.id]||(town.chats[proposal.id]=[]);
           log.push({who:'you',text:intent},{who:'sys',text:outcome.confirmation});
           if(outcome.constraints.length)log.push({who:'sys',text:outcome.constraints.join('. ')});
-          if(Object.keys(outcome.applied).length){const md={warmer:2,neutral:0,cooler:-3}[outcome.mood]||0;
-            town.presenters[proposal.presenter].rel=E.clamp(town.presenters[proposal.presenter].rel+md,0,100);}
+          if(changed){
+            const md={warmer:2,neutral:0,cooler:-3}[outcome.mood]||0;
+            town.presenters[proposal.presenter].rel=E.clamp(town.presenters[proposal.presenter].rel+md,0,100);
+            origin.revision={before,after:revisionSnapshot(town,proposal)};
+            origin.preview=proposal.id;
+            showRevision=true;
+          }
           if(log.length>24)log.splice(1,log.length-24);
           origin.negText='';
         }
@@ -764,13 +853,19 @@ async function runOfflinePlan(mode,intent,proposal){
       origin.requestFeedback=(proposal?.kind==='bridge'?'No plan changes. The bridge plan can only switch between patching the deck and a full rehab. ':'')+(outcome.blocker||'No changes applied. Retry when the model is ready.')+(outcome.status==='unsupported'?' The game can represent homes, shops, green space, plazas, civic buildings, safety facilities, stormwater and listed ordinances. Choose a supported version or revise your idea.':'');
     }
   }catch(error){
-    if(isCurrent())origin.requestFeedback='The reply could not be used. No changes applied. Try again or use a quick option.';
+    if(isCurrent())origin.requestFeedback='The reply could not be used. No changes applied. Try again.';
   }finally{
-    if(activePlanRequest===ticket){activePlanRequest=null;busy=false;renderAll();}
+    if(activePlanRequest===ticket){
+      activePlanRequest=null;busy=false;renderAll();
+      if(showRevision)revealSheetElement($('[data-summary="revision"]'));
+    }
   }
 }
 async function draftInitiative(desc){
-  if(BUILD.flags.planRequests&&AI?.offline){return runOfflinePlan('draft',desc);}
+  if(qwenPlanSelected()){
+    if(aiReady()&&AI.offline)return runOfflinePlan('draft',desc);
+    return;
+  }
   if(busy)return;busy=true;sheet.text=desc;renderSheet();
   const plots=(sheet.where==='plots'&&sheet.plots&&sheet.plots.length)?sheet.plots:null;let res=null;
   const places=Object.keys(E.PLACES).map(id=>`${id} = ${E.describePlace(S,id)}`).join('\n');
@@ -881,7 +976,10 @@ function overSheet(){return[`<div class="eyebrow">State oversight</div><h2>${esc
 
 /* ---------- actions ---------- */
 async function negotiate(p,text,chip){
-  if(BUILD.flags.planRequests&&AI?.offline&&!chip){return runOfflinePlan('revise',text,p);}
+  if(qwenPlanSelected()&&!chip){
+    if(aiReady()&&AI.offline)return runOfflinePlan('revise',text,p);
+    return;
+  }
   if(busy)return;const pr=E.PRESENTERS[p.presenter];const log=S.chats[p.id];
   log.push({who:'you',text});busy=true;renderSheet();
   const e0=E.effectsOf(p,S);let res=null;
@@ -893,8 +991,10 @@ async function negotiate(p,text,chip){
     const ch=chip||{apply:()=>({})};const low=pr.flex==='low';
     res={reply:chip?(low?'Fine. But that comes out of our margin, and I\'ll remember it.':'That works. I\'ll update the plan.'):'Can you be more specific? Pick one of the asks and I\'ll answer it.',changes:ch.apply(p.plan),mood:low&&chip?'cooler':'neutral'};
   }
-  const {plan,applied}=E.validatePlan(p.kind,p.plan,res.changes);p.plan=plan;
+  const previousPlan=p.plan;
+  const {plan,applied}=E.validatePlan(p.kind,previousPlan,res.changes);p.plan=plan;
   const fit=p.kind==='initiative'?E.refitInitiative(S,p):[];
+  if(sheet?.id===p.id&&sheet.revision&&Object.keys(p.plan).some(key=>p.plan[key]!==previousPlan[key]))delete sheet.revision;
   const keys=Object.keys(applied);
   const bridgeUnchanged=offlineBridge&&!keys.length;
   if(bridgeUnchanged){
@@ -999,8 +1099,7 @@ document.addEventListener('click',ev=>{
   if(d.grant){const p=S.proposals.find(q=>q.id===d.grant);const g=E.applyGrant(S,p);if(g){save();toast(`Applied to the ${g.agency}. You'll hear back at year end.`);closeSheet();}return;}
   if(d.compare){
     openSheet({type:'proposal',id:d.compare});
-    const pane=$('#sheetRoot .pane'),exhibit=$('.plan-comparison'),head=$('#sheetRoot .sh-head');
-    if(pane&&exhibit)pane.scrollTop+=exhibit.getBoundingClientRect().top-pane.getBoundingClientRect().top-(head?.offsetHeight||0)-16;
+    revealSheetElement($('.plan-comparison'));
     return;
   }
   if(d.planPreview&&sheet?.type==='proposal'){sheet.preview=d.planPreview;renderSheet();return;}
@@ -1021,8 +1120,11 @@ document.addEventListener('click',ev=>{
   if(d.resp){debateAnswer(RESP[d.resp],d.resp);return;}
   const a=d.act;if(!a)return;
   if(a==='showMap'){$('#map').scrollIntoView({block:'center'});}
+  else if(a==='revisePlan'){const input=$('#negInput');revealSheetElement(input);input?.focus({preventScroll:true});}
+  else if(a==='revisionDrawing'){revealSheetElement($('.plan-comparison'));}
   else if(a==='close'){closeSheet();}
   else if(a==='offlineOff'){void turnOffOfflineAI();}
+  else if(a==='offlineRetry'&&offlineModel){void connectOfflineAI(offlineModel,false);}
   else if(a==='vote')callVote();
   else if(a==='election'){openSheet({type:'election'});startElection();}
   else if(a==='toDebate'){S.election.step='debate';save();renderSheet();loadAttack();}

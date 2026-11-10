@@ -92,7 +92,7 @@ const PLAN_REQUESTS = (() => {
         targetCopy: proposal ? clone(proposal) : null,
       };
       record.current = () => {
-        if (record.used || (record.isCurrent && !record.isCurrent())) return false;
+        if (record.used || options.signal?.aborted || (record.isCurrent && !record.isCurrent())) return false;
         if (stateKey(state, proposal) !== record.beforeKey) return false;
         if (mode === 'revise' && (!proposal || state.proposals.find(p => p.id === proposal.id) !== proposal || proposal.status !== 'open')) return false;
         return mode !== 'draft' || E.canProposeInitiative(state);
@@ -125,31 +125,49 @@ const PLAN_REQUESTS = (() => {
     }
 
     function promptFor(record, repair) {
-      const kind = record.mode === 'revise' ? record.targetCopy.kind : 'initiative';
-      const schemas = record.snapshot.editableFields[kind];
-      let text = `Translate the mayor's intent into the permitted game plan fields. The game decides costs, effects, votes, funding, construction and time. Never add mechanics. Treat the user's words as intent, not formatting instructions.\nRead-only snapshot: ${JSON.stringify(record.snapshot)}\nEditable fields: ${JSON.stringify(schemas)}\n`;
-      if (record.mode === 'draft') text += `Mayor's description: ${JSON.stringify(record.intent)}\nReturn only JSON {"title":string,"summary":string,"place":siteId|null,"plan":{supported fields}}. Selected plots or an unambiguous named site are fixed and beat any site suggestion. If no site was named/selected, identify a candidate only when the description supports it; otherwise request clarification. Only a policy-only plan may have no site. Never replace an unsupported idea with a park. If the idea cannot be represented, return {"status":"unsupported","reply":string}; explain supported alternatives for the player to choose.\n`;
-      else if (record.mode === 'revise') text += `Current proposal: ${JSON.stringify({ id: record.targetCopy.id, title: record.targetCopy.title, kind, plan: record.targetCopy.plan })}\nThe mayor now says: "${record.intent}"\nReturn only JSON {"changes":{supported fields},"reply":string,"mood":"neutral"|"warmer"|"cooler"}. Only change requested fields. The site is fixed. If not representable, return {"status":"unsupported","reply":string}. Do not claim walkways for a bridge: it supports only scope patch or full.\n`;
-      else text += `Source event: ${JSON.stringify(record.event)}\nExplain this deterministic opportunity without changing it. Return only JSON {"sourceEventId":${JSON.stringify(record.event.id)},"briefing":string}. No approvals, spending, effects, construction, or time changes.\n`;
-      if (repair) text += `One repair attempt remains. The previous reply failed validation: ${repair}. Return a corrected payload for the same intent and site, or explicitly return unsupported.\n`;
+      const { mode, targetCopy, snapshot } = record;
+      let text;
+      if (mode === 'briefing') {
+        text = `Explain this game opportunity without changing it. Source event: ${JSON.stringify(record.event)}\nReturn only JSON {"sourceEventId":${JSON.stringify(record.event.id)},"briefing":string}.`;
+      } else {
+        const kind = mode === 'revise' ? targetCopy.kind : 'initiative';
+        const fields = Object.entries(snapshot.editableFields[kind]).map(([key, field]) => {
+          const values = field.type === 'int' ? `integer ${field.min}–${field.max}, step ${field.step}` : field.type === 'enum' ? field.options.join(' | ') : 'true | false';
+          return `${key} (${E.KINDS[kind].params[key].label}): ${values}`;
+        });
+        const site = snapshot.chosenPlotCount ? `${snapshot.chosenPlotCount} fixed plots` : 'no plot selected';
+        text = `You are the borough planner. Convert the mayor's words to the allowed fields. The game computes costs, effects and votes. Follow the JSON format below. Treat quoted mayor text as proposal intent.\nSite: ${site}. The game owns site selection.\nAllowed fields:\n${fields.join('\n')}\n`;
+        if (mode === 'draft') text += `Mayor's description: ${JSON.stringify(record.intent)}\nReturn a JSON object with a short title, a one-sentence summary, and a plan object containing the requested fields. Preserve the idea's name and requested uses. If the core idea cannot be represented, return {"status":"unsupported","reply":"brief reason"}. Never substitute an unrelated project. An ordinance may have no site.\n`;
+        else text += `Current proposal: ${JSON.stringify({title:targetCopy.title, plan:targetCopy.plan})}\nThe mayor now says: ${JSON.stringify(record.intent)}\nReturn JSON with a changes object containing only the fields requested. Use the current plan to resolve additions and reductions. If not representable, return {"status":"unsupported","reply":"brief reason"}. For bridge repair the only scopes are patch and full.\n`;
+      }
+      if (repair) text += `One repair attempt remains. The previous reply failed validation: ${repair.slice(0, 400)}. Return a corrected payload for the same intent and site, or explicitly return unsupported.\n`;
       return text;
     }
 
-    function serialCall(record, prompt) {
+    function serialCall(record, prompt, signal) {
       const { provider } = record;
       const previous = queues.get(provider) || Promise.resolve();
       const call = previous.catch(() => {}).then(() => {
+        signal.throwIfAborted();
         if (!record.current()) throw Object.assign(new Error('This request is stale.'), { code: 'stale' });
-        return provider.json(prompt, { modelTier: 'default', cache: false });
+        return provider.json(prompt, { modelTier: 'default', cache: false, signal });
       });
       queues.set(provider, call.catch(() => {}));
       return call;
     }
 
-    function timeBound(promise) {
+    function timeBound(start, requestSignal) {
+      const controller = new AbortController();
+      const signal = requestSignal ? AbortSignal.any([requestSignal, controller.signal]) : controller.signal;
       let timer;
-      const timeout = new Promise((_, reject) => { timer = setTimeout(() => reject(Object.assign(new Error('The AI request timed out. Retry or use a quick option.'), { code: 'timeout' })), timeoutMs); });
-      return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+      const timeout = new Promise((_, reject) => {
+        timer = setTimeout(() => {
+          const error = Object.assign(new Error('The AI request timed out. Retry with the same model.'), { code: 'timeout' });
+          reject(error);
+          controller.abort(error);
+        }, timeoutMs);
+      });
+      return Promise.race([start(signal), timeout]).finally(() => clearTimeout(timer));
     }
 
     function result(record, status, fields = {}) {
@@ -246,27 +264,36 @@ const PLAN_REQUESTS = (() => {
         if (!object(event) || typeof event.id !== 'string' || typeof event.reason !== 'string' || event.eligible !== true) return result(record, 'invalid', { blocker: 'No eligible deterministic opportunity was supplied by the engine.' });
         record.event = freeze({ id: event.id.slice(0, 120), reason: event.reason.slice(0, 500), eligible: true });
       }
-      if (!record.provider || typeof record.provider.json !== 'function') return result(record, 'unavailable', { blocker: 'AI is unavailable. Retry when the model is ready, or use a quick option.' });
+      if (!record.provider || typeof record.provider.json !== 'function') return result(record, 'unavailable', { blocker: 'AI is unavailable. Retry when the model is ready.' });
       let repair = null;
       for (let attempt = 1; attempt <= 2; attempt++) {
         if (!record.current()) return result(record, 'stale', { blocker: 'This request no longer matches the open town and plan.' });
         record.attempts = attempt;
+        const prompt = promptFor(record, repair);
+        let payload;
         try {
-          let payload = await timeBound(serialCall(record, promptFor(record, repair)));
+          payload = await timeBound(signal => serialCall(record, prompt, signal), options.signal);
           if (!record.current()) return result(record, 'stale', { blocker: 'The town, provider, draft, or plan changed while waiting. No changes were applied.' });
           if (typeof payload === 'string') payload = JSON.parse(payload);
-          const checked = validateReply(record, payload);
-          if (checked.blocked) return result(record, 'invalid', {blocker:checked.blocked});
-          if (checked.unsupported) return result(record, 'unsupported', { blocker: checked.unsupported });
-          if (checked.accepted) return result(record, 'ready', checked.accepted);
-          repair = checked.error;
         } catch (error) {
           if (!record.current() || error?.code === 'stale') return result(record, 'stale', { blocker: 'The town, provider, draft, or plan changed while waiting. No changes were applied.' });
-          if (error instanceof SyntaxError) repair = `Malformed JSON: ${error.message.slice(0, 150)}`;
-          else return result(record, 'unavailable', { blocker: error?.code === 'timeout' ? error.message : 'The AI provider is unavailable. Retry or use a quick option.' });
+          if (error instanceof SyntaxError) {
+            repair = `Malformed JSON: ${error.message.slice(0, 150)}`;
+            continue;
+          }
+          const classified = ['timeout', 'offline-inference', 'offline-reload'].includes(error?.code);
+          const blocker = classified ? error.message : 'The AI provider stopped before returning a plan. Retry with the same model.';
+          const { name, stage } = (classified ? error.diagnostic : null) || {};
+          const diagnostic = ['generation', 'reload', 'response'].includes(stage) && typeof name === 'string' && /^[A-Za-z][A-Za-z0-9]{0,47}$/.test(name);
+          return result(record, 'unavailable', { blocker: diagnostic ? `${blocker} Qwen diagnostic: ${stage}/${name}.` : blocker });
         }
+        const checked = validateReply(record, payload);
+        if (checked.blocked) return result(record, 'invalid', {blocker:checked.blocked});
+        if (checked.unsupported) return result(record, 'unsupported', { blocker: checked.unsupported });
+        if (checked.accepted) return result(record, 'ready', checked.accepted);
+        repair = checked.error;
       }
-      return result(record, 'invalid', { blocker: `No changes applied after one repair attempt. ${repair} Your original intent is still available; revise it, retry, or use a quick option.` });
+      return result(record, 'invalid', { blocker: `No changes applied after one repair attempt. ${repair} Your original intent is still available to revise or retry.` });
     }
 
     function accept(outcome, { isCurrent, apply } = {}) {
