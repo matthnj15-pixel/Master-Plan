@@ -53,3 +53,10 @@ Decisions Nate made, with the date. New decisions go at the bottom.
 - No decorative side highlight bars on callouts or council statements. Use quiet surfaces, headings and spacing. Cards and controls have modest 8–10px rounding; card padding is 20–24px and section spacing follows the heading hierarchy.
 - This is a visual update to the current game flow. The A/B/C exploration did not approve an agenda-first or site-notebook navigation change, new forecast/report mechanics, or the planned Plans history.
 - The game stays light regardless of the OS theme. Embed the openly licensed UI font in both build outputs so offline play does not need a font service. Preserve the single scrolling page, touch controls, persistent sheet actions, providers, engine outcomes and save format.
+
+## 2026-11-10: Council desk layout (MP-059)
+- Nate confirmed B, the Council desk, after the theme update reached dev. Apply the confirmed layout on top of the approved lighter styling.
+- Lead with the annual agenda and authorship, followed by town measures and the map. Keep one natural scroll stack and direct routes to map/plot selection.
+- Lead proposal decisions with the actual vote gap and funding consequences. Keep the existing council, funding, quick asks, grants and optional site-plan details available.
+- Lead the Courier report with before/after results and a cash reconciliation, then show engine causes grouped into decisions/projects and town response. Retain zero-valued events and all nine measures. Read existing history/reports; do not change engine outcomes or persist a new save shape.
+- This supersedes the earlier statement that the agenda-first choice was still open. Site-notebook history and heuristic intent changes remain separate scope.
