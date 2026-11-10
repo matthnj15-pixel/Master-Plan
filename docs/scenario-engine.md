@@ -53,4 +53,35 @@ MP-070–073 stay Planned. Pacing, a full second campaign, term-two agendas, gro
 
 The foundation publishes a detached context with scenario ID, turn ordinal, calendar date, map dimensions, legal site IDs and geometry, relevant town facts, proposal identity/kind and editable field schemas. Turn identity is sufficient for this slice; it does **not** detect same-turn plan edits or promise stale-result rejection. Revision enforcement belongs to the later plan/turn contract package. Context data is informational: engine validation, pricing, approvals and forecasts remain authoritative.
 
-Exact API examples and verification results are recorded after integration below.
+### API and fixtures
+
+```js
+const state = ENGINE.newGame(2027); // defaults to ENGINE.MILLBROOKE
+ENGINE.resolveYear(state);
+const context = ENGINE.scenarioContext(state);
+// context.scenarioId === 'millbrooke'; context.turn === 2
+// context.calendarYear === 2028; context.map === {width: 24, height: 24}
+// context.proposals includes park and commerce at site 'oldmill'
+// context.sites.find(site => site.id === 'oldmill').plots:
+// [[6,12], [7,12], [6,13], [7,13]]
+```
+
+`scenarioContext(state)` returns detached plain data. `sites` lists named site IDs and geometry, including existing agenda sites; `legalPlots` lists the currently selectable cells under `canBuildOn`, which can include occupied land with engine-priced demolition. Neither list promises exclusive site reservation. Pending-grant/site commitments are a later contract package. `facts` includes population, reserve, nine-meter snapshot and scenario prerequisite facts. Each proposal supplies identity, kind, site, geometry, status, plan, eligibility and authority. `editableFields` contains the existing bounded parameter schemas for every supported kind.
+
+For an authored draft, use `context.editableFields.initiative` as the allowed field vocabulary. For example, `{homes:20, shops:2, stories:2, affordable:true}` remains a draft: pass it through `validatePlan('initiative', defaultPlan('initiative'), draft)`, then `makeInitiative(state, {...draftMetadata, plan:validated.plan, plots:selectedPlots})`. The engine fits capacity, prices demolition and computes effects/votes. Use `effectsOf(proposal, state)`, `fundingOptions(state, proposal)` and `forecastVote(state, proposal, proposal.id)` for engine-owned results. One-argument `effectsOf(proposal)` and `plotsOf(proposal)` remain default-campaign compatibility APIs; consumers of other scenarios must pass state.
+
+`newGame(seed, definition)` accepts a trusted scenario input; it is not an AI-authored scenario editor. Definitions contain stable ID, metadata, calendar defaults, initial values/facts, a grid with dimensions/sites/parcels/places/growth geography, people, opening proposal definitions/schedule, decision route, event switches and supporting economy/labels/ownership. The existing kind catalog and UI remain oriented toward the first campaign. Test content lives in `tests/fixtures/reconstruction.mjs`; it is not a selectable full campaign.
+
+`proposalEligibility(state, proposal)` checks bounded plan values, scenario prerequisites and map bounds before `approve` mutates state. The fixture's explicit authority requirement is checked by `approve(state, proposal, funding, authorityId)`. Repair completion facts are applied through the ordinary pending-project resolver. Existing Millbrooke council/UI approval semantics are preserved; this is not a replacement voting system.
+
+### Save and calendar semantics
+
+Schema v3 adds `scenarioId`, a serializable scenario configuration, `calendar` and current prerequisite `facts`. The live grid stays in `state.grid`; the initial grid is not duplicated in each save. Saves pin their scenario configuration so a reconstruction save can reload without relying on a mutable global registry. `year` in states, reports, projects and history remains the existing one-based turn ordinal. `calendarYear(state, ordinal = state.year)` converts it to a display date. Millbrooke still resolves one year per turn and reaches its first election after four resolutions; no seasonal pacing is enabled.
+
+`isSupportedSave` recognizes v1, v2 and v3. `migrate` chains the existing v1 upgrade into v3, associates older games with Millbrooke and adds scenario metadata without rebuilding the live town. Current migrations are idempotent. Historical proposal names, text, IDs, plans, pending grants, finances and parcel changes remain intact. The stable browser key remains `millbrook.v1`; dev uses `masterplan.dev.save`. Account documents remain `save` and `save-dev`.
+
+### Verification record
+
+The parity fixture names the exact base and seed. The coordinator independently reproduced both stored SHA-256 hashes from the original base source. Both compare complete first-term state after omitting only schema/scenario metadata and normalizing the approved town spelling. The older-save fixture is genuine v2 state captured before implementation, with built and pending projects, a pending grant, finances and edited parcels.
+
+Automated Chromium is separate from physical iPhone Duo, Claude artifact and on-device Qwen verification. Final integrated checks, independent review, CI and Pages evidence are recorded in the PR.
