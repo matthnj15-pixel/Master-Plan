@@ -69,17 +69,41 @@ export async function startOfflineAI({ model, download, onProgress }) {
     await engine.unload();
     throw new Error('Safari could not keep the model in offline storage.');
   }
+  return createOfflineProvider(engine, modelId);
+}
+
+// Every caller (plans, lobbying, headlines, and shutdown) shares this queue.
+// A caller timing out cannot start another GPU request while the first one is
+// still running; unload also waits for that request to settle.
+export function createOfflineProvider(engine, modelId) {
+  let tail = Promise.resolve(), closing = false, unloading;
+  const enqueue = operation => {
+    const task = tail.catch(() => {}).then(operation);
+    tail = task.catch(() => {});
+    return task;
+  };
   return {
     offline: true,
-    async json(prompt) {
-      const result = await engine.chat.completions.create({
-        messages: [{ role: 'user', content: prompt }],
-        response_format: { type: 'json_object', schema: JSON_OBJECT_SCHEMA },
-        temperature: 0.2,
-        max_tokens: 640,
+    modelId,
+    json(prompt) {
+      if (closing) return Promise.reject(Object.assign(new Error('Offline AI is turning off.'), { code: 'unavailable' }));
+      return enqueue(async () => {
+        if (closing) throw Object.assign(new Error('Offline AI is turning off.'), { code: 'unavailable' });
+        const result = await engine.chat.completions.create({
+          messages: [{ role: 'user', content: prompt }],
+          response_format: { type: 'json_object', schema: JSON_OBJECT_SCHEMA },
+          temperature: 0.2,
+          max_tokens: 640,
+        });
+        return JSON.parse(result.choices[0].message.content);
       });
-      return JSON.parse(result.choices[0].message.content);
     },
-    unload: () => engine.unload(),
+    unload() {
+      if (!unloading) {
+        closing = true;
+        unloading = enqueue(() => engine.unload());
+      }
+      return unloading;
+    },
   };
 }
