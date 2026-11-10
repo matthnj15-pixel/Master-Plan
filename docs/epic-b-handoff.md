@@ -42,7 +42,17 @@ Use the current UI compatibility adapter while Epic A is open. Recheck latest de
 
 ## Evidence ledger
 
-Pending implementation and independent review. Automated browser/provider fixtures are not real Qwen inference, Safari, Home Screen cold launch or iPhone Duo measurements. The Claude Dev artifact requires separate publishing/runtime access.
+Product/test revision `35ff33c199baa96dc8f28eac1aaa67490809f5bb` passed the final local gate: **93 tests**, requirements traceability (53 requirements, 47 Accepted, 41 test-verified, 6 Play-test), dev and stable builds, and `git diff --check`. Both reversible flags are on only in dev. No engine, save format or dependency changes.
+
+Senior Reviewer independently inspected the original integrated revision before builder conclusions, reproduced two blockers (unsited physical revisions and Old Mill/Kish Creek ambiguity), then verified both fixes. Final disposition on `35ff33c`: **ready for dev integration**, with real-device acceptance unverified. Independent checks included the full earlier suite (92/93 before a test-only Claude locator correction), all three corrected UI checks, both channel builds, traceability, focused reproductions and portrait inspection.
+
+The real Pages shell, service worker and pinned provider adapter were tested with mocked model replies for offline cold relaunch, malformed/valid replies, finite repair, bridge regression, a different mayoral draft/revision, separated plots, stale/duplicate results, site-mode recovery and persistence. Normal-entry and isolated comparison checks cover 400 × 951 and 669 × 951, exact coordinates, both switching directions and Existing conditions, no save changes, touch targets, flags-off/AI-off and a mocked Claude capability path. These fixtures do not measure real Qwen inference, Safari storage, Home Screen cold launch or Duo memory/latency.
+
+An unmocked Chromium install-path check at both widths reported WebGPU present but no adapter/shader-f16, then displayed “Offline AI needs Safari WebGPU with 16-bit shader support.” No real model download/generation or 1.5B-versus-3B performance is claimed. Model IDs remain `Qwen2.5-1.5B-Instruct-q4f16_1-MLC` and `Qwen2.5-3B-Instruct-q4f16_1-MLC`, runtime WebLLM `0.2.87`. Hosted Claude Dev artifact publishing/runtime access was unavailable; it was not republished.
+
+Optional event evidence uses source `fixture:year2:oldmill`, eligibility true, reason “Old Mill is eligible for review,” and a late eligible fixture against engine base `4e008e6`. No Epic A opportunity contract was available; no combined-branch or post-election behavior is claimed.
+
+The epic PR carries the final branch/merge SHAs, GitHub CI and Pages deployment records, verified dev URL and any remaining blocker. Stable release approval remains with Nate.
 
 ## iPhone Duo checklist
 
