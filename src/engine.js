@@ -588,7 +588,7 @@ function grantInfo(s,p){if(p.grant||p.grantPending||p.grantDenied)return null;le
   if(!agency)return null;if(p.emergency)odds-=0.2;
   return{agency,share,odds:clamp(odds+(s.presenters.planner.rel-50)/200,0.2,0.85)};}
 function applyGrant(s,p){const g=grantInfo(s,p);if(!g)return null;p.grantPending={...g,year:s.year};p.status='tabled';return g;}
-function migrate(s,options={}){if(!s)return s;if(FLAGS.compositionPlans)s=copy(s);if(s.v===1){s.meters.safety=62;s.meters.afford=58;s.policies={};s.flags.floodRisk=0.06;
+function migrate(s,options={}){const checked=validateSave(s);if(!checked.ok)return checked;if(FLAGS.compositionPlans)s=copy(s);if(s.v===1){s.meters.safety=62;s.meters.afford=58;s.policies={};s.flags.floodRisk=0.06;
   for(const [id,pa] of Object.entries(PARCELS))if(pa.tiles)for(const [x,y] of pa.tiles){const c=s.grid[y*N+x];if(!c.site&&!c.b)c.site=id;}
   for(const h of s.history){if(h.safety===undefined)h.safety=62;if(h.afford===undefined)h.afford=58;}s.v=2;}
   if(s.v===2){const scenario=copy(MILLBROOKE);delete scenario.map.grid;s.scenarioId=MILLBROOKE.id;s.scenario=scenario;s.calendar=copy(MILLBROOKE.calendar);s.facts={};
@@ -746,7 +746,7 @@ function placesOf(s){return scenarioOf(s).map.places;}
 function presentersOf(s){return scenarioOf(s).people.presenters;}
 function councilOf(s){return scenarioOf(s).people.council;}
 function inBounds(c,b){return c.x>=b.minX&&c.x<=b.maxX&&c.y>=b.minY&&c.y<=b.maxY;}
-function isSupportedSave(s){return !!s&&(FLAGS.compositionPlans?[1,2,3,4]:[1,2,3]).includes(s.v);}
+function isSupportedSave(s){return validateSave(s).ok;}
 function approvalRoute(s,p){const d=scenarioOf(s).decisionRoute;return p.council?{id:d.id,name:d.name}:{id:d.executiveId,name:d.executiveName};}
 function proposalEligibility(s,p){
   if(FLAGS.compositionPlans&&p?.program)return programEligibility(s,p);
@@ -790,6 +790,60 @@ const record=v=>!!v&&Object.prototype.toString.call(v)==='[object Object]';
 const finite=(v,min,max)=>typeof v==='number'&&Number.isFinite(v)&&v>=min&&v<=max;
 const boundedText=(v,min,max)=>typeof v==='string'&&v.trim().length>=min&&v.length<=max;
 function closed(v,allowed,required=allowed){return record(v)&&Object.keys(v).every(k=>allowed.includes(k))&&required.every(k=>Object.hasOwn(v,k));}
+function ownRecord(table,id){return boundedText(id,1,120)&&record(table)&&Object.hasOwn(table,id)&&record(table[id]);}
+function trustedPresenter(s,id){
+  const definitions=presentersOf(s),people=s?.presenters;
+  return ownRecord(definitions,id)&&ownRecord(people,id)&&finite(definitions[id].comp,0,100)&&finite(definitions[id].detail,0,100)&&finite(people[id].rel,0,100);
+}
+function trustedMember(s,id){return ownRecord(s?.council,id)&&finite(s.council[id].rel,0,100)&&councilOf(s).some(m=>record(m)&&m.id===id&&record(m.pri)&&record(m.w));}
+// This is a structural save boundary, not a repair/normalization pass. Invalid
+// input stays untouched, and v1 omissions are admitted only where migration fills them.
+function validateSave(s){
+  const fail=reason=>({ok:false,reasons:[reason]});
+  if(!record(s)||!(FLAGS.compositionPlans?[1,2,3,4]:[1,2,3]).includes(s.v))return fail('save_version_unsupported');
+  const positive=n=>Number.isSafeInteger(n)&&n>0,nonnegative=n=>Number.isSafeInteger(n)&&n>=0,number=n=>typeof n==='number'&&Number.isFinite(n);
+  if(!positive(s.year)||!positive(s.maxYears)||!number(s.cash)||!number(s.pop)||!number(s.propIdx)||!number(s.capital)||!boundedText(s.phase,1,40))return fail('save_state_invalid');
+  for(const key of ['meters','flags','presenters','council','decided','chats','lobby'])if(!record(s[key]))return fail('save_object_invalid:'+key);
+  if(s.v>=2&&!record(s.policies))return fail('save_object_invalid:policies');
+  if(Object.values(s.meters).some(v=>!number(v))||!number(s.flags.students)||!number(s.flags.bridgeRisk))return fail('save_numbers_invalid');
+  let scenario=MILLBROOKE;
+  if(s.v>=3){
+    if(!record(s.scenario)||!record(s.calendar)||!record(s.facts)||!boundedText(s.scenarioId,1,120))return fail('save_scenario_invalid');scenario=s.scenario;
+    if(!record(scenario.map)||!record(scenario.map.growth)||!record(scenario.map.sites)||!record(scenario.map.parcels)||!record(scenario.map.places)||!record(scenario.people)||!record(scenario.people.presenters)||!Array.isArray(scenario.people.council)||!record(scenario.proposals)||!record(scenario.proposals.definitions)||!record(scenario.proposals.schedule)||!record(scenario.decisionRoute))return fail('save_scenario_invalid');
+    if(!positive(s.calendar.electionEvery)||!positive(s.calendar.yearsPerTurn)||!number(s.calendar.startYear))return fail('save_calendar_invalid');
+  }
+  const {width,height}=scenario.map;
+  if(!positive(width)||!positive(height)||!Array.isArray(s.grid)||s.grid.length!==width*height)return fail('save_grid_invalid');
+  const point=p=>Array.isArray(p)&&p.length===2&&Number.isInteger(p[0])&&Number.isInteger(p[1])&&p[0]>=0&&p[0]<width&&p[1]>=0&&p[1]<height;
+  for(let i=0;i<s.grid.length;i++){const c=s.grid[i];if(!record(c)||c.x!==i%width||c.y!==Math.floor(i/width)||!boundedText(c.t,1,40)||typeof c.road!=='boolean'||!(c.b===null||record(c.b)&&boundedText(c.b.type,1,80)))return fail('save_grid_entry_invalid');}
+  const definitions=scenario.people.presenters,memberIds=new Set();
+  for(const m of scenario.people.council){if(!record(m)||!boundedText(m.id,1,120)||memberIds.has(m.id)||!record(m.w)||!record(m.pri)||!ownRecord(s.council,m.id)||!finite(s.council[m.id].rel,0,100))return fail('save_council_invalid');memberIds.add(m.id);}
+  for(const [id,p] of Object.entries(s.presenters))if(!ownRecord(definitions,id)||!record(p)||!finite(p.rel,0,100)||!finite(definitions[id].comp,0,100)||!finite(definitions[id].detail,0,100))return fail('save_presenter_invalid');
+  for(const [id,m] of Object.entries(s.council))if(!memberIds.has(id)||!record(m)||!finite(m.rel,0,100))return fail('save_council_invalid');
+  const project=p=>{
+    if(!record(p)||!boundedText(p.id,1,120)||typeof p.kind!=='string'||!Object.hasOwn(KINDS,p.kind)||!ownRecord(definitions,p.presenter)||!ownRecord(s.presenters,p.presenter)||!record(p.plan)||!boundedText(p.site,1,120))return false;
+    if(p.plots!==undefined&&(!Array.isArray(p.plots)||p.plots.some(t=>!point(t))))return false;
+    if(p.demo!==undefined&&(!record(p.demo)||!Array.isArray(p.demo.landmarks)||!Array.isArray(p.demo.projects)))return false;
+    if(p.program!==undefined){if(!validateProgram(p.program).ok||!record(p.layout)||!Array.isArray(p.layout.cells)||p.layout.cells.some(c=>!record(c)||!point(c.plot))||!Array.isArray(p.layout.allocations)||p.layout.allocations.some(a=>!record(a)))return false;}
+    else if(!strictLegacyPlan(p.kind,p.plan))return false;
+    return true;
+  };
+  for(const key of ['proposals','pending','built','bonds','reports','history'])if(!Array.isArray(s[key]))return fail('save_collection_invalid:'+key);
+  for(const key of ['proposals','pending','built'])for(const p of s[key])if(!project(p)||key==='proposals'&&!boundedText(p.status,1,40)||key!=='proposals'&&(!number(p.cost)||!number(p.costHigh)||!number(p.odds)||!positive(p.year)))return fail('save_collection_entry_invalid:'+key);
+  if(s.bonds.some(b=>!record(b)||!boundedText(b.name,1,120)||!number(b.annual)||!nonnegative(b.left)))return fail('save_collection_entry_invalid:bonds');
+  if(s.reports.some(r=>!record(r)||(r.type==='event'?!boundedText(r.text,1,4000):!positive(r.year)||!record(r.before)||!record(r.after)||!Array.isArray(r.causes)||r.causes.some(c=>!record(c)||!number(c.v)||!boundedText(c.r,1,4000)))))return fail('save_collection_entry_invalid:reports');
+  if(s.history.some(h=>!record(h)||!positive(h.year)||!['pop','cash','jobs','walk','live','conf','approval'].every(k=>number(h[k]))))return fail('save_collection_entry_invalid:history');
+  for(const key of ['shocks','extraNext','receipts','projectRecords','persuasionHistory'])if(s[key]!==undefined&&(!Array.isArray(s[key])||s[key].some(v=>!record(v))))return fail('save_collection_entry_invalid:'+key);
+  if(s.shocks?.some(v=>!number(v.v)||!boundedText(v.r,1,4000)))return fail('save_collection_entry_invalid:shocks');
+  if(s.extraNext?.some(p=>!project(p)))return fail('save_collection_entry_invalid:extraNext');
+  if(s.projectRecords?.some(r=>!boundedText(r.proposalId,1,120)||!boundedText(r.stage,1,40)||!Array.isArray(r.revisions)||r.revisions.some(v=>!record(v))))return fail('save_collection_entry_invalid:projectRecords');
+  if(s.persuasionHistory?.some(h=>!memberIds.has(h.memberId)||!boundedText(h.proposalId,1,120)||!boundedText(h.claimKey,1,120)||!positive(h.year)))return fail('save_collection_entry_invalid:persuasionHistory');
+  if(s.v===4){
+    if(!(s.gameId===null||boundedText(s.gameId,1,120))||!nonnegative(s.revision)||!nonnegative(s.actionHighWater)||!Array.isArray(s.receipts)||s.receipts.length>COMPOSITION_RECEIPTS||!Array.isArray(s.projectRecords)||!Array.isArray(s.persuasionHistory))return fail('save_command_state_invalid');
+    if(s.receipts.some(r=>!positive(r.id)||r.id>s.actionHighWater||!boundedText(r.fingerprint,1,120)||!record(r.originalResult)))return fail('save_collection_entry_invalid:receipts');
+  }
+  return {ok:true,reasons:[]};
+}
 const CONDITION_PROPERTIES={hours:{type:'number',minimum:0,maximum:24},deliveries:{enum:['none','daytime','anytime']},access:{type:'boolean'},
   buffer:{type:'number',minimum:0,maximum:64},preserve:{type:'number',minimum:0,maximum:64},affordable:{type:'boolean'},operations:{type:'array',maxItems:24,items:{type:'object',additionalProperties:false,
     required:['componentId','stage','loadingRoute','publicSales','onSiteConsumption'],properties:{componentId:{type:'string'},stage:{const:'operation'},loadingRoute:{type:['string','null'],maxLength:80},publicSales:{type:'boolean'},onSiteConsumption:{type:'boolean'}}}}};
@@ -860,13 +914,15 @@ function validateProgram(input){
   const ids=new Map();
   for(const c of input.components){
     if(!closed(c,['id','capability','label','quantity','area','sharedWith'])){reasons.push('component_unknown_or_missing_field');continue;}
-    if(typeof c.id!=='string'||!/^[A-Za-z][A-Za-z0-9_-]{0,47}$/.test(c.id)||ids.has(c.id))reasons.push('component_id_invalid');ids.set(c.id,c);
+    if(typeof c.id!=='string'||!/^[A-Za-z][A-Za-z0-9_-]{0,47}$/.test(c.id)||ids.has(c.id)){reasons.push('component_id_invalid');continue;}ids.set(c.id,c);
     if(!boundedText(c.label,1,120))reasons.push('component_label');
-    const d=Object.hasOwn(CAPABILITY_BY_ID,c.capability)&&CAPABILITY_BY_ID[c.capability];if(!d){reasons.push('unsupported_capability:'+String(c.capability));continue;}
+    const d=typeof c.capability==='string'&&Object.hasOwn(CAPABILITY_BY_ID,c.capability)&&CAPABILITY_BY_ID[c.capability];if(!d){reasons.push('unsupported_capability');continue;}
     if(!finite(c.quantity,d.quantity.min,d.quantity.max)||(d.quantity.step===1&&!Number.isInteger(c.quantity)))reasons.push('quantity_bounds:'+c.id);
     if(!finite(c.area,d.area.min,d.area.max)||d.capacityPerArea!==null&&c.quantity>c.area*d.capacityPerArea+1e-8)reasons.push('area_capacity:'+c.id);
     if(c.sharedWith!==null&&!boundedText(c.sharedWith,1,48))reasons.push('shared_reference:'+c.id);
   }
+  if(reasons.length)return {ok:false,reasons};
+  if(input.components.filter(c=>c.capability==='policy').reduce((n,c)=>n+c.quantity,0)>1)reasons.push('policy_capacity_exceeded');
   const shared=new Map();
   for(const c of input.components){if(!record(c)||c.sharedWith===null)continue;const primary=ids.get(c.sharedWith),def=CAPABILITY_BY_ID[c.capability],host=primary&&CAPABILITY_BY_ID[primary.capability];
     if(!primary||primary===c||primary.sharedWith!==null||!def?.shareable||!host?.shareable){reasons.push('shared_reference:'+c.id);continue;}
@@ -973,8 +1029,8 @@ function previewProgram(s,input){
   if(!Array.isArray(plots)||plots.length>mapSize(s).width*mapSize(s).height)return {ok:false,reasons:['plots_invalid']};
   for(const plot of plots){if(!Array.isArray(plot)||plot.length!==2||!Number.isInteger(plot[0])||!Number.isInteger(plot[1])){reasons.push('plot_invalid');continue;}
     const key=plot.join(',');if(seen.has(key))reasons.push('plot_duplicate');seen.add(key);if(!canBuildOn(s,...plot))reasons.push('plot_not_buildable');}
-  const presenter=input.presenter||'planner',id=input.id||'init'+s.year;
-  if(!boundedText(id,1,100)||!presentersOf(s)[presenter]||!s.presenters[presenter])reasons.push('proposal_identity_invalid');
+  const presenter=Object.hasOwn(input,'presenter')?input.presenter:'planner',id=Object.hasOwn(input,'id')?input.id:'init'+s.year;
+  if(!boundedText(id,1,100)||!trustedPresenter(s,presenter))reasons.push('proposal_identity_invalid');
   const used=program.components.reduce((n,c)=>n+(c.sharedWith===null?c.area:0),0)+program.conditions.buffer;
   if(program.components.some(c=>c.capability==='policy')&&[...(s.built||[]),...(s.pending||[])].some(p=>p.id!==id&&!p.closed&&p.program?.components.some(c=>c.capability==='policy')))reasons.push('policy_program_already_active');
   if(used+program.conditions.preserve>plots.length+1e-8)reasons.push('site_capacity_exceeded');
@@ -1128,7 +1184,7 @@ function claimPriority(type,field,value,e,s){
 }
 function evaluateClaims(s,p,memberId,input){
   const invalid=reason=>({ok:false,reasons:[reason],claims:[],addressed:[],credit:'none',tone:'respectful',notes:[reason],offers:[]});
-  if(!FLAGS.compositionPlans||!p||!councilOf(s).some(m=>m.id===memberId))return invalid('claim_subject_invalid');
+  if(!FLAGS.compositionPlans||!p||!trustedMember(s,memberId))return invalid('claim_subject_invalid');
   if(!closed(input,['argument','source','programRevision','claims'])||!boundedText(input.argument,1,4000)||!['typed','quick'].includes(input.source)||!Array.isArray(input.claims)||input.claims.length>8)return invalid('claim_input_invalid');
   const current=s.proposals.find(q=>q.id===p.id)||p,revision=current.programRevision||legacyRevision(current,s);
   if(input.programRevision!==revision)return invalid('claim_revision_stale');
@@ -1152,8 +1208,8 @@ function evaluateClaims(s,p,memberId,input){
       if(c.value===false&&!/\b(no|without|not|never|closed|absent|off|false)\b/.test(lower)){valid=false;code='claim_polarity_not_in_argument';}
       if(typeof c.value==='string'&&!lower.includes(c.value.toLowerCase())){valid=false;code='claim_value_not_in_argument';}
     }
-    const key=fingerprint({proposalId:p.id,revision,type:c.type,field:c.field,actual:actual??null}),priority=valid?claimPriority(c.type,c.field,actual,e,s):null,
-      repeated=(s.persuasionHistory||[]).some(h=>h.memberId===memberId&&h.proposalId===p.id&&h.claimKey===key);
+    const key=fingerprint({proposalId:p.id,type:c.type,field:c.field,actual:actual??null}),priority=valid?claimPriority(c.type,c.field,actual,e,s):null,
+      repeated=(s.persuasionHistory||[]).some(h=>h.memberId===memberId&&h.proposalId===p.id&&(h.claimKey===key||(s.receipts||[]).some(r=>r.type==='persuade'&&r.memberId===memberId&&r.proposalId===p.id&&Array.isArray(r.originalResult?.claims)&&r.originalResult.claims.some(previous=>record(previous)&&previous.creditEligible&&previous.claimKey===h.claimKey&&previous.type===c.type&&previous.field===c.field&&previous.actual===actual))));
     let creditEligible=valid&&!!priority&&!!m.pri[priority];if(valid&&!creditEligible)code='claim_irrelevant';if(valid&&repeated){creditEligible=false;code='claim_repeated';}
     if(creditEligible)addressed.push(priority);results.push({id:c.id,type:c.type,field:c.field,claimedValue:c.value,valid,code,actual:actual??null,priority,creditEligible,claimKey:key});notes.push(c.id+': '+code);
   }
@@ -1231,6 +1287,7 @@ function applyCommand(state,command){
   const fail=(...reasons)=>({ok:false,applied:false,state,receipt:null,reasons});
   if(!FLAGS.compositionPlans)return fail('composition_disabled');
   if(!state||state.v!==4||!boundedText(state.gameId,1,120))return fail('game_identity_required');
+  const checked=validateSave(state);if(!checked.ok)return fail(...checked.reasons);
   if(!closed(command,['id','gameId','expectedRevision','expectedGeneration','type','payload'])||!Number.isSafeInteger(command.id)||command.id<=0||!boundedText(command.gameId,1,120)||!Number.isSafeInteger(command.expectedRevision)||command.expectedRevision<0||!Number.isSafeInteger(command.expectedGeneration)||command.expectedGeneration<0||!record(command.payload))return fail('command_schema_invalid');
   let digest;try{digest=fingerprint(command);}catch{return fail('command_not_canonical');}
   if(command.gameId!==state.gameId)return fail('game_mismatch');
@@ -1268,7 +1325,7 @@ function applyCommand(state,command){
       Object.assign(p,candidate);record.title=p.title;record.programRevision=p.programRevision;result={proposalId,programRevision:p.programRevision,controller,prerequisites:resident.prerequisites,forecast:forecastProgram(s,p)};
     }else if(command.type==='persuade'){
       if(!closed(payload,['proposalId','memberId','argument','source','programRevision','claims']))return fail('persuasion_payload_invalid');
-      memberId=payload.memberId;if(!s.council[memberId]||!councilOf(s).some(m=>m.id===memberId))return fail('member_invalid');
+      memberId=payload.memberId;if(!trustedMember(s,memberId))return fail('member_invalid');
       if((s.lobbyCount?.[memberId]||0)>=2)return fail('quota_used');
       const evaluation=evaluateClaims(s,p,memberId,{argument:payload.argument,source:payload.source,programRevision:payload.programRevision,claims:payload.claims});if(!evaluation.ok)return fail(...evaluation.reasons);
       const m=councilOf(s).find(m=>m.id===memberId),leanBefore=lean(memberScore(s,m,p,p.id)),relationshipBefore=s.council[memberId].rel,applied=applyLobby(s,memberId,p.id,evaluation);
@@ -1277,7 +1334,7 @@ function applyCommand(state,command){
       result={proposalId,memberId,programRevision:evaluation.programRevision,credit:evaluation.credit,tone:evaluation.tone,addressed:evaluation.addressed,claims:evaluation.claims,points:applied.points,
         notes:[...evaluation.notes,...applied.notes],leanBefore,leanAfter:lean(memberScore(s,m,p,p.id)),relationshipBefore,relationshipAfter:s.council[memberId].rel,pitchesUsed:s.lobbyCount[memberId],remainingConcerns:memberStatement(s,m,p,p.id).opposes};
     }else if(command.type==='offer'){
-      if(!closed(payload,['proposalId','memberId','offer'])||!s.council[payload.memberId])return fail('offer_payload_invalid');
+      if(!closed(payload,['proposalId','memberId','offer'])||!trustedMember(s,payload.memberId))return fail('offer_payload_invalid');
       memberId=payload.memberId;const offer=payload.offer;
       if(offer?.type==='favor'){if(!closed(offer,['type'])||s.capital<=0)return fail('favor_unavailable');}
       else if(offer?.type==='earmark'){if(!closed(offer,['type','amount_k'])||!Number.isInteger(offer.amount_k)||!finite(offer.amount_k,1,150)||s.cash<offer.amount_k)return fail('earmark_unavailable');}

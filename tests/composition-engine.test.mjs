@@ -294,3 +294,69 @@ test('MP-076 MP-078 trusted route lookups reject inherited names and malformed i
   }
   for(const id of ['service-lane','campus-entrance'])assert.equal(E.reviseProgram(s,campus,{conditions:{operations:requested(id).program.conditions.operations}}).ok,true,id);
 });
+
+const malformedIds=[null,false,0,[],{},['workplace'],{toString:null,valueOf:null},'toString','constructor','__proto__'];
+test('MP-015 MP-076 malformed capability and component identities reject without JSON coercion',()=>{
+  for(const field of ['capability','id','sharedWith'])for(const value of malformedIds){
+    if(field==='sharedWith'&&value===null||field==='id'&&typeof value==='string')continue;
+    const p=program([component('work','workplace',10,1)]);p.components[0][field]=value;
+    let result;assert.doesNotThrow(()=>{result=E.validateProgram(p);},field+': '+JSON.stringify(value));assert.equal(result.ok,false,field+': '+JSON.stringify(value));assert.ok(result.reasons.length);
+  }
+});
+
+test('MP-078 preview presenters and command members require typed own identities and real membership',()=>{
+  const s=fresh(),p=program([component('work','workplace',10,1)]),plots=land(s),before=E.canonical(s);
+  for(const id of malformedIds){
+    let result;assert.doesNotThrow(()=>{result=E.previewProgram(s,{program:p,plots,presenter:id});});assert.equal(result.ok,false,JSON.stringify(id));
+    for(const type of ['offer','persuade']){
+      const payload=type==='offer'?{proposalId:'bridge',memberId:id,offer:{type:'favor'}}:{proposalId:'bridge',memberId:id,argument:'Consider the proposal.',source:'typed',programRevision:'irrelevant',claims:[]};
+      assert.doesNotThrow(()=>{result=E.applyCommand(s,command(s,type,payload));});assert.equal(result.ok,false,JSON.stringify(id));assert.equal(result.state,s);assert.equal(result.receipt,null);
+    }
+    assert.equal(E.canonical(s),before);
+  }
+  s.council['unseated-person']={rel:50};assert.equal(E.applyCommand(s,command(s,'offer',{proposalId:'bridge',memberId:'unseated-person',offer:{type:'favor'}})).ok,false);
+});
+
+test('MP-060 MP-079 malformed saved collections fail before migration or any command dispatch',()=>{
+  const original=fresh(),collections=['proposals','pending','built','bonds','reports','history','receipts','projectRecords','persuasionHistory','shocks','extraNext'];
+  for(const key of collections)for(const entry of [null,false,[],{}]){
+    const corrupt=clone(original);corrupt[key]=[entry];const bytes=JSON.stringify(corrupt);
+    assert.equal(E.isSupportedSave(corrupt),false,key+': '+JSON.stringify(entry));
+    let migration;assert.doesNotThrow(()=>{migration=E.migrate(corrupt);});assert.equal(migration.ok,false);assert.ok(migration.reasons.length);
+    for(const [type,payload] of [['grant',{proposalId:'bridge'}],['resolveYear',{}]]){
+      let result;assert.doesNotThrow(()=>{result=E.applyCommand(corrupt,command(corrupt,type,payload));});assert.equal(result.ok,false);assert.equal(result.state,corrupt);assert.equal(result.receipt,null);
+    }
+    assert.equal(JSON.stringify(corrupt),bytes,'rejection preserves the original save');
+  }
+  for(const key of ['grid','proposals','pending','built','bonds','reports','history']){
+    const corrupt=clone(original);corrupt[key]=null;assert.equal(E.isSupportedSave(corrupt),false);assert.equal(E.applyCommand(corrupt,command(corrupt,'resolveYear',{})).ok,false);
+  }
+  const badGrid=clone(original);badGrid.grid[0]=null;assert.equal(E.isSupportedSave(badGrid),false);assert.equal(E.migrate(badGrid).ok,false);
+  for(const version of [1,2,3]){
+    const valid=engine(false).newGame(31);valid.v=version;if(version===1){delete valid.policies;delete valid.meters.safety;delete valid.meters.afford;for(const h of valid.history){delete h.safety;delete h.afford;}}
+    assert.equal(E.isSupportedSave(valid),true,'valid v'+version);const corrupt=clone(valid);corrupt.proposals=[null];assert.equal(E.isSupportedSave(corrupt),false);assert.equal(E.migrate(corrupt).ok,false);
+    const migrated=E.migrate(valid,{gameId:'valid-v'+version});assert.equal(migrated.v,4);assert.equal(E.isSupportedSave(migrated),true);
+  }
+});
+
+test('MP-078 cosmetic revisions retain fact credit history while real changed facts remain eligible',()=>{
+  let s=post(fresh(),program([component('park','green',.5,.5)])),p=s.proposals.at(-1),walk=E.effectsOf(p,s).walk;
+  const text=`This plan adds ${walk} walkability.`,first=command(s,'persuade',{proposalId:p.id,memberId:'okafor',...pitch(p,'walk',walk,text)});
+  s=E.applyCommand(s,first).state;const originalRevision=p.programRevision,key=s.receipts.at(-1).originalResult.claims[0].claimKey;
+  const older=clone(s),oldKey=E.fingerprint({proposalId:p.id,revision:originalRevision,type:'effect',field:'walk',actual:walk});
+  older.persuasionHistory[0].claimKey=oldKey;older.receipts.at(-1).originalResult.claims[0].claimKey=oldKey;
+  const oldRenamed=E.reviseProgram(older,p,{title:'A historical cosmetic edit'}),restored=commit(older,'reviseProposal',{proposalId:p.id,program:oldRenamed.proposal.program,confirmed:true});
+  assert.equal(E.evaluateClaims(restored,restored.proposals.at(-1),'okafor',pitch(restored.proposals.at(-1),'walk',walk,text)).credit,'none','retained historical receipts preserve already earned fact credit');
+  const renamed=E.reviseProgram(s,p,{title:'Only a different title'});s=commit(s,'reviseProposal',{proposalId:p.id,program:renamed.proposal.program,confirmed:true});p=s.proposals.at(-1);
+  assert.notEqual(p.programRevision,originalRevision);assert.equal(E.evaluateClaims(s,p,'okafor',pitch(p,'walk',walk,text,{programRevision:originalRevision})).ok,false);
+  const repeat=E.evaluateClaims(s,p,'okafor',pitch(p,'walk',walk,text));assert.equal(repeat.credit,'none');assert.equal(repeat.claims[0].code,'claim_repeated');assert.equal(repeat.claims[0].claimKey,key);
+  const changed=E.reviseProgram(s,p,{upsert:[component('park','green',1,1)]});s=commit(s,'reviseProposal',{proposalId:p.id,program:changed.proposal.program,confirmed:true});p=s.proposals.at(-1);
+  const newWalk=E.effectsOf(p,s).walk;assert.notEqual(newWalk,walk);assert.equal(E.evaluateClaims(s,p,'okafor',pitch(p,'walk',newWalk,`This plan adds ${newWalk} walkability.`)).credit,'strong');
+});
+
+test('MP-076 policy capacity is cumulative within a program and across active projects',()=>{
+  const p=program([component('first','policy',1,0),component('second','policy',1,0)]),s=fresh(),before=E.canonical(s);
+  assert.equal(E.validateProgram(p).ok,false);assert.equal(preview(s,p,[]).ok,false);
+  const result=E.applyCommand(s,command(s,'postProgram',{program:p,plots:[],acknowledgedScope:true}));assert.equal(result.ok,false);assert.equal(result.state,s);assert.equal(E.canonical(s),before);
+  assert.equal(E.validateProgram(program([component('single','policy',1,0),component('land','green',.1,.1)])).ok,true);
+});
