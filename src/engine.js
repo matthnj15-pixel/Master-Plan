@@ -596,6 +596,7 @@ function migrate(s,options={}){const checked=validateSave(s);if(!checked.ok)retu
   if(s.v===2){const scenario=copy(MILLBROOKE);delete scenario.map.grid;s.scenarioId=MILLBROOKE.id;s.scenario=scenario;s.calendar=copy(MILLBROOKE.calendar);s.facts={};
     if(s.town==='Millbrook'||!s.town)s.town=MILLBROOKE.metadata.town;s.v=3;}
   if(FLAGS.compositionPlans&&s.v===3)initializeComposition(s,options);
+  if(FLAGS.compositionPlans&&s.v===4)migrateCreditHistory(s);
   return s;}
 
 /* ---------- Scenario 01 · Millbrooke: campaign content, not shared rules ---------- */
@@ -1260,6 +1261,29 @@ function claimPriority(type,field,value,e,s){
   if(type==='component')return value>0?({housing:'housing',workplace:'jobs',shop:'stores',community:'live',recreation:'live',event:'conf',agriculture:'farm',storage:'jobs',access:'walk',parking:null,green:'live',stormwater:'flood',policy:'safety'}[field]||null):null;
   return null;
 }
+// Prove historical revision identities from accepted public records. This hashes
+// recorded programs/plans only; it never previews or reprices an occupied site.
+function creditRevisionEvidence(s,p){
+  const current=p.programRevision||legacyRevision(p,s),revisions=new Set([current]),history=(s.projectRecords||[]).find(r=>r.proposalId===p.id&&r.presenter===p.presenter);
+  if(!history||!Array.isArray(history.plots)||canonical(history.plots)!==canonical(plotsOf(p,s))||!Array.isArray(history.revisions))return {complete:false,revisions};
+  const identity=(program,plan)=>p.program?(record(program)?fingerprint({program,plots:history.plots,presenter:p.presenter,id:p.id}):null):(record(plan)?legacyRevision({...p,plan},s):null);
+  let previous=identity(history.originalProgram,history.originalPlan);if(!previous)return {complete:false,revisions};
+  revisions.add(previous);
+  for(const edit of history.revisions){if(!record(edit)||edit.from!==previous)return {complete:false,revisions};const next=identity(edit.program,edit.plan);if(!next||edit.to!==next)return {complete:false,revisions};revisions.add(next);previous=next;}
+  return {complete:previous===current,revisions};
+}
+function retainedCreditFact(s,h){
+  for(const r of s.receipts||[]){if(r.type!=='persuade'||r.memberId!==h.memberId||r.proposalId!==h.proposalId||!Array.isArray(r.originalResult?.claims))continue;
+    const fact=r.originalResult.claims.find(c=>record(c)&&c.valid&&c.creditEligible&&c.claimKey===h.claimKey&&typeof c.type==='string'&&typeof c.field==='string'&&savedFact(c.actual));if(fact)return fact;}
+  return null;
+}
+function migrateCreditHistory(s){
+  const evidence=new Map();
+  for(const h of s.persuasionHistory||[]){if(h.keyVersion===2||h.legacyCreditPolicy!==undefined)continue;
+    if(!evidence.has(h.proposalId)){const p=[...s.proposals,...s.pending,...s.built].find(p=>p.id===h.proposalId);evidence.set(h.proposalId,p?creditRevisionEvidence(s,p):{complete:false});}
+    h.legacyCreditPolicy=evidence.get(h.proposalId).complete?'recorded-revisions':retainedCreditFact(s,h)?'retained-receipt':'conservative';
+  }
+}
 function evaluateClaims(s,p,memberId,input){
   const invalid=reason=>({ok:false,reasons:[reason],claims:[],addressed:[],credit:'none',tone:'respectful',notes:[reason],offers:[]});
   if(!FLAGS.compositionPlans||!p||!trustedMember(s,memberId))return invalid('claim_subject_invalid');
@@ -1267,6 +1291,8 @@ function evaluateClaims(s,p,memberId,input){
   const current=s.proposals.find(q=>q.id===p.id)||p,revision=current.programRevision||legacyRevision(current,s);
   if(input.programRevision!==revision)return invalid('claim_revision_stale');
   const e=effectsOf(current,s),m=councilOf(s).find(m=>m.id===memberId),addressed=[],results=[],seen=new Set(),notes=[];
+  const history=(s.persuasionHistory||[]).filter(h=>h.memberId===memberId&&h.proposalId===p.id),legacy=history.filter(h=>h.keyVersion!==2),evidence=legacy.length?creditRevisionEvidence(s,current):null,
+    priorFacts=new Map(legacy.map(h=>[h,retainedCreditFact(s,h)]));
   for(const c of input.claims){
     if(!closed(c,['id','type','field','operator','value','evidence'])||!boundedText(c.id,1,48)||seen.has(c.id)||!['effect','condition','component','town'].includes(c.type)||!boundedText(c.field,1,80)||!['eq','gte','lte'].includes(c.operator)||!(typeof c.value==='boolean'||boundedText(c.value,1,120)||finite(c.value,-1e9,1e9))||!closed(c.evidence,['start','end','quote']))return invalid('claim_schema_invalid');
     seen.add(c.id);const span=c.evidence,quote=span.quote;
@@ -1287,8 +1313,10 @@ function evaluateClaims(s,p,memberId,input){
       if(typeof c.value==='string'&&!lower.includes(c.value.toLowerCase())){valid=false;code='claim_value_not_in_argument';}
     }
     const key=fingerprint({proposalId:p.id,type:c.type,field:c.field,actual:actual??null}),priority=valid?claimPriority(c.type,c.field,actual,e,s):null,
-      repeated=(s.persuasionHistory||[]).some(h=>h.memberId===memberId&&h.proposalId===p.id&&(h.claimKey===key||(s.receipts||[]).some(r=>r.type==='persuade'&&r.memberId===memberId&&r.proposalId===p.id&&Array.isArray(r.originalResult?.claims)&&r.originalResult.claims.some(previous=>record(previous)&&previous.creditEligible&&previous.claimKey===h.claimKey&&previous.type===c.type&&previous.field===c.field&&previous.actual===actual))));
-    let creditEligible=valid&&!!priority&&!!m.pri[priority];if(valid&&!creditEligible)code='claim_irrelevant';if(valid&&repeated){creditEligible=false;code='claim_repeated';}
+      historicalKeys=new Set(evidence?[...evidence.revisions].map(revision=>fingerprint({proposalId:p.id,revision,type:c.type,field:c.field,actual:actual??null})):[]),
+      repeated=history.some(h=>{const prior=priorFacts.get(h);return h.claimKey===key||h.keyVersion!==2&&(historicalKeys.has(h.claimKey)||prior&&prior.type===c.type&&prior.field===c.field&&prior.actual===actual);}),
+      unresolved=legacy.some(h=>h.claimKey!==key&&h.legacyCreditPolicy==='conservative'||h.claimKey!==key&&!evidence.complete&&!priorFacts.get(h));
+    let creditEligible=valid&&!!priority&&!!m.pri[priority];if(valid&&!creditEligible)code='claim_irrelevant';if(valid&&repeated){creditEligible=false;code='claim_repeated';}else if(valid&&unresolved){creditEligible=false;code='claim_history_unresolved';}
     if(creditEligible)addressed.push(priority);results.push({id:c.id,type:c.type,field:c.field,claimedValue:c.value,valid,code,actual:actual??null,priority,creditEligible,claimKey:key});notes.push(c.id+': '+code);
   }
   const tone=/\b(idiot|stupid|moron|corrupt|hate you)\b/i.test(input.argument)?'hostile':/\b(you must|or else|do as i say)\b/i.test(input.argument)?'pushy':'respectful',unique=[...new Set(addressed)];
@@ -1414,8 +1442,9 @@ function applyCommand(state,command){
       if((s.lobbyCount?.[memberId]||0)>=2)return fail('quota_used');
       const evaluation=evaluateClaims(s,p,memberId,{argument:payload.argument,source:payload.source,programRevision:payload.programRevision,claims:payload.claims});if(!evaluation.ok)return fail(...evaluation.reasons);
       const m=councilOf(s).find(m=>m.id===memberId),leanBefore=lean(memberScore(s,m,p,p.id)),relationshipBefore=s.council[memberId].rel,applied=applyLobby(s,memberId,p.id,evaluation);
-      for(const claim of evaluation.claims)if(claim.creditEligible)s.persuasionHistory.push({memberId,proposalId:p.id,claimKey:claim.claimKey,year:s.year});
-      s.persuasionHistory=s.persuasionHistory.slice(-256);
+      // Unique factual credit lasts for the town; receipt/history display limits
+      // must never age a previously credited fact back into eligibility.
+      for(const claim of evaluation.claims)if(claim.creditEligible&&!s.persuasionHistory.some(h=>h.memberId===memberId&&h.proposalId===p.id&&h.claimKey===claim.claimKey))s.persuasionHistory.push({memberId,proposalId:p.id,claimKey:claim.claimKey,year:s.year,keyVersion:2});
       result={proposalId,memberId,programRevision:evaluation.programRevision,credit:evaluation.credit,tone:evaluation.tone,addressed:evaluation.addressed,claims:evaluation.claims,points:applied.points,
         notes:[...evaluation.notes,...applied.notes],leanBefore,leanAfter:lean(memberScore(s,m,p,p.id)),relationshipBefore,relationshipAfter:s.council[memberId].rel,pitchesUsed:s.lobbyCount[memberId],remainingConcerns:memberStatement(s,m,p,p.id).opposes};
     }else if(command.type==='offer'){

@@ -348,6 +348,7 @@ test('MP-078 cosmetic revisions retain fact credit history while real changed fa
   s=E.applyCommand(s,first).state;const originalRevision=p.programRevision,key=s.receipts.at(-1).originalResult.claims[0].claimKey;
   const older=clone(s),oldKey=E.fingerprint({proposalId:p.id,revision:originalRevision,type:'effect',field:'walk',actual:walk});
   older.persuasionHistory[0].claimKey=oldKey;older.receipts.at(-1).originalResult.claims[0].claimKey=oldKey;
+  delete older.persuasionHistory[0].keyVersion;
   const oldRenamed=E.reviseProgram(older,p,{title:'A historical cosmetic edit'}),restored=commit(older,'reviseProposal',{proposalId:p.id,program:oldRenamed.proposal.program,confirmed:true});
   assert.equal(E.evaluateClaims(restored,restored.proposals.at(-1),'okafor',pitch(restored.proposals.at(-1),'walk',walk,text)).credit,'none','retained historical receipts preserve already earned fact credit');
   const renamed=E.reviseProgram(s,p,{title:'Only a different title'});s=commit(s,'reviseProposal',{proposalId:p.id,program:renamed.proposal.program,confirmed:true});p=s.proposals.at(-1);
@@ -440,4 +441,20 @@ test('MP-060 optional consumed display text remains optional in profiles, parcel
   for(const key of ['title','blurb','desc'])delete s.proposals[0][key];
   s.projectRecords=[{proposalId:'bridge',stage:'agenda',revisions:[{year:1,from:'old',to:'new'}]}];
   assert.equal(E.isSupportedSave(s),true);assert.equal(E.isSupportedSave(E.migrate(clone(s))),true);
+});
+
+test('MP-060 MP-078 authentic A fact credit survives migration and pruning without repricing historical sites',()=>{
+  const fixture=JSON.parse(readFileSync(new URL('./fixtures/composition-v2-pruned-credit.json',import.meta.url),'utf8')),original=fixture.state,before=JSON.stringify(original);
+  assert.equal(fixture.provenance.engineRevision,'6da5d9adc51751afb27236bfc27b769848a18d94');assert.equal(fixture.provenance.engineSHA256,'a579864490fbd00757b45835f2970d190412d2bee67cbcddc3e6828e0334411d');assert.equal(fixture.provenance.resourceOrRelationshipEdits,false);
+  assert.equal(createHash('sha256').update(before).digest('hex'),fixture.provenance.stateSHA256);assert.equal(original.actionHighWater,67);assert.equal(original.receipts.length,64);assert.equal(original.receipts.some(r=>r.id===fixture.provenance.originalPersuasionReceiptId),false);assert.equal(fixture.provenance.originalCredit,'strong');assert.equal(original.persuasionHistory.length,1);
+  assert.equal(E.isSupportedSave(original),true);let s=E.migrate(original),p=s.proposals.at(-1);
+  const evaluate=state=>E.evaluateClaims(state,state.proposals.at(-1),'okafor',{...fixture.input,programRevision:state.proposals.at(-1).programRevision});
+  const result=evaluate(s);assert.equal(result.ok,true);assert.equal(result.credit,'none');assert.equal(result.claims[0].code,'claim_repeated');assert.equal(JSON.stringify(original),before);
+  assert.equal(s.persuasionHistory[0].legacyCreditPolicy,'recorded-revisions');assert.deepEqual(clone(E.migrate(clone(s))),clone(s));
+  const live=E.effectsOf(p,s).live,newInput=pitch(p,'live',live,`This plan adds ${live} livability.`);assert.equal(E.evaluateClaims(s,p,'okafor',newInput).credit,'strong','a different verified fact remains eligible');
+  s=commit(s,'persuade',{proposalId:p.id,memberId:'okafor',...newInput});assert.equal(s.persuasionHistory.at(-1).keyVersion,2);
+  for(let i=0;i<65;i++){p=s.proposals.at(-1);const revision=E.reviseProgram(s,p,{title:'Another authorized title '+i});assert.equal(revision.ok,true);s=commit(s,'reviseProposal',{proposalId:p.id,program:revision.proposal.program,confirmed:true});}
+  assert.equal(s.receipts.length,64);assert.equal(s.receipts.some(r=>r.type==='persuade'),false);assert.equal(evaluate(E.migrate(clone(s))).credit,'none');assert.equal(s.persuasionHistory.length,2);assert.equal(s.lobbyCount.okafor,2);
+  assert.equal(E.evaluateClaims(s,s.proposals.at(-1),'okafor',{...newInput,programRevision:s.proposals.at(-1).programRevision}).credit,'none','new-format credit also survives receipt pruning');
+  const lost=clone(original);lost.projectRecords=[];const conservative=E.migrate(lost),blocked=evaluate(conservative);assert.equal(blocked.credit,'none');assert.equal(blocked.claims[0].code,'claim_history_unresolved');assert.equal(conservative.persuasionHistory[0].legacyCreditPolicy,'conservative');assert.equal(evaluate(E.migrate(clone(conservative))).credit,'none');
 });
