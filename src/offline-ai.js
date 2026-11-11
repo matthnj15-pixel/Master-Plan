@@ -11,7 +11,7 @@ const startupFailure = (code, message) => Object.assign(new Error(message), {cod
 const clock = () => globalThis.performance?.now?.() ?? Date.now();
 // Never let observational storage participate in inference or startup control flow.
 function record(diagnostics, name, outcome, metadata) {
-  try { diagnostics?.record(name, outcome, metadata); } catch {}
+  try { void Promise.resolve(diagnostics?.record(name, outcome, metadata)).catch(() => {}); } catch {}
 }
 function safeError(diagnostics, error, stage) {
   try { return diagnostics?.error(error, stage); } catch {}
@@ -126,6 +126,61 @@ export async function startOfflineAI({ model, download, onProgress, diagnostics 
   }
 }
 
+const PLAIN_JSON_SUFFIX = '\n\nReply with one valid JSON object only. Do not wrap it in Markdown.';
+
+/* Version adapter for the integrity-pinned 0.2.87 bundle. MLCEngine exposes no
+ * public config/tokenizer getter. These TS-private maps and pipeline members
+ * are deliberately guarded here, never inferred from HF limits or GPU bytes.
+ * An incompatible runtime fails composition admission explicitly, while legacy
+ * json callers remain usable. No mutation of the live conversation/KV cache.
+ */
+function loadedAdmission(engine, modelId, prompt, structured, runtimeVersion) {
+  const unavailable = { ok:false, code:'runtime_metadata_unavailable' };
+  try {
+    if (runtimeVersion !== '0.2.87' || ![...MODELS.values()].includes(modelId) || typeof prompt !== 'string') return unavailable;
+    const pipeline = engine.loadedModelIdToPipeline?.get(modelId);
+    const config = engine.loadedModelIdToChatConfig?.get(modelId);
+    if (!pipeline || !config || pipeline.config !== config || pipeline.artifact !== undefined ||
+        pipeline.slidingWindowSize !== -1 || config.sliding_window_size !== -1 ||
+        !Number.isSafeInteger(pipeline.contextWindowSize) || pipeline.contextWindowSize <= 0 ||
+        pipeline.contextWindowSize !== config.context_window_size || typeof pipeline.tokenizer?.encode !== 'function' ||
+        !config.conv_template || typeof pipeline.getConversationObject !== 'function') return unavailable;
+    const live = pipeline.getConversationObject();
+    if (!live || typeof live.constructor !== 'function' || live.constructor === Object) return unavailable;
+    const template = JSON.parse(JSON.stringify({ ...config.conv_template, ...config.conv_config }));
+    const conversation = new live.constructor(template);
+    if (conversation === live || !Array.isArray(conversation.messages) || conversation.messages.length ||
+        typeof conversation.appendMessage !== 'function' || typeof conversation.appendReplyHeader !== 'function' ||
+        typeof conversation.getPromptArray !== 'function') return unavailable;
+    // json() sends one user message, so WebLLM always starts a fresh conversation.
+    conversation.appendMessage('user', structured ? prompt : prompt + PLAIN_JSON_SUFFIX);
+    conversation.appendReplyHeader('assistant');
+    const segments = conversation.getPromptArray(config), prefix = template.system_prefix_token_ids ?? [];
+    if (!Array.isArray(segments) || segments.some(segment => typeof segment !== 'string') ||
+        !Array.isArray(prefix) || prefix.some(id => !Number.isSafeInteger(id) || id < 0)) return unavailable;
+    let promptTokens = prefix.length;
+    // WebLLM tokenizes each segment separately. Concatenation changes BPE edges.
+    for (const segment of segments) {
+      const ids = pipeline.tokenizer.encode(segment);
+      if ((!Array.isArray(ids) && !ArrayBuffer.isView(ids)) || !Number.isSafeInteger(ids.length) ||
+          ids.length < 0 || (segment.length && !ids.length)) return unavailable;
+      promptTokens += ids.length;
+    }
+    if (!Number.isSafeInteger(promptTokens)) return unavailable;
+    return { ok:promptTokens+640 <= pipeline.contextWindowSize, code:promptTokens+640 <= pipeline.contextWindowSize ? 'none' : 'context_limit',
+      promptTokens, contextWindowTokens:pipeline.contextWindowSize, maxOutputTokens:640, temperature:0.2,
+      modelId, runtimeVersion, adapter:'webllm-0.2.87-loaded-pipeline' };
+  } catch { return unavailable; }
+}
+
+function admissionFailure(code) {
+  return Object.assign(new Error(code === 'context_limit'
+    ? 'The complete request and reserved reply exceed the loaded model context.'
+    : code === 'output_limit' ? 'The reply reached the configured generation limit.'
+    : 'Exact context admission is unavailable for this runtime.'), { code,
+      diagnostic:{name:code==='context_limit'?'ContextWindowSizeExceededError':code==='output_limit'?'OutputLimitError':'RuntimeMetadataUnavailable',stage:code==='output_limit'?'response':'admission'} });
+}
+
 function providerFailure(code, stage, cause) {
   const errorName = cause?.name;
   const name = stage === 'response' ? 'MissingCompletion'
@@ -142,7 +197,7 @@ function providerFailure(code, stage, cause) {
 // Every caller (plans, lobbying, headlines, and shutdown) shares this queue.
 // A caller timing out cannot start another GPU request while the first one is
 // still running; unload also waits for that request to settle.
-export function createOfflineProvider(engine, modelId, reloadCachedEngine, diagnostics = globalThis.MP_QWEN_DIAGNOSTICS) {
+export function createOfflineProvider(engine, modelId, reloadCachedEngine, diagnostics = globalThis.MP_QWEN_DIAGNOSTICS, {runtimeVersion='0.2.87'} = {}) {
   let tail = Promise.resolve(), closing = false, unloading;
   let structured = true, needsReload = false;
   const turningOff = () => Object.assign(new Error('Offline AI is turning off.'), { code: 'unavailable' });
@@ -154,7 +209,7 @@ export function createOfflineProvider(engine, modelId, reloadCachedEngine, diagn
 
   async function generate(prompt, signal) {
     signal?.throwIfAborted();
-    const content = structured ? prompt : prompt + '\n\nReply with one valid JSON object only. Do not wrap it in Markdown.';
+    const content = structured ? prompt : prompt + PLAIN_JSON_SUFFIX;
     const interrupt = () => {
       try { void Promise.resolve(engine.interruptGenerate?.()).catch(() => {}); } catch {}
     };
@@ -176,7 +231,33 @@ export function createOfflineProvider(engine, modelId, reloadCachedEngine, diagn
   return {
     offline: true,
     modelId,
-    json(prompt, { signal, requestId, action = 'other', attempt = 1 } = {}) {
+    runtimeVersion,
+    // This CPU preflight uses the same queue as generation/reload/shutdown.
+    // json(requireAdmission) repeats it after reload and grammar fallback.
+    admit(prompt, {signal,requestId,action='other',attempt=1,isCurrent} = {}) {
+      return enqueue(async () => {
+        if (closing) throw turningOff();
+        signal?.throwIfAborted();
+        if (isCurrent && !isCurrent()) throw Object.assign(new Error('Stale request'),{code:'stale'});
+        if (engine.loadedModelIdToPipeline?.has(modelId) === false) needsReload = true;
+        if (needsReload && reloadCachedEngine) {
+          const started=clock();
+          record(diagnostics,'engine.reload','started',{requestId,action,attempt,stage:'reload',modelId,runtimeVersion});
+          try {
+            engine=await reloadCachedEngine();needsReload=false;
+            record(diagnostics,'engine.reload','success',{requestId,action,attempt,stage:'reload',modelId,runtimeVersion,durationMs:clock()-started});
+          } catch(error) {
+            record(diagnostics,'engine.reload','failed',{requestId,action,attempt,stage:'reload',modelId,runtimeVersion,durationMs:clock()-started,error:safeError(diagnostics,error,'reload')});
+            signal?.throwIfAborted();throw providerFailure('offline-reload','reload',error);
+          }
+        }
+        signal?.throwIfAborted();
+        if (closing) throw turningOff();
+        if (isCurrent && !isCurrent()) throw Object.assign(new Error('Stale request'),{code:'stale'});
+        return loadedAdmission(engine,modelId,prompt,structured,runtimeVersion);
+      });
+    },
+    json(prompt, { signal, requestId, action = 'other', attempt = 1, requireAdmission = false, isCurrent } = {}) {
       try { requestId ||= diagnostics?.id(); } catch {}
       const queued = clock();
       let queueWaitMs = 0, generationAttempt = 0, stage = 'queue';
@@ -198,6 +279,8 @@ export function createOfflineProvider(engine, modelId, reloadCachedEngine, diagn
         for (;;) {
           if (closing) throw turningOff();
           signal?.throwIfAborted();
+          if (isCurrent && !isCurrent()) throw Object.assign(new Error('Stale request'),{code:'stale'});
+          if (requireAdmission && engine.loadedModelIdToPipeline?.has(modelId) === false) needsReload = true;
           if (needsReload && reloadCachedEngine) {
             stage = 'reload';
             const reloadStart = clock();
@@ -214,6 +297,13 @@ export function createOfflineProvider(engine, modelId, reloadCachedEngine, diagn
             }
             signal?.throwIfAborted();
             if (closing) throw turningOff();
+          }
+          if (isCurrent && !isCurrent()) throw Object.assign(new Error('Stale request'),{code:'stale'});
+          if (requireAdmission) {
+            stage='admission';
+            const admission=loadedAdmission(engine,modelId,prompt,structured,runtimeVersion);
+            log('request.admission',admission.ok?'passed':'failed',{resultCode:admission.code,promptTokens:admission.promptTokens,contextWindowTokens:admission.contextWindowTokens,maxOutputTokens:640});
+            if(!admission.ok)throw admissionFailure(admission.code);
           }
           let result;
           stage = 'generation';
@@ -243,6 +333,7 @@ export function createOfflineProvider(engine, modelId, reloadCachedEngine, diagn
             throw providerFailure(code, 'generation', error);
           }
           stage = 'response';
+          if (requireAdmission && result?.choices?.[0]?.finish_reason === 'length') throw admissionFailure('output_limit');
           const content = result?.choices?.[0]?.message?.content;
           if (typeof content !== 'string') throw providerFailure('offline-inference', 'response');
           const fence = structured ? null : /^```(?:json)?\s+([\s\S]*?)\s*```$/i.exec(content.trim());

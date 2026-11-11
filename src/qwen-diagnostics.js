@@ -3,10 +3,13 @@
 'use strict';
 const HOURS=168, RETENTION_MS=HOURS*60*60*1000, MAX_EVENTS=1000, MAX_BYTES=1024*1024;
 const encoder=new TextEncoder();
-const names=new Set(('app.launch model.choice startup.begin startup.check startup.initialization startup.ready startup.error startup.interrupted startup.retry shutdown.begin shutdown.finish request.queued generation.started generation.finished request.timeout request.aborted request.error grammar.fallback engine.reload plan.submitted plan.queued plan.dequeued plan.validation plan.repair plan.final plan.application').split(' '));
+const names=new Set(('app.launch model.choice startup.begin startup.check startup.initialization startup.ready startup.error startup.interrupted startup.retry shutdown.begin shutdown.finish request.queued request.admission generation.started generation.finished request.timeout request.aborted request.error grammar.fallback engine.reload plan.submitted plan.queued plan.dequeued plan.validation plan.repair plan.final plan.application composition.submitted composition.admission composition.validation composition.repair composition.final composition.application').split(' '));
 const outcomes=new Set(('started queued passed failed ready valid invalid malformed-json unsupported stale canceled timeout unavailable applied unchanged not-applied incomplete success off selected observed').split(' '));
-const stages=new Set(('startup webgpu shader-f16 shell-cache runtime-cache model-cache initialization queue generation response reload validation repair application shutdown launch').split(' '));
-const actions=new Set(['draft','revise','briefing','other']);
+const stages=new Set(('startup webgpu shader-f16 shell-cache runtime-cache model-cache initialization queue admission generation response reload validation repair application persistence shutdown launch').split(' '));
+const actions=new Set(['draft','revise','claims','reaction','briefing','other']);
+const tasks=new Set(['draft','revise','claims','reaction']);
+const resultCodes=new Set(('none malformed_json unknown_field wrong_type value_out_of_range schema_version input_limit context_limit output_limit runtime_metadata_unavailable intent_unclear intent_mismatch unsupported_operation scope_ack_required site_required plot_invalid site_infeasible site_conflict stale_revision target_closed runtime_unavailable generation_timeout request_canceled engine_rejected claim_evidence_mismatch claim_revision_stale receipt_not_found reaction_member_mismatch reaction_type_mismatch command_mismatch reaction_fallback claim_false claim_unsupported claim_evidence_unrelated claim_quantity_not_in_argument claim_evidence_negated claim_value_not_in_argument claim_irrelevant claim_repeated verified save_conflict save_lock_unavailable storage_unavailable workspace_conflict quota_used').split(' '));
+const fieldIds=new Set(('program version title intent components id capability label quantity area sharedWith conditions hours deliveries access buffer preserve affordable operations componentId stage loadingRoute publicSales onSiteConsumption assumptions omissions patch upsert remove changes claims argument source programRevision type field operator value evidence start end quote definitionId receipt acknowledgement concernIndexes').split(' '));
 const models=new Set(['Qwen2.5-1.5B-Instruct-q4f16_1-MLC','Qwen2.5-3B-Instruct-q4f16_1-MLC']);
 const errorTypes={
  GrammarMatcherInitError:['grammar-init','grammar','JSON grammar initialization failed.'],
@@ -28,6 +31,9 @@ const codes={
  'model-missing':['model-missing','cache','The cached model is missing.'],
  'model-cache-write':['model-cache-write','storage','The model could not be kept in cache.'],
  'shell-cache':['shell-cache','cache','The game shell could not be cached.'],
+ context_limit:['context_limit','context','The complete request exceeds the loaded context window.'],
+ runtime_metadata_unavailable:['runtime_metadata_unavailable','context','Exact runtime context metadata is unavailable.'],
+ output_limit:['output_limit','response','The reply reached its configured generation limit.'],
  timeout:['timeout','timeout','The request exceeded its time limit.'],stale:['stale','cancellation','The request no longer matches the current game.'],unavailable:['unavailable','availability','The provider is unavailable.'],'offline-inference':['offline-inference','runtime','The runtime could not finish the request.'],'offline-reload':['offline-reload','model','The cached model could not be used.']};
 const unknown={name:'UnknownError',code:'unknown',category:'unknown',message:'An unclassified error occurred.'};
 const iso=ms=>new Date(ms).toISOString();
@@ -67,7 +73,7 @@ function safeError(error,stage){
   // Keep only an allowlisted local module and line; never retain stack text,
   // arbitrary source paths, URLs, query strings, or exception messages.
   const stack=typeof error?.stack==='string'?error.stack.slice(0,4096):'';
-  const modules='(offline-ai\\.js|plan-requests\\.js|ui\\.js|qwen-diagnostics\\.js|index\\.html)';
+  const modules='(offline-ai\\.js|plan-requests\\.js|composition-requests\\.js|ui\\.js|qwen-diagnostics\\.js|index\\.html)';
   for(const line of stack.split('\n').slice(1)){
    const local=new RegExp('(?:^|\\s|\\()'+modules+':(\\d{1,7})(?::\\d+)?(?:\\)|\\s|$)').exec(line);
    if(local){result.module=local[1];result.line=Number(local[2]);break;}
@@ -84,10 +90,15 @@ function sanitizeMetadata(input){
  const out={};if(!input||typeof input!=='object')return out;
  for(const key of ['requestId','startupId'])if(identifier(input[key]))out[key]=input[key];
  if(actions.has(input.action))out.action=input.action;
+ if(tasks.has(input.task))out.task=input.task;
+ if(input.contractVersion==='C2.1')out.contractVersion=input.contractVersion;
+ if(resultCodes.has(input.resultCode))out.resultCode=input.resultCode;
+ if(fieldIds.has(input.fieldId))out.fieldId=input.fieldId;
  if(stages.has(input.stage))out.stage=input.stage;
  if(models.has(input.modelId)){out.modelId=input.modelId;out.runtimeVersion='0.2.87';}
  if(input.runtimeVersion==='0.2.87')out.runtimeVersion=input.runtimeVersion;
- for(const key of ['attempt','generationAttempt','plotCount','changedFieldCount','promptTokens','completionTokens','totalTokens'])if(integer(input[key]))out[key]=Math.min(input[key],1e9);
+ for(const key of ['attempt','generationAttempt','plotCount','changedFieldCount','promptTokens','completionTokens','totalTokens','contextWindowTokens','maxOutputTokens','inputChars','claimCount','omissionCount','definitionCount'])if(integer(input[key]))out[key]=Math.min(input[key],1e9);
+ if(input.temperature===0.2)out.temperature=0.2;
  for(const key of ['durationMs','queueWaitMs','inferenceMs'])if(typeof input[key]==='number'&&Number.isFinite(input[key])&&input[key]>=0)out[key]=Math.round(Math.min(input[key],Number.MAX_SAFE_INTEGER));
  for(const key of ['applied','download','webgpu','shaderF16','cached','previousSession'])if(typeof input[key]==='boolean')out[key]=input[key];
  if(['stop','length','tool_calls','content_filter','function_call'].includes(input.finishReason))out.finishReason=input.finishReason;
@@ -95,7 +106,7 @@ function sanitizeMetadata(input){
   // Do not trust pre-sanitized caller objects: reconstruct from our own maps.
   const value=input.error;
   out.error=safeError({name:value.name,code:value.code,diagnostic:value.diagnostic},out.stage||value.stage);
-  if(['offline-ai.js','plan-requests.js','ui.js','qwen-diagnostics.js','index.html'].includes(value.module)&&integer(value.line)){
+  if(['offline-ai.js','plan-requests.js','composition-requests.js','ui.js','qwen-diagnostics.js','index.html'].includes(value.module)&&integer(value.line)){
    out.error.module=value.module;out.error.line=value.line;
   }
  }
@@ -161,10 +172,11 @@ function attemptSummaries(events){
  }
  return [...groups.values()].map(list=>{
   const first=list[0],last=list.at(-1),m=first.metadata||{},requestId=m.requestId,startupId=m.startupId;
-  const found=name=>list.findLast(e=>e.name===name),application=found('plan.application'),final=found('plan.final'),start=found('plan.submitted'),startup=found('startup.begin'),interrupted=found('startup.interrupted'),shutdown=found('shutdown.begin'),shutdownFinish=found('shutdown.finish');
+  const found=name=>list.findLast(e=>e.name===name),application=found('composition.application')||found('plan.application'),final=found('composition.final')||found('plan.final'),start=found('composition.submitted')||found('plan.submitted'),startup=found('startup.begin'),interrupted=found('startup.interrupted'),shutdown=found('shutdown.begin'),shutdownFinish=found('shutdown.finish');
   const missing=[],missingContext=[];
-  const isPlan=list.some(e=>e.name.startsWith('plan.')),isShutdown=!!(shutdown||shutdownFinish);
+  const isPlan=list.some(e=>e.name.startsWith('plan.')),isComposition=list.some(e=>e.name.startsWith('composition.')),isShutdown=!!(shutdown||shutdownFinish);
   if(isShutdown){if(!shutdown)missingContext.push('shutdown.begin');if(!shutdownFinish)missing.push('shutdown.finish');}
+  else if(isComposition){if(!start)missingContext.push('composition.submitted');if(!final)missing.push('composition.final');}
   else if(isPlan){if(!start)missingContext.push('plan.submitted');if(!final)missing.push('plan.final');else if(final.outcome==='ready'&&!application)missing.push('plan.application');}
   else if(startup||startupId||interrupted){
    if(!startup)missingContext.push('startup.begin');
@@ -201,12 +213,12 @@ function attemptSummaries(events){
   // The runner knows it handed off to the provider, but only the provider knows
   // whether that call is still queued or waiting for a cached-engine reload.
   const waitingStage=['unavailable','timeout','canceled','stale'].includes(final?.outcome)&&['queue','reload'].includes(runtimeBoundary?.metadata?.stage)?runtimeBoundary.metadata.stage:null;
-  if(!isPlan&&!isShutdown&&!startup&&!startupId&&!interrupted&&found('request.queued')&&!found('generation.finished')&&!found('request.error')&&!found('request.timeout')&&!found('request.aborted'))missing.push('generation.finished or request.error');
+  if(!isPlan&&!isComposition&&!isShutdown&&!startup&&!startupId&&!interrupted&&found('request.queued')&&!found('generation.finished')&&!found('request.error')&&!found('request.timeout')&&!found('request.aborted'))missing.push('generation.finished or request.error');
   const incomplete=missing.length>0||missingContext.length>0;
   const completed=list.findLast(e=>['passed','success','ready','valid','invalid','malformed-json','unsupported','failed','applied','unchanged','not-applied'].includes(e.outcome)||e.name==='plan.dequeued');
   const model=list.find(e=>e.metadata?.modelId)?.metadata.modelId||null;
   const elapsed=list.filter(e=>typeof e.metadata?.durationMs==='number').map(e=>e.metadata.durationMs);
-  return {...(requestId?{requestId}:{}),...(startupId?{startupId}:{}),sessionId:first.sessionId,build:first.build,revision:first.revision,action:list.find(e=>e.metadata?.action)?.metadata.action||'other',modelId:model,runtimeVersion:list.find(e=>e.metadata?.runtimeVersion)?.metadata.runtimeVersion||null,firstRecordedAt:first.timestamp,lastRecordedAt:last.timestamp,lastEvent:last.name,lastStage:lastOpenStage||waitingStage||last.metadata?.stage||last.name,lastCompletedStage:completed?(completed.metadata?.stage||completed.name):null,outcome:last.outcome,status:incomplete?'incomplete':'complete',missingTerminalEvents:missing,missingContextEvents:missingContext,partialContext:missingContext.length>0,...(incomplete?{cause:'unknown'}:{}),observedDurationMs:Math.max(0,Date.parse(last.timestamp)-Date.parse(first.timestamp)),...(elapsed.length?{measuredDurationMs:Math.max(...elapsed)}:{}),...(application?{applied:application.metadata.applied===true}:{})};
+  return {...(requestId?{requestId}:{}),...(startupId?{startupId}:{}),sessionId:first.sessionId,build:first.build,revision:first.revision,action:list.find(e=>e.metadata?.action)?.metadata.action||'other',...(isComposition?{task:list.find(e=>e.metadata?.task)?.metadata.task||null,resultCode:list.findLast(e=>e.metadata?.resultCode)?.metadata.resultCode||null,applicationStatus:application?(application.metadata.applied===true?'applied':'not-applied'):'not-observed'}:{}),modelId:model,runtimeVersion:list.find(e=>e.metadata?.runtimeVersion)?.metadata.runtimeVersion||null,firstRecordedAt:first.timestamp,lastRecordedAt:last.timestamp,lastEvent:last.name,lastStage:lastOpenStage||waitingStage||last.metadata?.stage||last.name,lastCompletedStage:completed?(completed.metadata?.stage||completed.name):null,outcome:last.outcome,status:incomplete?'incomplete':'complete',missingTerminalEvents:missing,missingContextEvents:missingContext,partialContext:missingContext.length>0,...(incomplete?{cause:'unknown'}:{}),observedDurationMs:Math.max(0,Date.parse(last.timestamp)-Date.parse(first.timestamp)),...(elapsed.length?{measuredDurationMs:Math.max(...elapsed)}:{}),...(application?{applied:application.metadata.applied===true}:{})};
  });
 }
 function availableDates(events){return {oldest:events.length?localDate(events[0].timestamp):null,newest:events.length?localDate(events.at(-1).timestamp):null};}
