@@ -701,7 +701,7 @@ function startPicking(initial){cancelPlanRequest();pendingInit={text:sheet&&shee
   renderAll();const mc=document.querySelector('.mapcard');if(mc)window.scrollTo({top:mc.getBoundingClientRect().top+window.scrollY-8});}
 function finishPicking(keep){const plots=keep?[...picking.values()]:(pendingInit?.plots||[]);picking=null;
   if(pendingInit?.composition){
-    sheet=pendingInit.composition;sheet.draft.plots=copy(plots);sheet.previewDirty=true;sheet.requested=null;sheet.resident=null;pendingInit=null;
+    sheet=pendingInit.composition;sheet.draft.plots=copy(plots);sheet.previewDirty=true;sheet.draft.previewDirty=true;sheet.requested=null;sheet.resident=null;pendingInit=null;
     void persistPrivateDraft();renderAll();return;
   }
   if(COMPOSITION&&pendingInit?.newComposition){const text=pendingInit.text||'';pendingInit=null;void openComposition({plots,text});renderAll();return;}
@@ -874,9 +874,9 @@ async function openComposition({draft,targetId,plots=[],text=''}={}){
   if(sheet?.type==='composition')await persistPrivateDraft();
   cancelPlanRequest();await readPrivateDrafts();
   const target=targetId&&S.proposals.find(p=>p.id===targetId);if(target&&!draft){text=target.program?.intent||target.blurb||target.title;}
-  draft=draft?copy(draft):{id:privateId(),targetId:targetId||null,text,editText:'',plots:copy(target?.plots||plots),program:copy(target?.program||{...emptyProgram(),title:target?.title||'Untitled plan'}),legacyPlan:target&&!target.program?copy(target.plan):null,versions:[],selectedVersion:null};
+  draft=draft?copy(draft):{id:privateId(),targetId:targetId||null,text,editText:'',plots:copy(target?E.plotsOf(target,S):plots),program:copy(target?.program||{...emptyProgram(),title:target?.title||'Untitled plan'}),legacyPlan:target&&!target.program?copy(target.plan):null,versions:[],selectedVersion:null};
   openSheet({type:'composition',gameId:S.gameId,draft,working:copy(draft.program),requested:null,resident:null,requestDetails:draft.requestDetails||null,feedback:draft.feedback||'',privateNotice:privateReason||'Private · Nothing is posted until you choose Put on agenda.'});
-  if(draft.versions.length){const version=draft.versions.find(v=>v.id===draft.selectedVersion)||draft.versions.at(-1);restorePrivateVersion(version);}
+  if(draft.versions.length){const version=draft.versions.find(v=>v.id===draft.selectedVersion)||draft.versions.at(-1);recoverPrivatePreview(version);}
   drawMap();
 }
 function privateWorkspaceSheet(){
@@ -989,7 +989,7 @@ function compositionSheet(){
     <p class="note">${aiReady()?'Your full text is sent to the interpreter; the engine validates and prices the result.':'Qwen is off. Compose activities and conditions below to make an engine preview.'}</p></form>
     ${busy?'<p class="thinking" role="status">Preparing the requested plan…</p>':''}${compositionFeedback()}
     <details class="composition-controls"><summary>Activities and operating conditions</summary><div class="stack details-content">${target&&!target.program?legacyCompositionControls(target):`<label>Title<input data-program-title value="${esc(program.title)}"></label>${componentControls(program)}<div class="composition-grid">${conditionNumber('hours','Operating hours per day (0–24)')}<label>Deliveries<select data-condition="deliveries">${['none','daytime','anytime'].map(v=>`<option ${conditions.deliveries===v?'selected':''}>${v}</option>`).join('')}</select></label>${conditionNumber('buffer','Buffer area · plots')}${conditionNumber('preserve','Retained area · plots')}<label class="composition-check"><input type="checkbox" data-condition="access" ${conditions.access?'checked':''}> Maintain farm/service access</label><label class="composition-check"><input type="checkbox" data-condition="affordable" ${conditions.affordable?'checked':''}> Affordable homes</label></div>`}</div></details>
-    ${preview?compositionExhibit(preview,'Requested preview'):''}`;
+    ${preview?compositionExhibit(preview,sheet.previewDirty?'Last accepted preview':'Requested preview'):''}`;
   if(preview){
     const p=preview.proposal;
     if(p.program?.assumptions.length)body+=`<div class="box"><b>Assumptions</b><ul>${p.program.assumptions.map(a=>`<li>${esc(a)}</li>`).join('')}</ul></div>`;
@@ -1017,12 +1017,12 @@ function previewCompositionProgram(program,origin=sheet){
 }
 function acceptCompositionPreview(result,input,record=true){
   sheet.requestDetails=null;
-  if(!result?.ok||!result.proposal){sheet.feedback=(result?.reasons||[]).join(' ')||'This plan could not be previewed. Your input is kept.';renderSheet();return false;}
+  if(!result?.ok||!result.proposal){sheet.previewDirty=true;sheet.draft.previewDirty=true;sheet.resident=null;sheet.feedback=(result?.reasons||[]).join(' ')||'This plan could not be previewed. Your input is kept.';sheet.draft.feedback=sheet.feedback;void persistPrivateDraft();renderSheet();return false;}
   const origin=sheet,d=origin.draft;
   d.requestDetails=null;d.feedback='';
   origin.requested={proposal:copy(result.proposal),forecast:result.forecast,layout:result.layout,request:result.request||null,requestId:result.request?.requestId||null};origin.resident=null;origin.acknowledgedScope=false;
   origin.previewGeneration=workspaceGeneration;origin.previewRevision=S.revision;
-  origin.previewDirty=false;
+  origin.previewDirty=false;d.previewDirty=false;origin.controlsEdited=false;d.controlsEdited=false;
   if(result.proposal.program){origin.working=copy(result.proposal.program);d.program=copy(result.proposal.program);}
   else d.legacyPlan=copy(result.proposal.plan);
   d.plots=copy(result.proposal.plots||d.plots);origin.feedback='Requested preview is private. Review its engine forecast before continuing.';
@@ -1033,13 +1033,29 @@ function acceptCompositionPreview(result,input,record=true){
   }
   drawMap();renderSheet();return true;
 }
+function privateVersionPreview(version){
+  const result=version.legacyPlan?E.previewLegacyRevision?.(S,currentPublic(sheet.draft),version.legacyPlan):previewCompositionProgram(version.program,{draft:{...sheet.draft,plots:version.plots}});
+  if(result)result.request=version.request||null;
+  return result;
+}
+function recoverPrivatePreview(version){
+  const d=sheet.draft,result=privateVersionPreview(version);
+  const controlsChanged=E.canonical(d.program)!==E.canonical(version.program)||E.canonical(d.legacyPlan||null)!==E.canonical(version.legacyPlan||null);
+  sheet.previewDirty=d.previewDirty===true||controlsChanged||E.canonical(d.plots)!==E.canonical(version.plots)||(d.previewDirty===undefined&&(d.editText||d.text)!==version.input)||!result?.ok;
+  sheet.controlsEdited=d.controlsEdited===true||controlsChanged;
+  if(result?.ok&&result.proposal){
+    sheet.requested={proposal:copy(result.proposal),forecast:result.forecast,layout:result.layout,request:result.request||null,requestId:result.request?.requestId||null};
+    sheet.previewGeneration=workspaceGeneration;sheet.previewRevision=S.revision;
+  }
+  if(sheet.previewDirty)sheet.feedback=(d.feedback?d.feedback+' ':'')+'Your recovered input is kept. Preview again before posting or confirming.';
+  else sheet.feedback=d.feedback||'Requested preview is private. Review its engine forecast before continuing.';
+  renderSheet();
+}
 function restorePrivateVersion(version){
   if(!version)return;
   sheet.draft.selectedVersion=version.id;sheet.draft.program=copy(version.program);sheet.working=copy(version.program);sheet.draft.plots=copy(version.plots);
   if(version.legacyPlan)sheet.draft.legacyPlan=copy(version.legacyPlan);
-  const result=version.legacyPlan?E.previewLegacyRevision?.(S,currentPublic(sheet.draft),version.legacyPlan):previewCompositionProgram(version.program);
-  if(result)result.request=version.request||null;
-  acceptCompositionPreview(result,version.input,false);
+  acceptCompositionPreview(privateVersionPreview(version),version.input,false);
 }
 async function runComposition(mode,intent,proposal){
   if(busy||storageBusy||!compositionRunner||!aiReady())return;
@@ -1101,7 +1117,7 @@ function projectSheet(){
 }
 function invalidateCompositionInput(controls=false){
   if(sheet?.type!=='composition')return;
-  cancelPlanRequest();sheet.previewDirty=true;sheet.resident=null;if(controls)sheet.controlsEdited=true;syncCompositionFooter();
+  cancelPlanRequest();sheet.previewDirty=true;sheet.draft.previewDirty=true;sheet.resident=null;if(controls)sheet.controlsEdited=true;sheet.draft.controlsEdited=!!sheet.controlsEdited;syncCompositionFooter();
   const button=$('[data-comp="post"], [data-comp="confirmRevision"]');if(button)button.disabled=true;
   schedulePrivateDraft();
 }

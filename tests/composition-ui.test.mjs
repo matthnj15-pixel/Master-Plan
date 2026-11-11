@@ -133,6 +133,47 @@ test('MP-076 MP-077 MP-080 generic controls retain a baseline, show engine delta
     }finally{await context.close();}
   }
 });
+test('MP-077 MP-080 pending controls, text and attempted site survive reopening separately from the accepted preview at both widths',async()=>{
+  for(const width of [400,669]){
+    const {context,page,errors}=await open(width);
+    try{
+      await genericDraft(page);await page.locator('[data-component-field="quantity"]').fill('6');await page.locator('[data-comp="previewControls"]').click();
+      await page.waitForFunction(()=>Object.values(JSON.parse(localStorage.getItem('masterplan.dev.draft-workspace.v1')).games)[0].drafts[0].versions.length===2);
+      const publicBefore=await saved(page),accepted=(await privateDrafts(page))[0].versions[1],text='Keep my complete pending idea and this attempted site.',edit='Try the new site with the pending quantity.';
+      await page.fill('#compositionIntent',text);await page.fill('#compositionEdit',edit);await page.locator('[data-component-field="quantity"]').fill('999');await page.selectOption('#compositionSite','oldmill');await page.locator('[data-comp="previewControls"]').click();
+      const attempted=await page.evaluate(()=>ENGINE.SITES.oldmill);
+      await page.waitForFunction(plots=>{const d=Object.values(JSON.parse(localStorage.getItem('masterplan.dev.draft-workspace.v1')).games)[0].drafts[0];return d.program.components[0].quantity===999&&JSON.stringify(d.plots)===JSON.stringify(plots);},attempted);
+      await page.reload();await page.locator('#panel [data-comp="workspace"]').click();await page.locator('[data-comp-open]').first().click();await page.locator('.composition-controls summary').click();
+      assert.equal(await page.locator('[data-component-field="quantity"]').inputValue(),'999');assert.equal(await page.inputValue('#compositionIntent'),text);assert.equal(await page.inputValue('#compositionEdit'),edit);
+      assert.match(await page.locator('.composition-form .chips .note').innerText(),/4 plots selected/);assert.match(await page.locator('.request-feedback').innerText(),/preview again/i);assert.equal(await page.locator('[data-comp="post"]').count(),0);
+      assert.equal(await page.locator('svg.plan-illustration').getAttribute('data-revision'),await page.evaluate(version=>ENGINE.previewProgram(JSON.parse(localStorage.getItem('masterplan.dev.save.v4')).state,{program:version.program,plots:version.plots}).proposal.programRevision,accepted));
+      assert.match(await page.locator('.composition-candidate .eyebrow').innerText(),/Last accepted preview/i);await checkTouch(page);
+      if(process.env.MP_UI_EVIDENCE_DIR){mkdirSync(process.env.MP_UI_EVIDENCE_DIR,{recursive:true});await page.screenshot({path:join(process.env.MP_UI_EVIDENCE_DIR,`${width}-pending-recovered.png`)});}
+      await page.locator('#sheetRoot [data-act="close"]').click();await page.waitForFunction(()=>Object.values(JSON.parse(localStorage.getItem('masterplan.dev.draft-workspace.v1')).games)[0].drafts[0].program.components[0].quantity===999);
+      const pending=(await privateDrafts(page))[0];assert.deepEqual(pending.plots,attempted);assert.equal(pending.text,text);assert.equal(pending.editText,edit);assert.deepEqual(await saved(page),publicBefore);
+      await page.reload();await page.locator('#panel [data-comp="workspace"]').click();await page.locator('[data-comp-open]').first().click();await page.locator('.composition-controls summary').click();
+      assert.equal(await page.locator('[data-comp="post"]').count(),0);await page.locator('[data-comp="previewControls"]').click();assert.equal(await page.locator('[data-comp="post"]').count(),0,'a rejected preview stays dirty');
+      await page.locator('[data-component-field="quantity"]').fill('6');await page.locator('[data-comp="previewControls"]').click();await page.locator('[data-comp="post"]').waitFor();assert.deepEqual((await privateDrafts(page))[0].plots,attempted);
+      await page.locator(`[data-comp-version="${accepted.id}"]`).click();assert.equal(await page.locator('[data-component-field="quantity"]').inputValue(),'6');assert.match(await page.locator('.composition-form .chips .note').innerText(),/6 plots selected/);
+      await page.locator('[data-comp="saveDraft"]').click();assert.deepEqual((await privateDrafts(page))[0].plots,accepted.plots,'only explicit version selection replaces working input');assert.deepEqual(await saved(page),publicBefore);assert.deepEqual(errors,[]);
+    }finally{await context.close();}
+  }
+});
+test('MP-026 MP-077 legacy park revisions retain their exact engine-resolved ordered site through preview, cancel and reload at both widths',async()=>{
+  for(const width of [400,669]){
+    const {context,page,errors}=await open(width);
+    try{
+      await page.locator('#endBtn').click();await page.locator('#sheetRoot [data-act="close"]').click();const publicBefore=await saved(page),plots=await page.evaluate(()=>{const s=JSON.parse(localStorage.getItem('masterplan.dev.save.v4')).state,p=s.proposals.find(p=>p.id==='park');if(p.plots)throw new Error('Expected the ordinary legacy site adapter');return ENGINE.plotsOf(p,s);});
+      await page.locator('.item[data-open="park"]').click();await page.locator('[data-comp-edit="park"]').click();assert.match(await page.locator('.composition-form .chips .note').innerText(),/4 plots selected/);assert.doesNotMatch(await page.locator('.composition-form .chips .note').innerText(),/no site for a policy/);
+      await page.locator('.composition-controls summary').click();await page.locator('[data-legacy-field="trees"]').fill('1');await page.locator('[data-comp="previewControls"]').click();await page.locator('[data-comp="resident"]').waitFor();
+      assert.deepEqual((await privateDrafts(page))[0].plots,plots);assert.deepEqual(await page.locator('svg.plan-illustration g[data-plot]').evaluateAll(es=>es.map(e=>e.dataset.plot.split(',').map(Number))),plots);await checkTouch(page);
+      await page.locator('#sheetRoot [data-act="close"]').click();await page.reload();await page.locator('#panel [data-comp="workspace"]').click();await page.locator('[data-comp-open]').first().click();
+      assert.match(await page.locator('.composition-form .chips .note').innerText(),/4 plots selected/);assert.deepEqual(await page.locator('svg.plan-illustration g[data-plot]').evaluateAll(es=>es.map(e=>e.dataset.plot.split(',').map(Number))),plots);
+      await page.locator('#sheetRoot [data-act="close"]').click();assert.deepEqual((await privateDrafts(page))[0].plots,plots);assert.deepEqual(await saved(page),publicBefore,'canceling private revisions never relocates or revises the public park');assert.deepEqual(errors,[]);
+      if(process.env.MP_UI_EVIDENCE_DIR){await page.locator('.item[data-open="park"]').click();await page.locator('[data-comp-edit="park"]').click();mkdirSync(process.env.MP_UI_EVIDENCE_DIR,{recursive:true});await page.screenshot({path:join(process.env.MP_UI_EVIDENCE_DIR,`${width}-legacy-site.png`)});}
+    }finally{await context.close();}
+  }
+});
 test('MP-033 MP-056 MP-077 rapid adjacent plot taps select each plot while normal double-tap remains a map gesture',async()=>{
   const {context,page,errors}=await open(400);
   try{
