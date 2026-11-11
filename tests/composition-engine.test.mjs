@@ -458,3 +458,45 @@ test('MP-060 MP-078 authentic A fact credit survives migration and pruning witho
   assert.equal(E.evaluateClaims(s,s.proposals.at(-1),'okafor',{...newInput,programRevision:s.proposals.at(-1).programRevision}).credit,'none','new-format credit also survives receipt pruning');
   const lost=clone(original);lost.projectRecords=[];const conservative=E.migrate(lost),blocked=evaluate(conservative);assert.equal(blocked.credit,'none');assert.equal(blocked.claims[0].code,'claim_history_unresolved');assert.equal(conservative.persuasionHistory[0].legacyCreditPolicy,'conservative');assert.equal(evaluate(E.migrate(clone(conservative))).credit,'none');
 });
+
+function realRenderer(){const context={module:{exports:{}}};vm.runInNewContext(readFileSync(new URL('../src/plan-renderer.js',import.meta.url),'utf8'),context);return context.module.exports;}
+async function protectedGeometryLoad(state){
+  const context={module:{exports:{}},TextEncoder};vm.runInNewContext(readFileSync(new URL('../src/workspace.js',import.meta.url),'utf8'),context);const W=context.module.exports;
+  for(const enabled of [true,false]){
+    const key='masterplan.dev.save.v4',raw=JSON.stringify({format:'masterplan-save',formatVersion:4,writerProtocol:1,formatFloor:4,storageGeneration:1,state,legacyImportBackup:null}),entries=new Map([[key,raw]]);let writes=0;
+    const store=W.create({engine:enabled?E:engine(false),enabled,channel:'dev',storage:{getItem:k=>entries.get(k)??null,setItem:(k,v)=>{writes++;entries.set(k,v);}},locks:{request:async(_key,_options,callback)=>callback()}});
+    const loaded=await store.load();assert.equal(loaded.ok,false);assert.equal(loaded.mode,'read-only');assert.equal(entries.get(key),raw);assert.equal(writes,0);
+  }
+}
+test('MP-060 MP-076 persisted layouts are canonical engine geometry before rendering, commands or either flag load',async()=>{
+  const R=realRenderer(),poison={toString:null,valueOf:null},mutations=[];
+  for(const key of ['label','role','componentId','sharedWith','capability','quantity','area'])mutations.push(p=>p.layout.allocations[0][key]=poison);
+  for(const key of ['plot','offset','area'])mutations.push(p=>p.layout.allocations[0].segments[0][key]=poison);
+  for(const key of ['plot','componentIds','role','usedArea','bufferArea','preservedArea','freeArea'])mutations.push(p=>p.layout.cells[0][key]=poison);
+  for(const key of ['plots','allocations','cells','buffer','preserved','unused','capacity','usedArea','freeArea','preservedArea','bufferArea','illustrativeInterior'])mutations.push(p=>p.layout[key]=poison);
+  mutations.push(p=>p.layout.allocations[0].area+=.25,p=>p.layout.cells[0].role='constructor',p=>p.layout.preserved[0].offset=.5,p=>p.layout.unused[0].area+=.5,p=>p.layout.plots.reverse());
+  for(let i=0;i<mutations.length;i++){
+    const s=fresh(31),p=s.proposals.find(p=>p.id==='farm-access');mutations[i](p);const before=JSON.stringify(s);
+    if(i<4)assert.throws(()=>R.render({state:s,proposal:p,engine:E}),/Cannot convert object to primitive value/,'actual renderer demonstrates the admission boundary');
+    assert.doesNotThrow(()=>assert.equal(E.isSupportedSave(s),false,'layout mutation '+i));assert.equal(E.migrate(s).ok,false);
+    const result=E.applyCommand(s,command(s,'resolveYear',{}));assert.equal(result.ok,false);assert.equal(result.state,s);assert.equal(result.receipt,null);await protectedGeometryLoad(s);assert.equal(JSON.stringify(s),before);
+  }
+});
+
+test('MP-060 MP-076 persisted grid plans and allocation metadata reject malformed consumed fields',async()=>{
+  let base=post(fresh(31),program([component('homes','housing',8,.5),component('garden','green',.5,.5)]),land(fresh(31),2)),p=base.proposals.at(-1),votes=E.forecastVote(base,p,p.id);
+  if(!votes.winner){const swing=votes.votes.filter(v=>v.vote!==p.id).sort((a,b)=>b.leans[0].lean-a.leans[0].lean)[0];base=commit(base,'offer',{proposalId:p.id,memberId:swing.member,offer:{type:'favor'}});}
+  base=commit(base,'decision',{proposalId:p.id,action:'vote',funding:'cash',route:E.approvalRoute(base,p).id});base=commit(base,'resolveYear',{});assert.equal(E.isSupportedSave(base),true);
+  const id=p.id,poison={toString:null,valueOf:null},mutations=[c=>c.var=poison,c=>c.site=poison,c=>c.b.plan=null,c=>c.b.plan.stories=poison,c=>c.b.componentIds=poison,c=>c.b.allocation.role=poison,c=>c.b.allocation.usedArea=.25];
+  for(const key of ['role','projectId','programRevision','title','for','d','new'])mutations.push(c=>c.b[key]=poison);
+  for(const mutate of mutations){const s=clone(base),cell=s.grid.find(c=>c.b?.projectId===id);mutate(cell);const bytes=JSON.stringify(s);assert.doesNotThrow(()=>assert.equal(E.isSupportedSave(s),false));assert.equal(E.migrate(s).ok,false);assert.equal(E.applyCommand(s,command(s,'resolveYear',{})).ok,false);await protectedGeometryLoad(s);assert.equal(JSON.stringify(s),bytes);}
+  for(const kind of Object.keys(E.KINDS)){const s=fresh(),cell=s.grid.find(c=>c.b?.type==='house');cell.b={type:kind,plan:null};assert.equal(E.isSupportedSave(s),false,kind+' requires its accepted legacy plan');}
+});
+
+test('MP-060 MP-076 exact historical A and current built geometry remain valid and render after reload',()=>{
+  const R=realRenderer(),fixture=JSON.parse(readFileSync(new URL('./fixtures/composition-v2-pruned-credit.json',import.meta.url),'utf8')),s=E.migrate(fixture.state);
+  assert.equal(E.isSupportedSave(s),true);for(const p of s.proposals.filter(p=>p.program))assert.doesNotThrow(()=>R.render({state:s,proposal:p,engine:E}));
+  let current=post(fresh(31),program([component('garden','green',.5,.5)])),p=current.proposals.at(-1);current=commit(current,'decision',{proposalId:p.id,action:'vote',funding:'cash',route:E.approvalRoute(current,p).id});const accepted=clone(current.pending[0].layout);
+  current=commit(current,'resolveYear',{});const restored=E.migrate(clone(current)),built=restored.built.find(b=>b.id===p.id);assert.equal(E.isSupportedSave(restored),true);assert.deepEqual(clone(built.layout),accepted);assert.doesNotThrow(()=>R.render({state:restored,proposal:built,engine:E}));assert.deepEqual(clone(R.layoutShapes(built)),clone(R.layoutShapes({layout:accepted})));
+  const off=engine(false),legacy=JSON.parse(readFileSync(new URL('./fixtures/millbrooke-v2-save.json',import.meta.url),'utf8'));assert.equal(off.isSupportedSave(off.migrate(clone(legacy))),true);assert.equal(E.isSupportedSave(E.migrate(clone(legacy))),true);
+});

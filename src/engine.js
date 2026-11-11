@@ -804,11 +804,20 @@ const savedStrings=v=>Array.isArray(v)&&v.every(x=>typeof x==='string');
 const savedFact=v=>typeof v==='boolean'||savedNumber(v)||typeof v==='string'||savedStrings(v);
 const savedFacts=v=>record(v)&&Object.values(v).every(savedFact);
 const savedTexts=(v,keys,nullable=[])=>keys.every(k=>v[k]===undefined||typeof v[k]==='string'||v[k]===null&&nullable.includes(k));
+function savedProgramLayout(program,plots,layout){
+  if(!validateProgram(program).ok||!record(layout)||!Array.isArray(plots)||plots.some(p=>!Array.isArray(p)||p.length!==2||!p.every(n=>Number.isSafeInteger(n)&&n>=0))||new Set(plots.map(p=>p.join(','))).size!==plots.length)return false;
+  const used=program.components.reduce((n,c)=>n+(c.sharedWith===null?c.area:0),0)+program.conditions.buffer+program.conditions.preserve;
+  if(used>plots.length+1e-8)return false;
+  // Allocation is pure geometry: no terrain, occupancy, forecast, or live prices.
+  // Canonical comparison closes every layout field, including strip/cell metadata.
+  try{return canonical(layout)===canonical(programLayout(program,plots));}catch{return false;}
+}
 function savedProjectText(p,allowRevisions=true){
   if(!record(p)||!savedTexts(p,['title','intent','blurb','desc','presenter','site','kind','programRevision','from','to','controller','outOfScope'],['outOfScope']))return false;
   for(const key of ['year','postedYear','deliveryYear','demolishedYear'])if(p[key]!==undefined&&p[key]!==null&&!savedNumber(p[key]))return false;
   for(const key of ['program','originalProgram'])if(p[key]!==undefined&&p[key]!==null&&!validateProgram(p[key]).ok)return false;
   for(const key of ['plan','originalPlan'])if(p[key]!==undefined&&!savedFacts(p[key]))return false;
+  if(p.layout!==undefined&&p.layout!==null&&!savedProgramLayout(p.program||p.originalProgram,p.plots,p.layout))return false;
   if(p.decision!==undefined&&p.decision!==null&&(!record(p.decision)||!savedTexts(p.decision,['action','funding','route'],['funding'])||p.decision.year!==undefined&&!savedNumber(p.decision.year)))return false;
   return p.revisions===undefined||allowRevisions&&Array.isArray(p.revisions)&&p.revisions.every(r=>savedProjectText(r,false));
 }
@@ -887,7 +896,7 @@ function validateSave(s){
   const {width,height}=scenario.map;
   if(!positive(width)||!positive(height)||!Array.isArray(s.grid)||s.grid.length!==width*height)return fail('save_grid_invalid');
   const point=p=>Array.isArray(p)&&p.length===2&&Number.isInteger(p[0])&&Number.isInteger(p[1])&&p[0]>=0&&p[0]<width&&p[1]>=0&&p[1]<height;
-  for(let i=0;i<s.grid.length;i++){const c=s.grid[i];if(!record(c)||c.x!==i%width||c.y!==Math.floor(i/width)||!boundedText(c.t,1,40)||typeof c.road!=='boolean'||!(c.b===null||record(c.b)&&boundedText(c.b.type,1,80)))return fail('save_grid_entry_invalid');}
+  for(let i=0;i<s.grid.length;i++){const c=s.grid[i];if(!record(c)||c.x!==i%width||c.y!==Math.floor(i/width)||!boundedText(c.t,1,40)||typeof c.road!=='boolean'||c.var!==undefined&&!savedNumber(c.var)||c.site!==undefined&&c.site!==null&&typeof c.site!=='string'||!(c.b===null||record(c.b)&&boundedText(c.b.type,1,80)))return fail('save_grid_entry_invalid');}
   const definitions=scenario.people.presenters,memberIds=new Set();
   for(const m of scenario.people.council){if(!record(m)||!boundedText(m.id,1,120)||memberIds.has(m.id)||!record(m.w)||!record(m.pri)||!ownRecord(s.council,m.id)||!finite(s.council[m.id].rel,0,100))return fail('save_council_invalid');memberIds.add(m.id);}
   for(const [id,p] of Object.entries(s.presenters))if(!ownRecord(definitions,id)||!record(p)||!finite(p.rel,0,100)||!finite(definitions[id].comp,0,100)||!finite(definitions[id].detail,0,100))return fail('save_presenter_invalid');
@@ -902,12 +911,24 @@ function validateSave(s){
     if(p.traits!==undefined&&!savedStrings(p.traits)||p.completionFacts!==undefined&&!savedFacts(p.completionFacts))return false;
     if(p.grantPending!==undefined&&(!record(p.grantPending)||typeof p.grantPending.agency!=='string'||!finite(p.grantPending.share,0,1)||!finite(p.grantPending.odds,0,1)||!positive(p.grantPending.year)))return false;
     if(p.demo!==undefined&&(!record(p.demo)||!savedStrings(p.demo.landmarks)||!savedStrings(p.demo.projects)||!['cost','residents','storefronts','untrackedJobs','farm','live','conf','approval','collegeTiles'].every(k=>savedNumber(p.demo[k]))))return false;
-    if(p.program!==undefined){if(!validateProgram(p.program).ok||!record(p.layout)||!Array.isArray(p.layout.cells)||p.layout.cells.some(c=>!record(c)||!point(c.plot)||!savedStrings(c.componentIds)||!savedNumber(c.usedArea))||!Array.isArray(p.layout.allocations)||p.layout.allocations.some(a=>!record(a)||!Array.isArray(a.segments)||a.segments.some(segment=>!record(segment)||!point(segment.plot)||!savedNumber(segment.offset)||!savedNumber(segment.area))))return false;}
+    if(p.program!==undefined){if(!record(p.program)||!record(p.layout)||!Array.isArray(p.plots))return false;}
     else if(!strictLegacyPlan(p.kind,p.plan))return false;
     return true;
   };
   for(const key of ['proposals','pending','built','bonds','reports','history'])if(!Array.isArray(s[key]))return fail('save_collection_invalid:'+key);
   for(const key of ['proposals','pending','built'])for(const p of s[key])if(!project(p)||key==='proposals'&&!boundedText(p.status,1,40)||key!=='proposals'&&(!number(p.cost)||!number(p.costHigh)||!number(p.odds)||!positive(p.year)))return fail('save_collection_entry_invalid:'+key);
+  const projects=new Map([...s.proposals,...s.pending,...s.built].map(p=>[p.id,p]));
+  for(const cell of s.grid){const b=cell.b;if(!b)continue;
+    if(!savedTexts(b,['role','projectId','programRevision','title','for','d'])||b.new!==undefined&&!savedNumber(b.new)||b.componentIds!==undefined&&!savedStrings(b.componentIds))return fail('save_grid_building_invalid');
+    const source=projects.get(b.projectId),expected=source?.program?source.layout.cells.find(c=>c.plot[0]===cell.x&&c.plot[1]===cell.y):null;
+    if(Object.hasOwn(KINDS,b.type)){
+      if(source?.program){try{if(b.type!=='initiative'||canonical(b.plan)!==canonical(compatiblePlan(source.program)))return fail('save_grid_building_plan_invalid');}catch{return fail('save_grid_building_plan_invalid');}}
+      else if(!strictLegacyPlan(b.type,b.plan))return fail('save_grid_building_plan_invalid');
+    }
+    if(b.allocation!==undefined){
+      try{if(b.type!=='initiative'||!expected||canonical(b.allocation)!==canonical(expected)||b.role!==expected.role||canonical(b.componentIds)!==canonical(expected.componentIds)||b.programRevision!==source.programRevision)return fail('save_grid_allocation_invalid');}catch{return fail('save_grid_allocation_invalid');}
+    }
+  }
   if(s.bonds.some(b=>!record(b)||!boundedText(b.name,1,120)||!number(b.annual)||!nonnegative(b.left)))return fail('save_collection_entry_invalid:bonds');
   if(s.reports.some(r=>!record(r)||(r.type==='event'?!boundedText(r.text,1,4000):!positive(r.year)||!record(r.before)||!record(r.after)||!Array.isArray(r.causes)||r.causes.some(c=>!record(c)||!number(c.v)||!boundedText(c.r,1,4000)))))return fail('save_collection_entry_invalid:reports');
   if(s.reports.some(r=>r.projects!==undefined&&(!Array.isArray(r.projects)||!r.projects.every(p=>savedProjectText(p)))))return fail('save_project_report_invalid');
