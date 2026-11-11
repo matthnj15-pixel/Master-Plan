@@ -1,0 +1,112 @@
+[
+  {
+    "flag": true,
+    "name": "economy",
+    "supported": false,
+    "migrationRejected": true,
+    "storeRejected": true,
+    "mode": "read-only",
+    "writes": 0,
+    "bytesPreserved": true,
+    "inputPreserved": true
+  },
+  {
+    "flag": true,
+    "name": "schedule",
+    "supported": false,
+    "migrationRejected": true,
+    "storeRejected": true,
+    "mode": "read-only",
+    "writes": 0,
+    "bytesPreserved": true,
+    "inputPreserved": true
+  },
+  {
+    "flag": true,
+    "name": "profile-authority",
+    "supported": false,
+    "migrationRejected": true,
+    "storeRejected": true,
+    "mode": "read-only",
+    "writes": 0,
+    "bytesPreserved": true,
+    "inputPreserved": true
+  },
+  {
+    "flag": true,
+    "name": "parcel-name",
+    "supported": false,
+    "migrationRejected": true,
+    "storeRejected": true,
+    "mode": "read-only",
+    "writes": 0,
+    "bytesPreserved": true,
+    "inputPreserved": true
+  },
+  {
+    "flag": true,
+    "name": "proposal-title",
+    "supported": false,
+    "migrationRejected": true,
+    "storeRejected": true,
+    "mode": "read-only",
+    "writes": 0,
+    "bytesPreserved": true,
+    "inputPreserved": true
+  },
+  {
+    "flag": false,
+    "name": "economy",
+    "supported": false,
+    "migrationRejected": true,
+    "storeRejected": true,
+    "mode": "read-only",
+    "writes": 0,
+    "bytesPreserved": true,
+    "inputPreserved": true
+  },
+  {
+    "flag": false,
+    "name": "schedule",
+    "supported": false,
+    "migrationRejected": true,
+    "storeRejected": true,
+    "mode": "read-only",
+    "writes": 0,
+    "bytesPreserved": true,
+    "inputPreserved": true
+  },
+  {
+    "flag": false,
+    "name": "profile-authority",
+    "supported": false,
+    "migrationRejected": true,
+    "storeRejected": true,
+    "mode": "read-only",
+    "writes": 0,
+    "bytesPreserved": true,
+    "inputPreserved": true
+  },
+  {
+    "flag": false,
+    "name": "parcel-name",
+    "supported": false,
+    "migrationRejected": true,
+    "storeRejected": true,
+    "mode": "read-only",
+    "writes": 0,
+    "bytesPreserved": true,
+    "inputPreserved": true
+  },
+  {
+    "flag": false,
+    "name": "proposal-title",
+    "supported": false,
+    "migrationRejected": true,
+    "storeRejected": true,
+    "mode": "read-only",
+    "writes": 0,
+    "bytesPreserved": true,
+    "inputPreserved": true
+  }
+]

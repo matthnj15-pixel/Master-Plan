@@ -1,0 +1,87 @@
+{
+  "viewport": {
+    "width": 400,
+    "height": 951
+  },
+  "bodyScrollTop": 0,
+  "paneScrollTop": 3054,
+  "actions": [
+    {
+      "text": "Preview these controls",
+      "action": "previewControls",
+      "disabled": false,
+      "rect": {
+        "x": 41,
+        "y": -327.75,
+        "width": 318,
+        "height": 47,
+        "top": -327.75,
+        "right": 359,
+        "bottom": -280.75,
+        "left": 41
+      },
+      "visible": false,
+      "position": "static",
+      "ancestors": [
+        {
+          "class": "sheet",
+          "position": "fixed",
+          "bottom": "0px"
+        }
+      ]
+    },
+    {
+      "text": "Recheck resident response",
+      "action": "resident",
+      "disabled": false,
+      "rect": {
+        "x": 20,
+        "y": 1251.6875,
+        "width": 360,
+        "height": 47,
+        "top": 1251.6875,
+        "right": 380,
+        "bottom": 1298.6875,
+        "left": 20
+      },
+      "visible": false,
+      "position": "static",
+      "ancestors": [
+        {
+          "class": "sheet",
+          "position": "fixed",
+          "bottom": "0px"
+        }
+      ]
+    },
+    {
+      "text": "Confirm public revision",
+      "action": "confirmRevision",
+      "disabled": false,
+      "rect": {
+        "x": 20,
+        "y": 891,
+        "width": 360,
+        "height": 48,
+        "top": 891,
+        "right": 380,
+        "bottom": 939,
+        "left": 20
+      },
+      "visible": true,
+      "position": "static",
+      "ancestors": [
+        {
+          "class": "composition-primary",
+          "position": "sticky",
+          "bottom": "0px"
+        },
+        {
+          "class": "sheet",
+          "position": "fixed",
+          "bottom": "0px"
+        }
+      ]
+    }
+  ]
+}

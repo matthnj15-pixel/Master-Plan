@@ -1,0 +1,88 @@
+{
+  "sha": "c921f0add6f7c16682e6fa6d4b04523b17656e4f",
+  "evidenceType": "independent malformed-save durability fixtures, separate from normal-play evidence; real browser storage and Web Locks",
+  "elapsedMs": 3179,
+  "results": [
+    {
+      "fixture": "valid-control",
+      "supported": true,
+      "load": {
+        "ok": true,
+        "mode": "ready"
+      },
+      "command": {
+        "ok": true,
+        "mode": "ready",
+        "reasons": []
+      },
+      "bytesAfterLoadEqual": true,
+      "bytesAfterCommandEqual": false,
+      "admittedResolve": null,
+      "storedYear": 2,
+      "errors": [],
+      "status": "pass"
+    },
+    {
+      "fixture": "economy-null",
+      "supported": true,
+      "load": {
+        "ok": true,
+        "mode": "ready"
+      },
+      "command": {
+        "ok": false,
+        "mode": "ready",
+        "code": "persistence_failed",
+        "reasons": [
+          "The save could not be written. No durable action was applied. Keep your input and retry."
+        ]
+      },
+      "bytesAfterLoadEqual": true,
+      "bytesAfterCommandEqual": true,
+      "admittedResolve": {
+        "threw": true,
+        "name": "TypeError",
+        "message": "Cannot read properties of null (reading 'jobs')",
+        "stack": "TypeError: Cannot read properties of null (reading 'jobs')\n    at econ (http://127.0.0.1:38629/:1018:66)\n    at snapshotStats (http://127.0.0.1:38629/:1029:36)\n    at Object.resolveYear (http://127.0.0.1:38629/:1032:36)\n    at eval (eval at evaluate (:311:30), <anonymous>:23:22)\n    at async <anonymous>:337:30"
+      },
+      "storedYear": 1,
+      "errors": [],
+      "status": "fail"
+    },
+    {
+      "fixture": "schedule-null-id",
+      "supported": true,
+      "load": {
+        "ok": true,
+        "mode": "ready"
+      },
+      "command": {
+        "ok": false,
+        "mode": "ready",
+        "code": "persistence_failed",
+        "reasons": [
+          "The save could not be written. No durable action was applied. Keep your input and retry."
+        ]
+      },
+      "bytesAfterLoadEqual": true,
+      "bytesAfterCommandEqual": true,
+      "admittedResolve": {
+        "threw": true,
+        "name": "TypeError",
+        "message": "Cannot read properties of undefined (reading 'program')",
+        "stack": "TypeError: Cannot read properties of undefined (reading 'program')\n    at makeProposal (http://127.0.0.1:38629/:854:32)\n    at proposalsFor (http://127.0.0.1:38629/:859:117)\n    at Object.resolveYear (http://127.0.0.1:38629/:1153:15)\n    at eval (eval at evaluate (:311:30), <anonymous>:23:22)\n    at async <anonymous>:337:30"
+      },
+      "storedYear": 1,
+      "errors": [],
+      "status": "fail"
+    }
+  ],
+  "passed": 1,
+  "total": 3,
+  "sourceVerification": {
+    "sha": "c921f0add6f7c16682e6fa6d4b04523b17656e4f",
+    "sourceCount": 16,
+    "buildCount": 6,
+    "mismatches": []
+  }
+}

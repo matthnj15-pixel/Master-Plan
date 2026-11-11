@@ -44,3 +44,10 @@ The current execution environment lacks `shader-f16` and has no physical Duo.
 Its mock-browser and source-audit results do not establish live/offline device
 acceptance. Active-space adaptive reuse inside an existing building is outside
 the current model; preservation retains assets outside the active allocations.
+
+Older towns retain their progress and original legacy save. A composed town
+requires the composition flag to resume; turning it off shows a protected-save
+screen. Malformed or newer saves remain untouched. For earlier experimental
+v4 towns, recorded factual credit remains spent after receipt pruning. When
+its old provenance cannot be recovered, the game explicitly withholds uncertain
+new credit while preserving the relationship and prior result.

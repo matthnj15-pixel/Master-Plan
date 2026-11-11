@@ -1,0 +1,2041 @@
+{
+  "sha": "c921f0add6f7c16682e6fa6d4b04523b17656e4f",
+  "evidenceType": "focused normal UI retest on labeled ordinary-engine/store fixture; Qwen off; not full first-term replay",
+  "elapsedMs": 29171,
+  "passed": 0,
+  "total": 2,
+  "results": [
+    {
+      "width": 669,
+      "sha": "c921f0add6f7c16682e6fa6d4b04523b17656e4f",
+      "reach": [
+        {
+          "width": 669,
+          "stage": "legacy-controls",
+          "position": "upper",
+          "viewport": {
+            "width": 669,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 0,
+          "main": {
+            "label": "Preview these controls",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 629,
+              "height": 48,
+              "top": 889,
+              "right": 649,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 669,
+          "stage": "legacy-controls",
+          "position": "middle",
+          "viewport": {
+            "width": 669,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 239,
+          "main": {
+            "label": "Preview these controls",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 629,
+              "height": 48,
+              "top": 889,
+              "right": 649,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 669,
+          "stage": "legacy-controls",
+          "position": "lower",
+          "viewport": {
+            "width": 669,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 239,
+          "main": {
+            "label": "Preview these controls",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 629,
+              "height": 48,
+              "top": 889,
+              "right": 649,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 669,
+          "stage": "legacy-requested",
+          "position": "upper",
+          "viewport": {
+            "width": 669,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 0,
+          "main": {
+            "label": "Hear resident response",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 629,
+              "height": 48,
+              "top": 889,
+              "right": 649,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 669,
+          "stage": "legacy-requested",
+          "position": "middle",
+          "viewport": {
+            "width": 669,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 700,
+          "main": {
+            "label": "Hear resident response",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 629,
+              "height": 48,
+              "top": 889,
+              "right": 649,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 669,
+          "stage": "legacy-requested",
+          "position": "lower",
+          "viewport": {
+            "width": 669,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 2500,
+          "main": {
+            "label": "Hear resident response",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 629,
+              "height": 48,
+              "top": 889,
+              "right": 649,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 669,
+          "stage": "legacy-agree",
+          "position": "upper",
+          "viewport": {
+            "width": 669,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 0,
+          "main": {
+            "label": "Confirm public revision",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 629,
+              "height": 48,
+              "top": 889,
+              "right": 649,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 669,
+          "stage": "legacy-agree",
+          "position": "middle",
+          "viewport": {
+            "width": 669,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 700,
+          "main": {
+            "label": "Confirm public revision",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 629,
+              "height": 48,
+              "top": 889,
+              "right": 649,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 669,
+          "stage": "legacy-agree",
+          "position": "lower",
+          "viewport": {
+            "width": 669,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 2500,
+          "main": {
+            "label": "Confirm public revision",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 629,
+              "height": 48,
+              "top": 889,
+              "right": 649,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 669,
+          "stage": "farm-requested",
+          "position": "upper",
+          "viewport": {
+            "width": 669,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 0,
+          "main": {
+            "label": "Hear resident response",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 629,
+              "height": 48,
+              "top": 889,
+              "right": 649,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 669,
+          "stage": "farm-requested",
+          "position": "middle",
+          "viewport": {
+            "width": 669,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 700,
+          "main": {
+            "label": "Hear resident response",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 629,
+              "height": 48,
+              "top": 889,
+              "right": 649,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 669,
+          "stage": "farm-requested",
+          "position": "lower",
+          "viewport": {
+            "width": 669,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 2500,
+          "main": {
+            "label": "Hear resident response",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 629,
+              "height": 48,
+              "top": 889,
+              "right": 649,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 669,
+          "stage": "farm-counter",
+          "position": "upper",
+          "viewport": {
+            "width": 669,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 0,
+          "main": {
+            "label": "Preview this counter",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 309.5,
+              "height": 48,
+              "top": 889,
+              "right": 329.5,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 669,
+          "stage": "farm-counter",
+          "position": "middle",
+          "viewport": {
+            "width": 669,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 700,
+          "main": {
+            "label": "Preview this counter",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 309.5,
+              "height": 48,
+              "top": 889,
+              "right": 329.5,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 669,
+          "stage": "farm-counter",
+          "position": "lower",
+          "viewport": {
+            "width": 669,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 2500,
+          "main": {
+            "label": "Preview this counter",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 309.5,
+              "height": 48,
+              "top": 889,
+              "right": 329.5,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 669,
+          "stage": "farm-counter-preview",
+          "position": "upper",
+          "viewport": {
+            "width": 669,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 0,
+          "main": {
+            "label": "Hear resident response",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 629,
+              "height": 48,
+              "top": 889,
+              "right": 649,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 669,
+          "stage": "farm-counter-preview",
+          "position": "middle",
+          "viewport": {
+            "width": 669,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 700,
+          "main": {
+            "label": "Hear resident response",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 629,
+              "height": 48,
+              "top": 889,
+              "right": 649,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 669,
+          "stage": "farm-counter-preview",
+          "position": "lower",
+          "viewport": {
+            "width": 669,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 2500,
+          "main": {
+            "label": "Hear resident response",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 629,
+              "height": 48,
+              "top": 889,
+              "right": 649,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 669,
+          "stage": "farm-agree",
+          "position": "upper",
+          "viewport": {
+            "width": 669,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 0,
+          "main": {
+            "label": "Confirm public revision",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 629,
+              "height": 48,
+              "top": 889,
+              "right": 649,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 669,
+          "stage": "farm-agree",
+          "position": "middle",
+          "viewport": {
+            "width": 669,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 700,
+          "main": {
+            "label": "Confirm public revision",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 629,
+              "height": 48,
+              "top": 889,
+              "right": 649,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 669,
+          "stage": "farm-agree",
+          "position": "lower",
+          "viewport": {
+            "width": 669,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 2500,
+          "main": {
+            "label": "Confirm public revision",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 629,
+              "height": 48,
+              "top": 889,
+              "right": 649,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 669,
+          "stage": "farm-refuse",
+          "position": "upper",
+          "viewport": {
+            "width": 669,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 0,
+          "main": {
+            "label": "Edit request",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 629,
+              "height": 48,
+              "top": 889,
+              "right": 649,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 669,
+          "stage": "farm-refuse",
+          "position": "middle",
+          "viewport": {
+            "width": 669,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 700,
+          "main": {
+            "label": "Edit request",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 629,
+              "height": 48,
+              "top": 889,
+              "right": 649,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 669,
+          "stage": "farm-refuse",
+          "position": "lower",
+          "viewport": {
+            "width": 669,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 2500,
+          "main": {
+            "label": "Edit request",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 629,
+              "height": 48,
+              "top": 889,
+              "right": 649,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 669,
+          "stage": "new-draft-initial",
+          "position": "upper",
+          "viewport": {
+            "width": 669,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 0,
+          "main": {
+            "label": "Preview these controls",
+            "disabled": true,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 629,
+              "height": 48,
+              "top": 889,
+              "right": 649,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 669,
+          "stage": "new-draft-initial",
+          "position": "middle",
+          "viewport": {
+            "width": 669,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 173,
+          "main": {
+            "label": "Preview these controls",
+            "disabled": true,
+            "rect": {
+              "x": 20,
+              "y": 888.96875,
+              "width": 629,
+              "height": 48,
+              "top": 888.96875,
+              "right": 649,
+              "bottom": 936.96875,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 669,
+          "stage": "new-draft-initial",
+          "position": "lower",
+          "viewport": {
+            "width": 669,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 173,
+          "main": {
+            "label": "Preview these controls",
+            "disabled": true,
+            "rect": {
+              "x": 20,
+              "y": 888.96875,
+              "width": 629,
+              "height": 48,
+              "top": 888.96875,
+              "right": 649,
+              "bottom": 936.96875,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 669,
+          "stage": "new-draft-controls",
+          "position": "upper",
+          "viewport": {
+            "width": 669,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 0,
+          "main": {
+            "label": "Preview these controls",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 629,
+              "height": 48,
+              "top": 889,
+              "right": 649,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 669,
+          "stage": "new-draft-controls",
+          "position": "middle",
+          "viewport": {
+            "width": 669,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 700,
+          "main": {
+            "label": "Preview these controls",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 629,
+              "height": 48,
+              "top": 889,
+              "right": 649,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 669,
+          "stage": "new-draft-controls",
+          "position": "lower",
+          "viewport": {
+            "width": 669,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 876,
+          "main": {
+            "label": "Preview these controls",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 888.96875,
+              "width": 629,
+              "height": 48,
+              "top": 888.96875,
+              "right": 649,
+              "bottom": 936.96875,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 669,
+          "stage": "new-draft-post",
+          "position": "upper",
+          "viewport": {
+            "width": 669,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 0,
+          "main": {
+            "label": "Put on agenda",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 309.5,
+              "height": 48,
+              "top": 889,
+              "right": 329.5,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 669,
+          "stage": "new-draft-post",
+          "position": "middle",
+          "viewport": {
+            "width": 669,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 700,
+          "main": {
+            "label": "Put on agenda",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 309.5,
+              "height": 48,
+              "top": 889,
+              "right": 329.5,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 669,
+          "stage": "new-draft-post",
+          "position": "lower",
+          "viewport": {
+            "width": 669,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 2500,
+          "main": {
+            "label": "Put on agenda",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 309.5,
+              "height": 48,
+              "top": 889,
+              "right": 329.5,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        }
+      ],
+      "errors": [],
+      "fixture": "ordinary seed31; actual store commands approve bridge/campus, table farm and resolve one year; then normal UI inputs only",
+      "engineLegacyRecord": {
+        "stage": "built",
+        "deliveryYear": 1,
+        "actualCostK": 260,
+        "decision": {
+          "action": "approve",
+          "route": "mayor",
+          "funding": "cash",
+          "year": 1,
+          "votes": {
+            "votes": [
+              {
+                "member": "marsh",
+                "leans": [
+                  {
+                    "id": "bridge",
+                    "lean": 15
+                  }
+                ],
+                "vote": "no"
+              },
+              {
+                "member": "pryor",
+                "leans": [
+                  {
+                    "id": "bridge",
+                    "lean": 33
+                  }
+                ],
+                "vote": "no"
+              },
+              {
+                "member": "okafor",
+                "leans": [
+                  {
+                    "id": "bridge",
+                    "lean": 73
+                  }
+                ],
+                "vote": "bridge"
+              },
+              {
+                "member": "brandt",
+                "leans": [
+                  {
+                    "id": "bridge",
+                    "lean": 50
+                  }
+                ],
+                "vote": "bridge"
+              },
+              {
+                "member": "weaver",
+                "leans": [
+                  {
+                    "id": "bridge",
+                    "lean": 47
+                  }
+                ],
+                "vote": "no"
+              }
+            ],
+            "tally": {
+              "no": 3,
+              "bridge": 2
+            },
+            "winner": null,
+            "options": [
+              "bridge"
+            ]
+          }
+        }
+      },
+      "historyList": {
+        "bridge": "Main Street bridge repairBuilt \u00b7 revision c3b5cca1",
+        "campus": "College Avenue distribution loadingBuilt \u00b7 revision 1a1585a6"
+      },
+      "bridgeHistory": "PROJECT HISTORY\nMain Street bridge repair\nMain Street bridge repair \u00b7 Built\n\nThe 1958 bridge over Kish Creek failed its last inspection. It carries every car into downtown.\n\nDecision: Mayoral approval in 2027 \u00b7 cash funding.\n\nApproved estimate\n$260K\nActual delivery cost\n$260K\nAnnual upkeep\n$0K\n\nDelivered in 2027.",
+      "campusHistory": "PROJECT HISTORY\nCollege Avenue distribution loading\nCOLLEGE AVENUE DISTRIBUTION LOADING\nNORTH UP \u00b7 EXACT PLOT GRID\n40 warehouse \u00b7 pallet bays\n100 loading \u00b7 daily passages\n1.75 allocated plots\n0 retained plots\n4.25 unused plots\n\nEngine cost $270K \u00b7 upkeep $10K/year\n\nEngine allocations on the exact selected boundary. Strips preserve plot-equivalent areas; shared activities overlap their named host. Interior symbols and fractional plot use are schematic game assumptions.\n\nCollege Avenue distribution loading \u00b7 Built\n\nA freight-only storage operation with a delegated service lane, not a drinking venue.\n\nwarehouse: 40 pallet bays \u00b7 1 plot\nloading: 100 daily passages \u00b7 0.25 plot\n\nOperating 10 hours/day; daytime deliveries. Farm/service access maintained. 0.5 plots of buffer; 0 plots retained.\n\nDecision: Council vote in 2027 \u00b7 cash funding \u00b7 3 council votes in favor.\n\nApproved estimate\n$270K\nActual delivery cost\n$270K\nAnnual upkeep\n$10K\n\nDelivered in 2027.",
+      "siteLabel": "PRIVATE REVISION \u00b7 0/8 SAVED VERSIONS\nOld Mill Memorial Park\n\nPublic accepted plan: Old Mill Memorial Park \u00b7 revision legacy. Changes below are private until confirmed.\n\nPrivate \u00b7 Nothing is posted until you choose Put on agenda.\n\nPlan title\nYour original idea\nChoose plots on the map\n0 plots selected \u00b7 no site for a policy\nRequested edit\n\nQwen is off. Compose activities and conditions below to make an engine preview.\n\nActivities and operating conditions\nInput versions\n\nReturn to any version on the same site. Forecasts are refreshed against the current town.\n\nYour first valid preview becomes the baseline.\nOpen saved drafts\nSave recovered input as new draft\nPreview these controls",
+      "siteLabelFailure": true,
+      "cancelPreservedPublic": true,
+      "status": "fail",
+      "error": "SUST-A-02 persists: physical legacy site is labeled zero/no-site policy. Other focused checks continued independently."
+    },
+    {
+      "width": 400,
+      "sha": "c921f0add6f7c16682e6fa6d4b04523b17656e4f",
+      "reach": [
+        {
+          "width": 400,
+          "stage": "legacy-controls",
+          "position": "upper",
+          "viewport": {
+            "width": 400,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 0,
+          "main": {
+            "label": "Preview these controls",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 360,
+              "height": 48,
+              "top": 889,
+              "right": 380,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 400,
+          "stage": "legacy-controls",
+          "position": "middle",
+          "viewport": {
+            "width": 400,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 350,
+          "main": {
+            "label": "Preview these controls",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 360,
+              "height": 48,
+              "top": 889,
+              "right": 380,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 400,
+          "stage": "legacy-controls",
+          "position": "lower",
+          "viewport": {
+            "width": 400,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 350,
+          "main": {
+            "label": "Preview these controls",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 360,
+              "height": 48,
+              "top": 889,
+              "right": 380,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 400,
+          "stage": "legacy-requested",
+          "position": "upper",
+          "viewport": {
+            "width": 400,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 0,
+          "main": {
+            "label": "Hear resident response",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 360,
+              "height": 48,
+              "top": 889,
+              "right": 380,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 400,
+          "stage": "legacy-requested",
+          "position": "middle",
+          "viewport": {
+            "width": 400,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 700,
+          "main": {
+            "label": "Hear resident response",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 360,
+              "height": 48,
+              "top": 889,
+              "right": 380,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 400,
+          "stage": "legacy-requested",
+          "position": "lower",
+          "viewport": {
+            "width": 400,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 2500,
+          "main": {
+            "label": "Hear resident response",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 360,
+              "height": 48,
+              "top": 889,
+              "right": 380,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 400,
+          "stage": "legacy-agree",
+          "position": "upper",
+          "viewport": {
+            "width": 400,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 0,
+          "main": {
+            "label": "Confirm public revision",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 360,
+              "height": 48,
+              "top": 889,
+              "right": 380,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 400,
+          "stage": "legacy-agree",
+          "position": "middle",
+          "viewport": {
+            "width": 400,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 700,
+          "main": {
+            "label": "Confirm public revision",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 360,
+              "height": 48,
+              "top": 889,
+              "right": 380,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 400,
+          "stage": "legacy-agree",
+          "position": "lower",
+          "viewport": {
+            "width": 400,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 2500,
+          "main": {
+            "label": "Confirm public revision",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 360,
+              "height": 48,
+              "top": 889,
+              "right": 380,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 400,
+          "stage": "farm-requested",
+          "position": "upper",
+          "viewport": {
+            "width": 400,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 0,
+          "main": {
+            "label": "Hear resident response",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 360,
+              "height": 48,
+              "top": 889,
+              "right": 380,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 400,
+          "stage": "farm-requested",
+          "position": "middle",
+          "viewport": {
+            "width": 400,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 700,
+          "main": {
+            "label": "Hear resident response",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 360,
+              "height": 48,
+              "top": 889,
+              "right": 380,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 400,
+          "stage": "farm-requested",
+          "position": "lower",
+          "viewport": {
+            "width": 400,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 2500,
+          "main": {
+            "label": "Hear resident response",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 360,
+              "height": 48,
+              "top": 889,
+              "right": 380,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 400,
+          "stage": "farm-counter",
+          "position": "upper",
+          "viewport": {
+            "width": 400,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 0,
+          "main": {
+            "label": "Preview this counter",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 176,
+              "height": 48,
+              "top": 889,
+              "right": 196,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 400,
+          "stage": "farm-counter",
+          "position": "middle",
+          "viewport": {
+            "width": 400,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 700,
+          "main": {
+            "label": "Preview this counter",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 176,
+              "height": 48,
+              "top": 889,
+              "right": 196,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 400,
+          "stage": "farm-counter",
+          "position": "lower",
+          "viewport": {
+            "width": 400,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 2500,
+          "main": {
+            "label": "Preview this counter",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 176,
+              "height": 48,
+              "top": 889,
+              "right": 196,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 400,
+          "stage": "farm-counter-preview",
+          "position": "upper",
+          "viewport": {
+            "width": 400,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 0,
+          "main": {
+            "label": "Hear resident response",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 360,
+              "height": 48,
+              "top": 889,
+              "right": 380,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 400,
+          "stage": "farm-counter-preview",
+          "position": "middle",
+          "viewport": {
+            "width": 400,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 700,
+          "main": {
+            "label": "Hear resident response",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 360,
+              "height": 48,
+              "top": 889,
+              "right": 380,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 400,
+          "stage": "farm-counter-preview",
+          "position": "lower",
+          "viewport": {
+            "width": 400,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 2500,
+          "main": {
+            "label": "Hear resident response",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 360,
+              "height": 48,
+              "top": 889,
+              "right": 380,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 400,
+          "stage": "farm-agree",
+          "position": "upper",
+          "viewport": {
+            "width": 400,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 0,
+          "main": {
+            "label": "Confirm public revision",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 360,
+              "height": 48,
+              "top": 889,
+              "right": 380,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 400,
+          "stage": "farm-agree",
+          "position": "middle",
+          "viewport": {
+            "width": 400,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 700,
+          "main": {
+            "label": "Confirm public revision",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 360,
+              "height": 48,
+              "top": 889,
+              "right": 380,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 400,
+          "stage": "farm-agree",
+          "position": "lower",
+          "viewport": {
+            "width": 400,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 2500,
+          "main": {
+            "label": "Confirm public revision",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 360,
+              "height": 48,
+              "top": 889,
+              "right": 380,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 400,
+          "stage": "farm-refuse",
+          "position": "upper",
+          "viewport": {
+            "width": 400,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 0,
+          "main": {
+            "label": "Edit request",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 360,
+              "height": 48,
+              "top": 889,
+              "right": 380,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 400,
+          "stage": "farm-refuse",
+          "position": "middle",
+          "viewport": {
+            "width": 400,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 700,
+          "main": {
+            "label": "Edit request",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 360,
+              "height": 48,
+              "top": 889,
+              "right": 380,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 400,
+          "stage": "farm-refuse",
+          "position": "lower",
+          "viewport": {
+            "width": 400,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 2500,
+          "main": {
+            "label": "Edit request",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 360,
+              "height": 48,
+              "top": 889,
+              "right": 380,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 400,
+          "stage": "new-draft-initial",
+          "position": "upper",
+          "viewport": {
+            "width": 400,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 0,
+          "main": {
+            "label": "Preview these controls",
+            "disabled": true,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 360,
+              "height": 48,
+              "top": 889,
+              "right": 380,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 400,
+          "stage": "new-draft-initial",
+          "position": "middle",
+          "viewport": {
+            "width": 400,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 305,
+          "main": {
+            "label": "Preview these controls",
+            "disabled": true,
+            "rect": {
+              "x": 20,
+              "y": 888.859375,
+              "width": 360,
+              "height": 48,
+              "top": 888.859375,
+              "right": 380,
+              "bottom": 936.859375,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 400,
+          "stage": "new-draft-initial",
+          "position": "lower",
+          "viewport": {
+            "width": 400,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 305,
+          "main": {
+            "label": "Preview these controls",
+            "disabled": true,
+            "rect": {
+              "x": 20,
+              "y": 888.859375,
+              "width": 360,
+              "height": 48,
+              "top": 888.859375,
+              "right": 380,
+              "bottom": 936.859375,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 400,
+          "stage": "new-draft-controls",
+          "position": "upper",
+          "viewport": {
+            "width": 400,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 0,
+          "main": {
+            "label": "Preview these controls",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 360,
+              "height": 48,
+              "top": 889,
+              "right": 380,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 400,
+          "stage": "new-draft-controls",
+          "position": "middle",
+          "viewport": {
+            "width": 400,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 721,
+          "main": {
+            "label": "Preview these controls",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 360,
+              "height": 48,
+              "top": 889,
+              "right": 380,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 400,
+          "stage": "new-draft-controls",
+          "position": "lower",
+          "viewport": {
+            "width": 400,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 1493,
+          "main": {
+            "label": "Preview these controls",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 888.65625,
+              "width": 360,
+              "height": 48,
+              "top": 888.65625,
+              "right": 380,
+              "bottom": 936.65625,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 400,
+          "stage": "new-draft-post",
+          "position": "upper",
+          "viewport": {
+            "width": 400,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 0,
+          "main": {
+            "label": "Put on agenda",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 176,
+              "height": 48,
+              "top": 889,
+              "right": 196,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 400,
+          "stage": "new-draft-post",
+          "position": "middle",
+          "viewport": {
+            "width": 400,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 700,
+          "main": {
+            "label": "Put on agenda",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 176,
+              "height": 48,
+              "top": 889,
+              "right": 196,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        },
+        {
+          "width": 400,
+          "stage": "new-draft-post",
+          "position": "lower",
+          "viewport": {
+            "width": 400,
+            "height": 951
+          },
+          "bodyScrollTop": 0,
+          "paneScrollTop": 2500,
+          "main": {
+            "label": "Put on agenda",
+            "disabled": false,
+            "rect": {
+              "x": 20,
+              "y": 889,
+              "width": 176,
+              "height": 48,
+              "top": 889,
+              "right": 196,
+              "bottom": 937,
+              "left": 20
+            },
+            "inside": true,
+            "thumb": true
+          },
+          "overflow": false
+        }
+      ],
+      "errors": [],
+      "fixture": "ordinary seed31; actual store commands approve bridge/campus, table farm and resolve one year; then normal UI inputs only",
+      "engineLegacyRecord": {
+        "stage": "built",
+        "deliveryYear": 1,
+        "actualCostK": 260,
+        "decision": {
+          "action": "approve",
+          "route": "mayor",
+          "funding": "cash",
+          "year": 1,
+          "votes": {
+            "votes": [
+              {
+                "member": "marsh",
+                "leans": [
+                  {
+                    "id": "bridge",
+                    "lean": 15
+                  }
+                ],
+                "vote": "no"
+              },
+              {
+                "member": "pryor",
+                "leans": [
+                  {
+                    "id": "bridge",
+                    "lean": 33
+                  }
+                ],
+                "vote": "no"
+              },
+              {
+                "member": "okafor",
+                "leans": [
+                  {
+                    "id": "bridge",
+                    "lean": 73
+                  }
+                ],
+                "vote": "bridge"
+              },
+              {
+                "member": "brandt",
+                "leans": [
+                  {
+                    "id": "bridge",
+                    "lean": 50
+                  }
+                ],
+                "vote": "bridge"
+              },
+              {
+                "member": "weaver",
+                "leans": [
+                  {
+                    "id": "bridge",
+                    "lean": 47
+                  }
+                ],
+                "vote": "no"
+              }
+            ],
+            "tally": {
+              "no": 3,
+              "bridge": 2
+            },
+            "winner": null,
+            "options": [
+              "bridge"
+            ]
+          }
+        }
+      },
+      "historyList": {
+        "bridge": "Main Street bridge repairBuilt \u00b7 revision c3b5cca1",
+        "campus": "College Avenue distribution loadingBuilt \u00b7 revision 1a1585a6"
+      },
+      "bridgeHistory": "PROJECT HISTORY\nMain Street bridge repair\nMain Street bridge repair \u00b7 Built\n\nThe 1958 bridge over Kish Creek failed its last inspection. It carries every car into downtown.\n\nDecision: Mayoral approval in 2027 \u00b7 cash funding.\n\nApproved estimate\n$260K\nActual delivery cost\n$260K\nAnnual upkeep\n$0K\n\nDelivered in 2027.",
+      "campusHistory": "PROJECT HISTORY\nCollege Avenue distribution loading\nCOLLEGE AVENUE DISTRIBUTION LOADING\nNORTH UP \u00b7 EXACT PLOT GRID\n40 warehouse \u00b7 pallet bays\n100 loading \u00b7 daily passages\n1.75 allocated plots\n0 retained plots\n4.25 unused plots\n\nEngine cost $270K \u00b7 upkeep $10K/year\n\nEngine allocations on the exact selected boundary. Strips preserve plot-equivalent areas; shared activities overlap their named host. Interior symbols and fractional plot use are schematic game assumptions.\n\nCollege Avenue distribution loading \u00b7 Built\n\nA freight-only storage operation with a delegated service lane, not a drinking venue.\n\nwarehouse: 40 pallet bays \u00b7 1 plot\nloading: 100 daily passages \u00b7 0.25 plot\n\nOperating 10 hours/day; daytime deliveries. Farm/service access maintained. 0.5 plots of buffer; 0 plots retained.\n\nDecision: Council vote in 2027 \u00b7 cash funding \u00b7 3 council votes in favor.\n\nApproved estimate\n$270K\nActual delivery cost\n$270K\nAnnual upkeep\n$10K\n\nDelivered in 2027.",
+      "siteLabel": "PRIVATE REVISION \u00b7 0/8 SAVED VERSIONS\nOld Mill Memorial Park\n\nPublic accepted plan: Old Mill Memorial Park \u00b7 revision legacy. Changes below are private until confirmed.\n\nPrivate \u00b7 Nothing is posted until you choose Put on agenda.\n\nPlan title\nYour original idea\nChoose plots on the map\n0 plots selected \u00b7 no site for a policy\nRequested edit\n\nQwen is off. Compose activities and conditions below to make an engine preview.\n\nActivities and operating conditions\nInput versions\n\nReturn to any version on the same site. Forecasts are refreshed against the current town.\n\nYour first valid preview becomes the baseline.\nOpen saved drafts\nSave recovered input as new draft\nPreview these controls",
+      "siteLabelFailure": true,
+      "cancelPreservedPublic": true,
+      "status": "fail",
+      "error": "SUST-A-02 persists: physical legacy site is labeled zero/no-site policy. Other focused checks continued independently."
+    }
+  ]
+}

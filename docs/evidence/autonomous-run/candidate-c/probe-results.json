@@ -1,0 +1,188 @@
+{
+  "sha": "35461a0acc6a21c723d97d90509bb1e8adb0cf49",
+  "types": [
+    "real engine",
+    "real workspace with memory storage and lock fixture",
+    "constant provider mock"
+  ],
+  "checks": [
+    {
+      "ids": [
+        "R1",
+        "R2"
+      ],
+      "result": "PASS",
+      "evidence": "Malformed capability/presenter/member JSON values reject without throw or mutation."
+    },
+    {
+      "ids": [
+        "R5"
+      ],
+      "result": "PASS",
+      "evidence": "Inherited route names reject in actual preview and revision command."
+    },
+    {
+      "ids": [
+        "R8"
+      ],
+      "result": "PASS",
+      "evidence": "Two policy components reject with policy_capacity_exceeded."
+    },
+    {
+      "ids": [
+        "R4"
+      ],
+      "result": "PASS",
+      "evidence": "A cosmetic rename cannot renew previously earned factual credit."
+    },
+    {
+      "ids": [
+        "R3-original-nested"
+      ],
+      "result": "PASS",
+      "evidence": [
+        {
+          "name": "scenario.economy=null",
+          "isSupportedSave": false,
+          "workspaceLoadOK": false,
+          "exception": null,
+          "inputPreserved": true
+        },
+        {
+          "name": "scenario.proposals.schedule[2]=[null]",
+          "isSupportedSave": false,
+          "workspaceLoadOK": false,
+          "exception": null,
+          "inputPreserved": true
+        }
+      ]
+    },
+    {
+      "ids": [
+        "legacy-stage"
+      ],
+      "result": "PASS",
+      "evidence": {
+        "approvedStatus": "approved",
+        "recordStage": "built",
+        "cost": 260,
+        "upkeep": 0,
+        "decision": {
+          "action": "approve",
+          "route": "mayor",
+          "funding": "cash",
+          "year": 1,
+          "votes": {
+            "votes": [
+              {
+                "member": "marsh",
+                "leans": [
+                  {
+                    "id": "bridge",
+                    "lean": 15
+                  }
+                ],
+                "vote": "no"
+              },
+              {
+                "member": "pryor",
+                "leans": [
+                  {
+                    "id": "bridge",
+                    "lean": 33
+                  }
+                ],
+                "vote": "no"
+              },
+              {
+                "member": "okafor",
+                "leans": [
+                  {
+                    "id": "bridge",
+                    "lean": 73
+                  }
+                ],
+                "vote": "bridge"
+              },
+              {
+                "member": "brandt",
+                "leans": [
+                  {
+                    "id": "bridge",
+                    "lean": 50
+                  }
+                ],
+                "vote": "bridge"
+              },
+              {
+                "member": "weaver",
+                "leans": [
+                  {
+                    "id": "bridge",
+                    "lean": 47
+                  }
+                ],
+                "vote": "no"
+              }
+            ],
+            "tally": {
+              "no": 3,
+              "bridge": 2
+            },
+            "winner": null,
+            "options": [
+              "bridge"
+            ]
+          }
+        },
+        "replayApplied": false
+      }
+    },
+    {
+      "ids": [
+        "R9-legacy"
+      ],
+      "result": "PASS",
+      "evidence": {
+        "note": "A normal mayoral cash approval and annual delivery produce a built legacy record, now present with legacy-plan provenance in same-site context.",
+        "source": "composition-requests.js:216",
+        "history": [
+          {
+            "title": "Main Street bridge repair",
+            "actorId": "engineer",
+            "stage": "built",
+            "representation": "legacy-plan",
+            "kind": "bridge",
+            "plan": {
+              "scope": "full"
+            },
+            "relevance": "selected site",
+            "source": {
+              "record": "projectRecords",
+              "snapshot": "built",
+              "proposalId": "bridge",
+              "programRevision": "c3b5cca1033a54d88cf1e6b2fbba99751bbcc3e15750827885fa7e22f8a669fd",
+              "decisionYear": 1,
+              "decisionRoute": "mayor",
+              "deliveryYear": 1
+            }
+          }
+        ]
+      }
+    },
+    {
+      "ids": [
+        "G1.6-carryforward"
+      ],
+      "result": "PASS",
+      "evidence": {
+        "note": "Accepted A full browser lifecycle retained; C detached interpretation and final-save compatibility checked, no repeated browser lifecycle.",
+        "definitionId": "lantern-repair-learning-yard",
+        "previewRevision": "5f4cbbd885722146d83e3c7e1771bcad833cf3f2b60a8bc72307ff497e3feba5",
+        "initialPreviewAndLayoutMatchA": true,
+        "costK": 275,
+        "finalSaveSupported": true
+      }
+    }
+  ]
+}

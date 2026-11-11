@@ -1,0 +1,22 @@
+[
+  {
+    "field": "label",
+    "supported": true,
+    "exception": "TypeError: Cannot convert object to primitive value"
+  },
+  {
+    "field": "role",
+    "supported": true,
+    "exception": "TypeError: Cannot convert object to primitive value"
+  },
+  {
+    "field": "componentId",
+    "supported": true,
+    "exception": "TypeError: Cannot convert object to primitive value"
+  },
+  {
+    "field": "sharedWith",
+    "supported": true,
+    "exception": "TypeError: Cannot convert object to primitive value"
+  }
+]

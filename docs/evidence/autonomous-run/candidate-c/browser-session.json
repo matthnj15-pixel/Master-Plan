@@ -1,0 +1,22 @@
+{
+  "sha": "35461a0acc6a21c723d97d90509bb1e8adb0cf49",
+  "browserVersion": "153.0.8010.12",
+  "origin": "http://127.0.0.1:8783",
+  "viewports": [
+    {
+      "width": 400,
+      "height": 951
+    },
+    {
+      "width": 669,
+      "height": 951
+    }
+  ],
+  "normalPageErrors": [],
+  "expectedCorruptFixturePageErrors": [
+    "TypeError: Cannot convert object to primitive value"
+  ],
+  "externalAccountAdapters": "disabled; QA separately supplies controlled account callbacks",
+  "sourceEdits": false,
+  "cleanup": "all browser contexts, browser and loopback server closed at end"
+}

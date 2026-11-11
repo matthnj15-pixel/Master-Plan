@@ -1,0 +1,30 @@
+{
+  "sha": "09f924bb305999932e8b74383f9d3f759f95895c",
+  "evidenceType": "independent CPU diagnostic-export smoke using actual frozen E diagnostics with explicit in-memory storage fixture; no model/browser/engine claim",
+  "passed": 3,
+  "total": 3,
+  "results": [
+    {
+      "inputClass": "exact fixed reason",
+      "eventPresent": true,
+      "codeRetained": true,
+      "exportedCode": "claim_history_unresolved",
+      "status": "pass"
+    },
+    {
+      "inputClass": "reason with arbitrary suffix",
+      "eventPresent": true,
+      "codeRetained": false,
+      "exportedCode": null,
+      "status": "pass"
+    },
+    {
+      "inputClass": "arbitrary code",
+      "eventPresent": true,
+      "codeRetained": false,
+      "exportedCode": null,
+      "status": "pass"
+    }
+  ],
+  "privateTextExcluded": true
+}

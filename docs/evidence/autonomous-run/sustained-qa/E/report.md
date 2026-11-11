@@ -1,0 +1,24 @@
+# Final E sustained evidence and diagnostic delta
+
+Final source freeze: **`09f924bb305999932e8b74383f9d3f759f95895c`**, common QA/Reviewer/Planner target, **C2.1** (`781a2491330e86cca15281437edc9ac3074a26e3`). All **16 source and six Dev/Stable build hashes** match `/tmp/mp-candidate-e-target.json`. Dev composition is enabled; Stable composition is disabled. Product source remained read-only.
+
+E adds exactly one fixed result code, `claim_history_unresolved`, to the closed diagnostics allowlist. The other fifteen pinned source files are byte-identical to D, including engine, UI, renderer, workspace, provider requests, build scripts and flags. The source diff changes no gameplay, progression, authority, prices or election behavior.
+
+| Evidence | Final result and provenance |
+|---|---|
+| E local full suite | **248/248**, zero failed/skipped, **142.404s**, traceability and actual pinned-runtime source audit pass. Both builds pass. |
+| E independent diagnostic export smoke | **3/3**: exact fixed code exported; arbitrary suffixed code and arbitrary code excluded; private reason/argument/town text absent. Actual E diagnostics with explicit memory-storage fixture; no model/browser/engine inference claim. |
+| D normal strategy carry-forward | **3/3 × twelve resolutions**, nine genuine host election wins and visible post-win continuations; all annual outcomes equal C. Engine/UI/progression hashes are unchanged on E. No new strategy replay was performed or required. |
+| D validation carry-forward | Nested-scenario fence **3/3** and persisted-layout fence **5/5**, each with valid ordinary controls; malformed data reject safely and preserve original bytes. Same engine/workspace/renderer hashes on E. |
+| C affected UI carry-forward | **2/2 widths**, **66 scrolled footer-bound samples**, correct delivered history and four-plot legacy label; pending controls/text/attempted-site recovery **4/4**, exact public-save bytes unchanged. Same UI/renderer/workspace hashes on D/E. |
+| A accepted normal browser session | Historical **23m31.53s**, five resolutions, actual **65.7% first-term win**, actual year-five opportunity approved/delivered and year-six reload. This remains A evidence, explicitly carried forward under unchanged valid progression; no full-session replay or invented loss continuation. |
+
+Compact/outward/preservation final population remains **3,512 / 3,627 / 3,570** and exact reserve **$1,892K / $2,883.50K / $2,697.25K**. Each path delivers two actual agenda opportunities and takes up its year-three carryover in year four. Land conversion/flood-risk/supply differences change actual eligibility and semantic opportunity sets, not only titles. The D report and structured assertions retain annual actions, explicit funding, real votes/favors, delivery, map/budget causes and all nine election shares. No relationship/resource gifts, phase edits or forced results were used.
+
+All A/B/C/D failures remain historical evidence. In particular, C's persisted-layout defect explains D, and D's missing safe diagnostic reason explains E. The first C recovery harness attempt remains locally preserved with its heading-case and persistence-wait errors; the corrected same-source run passes. None of these older results is relabeled as an E test or erased.
+
+The E packet contains its exact manifest/source comparison, diagnostic smoke/helper and actual full-suite observation/log. No new screenshots or strategy runs were needed for a one-code diagnostic-only change. Selected A/B/C screenshots, D strategy/validation artifacts and full raw local evidence remain linked through the package index. This role did not execute T1–T8 or the withheld typed-AI corpus. While reading the final published QA summary after scoring was complete, its original-input table was inadvertently displayed. None of that wording was used for source, harness changes or evaluation; the compact summary retained here excludes that table. Final common-target QA/reviewer dispositions are recorded in the 34-row ledger: **32 PASS, zero FAIL, two UNVERIFIED; experimental Dev READY, no known independently fixable source blockers.**
+
+Live Qwen remains blocked by measured shader-f16 availability. Actual cached model inference, physical Duo airplane-mode operation and real Claude/account-host callbacks are unverified; mocks do not pass those gates. The actual pinned runtime source audit is CPU/input-format evidence, not live inference.
+
+Final GitHub CI/deployed SHA are maintained by the coordinator in the authoritative [PR 17 handoff](https://github.com/matthnj15-pixel/Master-Plan/pull/17). The local source freeze is E; this document does not embed a self-referential documentation/merge commit SHA or invent a deployment pass. No source edits, publication or merge were performed by this role.

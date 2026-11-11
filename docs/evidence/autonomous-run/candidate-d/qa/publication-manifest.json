@@ -1,0 +1,72 @@
+{
+  "sourceSha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d",
+  "candidate": "D",
+  "exclusiveRepositoryDirectory": "docs/evidence/autonomous-run/candidate-d/qa",
+  "files": [
+    {
+      "path": "coverage.json",
+      "sha256": "31289f4a1416239973763a1d4cead0605dc881d89ea078ae39b25c145403e409",
+      "bytes": 12310
+    },
+    {
+      "path": "coverage.md",
+      "sha256": "b439bfdfce75ba7d1869d69cf8d3142e8a3efd779476432a16baa2283dc395de",
+      "bytes": 5620
+    },
+    {
+      "path": "qa-summary.json",
+      "sha256": "80f539c9d0df9c26dd69ca5666e5c4c31cefcb164d0c77f40388406f25ce49a6",
+      "bytes": 201669
+    },
+    {
+      "path": "qa-summary.md",
+      "sha256": "fa22f69a6779c2774453c27e5c17b1ef1540e7aea10ad67c2ac3f5027e2f2b51",
+      "bytes": 8682
+    },
+    {
+      "path": "screenshots/01-draft-plan-view.png",
+      "sha256": "68d63655f82350fedff347c1a6e5ed7e666607ec096b72f01eacec0dec010d29",
+      "bytes": 51988
+    },
+    {
+      "path": "screenshots/02-draft-plan-view.png",
+      "sha256": "23304b737cf06c6338b8336468fcc268498ad9bf8769bb94d2162b0a3a395558",
+      "bytes": 57059
+    },
+    {
+      "path": "screenshots/03-delivery-report.png",
+      "sha256": "a5f95ecbfeca5a1b7a90d08a8f3bca97a6b3fbd411ac96f5e50dc4775a805a33",
+      "bytes": 54453
+    },
+    {
+      "path": "screenshots/04-requested-and-counter.png",
+      "sha256": "6b4882dc4a747bc08c06f0a3d321c8403fd3e4b077fe0bbcae437ed20d5d1fb5",
+      "bytes": 49933
+    },
+    {
+      "path": "screenshots/05-post-after-eight-versions-and-deltas-after-scroll.png",
+      "sha256": "b998ea7539011cc38345469b51fb4114b33251d5a1960d6a4b16b83a67d43074",
+      "bytes": 51057
+    },
+    {
+      "path": "screenshots/06-draft-submit-after-scroll.png",
+      "sha256": "2ca8620c1d1031e4cb57376ffb003cf74c66fcc7d21e49a42c59b9481f98a235",
+      "bytes": 61228
+    },
+    {
+      "path": "screenshots/07-offline-log-export.png",
+      "sha256": "6303ad2e37f65eeefc67a6a5b40d6eaece79886a3061048a38403fd7a27325ef",
+      "bytes": 55285
+    },
+    {
+      "path": "screenshots/08-400-1.5B-blocked.png",
+      "sha256": "11cb45617f080ac833b6fcdc033fb0f9162d6773234cf87b865a2ed116da94cf",
+      "bytes": 48614
+    },
+    {
+      "path": "screenshots/09-physical-legacy-site.png",
+      "sha256": "ce24d2ab7ea87a524085b3b1d7c3f85508a4b78981a7ad041e4ddaa348a3c69e",
+      "bytes": 48040
+    }
+  ]
+}

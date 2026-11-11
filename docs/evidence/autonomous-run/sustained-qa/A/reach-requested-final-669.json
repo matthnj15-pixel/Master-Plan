@@ -1,0 +1,58 @@
+{
+  "viewport": {
+    "width": 669,
+    "height": 951
+  },
+  "bodyScrollTop": 0,
+  "paneScrollTop": 1974,
+  "actions": [
+    {
+      "text": "Preview these controls",
+      "action": "previewControls",
+      "disabled": false,
+      "rect": {
+        "x": 45,
+        "y": 138.96875,
+        "width": 579,
+        "height": 47,
+        "top": 138.96875,
+        "right": 624,
+        "bottom": 185.96875,
+        "left": 45
+      },
+      "visible": true,
+      "position": "static",
+      "ancestors": [
+        {
+          "class": "sheet",
+          "position": "fixed",
+          "bottom": "0px"
+        }
+      ]
+    },
+    {
+      "text": "Hear resident response",
+      "action": "resident",
+      "disabled": false,
+      "rect": {
+        "x": 24,
+        "y": 1774.8125,
+        "width": 621,
+        "height": 47,
+        "top": 1774.8125,
+        "right": 645,
+        "bottom": 1821.8125,
+        "left": 24
+      },
+      "visible": false,
+      "position": "static",
+      "ancestors": [
+        {
+          "class": "sheet",
+          "position": "fixed",
+          "bottom": "0px"
+        }
+      ]
+    }
+  ]
+}

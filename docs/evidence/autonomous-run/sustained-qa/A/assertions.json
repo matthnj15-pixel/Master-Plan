@@ -1,0 +1,930 @@
+{
+  "target": "6da5d9adc51751afb27236bfc27b769848a18d94",
+  "evidenceType": "independent Chromium touch-emulated normal-controls browser play; Qwen off",
+  "browser": "153.0.8010.12",
+  "gameId": "d13af67b-2f01-4520-8be5-a8f52c4f2456",
+  "seed": 31,
+  "elapsed": {
+    "browserActivityStartUtc": "2026-11-11T00:58:58.151Z",
+    "browserActivityEndUtc": "2026-11-11T01:22:29.681Z",
+    "browserActivitySeconds": 1411.53,
+    "firstInputUtc": "2026-11-11T01:00:08.432Z",
+    "lastInputUtc": "2026-11-11T01:22:29.220Z",
+    "inputWindowSeconds": 1340.788,
+    "focusedPrivateRevisionExplorationSeconds": 86.45,
+    "includes": "automation, screenshot inspection and pauses between controls; not a latency benchmark or hour-long human engagement study; registry-reset/packaging time excluded"
+  },
+  "counts": {
+    "journalLines": 190,
+    "taps": 84,
+    "screenshots": 82,
+    "annualResolutions": 5,
+    "authorizedInitialFixtures": 1,
+    "favorsSpent": 4
+  },
+  "sourceVerification": {
+    "checked": 127,
+    "mismatches": []
+  },
+  "election": {
+    "step": "result",
+    "theme": "quality",
+    "attack": "This mayor put Millbrooke in debt, $49K a year for the next decade. Our kids will be paying for these choices.",
+    "answer": "Look at the numbers. We fixed what was broken, the reserve is managed, and Millbrooke is growing. I made hard calls and I'll stand on them.",
+    "rejoinder": "We'll see what the voters think.",
+    "debate": 2,
+    "result": {
+      "share": 65.7,
+      "won": true,
+      "parts": [
+        {
+          "r": "Approval rating",
+          "v": 8.4
+        },
+        {
+          "r": "Campaign theme: Quality of life",
+          "v": 3.1
+        },
+        {
+          "r": "Debate with Greg Marsh",
+          "v": 2
+        },
+        {
+          "r": "Incumbency",
+          "v": 2
+        },
+        {
+          "r": "Turnout and late swings",
+          "v": 0.2
+        }
+      ]
+    }
+  },
+  "reload": {
+    "fullObservedStateEqual": true,
+    "sameGameId": true,
+    "turn": 6,
+    "cash": 575,
+    "pending": 0
+  },
+  "touch": {
+    "viewports": [
+      {
+        "width": 669,
+        "height": 951
+      },
+      {
+        "width": 400,
+        "height": 951
+      }
+    ],
+    "measurements": 82,
+    "horizontalOverflowSamples": [],
+    "smallVisibleControlSamples": [],
+    "primaryReach": "FAIL before resident stance (SUST-A-03); PASS sampled agree-confirm stage. Target size alone is not MP-057 acceptance."
+  },
+  "disposition": {
+    "normalFirstTermAndLaterOpportunity": "PASS on Candidate A: real 65.7% first-term win, actual year-five opportunity decision/delivery and year-six reload",
+    "historyAndPrimaryReach": "NEEDS REVISION: SUST-A-01/UI and engine stage, SUST-A-02, SUST-A-03",
+    "candidateB": "Affected-flow retest pending; no full-session repeat needed unless changes invalidate progression evidence",
+    "excluded": [
+      "T1\u2013T8",
+      "withheld twelve-case corpus",
+      "three independent normal-rule twelve-year paths",
+      "live Qwen",
+      "physical Duo",
+      "cached offline inference",
+      "deployment/CI"
+    ],
+    "trace": "Interactive PTY handle invalidated after registry reset; trace stop/export unavailable. Do not restart the game. Persisted journal/screenshots/checkpoints are retained."
+  },
+  "years": [
+    {
+      "turn": 1,
+      "calendarYear": 2027,
+      "openingCashK": 900,
+      "immediatePaymentsK": 530,
+      "annualBudget": {
+        "propTax": 960,
+        "comTax": 224,
+        "services": 864,
+        "upkeep": 160,
+        "bonds": 0,
+        "net": 160
+      },
+      "otherYearEndCashK": 0,
+      "closingCashK": 530,
+      "reserveReconciles": true,
+      "pop": 3265,
+      "approval": 54.48833333,
+      "capital": 4,
+      "bonds": [],
+      "builtIds": [
+        "bridge",
+        "campus-loading"
+      ]
+    },
+    {
+      "turn": 2,
+      "calendarYear": 2028,
+      "openingCashK": 530,
+      "immediatePaymentsK": 140,
+      "annualBudget": {
+        "propTax": 983,
+        "comTax": 266,
+        "services": 882,
+        "upkeep": 177,
+        "bonds": 49,
+        "net": 142
+      },
+      "otherYearEndCashK": 0,
+      "closingCashK": 532,
+      "reserveReconciles": true,
+      "pop": 3338,
+      "approval": 55.98833333,
+      "capital": 4,
+      "bonds": [
+        {
+          "name": "Bowers farm access and stand",
+          "annual": 49,
+          "left": 9
+        }
+      ],
+      "builtIds": [
+        "bridge",
+        "campus-loading",
+        "farm-access",
+        "opportunity-2-homes"
+      ]
+    },
+    {
+      "turn": 3,
+      "calendarYear": 2029,
+      "openingCashK": 532,
+      "immediatePaymentsK": 305,
+      "annualBudget": {
+        "propTax": 1010,
+        "comTax": 294,
+        "services": 901,
+        "upkeep": 197,
+        "bonds": 49,
+        "net": 157
+      },
+      "otherYearEndCashK": 0,
+      "closingCashK": 384,
+      "reserveReconciles": true,
+      "pop": 3430,
+      "approval": 58.688333330000006,
+      "capital": 5,
+      "bonds": [
+        {
+          "name": "Bowers farm access and stand",
+          "annual": 49,
+          "left": 8
+        }
+      ],
+      "builtIds": [
+        "bridge",
+        "campus-loading",
+        "farm-access",
+        "opportunity-2-homes",
+        "park"
+      ]
+    },
+    {
+      "turn": 4,
+      "calendarYear": 2030,
+      "openingCashK": 384,
+      "immediatePaymentsK": 142,
+      "annualBudget": {
+        "propTax": 1054,
+        "comTax": 336,
+        "services": 926,
+        "upkeep": 201,
+        "bonds": 49,
+        "net": 214
+      },
+      "otherYearEndCashK": 0,
+      "closingCashK": 456,
+      "reserveReconciles": true,
+      "pop": 3527,
+      "approval": 59.28833333000001,
+      "capital": 5,
+      "bonds": [
+        {
+          "name": "Bowers farm access and stand",
+          "annual": 49,
+          "left": 7
+        }
+      ],
+      "builtIds": [
+        "bridge",
+        "campus-loading",
+        "farm-access",
+        "opportunity-2-homes",
+        "park",
+        "opportunity-4-local-services"
+      ]
+    },
+    {
+      "turn": 5,
+      "calendarYear": 2031,
+      "openingCashK": 456,
+      "immediatePaymentsK": 140,
+      "annualBudget": {
+        "propTax": 1101,
+        "comTax": 364,
+        "services": 952,
+        "upkeep": 204,
+        "bonds": 49,
+        "net": 259
+      },
+      "otherYearEndCashK": 0,
+      "closingCashK": 575,
+      "reserveReconciles": true,
+      "pop": 3626,
+      "approval": 59.588333330000005,
+      "capital": 5,
+      "bonds": [
+        {
+          "name": "Bowers farm access and stand",
+          "annual": 49,
+          "left": 6
+        }
+      ],
+      "builtIds": [
+        "bridge",
+        "campus-loading",
+        "farm-access",
+        "opportunity-2-homes",
+        "park",
+        "opportunity-4-local-services",
+        "opportunity-5-homes"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": 1,
+      "turn": 1,
+      "type": "decision",
+      "proposalId": "bridge",
+      "description": "Explicit mayor approval of full bridge rehab, pay $260K cash",
+      "result": {
+        "proposalId": "bridge",
+        "outcome": "approved",
+        "funding": "cash",
+        "costK": 260,
+        "votes": {
+          "votes": [
+            {
+              "member": "marsh",
+              "leans": [
+                {
+                  "id": "bridge",
+                  "lean": 15
+                }
+              ],
+              "vote": "no"
+            },
+            {
+              "member": "pryor",
+              "leans": [
+                {
+                  "id": "bridge",
+                  "lean": 33
+                }
+              ],
+              "vote": "no"
+            },
+            {
+              "member": "okafor",
+              "leans": [
+                {
+                  "id": "bridge",
+                  "lean": 73
+                }
+              ],
+              "vote": "bridge"
+            },
+            {
+              "member": "brandt",
+              "leans": [
+                {
+                  "id": "bridge",
+                  "lean": 50
+                }
+              ],
+              "vote": "bridge"
+            },
+            {
+              "member": "weaver",
+              "leans": [
+                {
+                  "id": "bridge",
+                  "lean": 47
+                }
+              ],
+              "vote": "no"
+            }
+          ],
+          "tally": {
+            "no": 3,
+            "bridge": 2
+          },
+          "winner": null,
+          "options": [
+            "bridge"
+          ]
+        },
+        "programRevision": "c3b5cca1033a54d88cf1e6b2fbba99751bbcc3e15750827885fa7e22f8a669fd"
+      }
+    },
+    {
+      "id": 2,
+      "turn": 1,
+      "type": "decision",
+      "proposalId": "farm-access",
+      "description": "Table farm proposal for a real carryover",
+      "result": {
+        "proposalId": "farm-access",
+        "outcome": "tabled"
+      }
+    },
+    {
+      "id": 3,
+      "turn": 1,
+      "type": "offer",
+      "proposalId": "campus-loading",
+      "description": "Spend one earned political favor explicitly",
+      "result": {
+        "proposalId": "campus-loading",
+        "memberId": "weaver",
+        "offer": {
+          "type": "favor"
+        },
+        "capitalSpent": 1,
+        "cashSpentK": 0,
+        "points": 1.8,
+        "notes": [
+          "The pitch did not speak to what they care about",
+          "Political favor, 1 spent (+1.8)"
+        ],
+        "credit": "none"
+      }
+    },
+    {
+      "id": 4,
+      "turn": 1,
+      "type": "decision",
+      "proposalId": "campus-loading",
+      "description": "Call formal council vote on campus motion",
+      "result": {
+        "proposalId": "campus-loading",
+        "outcome": "approved",
+        "funding": "cash",
+        "costK": 270,
+        "votes": {
+          "votes": [
+            {
+              "member": "marsh",
+              "leans": [
+                {
+                  "id": "campus-loading",
+                  "lean": 18
+                }
+              ],
+              "vote": "no"
+            },
+            {
+              "member": "pryor",
+              "leans": [
+                {
+                  "id": "campus-loading",
+                  "lean": 31
+                }
+              ],
+              "vote": "no"
+            },
+            {
+              "member": "okafor",
+              "leans": [
+                {
+                  "id": "campus-loading",
+                  "lean": 72
+                }
+              ],
+              "vote": "campus-loading"
+            },
+            {
+              "member": "brandt",
+              "leans": [
+                {
+                  "id": "campus-loading",
+                  "lean": 63
+                }
+              ],
+              "vote": "campus-loading"
+            },
+            {
+              "member": "weaver",
+              "leans": [
+                {
+                  "id": "campus-loading",
+                  "lean": 61
+                }
+              ],
+              "vote": "campus-loading"
+            }
+          ],
+          "tally": {
+            "no": 2,
+            "campus-loading": 3
+          },
+          "winner": "campus-loading",
+          "options": [
+            "campus-loading"
+          ]
+        },
+        "programRevision": "1a1585a6a2dfa62f076c87f5ab203a68c574ef9b742fe1c922698ee8fcc1cb09"
+      }
+    },
+    {
+      "id": 6,
+      "turn": 2,
+      "type": "offer",
+      "proposalId": "farm-access",
+      "description": "Spend one earned favor for farm access plan",
+      "result": {
+        "proposalId": "farm-access",
+        "memberId": "weaver",
+        "offer": {
+          "type": "favor"
+        },
+        "capitalSpent": 1,
+        "cashSpentK": 0,
+        "points": 1.8,
+        "notes": [
+          "The pitch did not speak to what they care about",
+          "Political favor, 1 spent (+1.8)"
+        ],
+        "credit": "none"
+      }
+    },
+    {
+      "id": 7,
+      "turn": 2,
+      "type": "decision",
+      "proposalId": "farm-access",
+      "description": "Vote carried-over farm plan with explicit bond funding",
+      "result": {
+        "proposalId": "farm-access",
+        "outcome": "approved",
+        "funding": "bond",
+        "costK": 393,
+        "votes": {
+          "votes": [
+            {
+              "member": "marsh",
+              "leans": [
+                {
+                  "id": "farm-access",
+                  "lean": 23
+                }
+              ],
+              "vote": "no"
+            },
+            {
+              "member": "pryor",
+              "leans": [
+                {
+                  "id": "farm-access",
+                  "lean": 27
+                }
+              ],
+              "vote": "no"
+            },
+            {
+              "member": "okafor",
+              "leans": [
+                {
+                  "id": "farm-access",
+                  "lean": 76
+                }
+              ],
+              "vote": "farm-access"
+            },
+            {
+              "member": "brandt",
+              "leans": [
+                {
+                  "id": "farm-access",
+                  "lean": 66
+                }
+              ],
+              "vote": "farm-access"
+            },
+            {
+              "member": "weaver",
+              "leans": [
+                {
+                  "id": "farm-access",
+                  "lean": 61
+                }
+              ],
+              "vote": "farm-access"
+            }
+          ],
+          "tally": {
+            "no": 2,
+            "farm-access": 3
+          },
+          "winner": "farm-access",
+          "options": [
+            "farm-access"
+          ]
+        },
+        "programRevision": "029397b8ad957f8dccada08e72f91921c62671f49d74e6242167cfce556be641"
+      }
+    },
+    {
+      "id": 8,
+      "turn": 2,
+      "type": "grant",
+      "proposalId": "park",
+      "description": "Apply for real park grant and table until next year",
+      "result": {
+        "proposalId": "park",
+        "grant": {
+          "agency": "DCNR community parks grant",
+          "share": 0.5,
+          "odds": 0.6749999999999999
+        },
+        "stage": "tabled"
+      }
+    },
+    {
+      "id": 9,
+      "turn": 2,
+      "type": "offer",
+      "proposalId": "opportunity-2-homes",
+      "description": "Spend one available favor for compact housing",
+      "result": {
+        "proposalId": "opportunity-2-homes",
+        "memberId": "weaver",
+        "offer": {
+          "type": "favor"
+        },
+        "capitalSpent": 1,
+        "cashSpentK": 0,
+        "points": 1.8,
+        "notes": [
+          "The pitch did not speak to what they care about",
+          "Political favor, 1 spent (+1.8)"
+        ],
+        "credit": "none"
+      }
+    },
+    {
+      "id": 10,
+      "turn": 2,
+      "type": "decision",
+      "proposalId": "opportunity-2-homes",
+      "description": "Call year-two housing vote",
+      "result": {
+        "proposalId": "opportunity-2-homes",
+        "outcome": "approved",
+        "funding": "cash",
+        "costK": 140,
+        "votes": {
+          "votes": [
+            {
+              "member": "marsh",
+              "leans": [
+                {
+                  "id": "opportunity-2-homes",
+                  "lean": 15
+                }
+              ],
+              "vote": "no"
+            },
+            {
+              "member": "pryor",
+              "leans": [
+                {
+                  "id": "opportunity-2-homes",
+                  "lean": 37
+                }
+              ],
+              "vote": "no"
+            },
+            {
+              "member": "okafor",
+              "leans": [
+                {
+                  "id": "opportunity-2-homes",
+                  "lean": 66
+                }
+              ],
+              "vote": "opportunity-2-homes"
+            },
+            {
+              "member": "brandt",
+              "leans": [
+                {
+                  "id": "opportunity-2-homes",
+                  "lean": 52
+                }
+              ],
+              "vote": "opportunity-2-homes"
+            },
+            {
+              "member": "weaver",
+              "leans": [
+                {
+                  "id": "opportunity-2-homes",
+                  "lean": 63
+                }
+              ],
+              "vote": "opportunity-2-homes"
+            }
+          ],
+          "tally": {
+            "no": 2,
+            "opportunity-2-homes": 3
+          },
+          "winner": "opportunity-2-homes",
+          "options": [
+            "opportunity-2-homes"
+          ]
+        },
+        "programRevision": "f2b380dc3f8478ce28305e8507bf7214b3dc711e96b67eef1e82935a6618f5f8"
+      }
+    },
+    {
+      "id": 12,
+      "turn": 3,
+      "type": "decision",
+      "proposalId": "park",
+      "description": "Call park vote with existing 4-1 majority, no favor",
+      "result": {
+        "proposalId": "park",
+        "outcome": "approved",
+        "funding": "cash",
+        "costK": 305,
+        "votes": {
+          "votes": [
+            {
+              "member": "marsh",
+              "leans": [
+                {
+                  "id": "park",
+                  "lean": 29
+                }
+              ],
+              "vote": "no"
+            },
+            {
+              "member": "pryor",
+              "leans": [
+                {
+                  "id": "park",
+                  "lean": 59
+                }
+              ],
+              "vote": "park"
+            },
+            {
+              "member": "okafor",
+              "leans": [
+                {
+                  "id": "park",
+                  "lean": 100
+                }
+              ],
+              "vote": "park"
+            },
+            {
+              "member": "brandt",
+              "leans": [
+                {
+                  "id": "park",
+                  "lean": 79
+                }
+              ],
+              "vote": "park"
+            },
+            {
+              "member": "weaver",
+              "leans": [
+                {
+                  "id": "park",
+                  "lean": 74
+                }
+              ],
+              "vote": "park"
+            }
+          ],
+          "tally": {
+            "no": 1,
+            "park": 4
+          },
+          "winner": "park",
+          "options": [
+            "park"
+          ]
+        },
+        "programRevision": "272799818a0d0382167a766cdcd0600b2e8f2d15454af55974be3f1f6d623480"
+      }
+    },
+    {
+      "id": 14,
+      "turn": 4,
+      "type": "offer",
+      "proposalId": "opportunity-4-local-services",
+      "description": "Spend one available political favor for services",
+      "result": {
+        "proposalId": "opportunity-4-local-services",
+        "memberId": "weaver",
+        "offer": {
+          "type": "favor"
+        },
+        "capitalSpent": 1,
+        "cashSpentK": 0,
+        "points": 1.8,
+        "notes": [
+          "The pitch did not speak to what they care about",
+          "Political favor, 1 spent (+1.8)"
+        ],
+        "credit": "none"
+      }
+    },
+    {
+      "id": 15,
+      "turn": 4,
+      "type": "decision",
+      "proposalId": "opportunity-4-local-services",
+      "description": "Call fourth-year services vote",
+      "result": {
+        "proposalId": "opportunity-4-local-services",
+        "outcome": "approved",
+        "funding": "cash",
+        "costK": 142,
+        "votes": {
+          "votes": [
+            {
+              "member": "marsh",
+              "leans": [
+                {
+                  "id": "opportunity-4-local-services",
+                  "lean": 20
+                }
+              ],
+              "vote": "no"
+            },
+            {
+              "member": "pryor",
+              "leans": [
+                {
+                  "id": "opportunity-4-local-services",
+                  "lean": 37
+                }
+              ],
+              "vote": "no"
+            },
+            {
+              "member": "okafor",
+              "leans": [
+                {
+                  "id": "opportunity-4-local-services",
+                  "lean": 66
+                }
+              ],
+              "vote": "opportunity-4-local-services"
+            },
+            {
+              "member": "brandt",
+              "leans": [
+                {
+                  "id": "opportunity-4-local-services",
+                  "lean": 60
+                }
+              ],
+              "vote": "opportunity-4-local-services"
+            },
+            {
+              "member": "weaver",
+              "leans": [
+                {
+                  "id": "opportunity-4-local-services",
+                  "lean": 64
+                }
+              ],
+              "vote": "opportunity-4-local-services"
+            }
+          ],
+          "tally": {
+            "no": 2,
+            "opportunity-4-local-services": 3
+          },
+          "winner": "opportunity-4-local-services",
+          "options": [
+            "opportunity-4-local-services"
+          ]
+        },
+        "programRevision": "2476884b38887cea4c92b6f55f6019a4d23cf7dc6b9cf1d99bebe3f977d6ca75"
+      }
+    },
+    {
+      "id": 17,
+      "turn": 5,
+      "type": "decision",
+      "proposalId": "opportunity-5-homes",
+      "description": "Call real year-five opportunity vote, no favor needed",
+      "result": {
+        "proposalId": "opportunity-5-homes",
+        "outcome": "approved",
+        "funding": "cash",
+        "costK": 140,
+        "votes": {
+          "votes": [
+            {
+              "member": "marsh",
+              "leans": [
+                {
+                  "id": "opportunity-5-homes",
+                  "lean": 15
+                }
+              ],
+              "vote": "no"
+            },
+            {
+              "member": "pryor",
+              "leans": [
+                {
+                  "id": "opportunity-5-homes",
+                  "lean": 37
+                }
+              ],
+              "vote": "no"
+            },
+            {
+              "member": "okafor",
+              "leans": [
+                {
+                  "id": "opportunity-5-homes",
+                  "lean": 66
+                }
+              ],
+              "vote": "opportunity-5-homes"
+            },
+            {
+              "member": "brandt",
+              "leans": [
+                {
+                  "id": "opportunity-5-homes",
+                  "lean": 52
+                }
+              ],
+              "vote": "opportunity-5-homes"
+            },
+            {
+              "member": "weaver",
+              "leans": [
+                {
+                  "id": "opportunity-5-homes",
+                  "lean": 51
+                }
+              ],
+              "vote": "opportunity-5-homes"
+            }
+          ],
+          "tally": {
+            "no": 2,
+            "opportunity-5-homes": 3
+          },
+          "winner": "opportunity-5-homes",
+          "options": [
+            "opportunity-5-homes"
+          ]
+        },
+        "programRevision": "8c85031ad25b6fe63d70c5d38355f6a02e03748e9b23609ede09b398c42c866c"
+      }
+    }
+  ],
+  "laterOpportunity": {
+    "id": "opportunity-5-homes",
+    "reason": "Housing capacity and current population indicate room for compact infill.",
+    "plots": [
+      [
+        6,
+        0
+      ]
+    ],
+    "approvedRevision": "8c85031ad25b6fe63d70c5d38355f6a02e03748e9b23609ede09b398c42c866c",
+    "deliveredRevision": "8c85031ad25b6fe63d70c5d38355f6a02e03748e9b23609ede09b398c42c866c",
+    "approvedProgramEqualsDelivered": true,
+    "approvedLayoutEqualsDelivered": true,
+    "deliveredTurn": 5
+  }
+}

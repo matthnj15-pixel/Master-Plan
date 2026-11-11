@@ -1,0 +1,332 @@
+{
+  "candidate": "E",
+  "sha": "09f924bb305999932e8b74383f9d3f759f95895c",
+  "contractRevision": "781a2491330e86cca15281437edc9ac3074a26e3",
+  "disposition": "ready",
+  "requestedGate": "experimental Dev integration",
+  "gateDispositions": {
+    "experimentalDev": "ready: no known independently fixable source blockers",
+    "AIReady": "pending verification: live Qwen, real cached offline-model/Duo and real Claude/account host not verified",
+    "stableComposition": "flag remains off; build/compatibility verified, release approval not claimed"
+  },
+  "criteriaCounts": {
+    "PASS": 32,
+    "FAIL": 0,
+    "UNVERIFIED": 2
+  },
+  "criteria": [
+    {
+      "id": "G1.1",
+      "status": "PASS",
+      "evidence": "Typed browser mock lifecycles retain exact ordered sites, original intent, private state and annual initiative availability."
+    },
+    {
+      "id": "G1.2",
+      "status": "PASS",
+      "evidence": "Generic multi-component schema, scale, sharing and operating conditions; malformed identities and cumulative policy validation now reject safely."
+    },
+    {
+      "id": "G1.3",
+      "status": "PASS",
+      "evidence": "C legacy park editor shows four exact ordered plots at 400/669 before preview and after reload; exhibit matches. Public bytes unchanged. Composed renderer/map implementation is unchanged from B."
+    },
+    {
+      "id": "G1.4",
+      "status": "PASS",
+      "evidence": "Engine conservation/sharing, occupied-site demolition and retention checks pass; unsupported active-space reuse is disclosed."
+    },
+    {
+      "id": "G1.5",
+      "status": "PASS",
+      "evidence": "All 12 corpus cases pass at the code/browser-fixture boundary, including clarification and unsupported/capacity handling; actual live interpretation remains X1."
+    },
+    {
+      "id": "G1.6",
+      "status": "PASS",
+      "evidence": "Accepted A data-only extension lifecycle retained. C detached interpretation reproduces the identical initial revision/layout/$275K cost and supports its delivered save. No long browser lifecycle repeated."
+    },
+    {
+      "id": "G1.7",
+      "status": "PASS",
+      "evidence": "Independent frozen-catalog corpus and three uncatalogued typed browser mock lifecycles pass; this establishes the shared pipeline, not live-model generalization."
+    },
+    {
+      "id": "G2.1",
+      "status": "PASS",
+      "evidence": "Three typed additive/reductive edits in three actual browser mock lifecycles preserve site, unrelated components and synchronized forecasts."
+    },
+    {
+      "id": "G2.2",
+      "status": "PASS",
+      "evidence": "QA alternatives round trips and reviewer comparison/reload identify the baseline without consuming a public action."
+    },
+    {
+      "id": "G2.3",
+      "status": "PASS",
+      "evidence": "Requested previews precede resident responses. Farm counter/confirmation and named campus stakeholder views pass."
+    },
+    {
+      "id": "G2.4",
+      "status": "PASS",
+      "evidence": "Independent C browser checks retain quantity 999, full original/edit text and changed four-plot site across close/reload at both widths; last accepted preview stays separate, posting requires valid re-preview, and explicit version selection restores the former site."
+    },
+    {
+      "id": "G2.5",
+      "status": "PASS",
+      "evidence": "C typed lifecycle/working-input checks preserve accepted baseline versus pending edits. B numerical comparison and after-reload delta evidence is carried with source comparison; coefficient/render/workspace sources are unchanged."
+    },
+    {
+      "id": "G2.6",
+      "status": "PASS",
+      "evidence": "Four drafts/eight versions/128KiB capacity and explicit no-eviction handling pass storage fixtures and QA. Structurally malformed private recovery now reports unavailable while retaining bytes/live text/site."
+    },
+    {
+      "id": "G3.1",
+      "status": "PASS",
+      "evidence": "Five browser persona/council cases include farm agree/counter/refuse and concrete campus objections."
+    },
+    {
+      "id": "G3.2",
+      "status": "PASS",
+      "evidence": "The controlling freight operator agrees while the named college stakeholder counters the campus-entrance loading conflict; both are displayed."
+    },
+    {
+      "id": "G3.3",
+      "status": "PASS",
+      "evidence": "Farm concession is previewed, explicitly confirmed and re-evaluated; route changes affect engine costs and actor evaluations."
+    },
+    {
+      "id": "G3.4",
+      "status": "PASS",
+      "evidence": "One controlling authorizer and prerequisite checks remain engine-owned. Inherited route IDs and malformed presenter/member identities reject."
+    },
+    {
+      "id": "G3.5",
+      "status": "PASS",
+      "evidence": "Unchanged A-engine receipt-pruned reproduction passes on C and D: same fact earns none/claim_repeated. E engine is byte-identical to D. Authentic historical provenance and conservative fallback scoring remain correct; the fallback diagnostic reason is now retained."
+    },
+    {
+      "id": "G3.6",
+      "status": "PASS",
+      "evidence": "Actual saved persuasion receipts govern reactions. Wrong/member/missing/pruned/stale receipts and retries are covered without a second score."
+    },
+    {
+      "id": "G3.7",
+      "status": "PASS",
+      "evidence": "Explicit favors/earmarks/funding/votes and existing per-member caps remain intact; historical repeated-fact eligibility is failed separately under G3.5."
+    },
+    {
+      "id": "G4.1",
+      "status": "PASS",
+      "evidence": "Real engine/store post and native-lock browser races consume the initiative once; failed actions preserve durable state."
+    },
+    {
+      "id": "G4.2",
+      "status": "PASS",
+      "evidence": "Valid-state vote/funding eligibility and all eight real-browser shared-storage/native-Web-Locks interleavings pass. Corrupt save admission is failed under X4."
+    },
+    {
+      "id": "G4.3",
+      "status": "PASS",
+      "evidence": "Approved program/layout/conditions/revision survive pending/built/reload. New legacy delivery records retain plan/site/revision/decision; actual cost, upkeep and replay pass."
+    },
+    {
+      "id": "G4.4",
+      "status": "PASS",
+      "evidence": "Three browser mock lifecycles retain delivered geometry and reports. Legacy record/UI now show built, actual cost/upkeep, and mayoral approval without a fictitious council vote."
+    },
+    {
+      "id": "G4.5",
+      "status": "PASS",
+      "evidence": "Actual cash-approved legacy bridge record reaches bounded context with kind/plan and source identity. Seven inconsistent archives reject; legacy/composed copies share a combined limit of three without repricing historical land or granting present authority."
+    },
+    {
+      "id": "G4.6",
+      "status": "PASS",
+      "evidence": "D independent compact/outward/preservation paths each complete 12 normal-rule engine/store years with traceable outcome/opportunity divergence. E engine is byte-identical; the same results carry forward."
+    },
+    {
+      "id": "G4.7",
+      "status": "PASS",
+      "evidence": "Accepted A normal first-term/election/later-opportunity browser evidence is retained with B progression/three 12-year path and affected-flow checks. No forced loss continuation or resource gifts."
+    },
+    {
+      "id": "X1",
+      "status": "UNVERIFIED",
+      "evidence": "Live Qwen is blocked by measured shader-f16 capability. Zero real-model generation acceptance; all provider substitutes are labeled."
+    },
+    {
+      "id": "X2",
+      "status": "UNVERIFIED",
+      "evidence": "Cached offline/failure recovery browser mocks pass; actual model-cache inference and physical Duo airplane-mode operation remain unverified."
+    },
+    {
+      "id": "X3",
+      "status": "PASS",
+      "evidence": "C browser touch emulation at 400x951 and 669x951 covers pinned primary actions, scrolling, controls, fit and affected views. Physical device behavior is not inferred."
+    },
+    {
+      "id": "X4",
+      "status": "PASS",
+      "evidence": "D closes nested layout/grid admission: 44 independent corrupted saves reject with bytes preserved on both flags; seven actual controlled account imports reject without replacement. Six valid-save cases and actual A delivered-extension import/render pass. Real account host remains unverified."
+    },
+    {
+      "id": "X5",
+      "status": "PASS",
+      "evidence": "E actual engine/runner/prepared-export reproduction retains claim_history_unresolved while preserving no-credit scoring. Five independent exclusion cases drop arbitrary codes, suffixed codes, unknown rule IDs and private text. Prior exact validator reasons, retention and date-range checks carry forward unchanged."
+    },
+    {
+      "id": "X6",
+      "status": "PASS",
+      "evidence": "Deterministic engine owns all outcomes and now compares saved layouts to pure canonical geometry without repricing historical sites. Consumed grid metadata is validated before load/render/account admission."
+    },
+    {
+      "id": "X7",
+      "status": "PASS",
+      "evidence": "E full SHA and all 22 source/build hashes match. Fifteen manifest sources are byte-identical to D; the sole product change is one fixed diagnostic result-code entry. Prior evidence retains original revisions/types; live/device/host omissions remain explicit."
+    }
+  ],
+  "blockingFindings": [],
+  "noKnownIndependentlyFixableSourceBlockers": true,
+  "closureChecks": [
+    {
+      "id": "R1",
+      "status": "FIXED",
+      "subject": "Malformed capability/component identities",
+      "evidence": "B focused and independent probes; unchanged path"
+    },
+    {
+      "id": "R2",
+      "status": "FIXED",
+      "subject": "Presenter/member own identities and membership",
+      "evidence": "B independent probes; later focused suites"
+    },
+    {
+      "id": "R3",
+      "status": "FIXED",
+      "subject": "Legacy/current save structure, nested display, canonical layouts and consumed grid metadata",
+      "evidence": "D geometry-probe.json: 44 rejection cases across both flags; six positive cases; actual local/account browser admission; E engine/workspace/UI/renderer hashes identical"
+    },
+    {
+      "id": "R4",
+      "status": "FIXED",
+      "subject": "Cosmetic-repeat and supported A receipt-pruned credit",
+      "evidence": "C/D unchanged original A reproduction and authentic fixture/conservative migration tests; E engine hash identical"
+    },
+    {
+      "id": "R5",
+      "status": "FIXED",
+      "subject": "Inherited loading routes",
+      "evidence": "Own-route helper across preview/effects/resident; positive and negative tests pass"
+    },
+    {
+      "id": "R6",
+      "status": "FIXED",
+      "subject": "Protected feature-off town display",
+      "evidence": "B/C protected landing and D protected-layout-browser.json both flags; E UI/workspace hashes identical"
+    },
+    {
+      "id": "R7",
+      "status": "FIXED",
+      "subject": "Named stakeholder views versus one controlling authorizer",
+      "evidence": "C/D persona browser evidence and unchanged E UI/provider"
+    },
+    {
+      "id": "R8",
+      "status": "FIXED",
+      "subject": "Cumulative and recurring policy capacity",
+      "evidence": "Engine program sum guard and active-program guard; normal 12-year paths; unchanged E engine"
+    },
+    {
+      "id": "R9",
+      "status": "FIXED",
+      "subject": "Verified composed and legacy project history",
+      "evidence": "C history-consistency.json: actual bridge, seven inconsistent-source negatives and one combined three-entry budget; unchanged E provider/helper"
+    },
+    {
+      "id": "R10",
+      "status": "FIXED",
+      "subject": "Malformed private shape and pending-working versus accepted recovery",
+      "evidence": "C both-width normal input/reload cycles and D pending recovery; E UI/workspace hashes identical"
+    },
+    {
+      "id": "R11",
+      "status": "FIXED",
+      "subject": "Precise sanitized validator and historical-credit reasons",
+      "evidence": "B density/site reasons retained; E real engine/runner/export reproducer and arbitrary-code/privacy exclusion pass"
+    },
+    {
+      "id": "SUST-A-02",
+      "status": "FIXED",
+      "subject": "Legacy editor exact ordered four-plot site",
+      "evidence": "C both-width initial/preview/cancel/reload proof and D affected QA; unchanged E UI"
+    },
+    {
+      "id": "Legacy delivery stage",
+      "status": "FIXED",
+      "subject": "Approved snapshot, built record, actual cost/upkeep/effects/report/decision",
+      "evidence": "C/D engine and browser history evidence; replay does not redeliver; E engine hash identical"
+    }
+  ],
+  "validation": {
+    "manifest": "22/22 source/build hashes match",
+    "EIndependentFocused": {
+      "total": 58,
+      "pass": 57,
+      "fail": 0,
+      "skip": 1,
+      "skipReason": "Optional actual pinned runtime source audit not enabled in this focused run; it passes in the full suite."
+    },
+    "ECoordinatorFullSuite": {
+      "total": 248,
+      "pass": 248,
+      "fail": 0,
+      "skip": 0,
+      "durationSeconds": 142.4,
+      "trace": "62 requirements, 55 accepted, 48 test-verified, 7 play-test; pass",
+      "pinnedRuntimeAudit": "enabled; actual pinned source test passes"
+    },
+    "EAffectedReproduction": "Actual engine + actual composition runner + actual diagnostic prepared export, with constant provider claim mock; fixed reason retained, credit remains none",
+    "EArbitraryCodeExclusion": "Five exact/suffixed/arbitrary/prototype-shaped input cases; only the fixed allowlisted code survives, private text and unknown rule IDs excluded"
+  },
+  "sourceComparison": {
+    "previousSHA": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d",
+    "reviewedSHA": "09f924bb305999932e8b74383f9d3f759f95895c",
+    "unchangedFiles": [
+      "flags.json",
+      "scripts/build.mjs",
+      "scripts/trace.mjs",
+      "src/composition-requests.js",
+      "src/engine.js",
+      "src/fonts/OFL.txt",
+      "src/fonts/host-grotesk-latin.woff2",
+      "src/index.html",
+      "src/offline-ai.js",
+      "src/offline-worker.js",
+      "src/package.json",
+      "src/plan-renderer.js",
+      "src/plan-requests.js",
+      "src/ui.js",
+      "src/workspace.js"
+    ],
+    "changedFiles": [
+      "src/qwen-diagnostics.js"
+    ]
+  },
+  "carryForward": {
+    "D": "Geometry/grid validation, valid A/current/legacy saves, actual load/account/renderer checks, progression, races and typed gameplay evidence; E engine/UI/provider/workspace/renderer/flags/build/trace sources match D exactly.",
+    "C": "Both-width pending control/text/site recovery and legacy ordered four-plot editor; verified bounded legacy/composed history; old-credit reproduction.",
+    "B": "Frozen twelve-case corpus and broader prior review evidence, with C/D affected retests.",
+    "A": "Accepted data-only trusted definition extension with preserved content.diff and full browser lifecycle, plus ordinary first-term/election/later-opportunity sustained browser evidence. Never relabeled as a new E or live-model run."
+  },
+  "externalGates": {
+    "X1": "UNVERIFIED: live Qwen actual drafting/revision/council generation blocked by measured shader-f16 capability",
+    "X2": "UNVERIFIED: physical Duo absent; actual real-model cached offline/airplane-mode inference not verified",
+    "ClaudeArtifactAccountHost": "UNVERIFIED: controlled local account callbacks only; no real external host writes/acceptance"
+  },
+  "remainingWorkflow": "Coordinator owns final docs/CI/merge/deploy verification; this report makes no merged/deployed or physical-device claim.",
+  "productSourceReadOnly": true,
+  "externalAccountWrites": false,
+  "browserCleanup": "D contexts/browser/loopback server closed; no E browser session required for this diagnostic-only entry",
+  "recordedUTC": "2026-11-11T03:45:11.288568+00:00"
+}

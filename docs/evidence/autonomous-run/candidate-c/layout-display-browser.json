@@ -1,0 +1,9 @@
+{
+  "protectedLanding": 0,
+  "errors": [
+    "TypeError: Cannot convert object to primitive value"
+  ],
+  "bytesPreserved": true,
+  "renderedProposal": 0,
+  "field": "farm-access.layout.allocations[0].label"
+}

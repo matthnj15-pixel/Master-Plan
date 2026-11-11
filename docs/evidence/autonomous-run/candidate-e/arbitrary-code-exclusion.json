@@ -1,0 +1,187 @@
+{
+  "sha": "09f924bb305999932e8b74383f9d3f759f95895c",
+  "allPassed": true,
+  "results": [
+    {
+      "inputIndex": 0,
+      "retainedCode": "claim_history_unresolved",
+      "unknownRuleExcluded": true
+    },
+    {
+      "inputIndex": 1,
+      "retainedCode": null,
+      "unknownRuleExcluded": true
+    },
+    {
+      "inputIndex": 2,
+      "retainedCode": null,
+      "unknownRuleExcluded": true
+    },
+    {
+      "inputIndex": 3,
+      "retainedCode": null,
+      "unknownRuleExcluded": true
+    },
+    {
+      "inputIndex": 4,
+      "retainedCode": null,
+      "unknownRuleExcluded": true
+    }
+  ],
+  "privateContentExcluded": true,
+  "document": {
+    "schemaVersion": 1,
+    "exportedAt": "2026-11-11T03:41:36.649Z",
+    "selectedDates": {
+      "from": "2026-11-11",
+      "through": "2026-11-11",
+      "inclusive": true
+    },
+    "timezone": "UTC",
+    "boundaries": {
+      "startUtc": "2026-11-11T00:00:00.000Z",
+      "endExclusiveUtc": "2026-11-12T00:00:00.000Z",
+      "startOffsetMinutes": 0,
+      "endOffsetMinutes": 0
+    },
+    "retention": {
+      "hours": 168,
+      "cutoffUtc": "2026-11-04T03:41:36.649Z",
+      "throughUtc": "2026-11-11T03:41:36.649Z",
+      "maxEvents": 1000,
+      "maxEncodedBytes": 1048576,
+      "encodedBytes": 2490,
+      "capacityTrimmedEvents": 0
+    },
+    "availableDateRange": {
+      "oldest": "2026-11-11",
+      "newest": "2026-11-11"
+    },
+    "retainedEventCount": 5,
+    "eventCount": 5,
+    "attempts": [],
+    "events": [
+      {
+        "id": "e2fdb13e-a57e-4e22-9b55-be06be41c982",
+        "timestamp": "2026-11-11T03:41:36.596Z",
+        "sessionId": "a6fa22db-a7b7-4c50-a4ec-bf47b10eae9d",
+        "sequence": 1,
+        "channel": "dev",
+        "build": "0.6.0-dev",
+        "revision": "09f924bb305999932e8b74383f9d3f759f95895c",
+        "name": "composition.validation",
+        "outcome": "valid",
+        "context": {
+          "launchMode": "browser",
+          "network": {
+            "online": null,
+            "source": "navigator.onLine",
+            "interpretation": "observation"
+          },
+          "serviceWorkerControlled": false
+        },
+        "metadata": {
+          "task": "claims",
+          "resultCode": "claim_history_unresolved",
+          "stage": "validation"
+        }
+      },
+      {
+        "id": "dd21fca9-8260-4fc8-ae9f-6474f097d045",
+        "timestamp": "2026-11-11T03:41:36.600Z",
+        "sessionId": "a6fa22db-a7b7-4c50-a4ec-bf47b10eae9d",
+        "sequence": 2,
+        "channel": "dev",
+        "build": "0.6.0-dev",
+        "revision": "09f924bb305999932e8b74383f9d3f759f95895c",
+        "name": "composition.validation",
+        "outcome": "valid",
+        "context": {
+          "launchMode": "browser",
+          "network": {
+            "online": null,
+            "source": "navigator.onLine",
+            "interpretation": "observation"
+          },
+          "serviceWorkerControlled": false
+        },
+        "metadata": {
+          "task": "claims",
+          "stage": "validation"
+        }
+      },
+      {
+        "id": "0d48fa8b-1170-4a7b-91e1-08dc4eddaf40",
+        "timestamp": "2026-11-11T03:41:36.622Z",
+        "sessionId": "a6fa22db-a7b7-4c50-a4ec-bf47b10eae9d",
+        "sequence": 3,
+        "channel": "dev",
+        "build": "0.6.0-dev",
+        "revision": "09f924bb305999932e8b74383f9d3f759f95895c",
+        "name": "composition.validation",
+        "outcome": "valid",
+        "context": {
+          "launchMode": "browser",
+          "network": {
+            "online": null,
+            "source": "navigator.onLine",
+            "interpretation": "observation"
+          },
+          "serviceWorkerControlled": false
+        },
+        "metadata": {
+          "task": "claims",
+          "stage": "validation"
+        }
+      },
+      {
+        "id": "294d2698-bf51-49a4-9635-9c2101696bb8",
+        "timestamp": "2026-11-11T03:41:36.623Z",
+        "sessionId": "a6fa22db-a7b7-4c50-a4ec-bf47b10eae9d",
+        "sequence": 4,
+        "channel": "dev",
+        "build": "0.6.0-dev",
+        "revision": "09f924bb305999932e8b74383f9d3f759f95895c",
+        "name": "composition.validation",
+        "outcome": "valid",
+        "context": {
+          "launchMode": "browser",
+          "network": {
+            "online": null,
+            "source": "navigator.onLine",
+            "interpretation": "observation"
+          },
+          "serviceWorkerControlled": false
+        },
+        "metadata": {
+          "task": "claims",
+          "stage": "validation"
+        }
+      },
+      {
+        "id": "58c6a5e8-6797-4eb8-b6f9-a03f59906559",
+        "timestamp": "2026-11-11T03:41:36.624Z",
+        "sessionId": "a6fa22db-a7b7-4c50-a4ec-bf47b10eae9d",
+        "sequence": 5,
+        "channel": "dev",
+        "build": "0.6.0-dev",
+        "revision": "09f924bb305999932e8b74383f9d3f759f95895c",
+        "name": "composition.validation",
+        "outcome": "valid",
+        "context": {
+          "launchMode": "browser",
+          "network": {
+            "online": null,
+            "source": "navigator.onLine",
+            "interpretation": "observation"
+          },
+          "serviceWorkerControlled": false
+        },
+        "metadata": {
+          "task": "claims",
+          "stage": "validation"
+        }
+      }
+    ]
+  }
+}

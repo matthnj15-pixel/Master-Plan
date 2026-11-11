@@ -87,3 +87,12 @@ Decisions Nate made, with the date. New decisions go at the bottom.
 - Independent browser fixtures, live WebLLM, deployed checks and physical Duo
   evidence are reported separately. No AI-ready verdict without real Qwen.
   Dev integration is authorized after green checks; Stable remains Nate's gate.
+- Historical factual credit survives action-receipt pruning. New earned facts
+  carry a version marker and are retained independently of the bounded replay
+  ledger. Older facts are matched through verified recorded revisions or an
+  original retained persuasion receipt. If that provenance is unavailable,
+  migration records a conservative policy and awards no uncertain new credit;
+  existing relationships, points and original receipts remain intact. The
+  result identifies unresolved history rather than treating a truthful claim
+  as false. An unchanged earlier-engine save generated through 65 authorized
+  title revisions supplies the portable regression fixture.

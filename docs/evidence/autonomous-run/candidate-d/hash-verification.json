@@ -1,0 +1,134 @@
+[
+  {
+    "type": "source",
+    "file": "flags.json",
+    "hash": "0980b7a3c4005aceac1f64739236a7591d5a20fb8cd1342398f2c467d6b2a76d",
+    "ok": true
+  },
+  {
+    "type": "source",
+    "file": "scripts/build.mjs",
+    "hash": "f5bcbe87038a8bceabcc5c39f2202ba33f62378914d8c010de676597491498f0",
+    "ok": true
+  },
+  {
+    "type": "source",
+    "file": "scripts/trace.mjs",
+    "hash": "e0264db2ec5905fcdefc13cbc83558fb9423200e4b645c479ac0d62d3bdb5e92",
+    "ok": true
+  },
+  {
+    "type": "source",
+    "file": "src/composition-requests.js",
+    "hash": "7faff5e03d715cb9faa38b1aa4013b65ce134260aea2167de9d403c5fb7e683c",
+    "ok": true
+  },
+  {
+    "type": "source",
+    "file": "src/engine.js",
+    "hash": "23698a9c9e9541b29154875295e971a623b45bcd8f58a25036c56f9bcf0fdb21",
+    "ok": true
+  },
+  {
+    "type": "source",
+    "file": "src/fonts/OFL.txt",
+    "hash": "567af61acf3c9f93aea10185a7a06ebb3e010d35bdee19b7c7b73f9b9e7e21f7",
+    "ok": true
+  },
+  {
+    "type": "source",
+    "file": "src/fonts/host-grotesk-latin.woff2",
+    "hash": "ce9c9db8a488852eb7e4a52f51fd8ce0c93ef61a8d3bfa054b509ec92958dcfe",
+    "ok": true
+  },
+  {
+    "type": "source",
+    "file": "src/index.html",
+    "hash": "7c578f0a65f17fd3c5db4d8fd26a928cc15c34879736a97b66290e0d36fb0090",
+    "ok": true
+  },
+  {
+    "type": "source",
+    "file": "src/offline-ai.js",
+    "hash": "88267cf985e46b6f8fb8c2a5d2972e0f78edf0d7cd18e85c88a705ca9ad00bf9",
+    "ok": true
+  },
+  {
+    "type": "source",
+    "file": "src/offline-worker.js",
+    "hash": "4319e857bb33006c38f6425ddfaa782d37a34e535bbf314412e6540d608ffe04",
+    "ok": true
+  },
+  {
+    "type": "source",
+    "file": "src/package.json",
+    "hash": "d18f120db5a99372058690f86a1332484253e3cdbdbddbc0f5effa6a392b26e0",
+    "ok": true
+  },
+  {
+    "type": "source",
+    "file": "src/plan-renderer.js",
+    "hash": "0096dbc35f8755f9047415ab1ac94a74970098a94c63b01f6421b90fb98ca979",
+    "ok": true
+  },
+  {
+    "type": "source",
+    "file": "src/plan-requests.js",
+    "hash": "25bcb5d8bf7d39c585e1c252779637b13fe29bed84d757c7ed27d5dae0b7fea4",
+    "ok": true
+  },
+  {
+    "type": "source",
+    "file": "src/qwen-diagnostics.js",
+    "hash": "5d94205c63dafdddae21f65198c376dd8d838a09b4ec829accdd91c8d01f91c6",
+    "ok": true
+  },
+  {
+    "type": "source",
+    "file": "src/ui.js",
+    "hash": "17c79093d9afb88d23df401fe8c4584945738cc334ea3ce508a7f7d434a3666e",
+    "ok": true
+  },
+  {
+    "type": "source",
+    "file": "src/workspace.js",
+    "hash": "660c0fcea98c3f9468ebab3a6a1fa650def761e2e2c65fc9fff49bf625785f7e",
+    "ok": true
+  },
+  {
+    "type": "dev",
+    "file": "offline-ai.js",
+    "hash": "88267cf985e46b6f8fb8c2a5d2972e0f78edf0d7cd18e85c88a705ca9ad00bf9",
+    "ok": true
+  },
+  {
+    "type": "dev",
+    "file": "master-plan.html",
+    "hash": "78e98c3a6a6457e064724f81622bd4e82e46946d4bf566a35132228dedfb0bde",
+    "ok": true
+  },
+  {
+    "type": "dev",
+    "file": "offline-worker.js",
+    "hash": "a19e76cf949755fdfb19cabea5d976498841e8586729b5ece49fd6dcee0a352b",
+    "ok": true
+  },
+  {
+    "type": "dev",
+    "file": "index.html",
+    "hash": "f9c2ccd5d0201f72f4b07d5b4e6b34d6151ee86df6294b64597613c1c71b01a6",
+    "ok": true
+  },
+  {
+    "type": "stable",
+    "file": "master-plan.html",
+    "hash": "f99fce665bc403fe826a84e2d31d8761aa9b8d12b7fa1b797dc05a5712032d84",
+    "ok": true
+  },
+  {
+    "type": "stable",
+    "file": "index.html",
+    "hash": "d7a98b6d5eabbf00046a3289065a591da7f6c61b16689c47c455f6cace8147c2",
+    "ok": true
+  }
+]

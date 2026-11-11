@@ -1,0 +1,31 @@
+{
+  "sha": "35461a0acc6a21c723d97d90509bb1e8adb0cf49",
+  "disposition": "needs revision",
+  "findings": [
+    {
+      "id": "R3-LAYOUT-DISPLAY",
+      "severity": "P1",
+      "owner": "engine save validator",
+      "criteria": [
+        "X4",
+        "X6"
+      ],
+      "source": "src/engine.js validateSave project layout branch",
+      "reproduction": "Create a normal composition-enabled seed-31 v4 town. Take the first p with p.program. Set p.layout.allocations[0].label, role, componentId or sharedWith to JSON object {toString:null,valueOf:null}. Each variation is accepted by E.isSupportedSave(s), then actual PLAN_RENDERER.render({state:s,proposal:p,engine:E}) throws TypeError: Cannot convert object to primitive value.",
+      "evidence": "layout-display-probe.json",
+      "amendment": "Validate the scalar layout fields consumed by display/property lookup, plus the corresponding persisted cell/strip fields, before store/account admission. Reject with a closed reason and preserve input bytes. Cover valid layouts and both flag paths. Product source remains read-only in this review."
+    },
+    {
+      "id": "R11-HISTORY-REASON",
+      "severity": "P2",
+      "owner": "diagnostic closed result-code allowlist",
+      "criteria": [
+        "X5"
+      ],
+      "source": "src/qwen-diagnostics.js resultCodes; src/composition-requests.js claims logging",
+      "reproduction": "Use the authentic A pruned-credit fixture with projectRecords absent; C migrates conservatively. Run actual COMPOSITION_REQUESTS claims with a constant original-claim mock and actual diagnostics. Engine evaluation returns none/claim_history_unresolved, but prepared export drops that code and retains valid/none events.",
+      "evidence": "claim-history-diagnostics.json",
+      "amendment": "Add the exact fixed claim_history_unresolved code to the closed diagnostic allowlist and verify sanitized export. Preserve rejection of arbitrary text."
+    }
+  ]
+}

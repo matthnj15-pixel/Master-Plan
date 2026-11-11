@@ -1,0 +1,276 @@
+{
+  "observed": {
+    "status": "ready",
+    "credit": "none",
+    "engineCode": "claim_history_unresolved",
+    "validationEvents": [
+      {
+        "id": "52f0ae02-d734-4fe6-8ddb-e11d5486a507",
+        "timestamp": "2026-11-11T03:29:14.816Z",
+        "sessionId": "2c1e23b0-348e-4a71-bd98-a806f2923146",
+        "sequence": 3,
+        "channel": "dev",
+        "build": "0.6.0-dev",
+        "revision": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d",
+        "name": "composition.validation",
+        "outcome": "valid",
+        "context": {
+          "launchMode": "browser",
+          "network": {
+            "online": null,
+            "source": "navigator.onLine",
+            "interpretation": "observation"
+          },
+          "serviceWorkerControlled": false
+        },
+        "metadata": {
+          "requestId": "e01878cd-532a-4a7f-8b55-d517c589c1a2",
+          "action": "claims",
+          "task": "claims",
+          "contractVersion": "C2.1",
+          "fieldId": "value",
+          "stage": "validation",
+          "attempt": 1,
+          "claimCount": 1
+        }
+      },
+      {
+        "id": "c5a9ba71-076f-4a28-ab10-764c174fd568",
+        "timestamp": "2026-11-11T03:29:14.816Z",
+        "sessionId": "2c1e23b0-348e-4a71-bd98-a806f2923146",
+        "sequence": 4,
+        "channel": "dev",
+        "build": "0.6.0-dev",
+        "revision": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d",
+        "name": "composition.validation",
+        "outcome": "valid",
+        "context": {
+          "launchMode": "browser",
+          "network": {
+            "online": null,
+            "source": "navigator.onLine",
+            "interpretation": "observation"
+          },
+          "serviceWorkerControlled": false
+        },
+        "metadata": {
+          "requestId": "e01878cd-532a-4a7f-8b55-d517c589c1a2",
+          "action": "claims",
+          "task": "claims",
+          "contractVersion": "C2.1",
+          "resultCode": "none",
+          "stage": "validation",
+          "attempt": 1
+        }
+      }
+    ],
+    "codePresentInExport": false
+  },
+  "document": {
+    "schemaVersion": 1,
+    "exportedAt": "2026-11-11T03:29:14.839Z",
+    "selectedDates": {
+      "from": "2026-11-11",
+      "through": "2026-11-11",
+      "inclusive": true
+    },
+    "timezone": "UTC",
+    "boundaries": {
+      "startUtc": "2026-11-11T00:00:00.000Z",
+      "endExclusiveUtc": "2026-11-12T00:00:00.000Z",
+      "startOffsetMinutes": 0,
+      "endOffsetMinutes": 0
+    },
+    "retention": {
+      "hours": 168,
+      "cutoffUtc": "2026-11-04T03:29:14.839Z",
+      "throughUtc": "2026-11-11T03:29:14.839Z",
+      "maxEvents": 1000,
+      "maxEncodedBytes": 1048576,
+      "encodedBytes": 3134,
+      "capacityTrimmedEvents": 0
+    },
+    "availableDateRange": {
+      "oldest": "2026-11-11",
+      "newest": "2026-11-11"
+    },
+    "retainedEventCount": 5,
+    "eventCount": 5,
+    "attempts": [
+      {
+        "requestId": "e01878cd-532a-4a7f-8b55-d517c589c1a2",
+        "sessionId": "2c1e23b0-348e-4a71-bd98-a806f2923146",
+        "build": "0.6.0-dev",
+        "revision": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d",
+        "action": "claims",
+        "task": "claims",
+        "resultCode": "none",
+        "applicationStatus": "not-observed",
+        "modelId": null,
+        "runtimeVersion": null,
+        "firstRecordedAt": "2026-11-11T03:29:14.247Z",
+        "lastRecordedAt": "2026-11-11T03:29:14.816Z",
+        "lastEvent": "composition.final",
+        "lastStage": "validation",
+        "lastCompletedStage": "validation",
+        "outcome": "ready",
+        "status": "complete",
+        "missingTerminalEvents": [],
+        "missingContextEvents": [],
+        "partialContext": false,
+        "observedDurationMs": 569,
+        "measuredDurationMs": 570
+      }
+    ],
+    "events": [
+      {
+        "id": "6ad93acc-023a-4af5-b0b8-498de7073276",
+        "timestamp": "2026-11-11T03:29:14.247Z",
+        "sessionId": "2c1e23b0-348e-4a71-bd98-a806f2923146",
+        "sequence": 1,
+        "channel": "dev",
+        "build": "0.6.0-dev",
+        "revision": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d",
+        "name": "composition.submitted",
+        "outcome": "started",
+        "context": {
+          "launchMode": "browser",
+          "network": {
+            "online": null,
+            "source": "navigator.onLine",
+            "interpretation": "observation"
+          },
+          "serviceWorkerControlled": false
+        },
+        "metadata": {
+          "requestId": "e01878cd-532a-4a7f-8b55-d517c589c1a2",
+          "action": "claims",
+          "task": "claims",
+          "contractVersion": "C2.1",
+          "stage": "validation",
+          "attempt": 0,
+          "inputChars": 31
+        }
+      },
+      {
+        "id": "6a19d828-6ea8-41f3-9b8f-730a1775c42c",
+        "timestamp": "2026-11-11T03:29:14.661Z",
+        "sessionId": "2c1e23b0-348e-4a71-bd98-a806f2923146",
+        "sequence": 2,
+        "channel": "dev",
+        "build": "0.6.0-dev",
+        "revision": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d",
+        "name": "composition.admission",
+        "outcome": "observed",
+        "context": {
+          "launchMode": "browser",
+          "network": {
+            "online": null,
+            "source": "navigator.onLine",
+            "interpretation": "observation"
+          },
+          "serviceWorkerControlled": false
+        },
+        "metadata": {
+          "requestId": "e01878cd-532a-4a7f-8b55-d517c589c1a2",
+          "action": "claims",
+          "task": "claims",
+          "contractVersion": "C2.1",
+          "admissionStatus": "unverified",
+          "resultCode": "none",
+          "stage": "admission",
+          "attempt": 1
+        }
+      },
+      {
+        "id": "52f0ae02-d734-4fe6-8ddb-e11d5486a507",
+        "timestamp": "2026-11-11T03:29:14.816Z",
+        "sessionId": "2c1e23b0-348e-4a71-bd98-a806f2923146",
+        "sequence": 3,
+        "channel": "dev",
+        "build": "0.6.0-dev",
+        "revision": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d",
+        "name": "composition.validation",
+        "outcome": "valid",
+        "context": {
+          "launchMode": "browser",
+          "network": {
+            "online": null,
+            "source": "navigator.onLine",
+            "interpretation": "observation"
+          },
+          "serviceWorkerControlled": false
+        },
+        "metadata": {
+          "requestId": "e01878cd-532a-4a7f-8b55-d517c589c1a2",
+          "action": "claims",
+          "task": "claims",
+          "contractVersion": "C2.1",
+          "fieldId": "value",
+          "stage": "validation",
+          "attempt": 1,
+          "claimCount": 1
+        }
+      },
+      {
+        "id": "c5a9ba71-076f-4a28-ab10-764c174fd568",
+        "timestamp": "2026-11-11T03:29:14.816Z",
+        "sessionId": "2c1e23b0-348e-4a71-bd98-a806f2923146",
+        "sequence": 4,
+        "channel": "dev",
+        "build": "0.6.0-dev",
+        "revision": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d",
+        "name": "composition.validation",
+        "outcome": "valid",
+        "context": {
+          "launchMode": "browser",
+          "network": {
+            "online": null,
+            "source": "navigator.onLine",
+            "interpretation": "observation"
+          },
+          "serviceWorkerControlled": false
+        },
+        "metadata": {
+          "requestId": "e01878cd-532a-4a7f-8b55-d517c589c1a2",
+          "action": "claims",
+          "task": "claims",
+          "contractVersion": "C2.1",
+          "resultCode": "none",
+          "stage": "validation",
+          "attempt": 1
+        }
+      },
+      {
+        "id": "862045fc-575d-4ec7-adee-61c236b08c28",
+        "timestamp": "2026-11-11T03:29:14.816Z",
+        "sessionId": "2c1e23b0-348e-4a71-bd98-a806f2923146",
+        "sequence": 5,
+        "channel": "dev",
+        "build": "0.6.0-dev",
+        "revision": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d",
+        "name": "composition.final",
+        "outcome": "ready",
+        "context": {
+          "launchMode": "browser",
+          "network": {
+            "online": null,
+            "source": "navigator.onLine",
+            "interpretation": "observation"
+          },
+          "serviceWorkerControlled": false
+        },
+        "metadata": {
+          "requestId": "e01878cd-532a-4a7f-8b55-d517c589c1a2",
+          "action": "claims",
+          "task": "claims",
+          "contractVersion": "C2.1",
+          "resultCode": "none",
+          "stage": "validation",
+          "attempt": 1,
+          "durationMs": 570
+        }
+      }
+    ]
+  }
+}
