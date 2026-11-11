@@ -798,6 +798,66 @@ function trustedPresenter(s,id){
   return ownRecord(definitions,id)&&ownRecord(people,id)&&finite(definitions[id].comp,0,100)&&finite(definitions[id].detail,0,100)&&finite(people[id].rel,0,100);
 }
 function trustedMember(s,id){return ownRecord(s?.council,id)&&finite(s.council[id].rel,0,100)&&councilOf(s).some(m=>record(m)&&m.id===id&&record(m.pri)&&record(m.w));}
+const savedNumber=v=>typeof v==='number'&&Number.isFinite(v);
+const savedStrings=v=>Array.isArray(v)&&v.every(x=>typeof x==='string');
+const savedFact=v=>typeof v==='boolean'||savedNumber(v)||typeof v==='string'||savedStrings(v);
+const savedFacts=v=>record(v)&&Object.values(v).every(savedFact);
+function savedProfile(profile,point){
+  if(!record(profile))return false;
+  for(const key of ['interests','prerequisites','hard','preferences','affectedPlots'])if(profile[key]!==undefined&&!Array.isArray(profile[key]))return false;
+  if(profile.interests&&!savedStrings(profile.interests)||profile.affectedPlots&&!profile.affectedPlots.every(point))return false;
+  if(profile.prerequisites?.some(g=>!record(g)||!boundedText(g.fact,1,120)||!savedFact(g.value)||g.reason!==undefined&&typeof g.reason!=='string'))return false;
+  for(const rule of [...(profile.hard||[]),...(profile.preferences||[])]){
+    if(!record(rule)||!boundedText(rule.field,1,120)||typeof rule.reason!=='string')return false;
+    if(rule.min!==undefined&&!savedNumber(rule.min)||rule.max!==undefined&&!savedNumber(rule.max)||Object.hasOwn(rule,'equals')&&!savedFact(rule.equals))return false;
+    if(rule.concession!==undefined){const patch=rule.concession;if(!record(patch))return false;
+      if(patch.conditions!==undefined&&validateConditions(patch.conditions,true).length||patch.remove!==undefined&&!savedStrings(patch.remove)||patch.upsert!==undefined&&(!Array.isArray(patch.upsert)||patch.upsert.some(c=>!record(c)))||patch.changes!==undefined&&!savedFacts(patch.changes))return false;
+    }
+  }
+  return true;
+}
+function validateScenario(d){
+  const fail=field=>({ok:false,reasons:['save_scenario_invalid:'+field]}),positive=n=>Number.isSafeInteger(n)&&n>0;
+  if(!record(d))return fail('root');
+  for(const key of ['metadata','calendar','map','people','initial','proposals','events','economy','labels','ownership'])if(!record(d[key]))return fail(key);
+  if(!boundedText(d.id,1,120)||!boundedText(d.metadata.town,1,120)||!boundedText(d.metadata.displayName,1,240))return fail('identity');
+  if(!savedNumber(d.calendar.startYear)||!positive(d.calendar.yearsPerTurn)||!positive(d.calendar.electionEvery)||!positive(d.calendar.maxTurns))return fail('calendar');
+  if(!['jobs','upkeep','roadCap'].every(k=>savedNumber(d.economy[k]))||!['bridge','boutique','flood'].every(k=>typeof d.events[k]==='boolean'))return fail('economy_or_events');
+  if(!savedNumber(d.initial.cash)||!savedNumber(d.initial.pop)||d.initial.flags!==undefined&&!record(d.initial.flags)||d.initial.meters!==undefined&&(!record(d.initial.meters)||!Object.values(d.initial.meters).every(savedNumber))||d.initial.facts!==undefined&&!savedFacts(d.initial.facts))return fail('initial');
+  if(!['creek','bridge','school','college','luxuryStore'].every(k=>typeof d.labels[k]==='string')||d.labels.bridgeShort!==undefined&&typeof d.labels.bridgeShort!=='string'||!Object.values(d.ownership).every(v=>typeof v==='string'))return fail('labels_or_ownership');
+  const map=d.map;if(!positive(map.width)||!positive(map.height)||!record(map.growth)||!record(map.sites)||!record(map.parcels)||!record(map.places))return fail('map');
+  const point=p=>Array.isArray(p)&&p.length===2&&Number.isInteger(p[0])&&Number.isInteger(p[1])&&p[0]>=0&&p[0]<map.width&&p[1]>=0&&p[1]<map.height;
+  const points=v=>Array.isArray(v)&&v.every(point),bounds=b=>record(b)&&['minX','maxX','minY','maxY'].every(k=>savedNumber(b[k]));
+  const growth=map.growth;if(!Array.isArray(growth.center)||growth.center.length!==2||!growth.center.every(savedNumber)||!bounds(growth.bounds)||!bounds(growth.main)||growth.traitsMain!==undefined&&!bounds(growth.traitsMain)||growth.enabled!==undefined&&typeof growth.enabled!=='boolean')return fail('growth');
+  if(!Object.values(map.sites).every(points)||Object.values(map.parcels).some(p=>!record(p)||!savedStrings(p.traits)||p.tiles!==undefined&&!points(p.tiles)))return fail('sites_or_parcels');
+  for(const p of Object.values(map.places)){
+    if(!record(p)||typeof p.name!=='string'||!savedStrings(p.kw))return fail('places');
+    if(p.query!==undefined){const q=p.query;if(!record(q)||!savedStrings(q.buildings)||q.rows!==undefined&&(!Array.isArray(q.rows)||!q.rows.every(Number.isInteger))||q.bounds!==undefined&&!bounds(q.bounds))return fail('place_query');}
+  }
+  if(!record(d.people.presenters)||!Array.isArray(d.people.council))return fail('people');
+  for(const [id,p] of Object.entries(d.people.presenters))if(!boundedText(id,1,120)||!record(p)||typeof p.name!=='string'||!['rel','comp','detail'].every(k=>finite(p[k],0,100))||['role','persona','flex'].some(k=>p[k]!==undefined&&typeof p[k]!=='string')||p.profile!==undefined&&!savedProfile(p.profile,point))return fail('presenters');
+  for(const m of d.people.council)if(!record(m)||!boundedText(m.id,1,120)||typeof m.name!=='string'||m.seat!==undefined&&typeof m.seat!=='string'||!finite(m.rel,0,100)||!record(m.w)||!Object.values(m.w).every(savedNumber)||!record(m.pri)||!Object.values(m.pri).every(v=>typeof v==='string'))return fail('council');
+  const route=d.decisionRoute;if(!record(route)||!boundedText(route.id,1,120)||!boundedText(route.executiveId,1,120)||typeof route.name!=='string'||typeof route.executiveName!=='string'||!savedNumber(route.executiveLimit)||!positive(route.votesRequired)||route.requireAuthority!==undefined&&typeof route.requireAuthority!=='boolean')return fail('decision_route');
+  if(!record(d.proposals.definitions)||!record(d.proposals.schedule))return fail('proposals');
+  const definitions=d.proposals.definitions;
+  for(const [id,p] of Object.entries(definitions)){
+    if(!boundedText(id,1,120)||!record(p)||typeof p.kind!=='string'||!Object.hasOwn(KINDS,p.kind)||!ownRecord(d.people.presenters,p.presenter)||typeof p.title!=='string'||p.council!==undefined&&typeof p.council!=='boolean'||p.group!==undefined&&p.group!==null&&!boundedText(p.group,1,120))return fail('proposal_definition');
+    if(p.site!==undefined&&(!boundedText(p.site,1,120)||!['custom','none'].includes(p.site)&&!Object.hasOwn(map.sites,p.site))||p.plots!==undefined&&!points(p.plots))return fail('proposal_site');
+    if(p.program!==undefined){if(!validateProgram(p.program).ok)return fail('proposal_program');}
+    else if(p.site===undefined||p.plan!==undefined&&(!record(p.plan)||!strictLegacyPlan(p.kind,{...defaultPlan(p.kind),...p.plan})))return fail('proposal_plan');
+    if(p.requires!==undefined&&!savedFacts(p.requires)||p.completionFacts!==undefined&&!savedFacts(p.completionFacts))return fail('proposal_facts');
+    if(p.stakeholders!==undefined&&(!savedStrings(p.stakeholders)||p.stakeholders.some(actor=>!ownRecord(d.people.presenters,actor)))||p.controller!==undefined&&p.controller!=='mayor'&&!ownRecord(d.people.presenters,p.controller)||p.profileId!==undefined&&(!ownRecord(d.composition?.profiles,p.profileId)&&!(ownRecord(d.people.presenters,p.profileId)&&record(d.people.presenters[p.profileId].profile)))||p.profile!==undefined&&!savedProfile(p.profile,point))return fail('proposal_authority');
+  }
+  for(const ids of Object.values(d.proposals.schedule))if(!savedStrings(ids)||ids.some(id=>!ownRecord(definitions,id)))return fail('schedule');
+  if(d.events.bridge&&(!ownRecord(definitions,'bridge')||definitions.bridge.kind!=='bridge'))return fail('bridge_event');
+  if(d.programDefinitions!==undefined&&!record(d.programDefinitions))return fail('program_definitions');
+  if(d.composition!==undefined){const c=d.composition;if(!record(c))return fail('composition');
+    if(c.profiles!==undefined&&(!record(c.profiles)||Object.values(c.profiles).some(p=>!savedProfile(p,point))))return fail('profiles');
+    if(c.routes!==undefined){if(!record(c.routes))return fail('loading_routes');for(const [id,r] of Object.entries(c.routes))if(!record(r)||r.id!==id||typeof r.crossingConflict!=='boolean'||r.plots!==undefined&&!points(r.plots)||r.costK!==undefined&&!savedNumber(r.costK)||r.upkeepK!==undefined&&!savedNumber(r.upkeepK))return fail('loading_routes');}
+    if(c.authoredFacts!==undefined&&(!record(c.authoredFacts)||Object.values(c.authoredFacts).some(f=>!record(f)||!savedFact(f.value)||typeof f.source!=='string'||!boundedText(f.recordId,1,120))))return fail('authored_facts');
+  }
+  return {ok:true,reasons:[]};
+}
 // This is a structural save boundary, not a repair/normalization pass. Invalid
 // input stays untouched, and v1 omissions are admitted only where migration fills them.
 function validateSave(s){
@@ -811,7 +871,7 @@ function validateSave(s){
   let scenario=MILLBROOKE;
   if(s.v>=3){
     if(!record(s.scenario)||!record(s.calendar)||!record(s.facts)||!boundedText(s.scenarioId,1,120))return fail('save_scenario_invalid');scenario=s.scenario;
-    if(!record(scenario.map)||!record(scenario.map.growth)||!record(scenario.map.sites)||!record(scenario.map.parcels)||!record(scenario.map.places)||!record(scenario.people)||!record(scenario.people.presenters)||!Array.isArray(scenario.people.council)||!record(scenario.proposals)||!record(scenario.proposals.definitions)||!record(scenario.proposals.schedule)||!record(scenario.decisionRoute))return fail('save_scenario_invalid');
+    const checked=validateScenario(scenario);if(!checked.ok)return checked;
     if(!positive(s.calendar.electionEvery)||!positive(s.calendar.yearsPerTurn)||!number(s.calendar.startYear))return fail('save_calendar_invalid');
   }
   const {width,height}=scenario.map;
@@ -822,11 +882,17 @@ function validateSave(s){
   for(const m of scenario.people.council){if(!record(m)||!boundedText(m.id,1,120)||memberIds.has(m.id)||!record(m.w)||!record(m.pri)||!ownRecord(s.council,m.id)||!finite(s.council[m.id].rel,0,100))return fail('save_council_invalid');memberIds.add(m.id);}
   for(const [id,p] of Object.entries(s.presenters))if(!ownRecord(definitions,id)||!record(p)||!finite(p.rel,0,100)||!finite(definitions[id].comp,0,100)||!finite(definitions[id].detail,0,100))return fail('save_presenter_invalid');
   for(const [id,m] of Object.entries(s.council))if(!memberIds.has(id)||!record(m)||!finite(m.rel,0,100))return fail('save_council_invalid');
+  if(!['lower','hold','raise'].includes(s.taxRate)||!['lower','hold','raise'].includes(s.prevTax)||!Object.values(s.lobby).every(v=>record(v)&&Object.values(v).every(savedNumber))||s.lobbyCount!==undefined&&(!record(s.lobbyCount)||!Object.values(s.lobbyCount).every(nonnegative)))return fail('save_runtime_invalid');
+  if(!Object.values(s.chats).every(v=>Array.isArray(v)&&v.every(c=>record(c)&&typeof c.who==='string'&&typeof c.text==='string')))return fail('save_chat_entry_invalid');
+  if(typeof s.flags.bridgeClosed!=='boolean'||!nonnegative(s.flags.deficitYears)||s.flags.collegeLost!==undefined&&!savedNumber(s.flags.collegeLost)||s.flags.boutique!==null&&s.flags.boutique!==undefined&&(!record(s.flags.boutique)||!positive(s.flags.boutique.opened)||!strictLegacyPlan('boutique',s.flags.boutique.plan)))return fail('save_runtime_flags_invalid');
   const project=p=>{
     if(!record(p)||!boundedText(p.id,1,120)||typeof p.kind!=='string'||!Object.hasOwn(KINDS,p.kind)||!ownRecord(definitions,p.presenter)||!ownRecord(s.presenters,p.presenter)||!record(p.plan)||!boundedText(p.site,1,120))return false;
+    if(p.group!==undefined&&p.group!==null&&!boundedText(p.group,1,120)||p.council!==undefined&&typeof p.council!=='boolean')return false;
     if(p.plots!==undefined&&(!Array.isArray(p.plots)||p.plots.some(t=>!point(t))))return false;
-    if(p.demo!==undefined&&(!record(p.demo)||!Array.isArray(p.demo.landmarks)||!Array.isArray(p.demo.projects)))return false;
-    if(p.program!==undefined){if(!validateProgram(p.program).ok||!record(p.layout)||!Array.isArray(p.layout.cells)||p.layout.cells.some(c=>!record(c)||!point(c.plot))||!Array.isArray(p.layout.allocations)||p.layout.allocations.some(a=>!record(a)))return false;}
+    if(p.traits!==undefined&&!savedStrings(p.traits)||p.completionFacts!==undefined&&!savedFacts(p.completionFacts))return false;
+    if(p.grantPending!==undefined&&(!record(p.grantPending)||typeof p.grantPending.agency!=='string'||!finite(p.grantPending.share,0,1)||!finite(p.grantPending.odds,0,1)||!positive(p.grantPending.year)))return false;
+    if(p.demo!==undefined&&(!record(p.demo)||!savedStrings(p.demo.landmarks)||!savedStrings(p.demo.projects)||!['cost','residents','storefronts','untrackedJobs','farm','live','conf','approval','collegeTiles'].every(k=>savedNumber(p.demo[k]))))return false;
+    if(p.program!==undefined){if(!validateProgram(p.program).ok||!record(p.layout)||!Array.isArray(p.layout.cells)||p.layout.cells.some(c=>!record(c)||!point(c.plot)||!savedStrings(c.componentIds)||!savedNumber(c.usedArea))||!Array.isArray(p.layout.allocations)||p.layout.allocations.some(a=>!record(a)||!Array.isArray(a.segments)||a.segments.some(segment=>!record(segment)||!point(segment.plot)||!savedNumber(segment.offset)||!savedNumber(segment.area))))return false;}
     else if(!strictLegacyPlan(p.kind,p.plan))return false;
     return true;
   };

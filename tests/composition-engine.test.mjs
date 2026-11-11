@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import vm from 'node:vm';
+import {reconstruction} from './fixtures/reconstruction.mjs';
 
 const source=readFileSync(new URL('../src/engine.js',import.meta.url),'utf8');
 function engine(enabled=true){const context={module:{exports:{}},MP_BUILD:{flags:{compositionPlans:enabled}}};vm.runInNewContext(source,context);return context.module.exports;}
@@ -385,4 +386,42 @@ test('MP-060 MP-079 legacy command deliveries finalize approved records with act
   }
   const off=engine(false),legacy=off.newGame(0);off.approve(legacy,legacy.proposals.find(p=>p.id==='bridge'),'cash');assert.equal(legacy.pending[0].status,undefined);
   const report=off.resolveYear(legacy);assert.equal(legacy.built[0].status,undefined);assert.equal(legacy.projectRecords,undefined);assert.equal(report.projects,undefined);
+});
+
+test('MP-060 MP-079 consumed nested scenario and runtime collections reject before migration, store load or commands',async()=>{
+  const mutations=[
+    s=>s.scenario.economy=null,s=>s.scenario.economy.jobs=null,s=>s.scenario.economy.roadCap='large',s=>s.scenario.events=null,s=>s.scenario.events.bridge='yes',
+    s=>s.scenario.proposals.schedule[2]=[null],s=>s.scenario.proposals.schedule[2]={},s=>s.scenario.proposals.schedule[2]=['missing'],s=>s.scenario.proposals.schedule[2]=['constructor'],
+    s=>s.scenario.proposals.definitions.park=null,s=>s.scenario.proposals.definitions.park.presenter='toString',s=>s.scenario.proposals.definitions.park.plan={trees:'many'},s=>s.scenario.proposals.definitions.park.stakeholders=[null],
+    s=>s.scenario.proposals.definitions.park.requires={ready:{}},s=>s.scenario.proposals.definitions.park.completionFacts={ready:{}},
+    s=>s.scenario.map.growth.center=null,s=>s.scenario.map.growth.bounds=null,s=>s.scenario.map.growth.main={},s=>s.scenario.map.sites.oldmill=[null],
+    s=>s.scenario.map.parcels.oldmill.traits=null,s=>s.scenario.map.places.oldmill.kw=[null],s=>s.scenario.map.places.downtown.query.buildings=null,s=>s.scenario.map.places.downtown.query.rows=[null],
+    s=>s.scenario.people.council[0].w.jobs=null,s=>s.scenario.people.presenters.engineer.comp='high',s=>s.scenario.labels=null,s=>s.scenario.initial=null,s=>s.scenario.ownership=null,
+    s=>s.scenario.labels.bridgeShort={toString:null,valueOf:null},s=>s.scenario.proposals.definitions.park.group={},s=>s.scenario.proposals.definitions.park.profileId='constructor',s=>s.proposals[0].group={},
+    s=>s.scenario.composition.profiles.bowers_operator.hard=[null],s=>s.scenario.composition.profiles.bowers_operator.hard[0].field=null,
+    s=>s.scenario.composition.profiles.bowers_operator.prerequisites=[null],s=>s.scenario.composition.routes['service-lane'].plots=[null],
+    s=>s.scenario.composition.authoredFacts.bowersLeaseValid=null,s=>s.lobby.okafor=null,s=>s.lobbyCount={okafor:null},
+    s=>s.chats.bridge=[null],s=>s.flags.boutique={opened:1,plan:null},s=>s.proposals[0].traits={},s=>s.proposals[0].grantPending={agency:'Test',share:null,odds:.5,year:1},
+    s=>s.proposals.find(p=>p.program).layout.cells[0].componentIds=null,s=>s.proposals.find(p=>p.program).layout.allocations[0].segments=[null]
+  ];
+  const workspaceContext={module:{exports:{}},TextEncoder};vm.runInNewContext(readFileSync(new URL('../src/workspace.js',import.meta.url),'utf8'),workspaceContext);const W=workspaceContext.module.exports;
+  for(let i=0;i<mutations.length;i++){
+    const state=fresh();mutations[i](state);const before=JSON.stringify(state);let migrated,result;
+    assert.doesNotThrow(()=>assert.equal(E.isSupportedSave(state),false,'mutation '+i));
+    assert.doesNotThrow(()=>{migrated=E.migrate(state);});assert.equal(migrated.ok,false);assert.ok(migrated.reasons.length);
+    for(const [type,payload] of [['resolveYear',{}],['grant',{proposalId:'bridge'}]]){assert.doesNotThrow(()=>{result=E.applyCommand(state,command(state,type,payload));});assert.equal(result.ok,false,'mutation '+i);assert.equal(result.state,state);assert.equal(result.receipt,null);}
+    const key='masterplan.dev.save.v4',raw=JSON.stringify({format:'masterplan-save',formatVersion:4,writerProtocol:1,formatFloor:4,storageGeneration:1,state,legacyImportBackup:null}),entries=new Map([[key,raw]]);let writes=0;
+    const store=W.create({engine:E,storage:{getItem:k=>entries.get(k)??null,setItem:(k,v)=>{writes++;entries.set(k,v);}},locks:{request:async(_key,_options,callback)=>callback()},channel:'dev'});
+    const loaded=await store.load();assert.equal(loaded.ok,false,'store mutation '+i);assert.equal(loaded.mode,'read-only');assert.equal(writes,0);assert.equal(entries.get(key),raw);assert.equal(JSON.stringify(state),before);
+  }
+});
+
+test('MP-060 MP-074 MP-079 valid custom scenario scheduling, profiles and alternate map remain playable and retain public legacy identity',()=>{
+  let s=E.newGame(31,reconstruction,{gameId:'nested-custom-positive'});assert.equal(E.isSupportedSave(s),true);assert.equal(E.isSupportedSave(E.migrate(clone(s))),true);
+  const repair=s.proposals.find(p=>p.id==='repair'),revision=E.legacyRevision(repair,s);assert.equal(revision,E.fingerprint({id:repair.id,kind:repair.kind,plan:repair.plan,plots:E.plotsOf(repair,s),presenter:repair.presenter}));
+  s=commit(s,'decision',{proposalId:repair.id,action:'approve',funding:'cash',route:'recovery-authority'});assert.equal(s.pending[0].programRevision,revision);
+  s=commit(s,'decision',{proposalId:'housing',action:'table',funding:null,route:'recovery-authority'});
+  s=commit(s,'resolveYear',{});assert.equal(s.facts.waterReady,true);assert.equal(E.isSupportedSave(s),true);assert.equal(s.proposals.find(p=>p.id==='housing').status,'open');
+  const record=s.projectRecords.find(r=>r.proposalId===repair.id);assert.equal(record.programRevision,revision);assert.equal(E.legacyRevision(s.built.find(p=>p.id===repair.id),s),revision);
+  s=commit(s,'decision',{proposalId:'housing',action:'approve',funding:'cash',route:'recovery-authority'});s=commit(s,'resolveYear',{});assert.equal(E.isSupportedSave(s),true);assert.equal(s.built.length,2);
 });
