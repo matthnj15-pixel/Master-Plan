@@ -150,7 +150,7 @@ function growthTiles(g,map=MILLBROOKE.map){
 }
 
 /* ---------- state ---------- */
-function newGame(seed,definition=MILLBROOKE){
+function newGame(seed,definition=MILLBROOKE,options={}){
   seed=seed??(Date.now()%100000);
   const scenario=copy(definition),initial=scenario.initial;
   const grid=scenario.map.grid;delete scenario.map.grid;
@@ -164,22 +164,27 @@ function newGame(seed,definition=MILLBROOKE){
     council:Object.fromEntries(scenario.people.council.map(m=>[m.id,{rel:m.rel}])),
     lobby:{},flags:{bridgeRisk:0,bridgeClosed:false,students:0,boutique:null,deficitYears:0,floodRisk:0.06,...initial.flags},facts:copy(initial.facts||{}),
     grid,proposals:[],chats:{},reports:[],phase:'agenda',election:null,history:[]};
+  if(FLAGS.compositionPlans){initializeComposition(s,options);installCompositionScenario(s);}
   s.proposals=proposalsFor(s,1);
   s.history.push(snapshotStats(s));
   return s;
 }
 
-function makeProposal(id,year,s){const d=scenarioOf(s).proposals.definitions[id];return{id,...copy(d),plan:validatePlan(d.kind,defaultPlan(d.kind),d.plan||{}).plan,year,status:'open'};}
+function makeProposal(id,year,s){const d=scenarioOf(s).proposals.definitions[id];
+  if(FLAGS.compositionPlans&&d.program){const r=previewProgram(s,{program:d.program,plots:d.plots||sitesOf(s)[d.site]||[],id,presenter:d.presenter});if(!r.ok)return null;return{...r.proposal,site:d.site||r.proposal.site,year,mine:false};}
+  return{id,...copy(d),plan:validatePlan(d.kind,defaultPlan(d.kind),d.plan||{}).plan,year,status:'open'};}
 function proposalsFor(s,year){
   const out=[];
   for(const p of s.proposals||[]) if(p.status==='tabled'){p.status='open';out.push(p);}
-  for(const id of (scenarioOf(s).proposals.schedule[year]||[])) if(!s.decided[id]&&!out.find(p=>p.id===id)) out.push(makeProposal(id,year,s));
+  for(const id of (scenarioOf(s).proposals.schedule[year]||[])) if(!s.decided[id]&&!out.find(p=>p.id===id)){const p=makeProposal(id,year,s);if(p)out.push(p);}
+  if(FLAGS.compositionPlans&&s.v===4&&year>1){for(const o of programOpportunities(s).slice(0,2)){if(out.some(p=>p.id===o.id))continue;const r=previewProgram(s,{program:o.program,plots:o.plots,id:o.id,presenter:o.presenter});if(r.ok)out.push({...r.proposal,mine:false,opportunity:o.id});}}
   return out;
 }
 
 /* ---------- forecasting & scoring ---------- */
 const SAFE_AFF={stripmall:p=>[-1,0],commerce:p=>[1,(p.stories-1)*0.8],studenthousing:p=>[-2,p.beds/150],subdivision:p=>[0,p.homes/30],park:p=>[1,0],boutique:p=>[0,0],bridge:p=>[p.scope==='full'?1:0,0]};
-function effectsOf(p,s){const e=KINDS[p.kind].effects(p.plan);const pr=presentersOf(s)[p.presenter];if(p.emergency)e.cost*=1.6;
+function effectsOf(p,s){if(FLAGS.compositionPlans&&p.program)return compositionEffects(p,s);
+  const e=KINDS[p.kind].effects(p.plan);const pr=presentersOf(s)[p.presenter];if(p.emergency)e.cost*=1.6;
   const labels=scenarioOf(s).labels;e.notes=e.notes.map(n=>n.replaceAll('Kish Creek',labels.creek).replaceAll('Main St bridge',labels.bridgeShort||labels.bridge));
   if(e.safety===undefined){const sa=(SAFE_AFF[p.kind]||(()=>[0,0]))(p.plan);e.safety=sa[0];e.afford=sa[1];}
   e.creek=0;const par=p.traits?{traits:p.traits}:parcelsOf(s)[p.site];
@@ -301,6 +306,7 @@ function memberStatement(s,m,p,champion){
 /* ---------- decisions ---------- */
 function fundingOptions(s,p){const e=effectsOf(p,s);return{cash:s.cash>=e.cost,bondAnnual:Math.round(e.cost*0.125)};}
 function approve(s,p,funding,authorityId){
+  if(FLAGS.compositionPlans&&p?.program)return approveProgram(s,p,funding,authorityId);
   const eligibility=proposalEligibility(s,p);
   if(!eligibility.ok)return eligibility;
   const route=approvalRoute(s,p);
@@ -331,7 +337,7 @@ function econ(s){
   const g=s.grid;let units=0,housing=0,jobs=scenarioOf(s).economy.jobs,upkeep=scenarioOf(s).economy.upkeep,parking=0;
   for(const c of g){if(!c.b)continue;const t=c.b.type;
     if(t==='shop')units+=2; if(t==='house')housing+=62; if(t==='apt')housing+=200;}
-  for(const b of s.built){if(b.closed)continue;const e=KINDS[b.kind].effects(b.plan);units+=e.units;housing+=e.housing;jobs+=e.jobs;upkeep+=e.upkeep;parking+=e.parking;}
+  for(const b of s.built){if(b.closed)continue;const e=FLAGS.compositionPlans&&b.program?programOperatingEffects(b,s):KINDS[b.kind].effects(b.plan);units+=e.units;housing+=e.housing;jobs+=e.jobs;upkeep+=e.upkeep;parking+=e.parking;}
   for(const c of g)if(c.b&&c.b.type==='shop')jobs+=10;
   jobs-=(s.flags.collegeLost||0)*30; // college buildings torn down take their jobs with them
   const demand=s.pop/100*(1+s.flags.students/3000);
@@ -360,9 +366,10 @@ function resolveYear(s){
     }
     s.built.push({...pj,done:s.year});
     const tl=plotsOf(pj,s);const roles=pj.kind==='initiative'?initiativeRoles(pj.plan,tl.length):[];
-    tl.forEach((t,i)=>{const c=cellAt(s,t[0],t[1]);c.b=pj.kind==='bridge'?null:{type:pj.kind,plan:pj.plan,role:roles[i]};});
+    if(FLAGS.compositionPlans&&pj.program)completeProgram(s,pj,e,ok,causes);
+    else tl.forEach((t,i)=>{const c=cellAt(s,t[0],t[1]);c.b=pj.kind==='bridge'?null:{type:pj.kind,plan:pj.plan,role:roles[i]};});
     if(pj.completionFacts)Object.assign(s.facts,pj.completionFacts);
-    if(pj.kind==='initiative'&&pj.plan.policy!=='none')s.policies[pj.plan.policy]=s.year;
+    if(pj.kind==='initiative'&&!pj.program&&pj.plan.policy!=='none')s.policies[pj.plan.policy]=s.year;
     if(e.safety)add('safety',e.safety*0.5,`${pj.title} opened`);if(e.afford)add('afford',e.afford*0.5,`${pj.title} opened`);
     add('walk',e.walk,`${pj.title} opened`);add('live',e.live,`${pj.title} opened`);add('conf',e.conf,`${pj.title} opened`);
     add('approval',e.approval+1,`Ribbon cutting: ${pj.title}`);
@@ -404,7 +411,7 @@ function resolveYear(s){
   const net=Math.round(propTax+comTax-services-ec.upkeep-bondPay);
   s.cash+=net;s.lastBudget={propTax:Math.round(propTax),comTax:Math.round(comTax),services:Math.round(services),upkeep:Math.round(ec.upkeep),bonds:bondPay,net};
   // property values
-  let pr=0.004;for(const b of s.built){if(b.closed)continue;pr+=KINDS[b.kind].effects(b.plan).prop;}
+  let pr=0.004;for(const b of s.built){if(b.closed)continue;pr+=(FLAGS.compositionPlans&&b.program?programOperatingEffects(b,s):KINDS[b.kind].effects(b.plan)).prop;}
   s.propIdx=r1(s.propIdx*1000*(1+pr))/1000;
   // population
   const jm=jobsMeter(s,ec);
@@ -451,6 +458,7 @@ function resolveYear(s){
   // wrap
   const after=snapshotStats(s);
   const report={year:s.year,before,after,causes,budget:s.lastBudget};
+  if(FLAGS.compositionPlans)report.projects=copy((s.projectRecords||[]).filter(p=>p.stage==='built'&&p.deliveryYear===s.year));
   s.reports.push(report);s.history.push(after);
   s.lobby={};s.lobbyCount={};s.capital=Math.min(5,s.capital+2);
   for(const p of s.proposals)if(p.status==='open'){p.status='lapsed';s.decided[p.id]='lapsed';}
@@ -580,11 +588,12 @@ function grantInfo(s,p){if(p.grant||p.grantPending||p.grantDenied)return null;le
   if(!agency)return null;if(p.emergency)odds-=0.2;
   return{agency,share,odds:clamp(odds+(s.presenters.planner.rel-50)/200,0.2,0.85)};}
 function applyGrant(s,p){const g=grantInfo(s,p);if(!g)return null;p.grantPending={...g,year:s.year};p.status='tabled';return g;}
-function migrate(s){if(!s)return s;if(s.v===1){s.meters.safety=62;s.meters.afford=58;s.policies={};s.flags.floodRisk=0.06;
+function migrate(s,options={}){if(!s)return s;if(s.v===1){s.meters.safety=62;s.meters.afford=58;s.policies={};s.flags.floodRisk=0.06;
   for(const [id,pa] of Object.entries(PARCELS))if(pa.tiles)for(const [x,y] of pa.tiles){const c=s.grid[y*N+x];if(!c.site&&!c.b)c.site=id;}
   for(const h of s.history){if(h.safety===undefined)h.safety=62;if(h.afford===undefined)h.afford=58;}s.v=2;}
   if(s.v===2){const scenario=copy(MILLBROOKE);delete scenario.map.grid;s.scenarioId=MILLBROOKE.id;s.scenario=scenario;s.calendar=copy(MILLBROOKE.calendar);s.facts={};
     if(s.town==='Millbrook'||!s.town)s.town=MILLBROOKE.metadata.town;s.v=3;}
+  if(FLAGS.compositionPlans&&s.v===3)initializeComposition(s,options);
   return s;}
 
 /* ---------- Scenario 01 · Millbrooke: campaign content, not shared rules ---------- */
@@ -737,9 +746,10 @@ function placesOf(s){return scenarioOf(s).map.places;}
 function presentersOf(s){return scenarioOf(s).people.presenters;}
 function councilOf(s){return scenarioOf(s).people.council;}
 function inBounds(c,b){return c.x>=b.minX&&c.x<=b.maxX&&c.y>=b.minY&&c.y<=b.maxY;}
-function isSupportedSave(s){return !!s&&[1,2,3].includes(s.v);}
+function isSupportedSave(s){return !!s&&(FLAGS.compositionPlans?[1,2,3,4]:[1,2,3]).includes(s.v);}
 function approvalRoute(s,p){const d=scenarioOf(s).decisionRoute;return p.council?{id:d.id,name:d.name}:{id:d.executiveId,name:d.executiveName};}
 function proposalEligibility(s,p){
+  if(FLAGS.compositionPlans&&p?.program)return programEligibility(s,p);
   const reasons=[];
   if(!p||!KINDS[p.kind])return{ok:false,reasons:['Unknown proposal kind']};
   if(!p.plan||typeof p.plan!=='object')return{ok:false,reasons:['Missing plan']};
@@ -750,6 +760,549 @@ function proposalEligibility(s,p){
   for(const [x,y] of plotsOf(p,s))if(!cellAt(s,x,y))reasons.push('Site is outside the scenario map');
   return{ok:!reasons.length,reasons};
 }
+/* ---------- MP-076..079 composition: trusted vocabulary, never title dispatch ---------- */
+// All coefficients are fictional game balance, in $K / plot equivalents / annual capacity.
+// See docs/composition-balance.md. No source document supplies measured effect sizes.
+const COMPOSITION_RECEIPTS=64;
+const CAPABILITIES=[
+  {id:'housing',family:'housing',unit:'homes',max:200,minArea:.1,density:60,role:'homes',price:[4,40,.12,2],fx:{housing:2.4,afford:.025,live:.015,prop:.000025}},
+  {id:'workplace',family:'commercial',unit:'staffed work places',max:400,minArea:.1,density:40,role:'workshop',price:[4,60,.25,3],fx:{jobs:1,conf:.06,live:.015,prop:.00001}},
+  {id:'shop',family:'commercial',unit:'storefronts',max:24,minArea:.25,density:4,role:'mixed',price:[30,20,1,2],fx:{jobs:9,units:1,conf:.4,walk:.2,prop:.0002}},
+  {id:'community',family:'civic',unit:'daily participants',max:500,minArea:.1,density:100,role:'civic',price:[1.5,80,.1,8],fx:{jobs:.08,live:.06,approval:.02,walk:.01,prop:.00002}},
+  {id:'recreation',family:'recreation',unit:'daily participants',max:500,minArea:.1,density:100,role:'recreation',price:[1,45,.06,5],fx:{jobs:.025,live:.04,safety:.01,prop:.00001}},
+  {id:'event',family:'recreation',unit:'peak attendees',max:1000,minArea:.1,density:200,role:'event',price:[.6,60,.035,6],fx:{jobs:.03,live:.02,conf:.015,approval:.005}},
+  {id:'agriculture',family:'land',unit:'productive plot equivalents',max:64,minArea:.1,density:1,role:'farm',fractional:true,price:[8,12,1,1],fx:{jobs:2,live:.2,conf:.15,storm:.05}},
+  {id:'storage',family:'commercial',unit:'pallet bays',max:1000,minArea:.1,density:100,role:'storage',price:[.8,60,.03,3],fx:{jobs:.08,conf:.015}},
+  {id:'access',family:'infrastructure',unit:'daily passages',max:2000,minArea:.1,density:1000,role:'path',price:[.05,45,.005,2],fx:{walk:.004,safety:.002}},
+  {id:'parking',family:'infrastructure',unit:'spaces',max:400,minArea:.01,density:100,role:'parking',price:[2.5,0,.1,0],fx:{parking:1,walk:-.025,creek:.001}},
+  {id:'green',family:'land',unit:'landscaped plot equivalents',max:64,minArea:.1,density:1,role:'green',fractional:true,price:[45,15,3,2],fx:{walk:.6,live:1.5,storm:.15,prop:.002}},
+  {id:'stormwater',family:'infrastructure',unit:'treated plot equivalents',max:64,minArea:.1,density:1,role:'pond',fractional:true,price:[70,30,2,2],fx:{storm:1,live:.25,safety:.2}},
+  {id:'policy',family:'policy',unit:'operating program',max:1,minArea:0,density:null,role:'policy',price:[10,0,5,0],fx:{walk:1,safety:1,afford:.5,approval:-.25}}
+].map(d=>({id:d.id,label:d.id[0].toUpperCase()+d.id.slice(1),family:d.family,unit:d.unit,
+  quantity:{min:d.fractional?.1:1,max:d.max,step:d.fractional?null:1},area:{min:d.minArea,max:d.id==='policy'?0:64},capacityPerArea:d.density,
+  shareable:['housing','workplace','shop','community','recreation','event','storage'].includes(d.id),
+  pricing:{quantity:d.price[0],area:d.price[1],upkeepQuantity:d.price[2],upkeepArea:d.price[3]},effects:d.fx,render:{role:d.role,symbol:d.id},
+  supportsReuse:false,limitations:['Retained assets are excluded from active allocations. Adaptive reuse inside an existing building requires an unsupported scope acknowledgment.'],schema:{type:'object',additionalProperties:false,required:['id','capability','label','quantity','area','sharedWith'],properties:{
+    id:{type:'string',pattern:'^[A-Za-z][A-Za-z0-9_-]{0,47}$'},capability:{const:d.id},label:{type:'string',minLength:1,maxLength:120},
+    quantity:{type:d.fractional?'number':'integer',minimum:d.fractional?.1:1,maximum:d.max},area:{type:'number',minimum:d.minArea,maximum:d.id==='policy'?0:64},sharedWith:{type:['string','null']}}}}));
+const CAPABILITY_BY_ID=Object.fromEntries(CAPABILITIES.map(d=>[d.id,d]));
+const record=v=>!!v&&Object.prototype.toString.call(v)==='[object Object]';
+const finite=(v,min,max)=>typeof v==='number'&&Number.isFinite(v)&&v>=min&&v<=max;
+const boundedText=(v,min,max)=>typeof v==='string'&&v.trim().length>=min&&v.length<=max;
+function closed(v,allowed,required=allowed){return record(v)&&Object.keys(v).every(k=>allowed.includes(k))&&required.every(k=>Object.hasOwn(v,k));}
+const CONDITION_PROPERTIES={hours:{type:'number',minimum:0,maximum:24},deliveries:{enum:['none','daytime','anytime']},access:{type:'boolean'},
+  buffer:{type:'number',minimum:0,maximum:64},preserve:{type:'number',minimum:0,maximum:64},affordable:{type:'boolean'},operations:{type:'array',maxItems:24,items:{type:'object',additionalProperties:false,
+    required:['componentId','stage','loadingRoute','publicSales','onSiteConsumption'],properties:{componentId:{type:'string'},stage:{const:'operation'},loadingRoute:{type:['string','null'],maxLength:80},publicSales:{type:'boolean'},onSiteConsumption:{type:'boolean'}}}}};
+const CONDITION_KEYS=['hours','deliveries','access','buffer','preserve','affordable'];
+function capabilities(){return copy(CAPABILITIES);}
+function programSchema(){return copy({type:'object',additionalProperties:false,required:['version','title','intent','components','conditions','assumptions','omissions'],properties:{
+  version:{const:2},title:{type:'string',minLength:1,maxLength:120},intent:{type:'string',minLength:1,maxLength:4000},
+  components:{type:'array',minItems:1,maxItems:24,items:{oneOf:CAPABILITIES.map(d=>d.schema)}},
+  conditions:{type:'object',additionalProperties:false,required:CONDITION_KEYS,properties:CONDITION_PROPERTIES},
+  assumptions:{type:'array',maxItems:16,items:{type:'string',minLength:1,maxLength:500}},omissions:{type:'array',maxItems:16,items:{type:'string',minLength:1,maxLength:500}}}});}
+function patchSchema(){return copy({type:'object',additionalProperties:false,properties:{upsert:programSchema().properties.components,remove:{type:'array',maxItems:24,items:{type:'string'}},
+  title:programSchema().properties.title,conditions:{type:'object',additionalProperties:false,properties:CONDITION_PROPERTIES}}});}
+function claimsSchema(){
+  const evidence={type:'object',additionalProperties:false,required:['start','end','quote'],properties:{start:{type:'integer',minimum:0},end:{type:'integer',minimum:1},quote:{type:'string',minLength:1,maxLength:4000}}};
+  const claim={type:'object',additionalProperties:false,required:['id','type','field','operator','value','evidence'],properties:{id:{type:'string',minLength:1,maxLength:48},type:{enum:['effect','condition','component','town']},field:{type:'string',minLength:1,maxLength:80},operator:{enum:['eq','gte','lte']},value:{type:['number','boolean','string']},evidence}};
+  return copy({type:'object',additionalProperties:false,required:['argument','source','programRevision','claims'],properties:{argument:{type:'string',minLength:1,maxLength:4000},source:{enum:['typed','quick']},programRevision:{type:'string'},claims:{type:'array',maxItems:8,items:claim}}});
+}
+
+function canonical(value){
+  const seen=new Set();
+  function encode(v){
+    if(v===null||typeof v==='string'||typeof v==='boolean')return JSON.stringify(v);
+    if(typeof v==='number'){if(!Number.isFinite(v))throw new TypeError('canonical_nonfinite');return JSON.stringify(v);}
+    if(typeof v!=='object'||seen.has(v))throw new TypeError('canonical_invalid');
+    seen.add(v);let out;
+    if(Array.isArray(v)){if(Object.keys(v).length!==v.length)throw new TypeError('canonical_sparse_array');out='['+Array.from(v,encode).join(',')+']';}
+    else {if(!record(v)||Object.getOwnPropertySymbols(v).length)throw new TypeError('canonical_invalid');out='{'+Object.keys(v).sort().map(k=>JSON.stringify(k)+':'+encode(v[k])).join(',')+'}';}
+    seen.delete(v);return out;
+  }
+  return encode(value);
+}
+// Portable synchronous SHA-256: works in the offline browser and a VM without Node APIs.
+function fingerprint(value){
+  const str=canonical(value),bytes=[];
+  for(let i=0;i<str.length;i++){let n=str.charCodeAt(i);if(n>=0xd800&&n<=0xdbff&&i+1<str.length){const low=str.charCodeAt(i+1);if(low>=0xdc00&&low<=0xdfff){n=0x10000+((n-0xd800)<<10)+low-0xdc00;i++;}}
+    if(n<128)bytes.push(n);else if(n<2048)bytes.push(192|(n>>6),128|(n&63));else if(n<65536)bytes.push(224|(n>>12),128|((n>>6)&63),128|(n&63));else bytes.push(240|(n>>18),128|((n>>12)&63),128|((n>>6)&63),128|(n&63));}
+  const length=bytes.length*8;bytes.push(128);while(bytes.length%64!==56)bytes.push(0);const hi=Math.floor(length/4294967296),lo=length>>>0;for(let shift=24;shift>=0;shift-=8)bytes.push((hi>>>shift)&255);for(let shift=24;shift>=0;shift-=8)bytes.push((lo>>>shift)&255);
+  const constants=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+  const h=[0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19],rotr=(x,n)=>(x>>>n)|(x<<(32-n));
+  for(let at=0;at<bytes.length;at+=64){const w=[];for(let i=0;i<16;i++)w[i]=(bytes[at+4*i]<<24)|(bytes[at+4*i+1]<<16)|(bytes[at+4*i+2]<<8)|bytes[at+4*i+3];
+    for(let i=16;i<64;i++){const x=w[i-15],y=w[i-2];w[i]=(w[i-16]+(rotr(x,7)^rotr(x,18)^(x>>>3))+w[i-7]+(rotr(y,17)^rotr(y,19)^(y>>>10)))|0;}
+    let [a,b,c,d,e,f,g,k]=h;for(let i=0;i<64;i++){const t1=(k+(rotr(e,6)^rotr(e,11)^rotr(e,25))+((e&f)^(~e&g))+constants[i]+w[i])|0,t2=((rotr(a,2)^rotr(a,13)^rotr(a,22))+((a&b)^(a&c)^(b&c)))|0;k=g;g=f;f=e;e=(d+t1)|0;d=c;c=b;b=a;a=(t1+t2)|0;}
+    [a,b,c,d,e,f,g,k].forEach((v,i)=>h[i]=(h[i]+v)|0);
+  }
+  return h.map(v=>(v>>>0).toString(16).padStart(8,'0')).join('');
+}
+function validateConditions(c,partial=false){
+  const reasons=[];if(!closed(c,Object.keys(CONDITION_PROPERTIES),partial?[]:CONDITION_KEYS))return ['conditions_unknown_or_missing_field'];
+  for(const [k,v] of Object.entries(c)){
+    if(['access','affordable'].includes(k)&&typeof v!=='boolean')reasons.push('condition_type:'+k);
+    if(['hours','buffer','preserve'].includes(k)&&!finite(v,0,k==='hours'?24:64))reasons.push('condition_bounds:'+k);
+    if(k==='deliveries'&&!['none','daytime','anytime'].includes(v))reasons.push('delivery_period_invalid');
+    if(k==='operations'){
+      if(!Array.isArray(v)||v.length>24){reasons.push('operations_invalid');continue;}
+      const ids=new Set();for(const op of v){if(!record(op)){reasons.push('operation_invalid');continue;}if(!closed(op,['componentId','stage','loadingRoute','publicSales','onSiteConsumption'])||!boundedText(op.componentId,1,48)||op.stage!=='operation'||!(op.loadingRoute===null||boundedText(op.loadingRoute,1,80))||typeof op.publicSales!=='boolean'||typeof op.onSiteConsumption!=='boolean'||ids.has(op.componentId))reasons.push('operation_invalid');ids.add(op.componentId);}
+    }
+  }
+  return reasons;
+}
+function validateProgram(input){
+  const reasons=[];
+  if(!closed(input,['version','title','intent','components','conditions','assumptions','omissions']))return {ok:false,reasons:['program_unknown_or_missing_field']};
+  if(input.version!==2)reasons.push('program_version');
+  if(!boundedText(input.title,1,120)||!boundedText(input.intent,1,4000))reasons.push('program_text_bounds');
+  for(const k of ['assumptions','omissions'])if(!Array.isArray(input[k])||input[k].length>16||input[k].some(v=>!boundedText(v,1,500)))reasons.push('program_text_list:'+k);
+  reasons.push(...validateConditions(input.conditions));
+  if(!Array.isArray(input.components)||!input.components.length||input.components.length>24)return {ok:false,reasons:[...reasons,'component_count']};
+  const ids=new Map();
+  for(const c of input.components){
+    if(!closed(c,['id','capability','label','quantity','area','sharedWith'])){reasons.push('component_unknown_or_missing_field');continue;}
+    if(typeof c.id!=='string'||!/^[A-Za-z][A-Za-z0-9_-]{0,47}$/.test(c.id)||ids.has(c.id))reasons.push('component_id_invalid');ids.set(c.id,c);
+    if(!boundedText(c.label,1,120))reasons.push('component_label');
+    const d=Object.hasOwn(CAPABILITY_BY_ID,c.capability)&&CAPABILITY_BY_ID[c.capability];if(!d){reasons.push('unsupported_capability:'+String(c.capability));continue;}
+    if(!finite(c.quantity,d.quantity.min,d.quantity.max)||(d.quantity.step===1&&!Number.isInteger(c.quantity)))reasons.push('quantity_bounds:'+c.id);
+    if(!finite(c.area,d.area.min,d.area.max)||d.capacityPerArea!==null&&c.quantity>c.area*d.capacityPerArea+1e-8)reasons.push('area_capacity:'+c.id);
+    if(c.sharedWith!==null&&!boundedText(c.sharedWith,1,48))reasons.push('shared_reference:'+c.id);
+  }
+  const shared=new Map();
+  for(const c of input.components){if(!record(c)||c.sharedWith===null)continue;const primary=ids.get(c.sharedWith),def=CAPABILITY_BY_ID[c.capability],host=primary&&CAPABILITY_BY_ID[primary.capability];
+    if(!primary||primary===c||primary.sharedWith!==null||!def?.shareable||!host?.shareable){reasons.push('shared_reference:'+c.id);continue;}
+    shared.set(primary.id,(shared.get(primary.id)||0)+c.area);if(shared.get(primary.id)>primary.area+1e-8)reasons.push('shared_capacity:'+primary.id);
+  }
+  for(const op of Array.isArray(input.conditions?.operations)?input.conditions.operations:[]){if(!record(op))continue;const c=ids.get(op.componentId);if(!c)reasons.push('operation_component_missing');
+    else if((op.publicSales||op.onSiteConsumption)&&!['shop','storage','event','community'].includes(c.capability))reasons.push('operation_not_supported:'+c.id);}
+  return reasons.length?{ok:false,reasons}:{ok:true,program:copy(input),reasons:[]};
+}
+
+const precise=n=>Math.round(n*1e8)/1e8;
+function programLayout(program,plots){
+  const allocations=[],primary=new Map();let cursor=0;
+  const slices=(start,size)=>{const segments=[];let left=size,at=start;while(left>1e-8){const index=Math.floor(at+1e-8),offset=precise(at-index),area=precise(Math.min(left,1-offset));if(!plots[index]||area<=0)break;segments.push({plot:plots[index].slice(),offset,area});at=precise(at+area);left=precise(left-area);}return segments;};
+  for(const c of program.components.filter(c=>c.sharedWith===null)){
+    const segments=slices(cursor,c.area),a={componentId:c.id,capability:c.capability,label:c.label,quantity:c.quantity,area:c.area,sharedWith:null,role:CAPABILITY_BY_ID[c.capability].render.role,segments};
+    primary.set(c.id,{start:cursor,next:0});allocations.push(a);cursor=precise(cursor+c.area);
+  }
+  for(const c of program.components.filter(c=>c.sharedWith!==null)){
+    const host=primary.get(c.sharedWith),segments=slices(host.start+host.next,c.area);host.next=precise(host.next+c.area);
+    allocations.push({componentId:c.id,capability:c.capability,label:c.label,quantity:c.quantity,area:c.area,sharedWith:c.sharedWith,role:CAPABILITY_BY_ID[c.capability].render.role,segments});
+  }
+  // Presentation order is the accepted component order, even when hosts appear later.
+  allocations.sort((a,b)=>program.components.findIndex(c=>c.id===a.componentId)-program.components.findIndex(c=>c.id===b.componentId));
+  const buffer=slices(cursor,program.conditions.buffer),usedArea=precise(cursor+program.conditions.buffer),preservedArea=program.conditions.preserve,
+    preserved=slices(plots.length-preservedArea,preservedArea),unused=slices(usedArea,Math.max(0,plots.length-preservedArea-usedArea));
+  const cells=plots.map(plot=>{const match=segment=>segment.plot[0]===plot[0]&&segment.plot[1]===plot[1],on=allocations.filter(a=>a.segments.some(match)),primaryOn=on.filter(a=>a.sharedWith===null),sum=ss=>precise(ss.filter(match).reduce((n,a)=>n+a.area,0)),occupied=precise(primaryOn.reduce((n,a)=>n+sum(a.segments),0)+sum(buffer));
+    return {plot:plot.slice(),componentIds:on.map(a=>a.componentId),role:primaryOn[0]?.role||(sum(buffer)?'buffer':'retained'),usedArea:occupied,bufferArea:sum(buffer),preservedArea:sum(preserved),freeArea:precise(1-occupied-sum(preserved))};});
+  return {plots:copy(plots),allocations,cells,capacity:plots.length,usedArea,freeArea:precise(plots.length-usedArea-preservedArea),preservedArea,bufferArea:program.conditions.buffer,buffer,preserved,unused,illustrativeInterior:true};
+}
+function programDemolition(s,layout){
+  const changed=layout.cells.filter(c=>c.usedArea>1e-8).map(c=>c.plot),d=demolitionOf(s,changed);
+  // Working agriculture and landscape management keep the underlying land in service.
+  let farmKept=0;for(const cell of layout.cells){if(!cell.usedArea)continue;const c=cellAt(s,...cell.plot);if(c.t==='farm'&&!c.b){const destructive=layout.allocations.filter(a=>a.sharedWith===null&&!['agriculture','green','stormwater','access'].includes(a.capability)).reduce((n,a)=>n+a.segments.filter(t=>t.plot[0]===c.x&&t.plot[1]===c.y).reduce((v,t)=>v+t.area,0),0)+cell.bufferArea;farmKept+=.5*(1-Math.min(1,destructive));}}
+  d.farm=precise(Math.max(0,d.farm-farmKept));
+  d.retained=layout.cells.filter(c=>!c.usedArea).map(c=>({plot:c.plot.slice(),building:copy(cellAt(s,...c.plot).b),terrain:cellAt(s,...c.plot).t}));
+  d.changedPlots=changed;return d;
+}
+function programBaseEffects(p,s){
+  const program=p.program,c=program.conditions,e={cost:0,upkeep:0,jobs:0,units:0,housing:0,walk:0,live:0,conf:0,prop:0,approval:0,farm:0,parking:0,safety:0,afford:0,storm:0,downtown:0,creek:0,activity:0,noise:0,freight:0,notes:[]};
+  for(const part of program.components){const d=CAPABILITY_BY_ID[part.capability],price=d.pricing,operates=!['housing','green','stormwater','policy','agriculture','access','parking'].includes(part.capability),factor=operates?c.hours/10:1;
+    e.cost+=part.quantity*price.quantity+part.area*price.area*(part.sharedWith?.5:1);e.upkeep+=part.quantity*price.upkeepQuantity+part.area*price.upkeepArea;
+    for(const [field,value] of Object.entries(d.effects))e[field]+=value*part.quantity*(operates&&['jobs','conf','live','approval'].includes(field)?factor:1);
+    if(operates){e.activity+=part.quantity*factor;e.noise+=part.quantity*factor*(part.capability==='event'?.02:.005);}
+    if(part.capability==='storage')e.freight+=part.quantity/20;
+  }
+  const physical=program.components.some(c=>c.area>0);
+  if(physical){e.cost+=30;if(c.access){e.cost+=25;e.upkeep+=1;e.walk+=1;e.safety+=1;}
+    else{e.walk-=1;e.safety-=1;}
+    e.cost+=c.buffer*40+c.preserve*8;e.upkeep+=c.buffer*2+c.preserve*.5;e.live+=c.buffer*.7;e.storm+=c.buffer*.2;
+    if(c.deliveries==='daytime'&&e.freight){e.cost+=12;e.upkeep+=1;e.noise*=.7;}
+    if(c.deliveries==='none'&&e.freight)e.conf-=e.freight*.2;
+  }
+  const homes=program.components.filter(c=>c.capability==='housing').reduce((n,c)=>n+c.quantity,0);
+  if(c.affordable&&homes){e.cost+=homes*10;e.afford+=homes*.0625;e.approval+=1;}
+  const traits=p.traits||[],nearHomes=traits.includes('neighbors');
+  if(nearHomes){const disturbance=e.noise*Math.max(0,c.hours-8)/8/(1+c.buffer);e.live-=disturbance;e.approval-=disturbance*.5;}
+  if(traits.includes('creek'))e.creek+=Math.max(0,(p.layout?.usedArea||0)-c.buffer)*.1;
+  if(traits.includes('edge')&&physical)e.walk-=.5;
+  for(const op of c.operations||[]){const route=scenarioOf(s).composition?.routes?.[op.loadingRoute];if(route){e.cost+=route.costK||0;e.upkeep+=route.upkeepK||0;if(route.crossingConflict&&e.freight){e.safety-=.8;e.live-=.4;}}
+    if(op.publicSales){e.activity+=5;e.walk+=.1;}}
+  for(const k of Object.keys(e))if(typeof e[k]==='number')e[k]=precise(e[k]);return e;
+}
+function programOperatingEffects(p,s){return p.operatingEffects?copy(p.operatingEffects):programBaseEffects(p,s);}
+function compositionEffects(p,s){
+  const e=programBaseEffects(p,s),d=p.demo,pr=presentersOf(s)[p.presenter]||PRESENTERS.planner;
+  e.cost+=(p.layout?.cells.filter(c=>c.usedArea>1e-8).length||0)*15;
+  if(d){e.cost+=d.cost;e.jobs-=d.untrackedJobs;e.farm+=d.farm;e.live+=d.live;e.conf+=d.conf;e.approval+=d.approval;
+    if(d.residents)e.notes.push(`Displaces about ${d.residents} residents`);if(d.warning)e.notes.push(d.warning);}
+  if(p.grant)e.cost*=1-p.grant;
+  e.cost=Math.round(e.cost);e.costHigh=Math.round(e.cost*(1+(100-pr.detail)/250));e.upkeep=r1(e.upkeep);
+  // Identity text is separate from numerical notes so renaming cannot change effects.
+  e.notes.push('Fictional balance estimates; plot allocations and shared activity are schematic.');return e;
+}
+function compatiblePlan(program){
+  const out=defaultPlan('initiative'),sum=id=>program.components.filter(c=>c.capability===id).reduce((n,c)=>n+c.quantity,0);
+  out.homes=Math.min(200,Math.round(sum('housing')));out.shops=Math.min(12,Math.round(sum('shop')));out.parking=Math.min(300,Math.round(sum('parking')));out.affordable=program.conditions.affordable;
+  out.green=Math.min(3,Math.ceil(sum('green')));out.stormwater=sum('stormwater')>0;out.plaza=sum('event')>0;out.civic=sum('community')>0?'community_center':'none';return out;
+}
+function forecastProgram(s,p,base=null){
+  const e=effectsOf(p,s),vote=forecastVote(s,p,p.id),support=councilOf(s).map(m=>({memberId:m.id,lean:lean(memberScore(s,m,p,p.id)),statement:memberStatement(s,m,p,p.id)}));
+  const money={costK:e.cost,costHighK:e.costHigh,annualUpkeepK:e.upkeep,reserveAfterCashK:s.cash-e.cost,bondAnnualK:Math.round(e.cost*.125)},effects=copy(e);
+  delete effects.cost;delete effects.costHigh;delete effects.upkeep;
+  const result={programRevision:p.programRevision||fingerprint({kind:p.kind,plan:p.plan,plots:plotsOf(p,s)}),money,effects,demolition:{costK:p.demo?.cost||0,displacedResidents:p.demo?.residents||0,lostStorefronts:p.demo?.storefronts||0,acquisitionWarning:p.demo?.warning||null},support,votes:vote,funding:fundingOptions(s,p),deliveryOdds:deliveryOdds(s,p)};
+  if(base){const old=forecastProgram(s,base),delta={money:{},effects:{},support:[]};for(const k of Object.keys(money))delta.money[k]=precise(money[k]-old.money[k]);for(const k of new Set([...Object.keys(effects),...Object.keys(old.effects)]))if(typeof effects[k]==='number'||typeof old.effects[k]==='number')delta.effects[k]=precise((effects[k]||0)-(old.effects[k]||0));delta.support=support.map(m=>({memberId:m.memberId,lean:m.lean-(old.support.find(v=>v.memberId===m.memberId)?.lean||0)}));result.delta=delta;}
+  return result;
+}
+function previewProgram(s,input){
+  const reasons=[];if(!FLAGS.compositionPlans)return {ok:false,reasons:['composition_disabled']};
+  if(!s||!closed(input,['program','plots','id','presenter'],['program','plots']))return {ok:false,reasons:['preview_unknown_or_missing_field']};
+  const valid=validateProgram(input.program);if(!valid.ok)return valid;const program=valid.program,plots=input.plots,seen=new Set();
+  if(!Array.isArray(plots)||plots.length>mapSize(s).width*mapSize(s).height)return {ok:false,reasons:['plots_invalid']};
+  for(const plot of plots){if(!Array.isArray(plot)||plot.length!==2||!Number.isInteger(plot[0])||!Number.isInteger(plot[1])){reasons.push('plot_invalid');continue;}
+    const key=plot.join(',');if(seen.has(key))reasons.push('plot_duplicate');seen.add(key);if(!canBuildOn(s,...plot))reasons.push('plot_not_buildable');}
+  const presenter=input.presenter||'planner',id=input.id||'init'+s.year;
+  if(!boundedText(id,1,100)||!presentersOf(s)[presenter]||!s.presenters[presenter])reasons.push('proposal_identity_invalid');
+  const used=program.components.reduce((n,c)=>n+(c.sharedWith===null?c.area:0),0)+program.conditions.buffer;
+  if(program.components.some(c=>c.capability==='policy')&&[...(s.built||[]),...(s.pending||[])].some(p=>p.id!==id&&!p.closed&&p.program?.components.some(c=>c.capability==='policy')))reasons.push('policy_program_already_active');
+  if(used+program.conditions.preserve>plots.length+1e-8)reasons.push('site_capacity_exceeded');
+  for(const op of program.conditions.operations||[]){if(op.loadingRoute!==null){const route=scenarioOf(s).composition?.routes?.[op.loadingRoute];if(!route||route.plots&&!plots.some(p=>route.plots.some(q=>canonical(p)===canonical(q))))reasons.push('loading_route_unavailable');}}
+  if(reasons.length)return {ok:false,reasons};
+  const layout=programLayout(program,plots),demo=programDemolition(s,layout),changed=new Set(demo.changedPlots.map(p=>p.join(',')));
+  for(const cell of layout.cells){if(cell.usedArea>1e-8&&cell.preservedArea>1e-8&&cellAt(s,...cell.plot).b)reasons.push('retained_building_cannot_be_split');}
+  for(const b of s.built||[]){if(b.closed)continue;const old=b.layout?b.layout.cells.filter(c=>c.usedArea>1e-8).map(c=>c.plot):plotsOf(b,s);if(old.some(p=>changed.has(p.join(',')))&&old.some(p=>!changed.has(p.join(','))))reasons.push('existing_project_partial_demolition');}
+  if(reasons.length)return {ok:false,reasons};
+  const proposal={id,kind:'initiative',title:program.title,presenter,site:plots.length?'custom':'none',plots:copy(plots),traits:plotTraits(s,plots),demo,plan:compatiblePlan(program),
+    program,programRevision:fingerprint({program,plots,presenter,id}),layout,conditions:copy(program.conditions),council:true,blurb:program.intent,desc:program.intent,year:s.year,status:'open',mine:presenter==='planner',outOfScope:program.omissions.join(' ')||null};
+  return {ok:true,proposal,forecast:forecastProgram(s,proposal),layout,reasons:[]};
+}
+function reviseProgram(s,p,patch){
+  if(!p?.program)return closed(patch,['changes'])?previewLegacyRevision(s,p,patch.changes):{ok:false,reasons:['legacy_changes_required']};
+  if(!closed(patch,['upsert','remove','conditions','title'],[]))return {ok:false,reasons:['patch_unknown_field']};
+  if(patch.upsert!==undefined&&(!Array.isArray(patch.upsert)||patch.upsert.length>24)||patch.remove!==undefined&&(!Array.isArray(patch.remove)||patch.remove.length>24||patch.remove.some(x=>!boundedText(x,1,48))||new Set(patch.remove).size!==patch.remove.length))return {ok:false,reasons:['patch_components_invalid']};
+  if(patch.conditions!==undefined){const invalid=validateConditions(patch.conditions,true);if(invalid.length)return {ok:false,reasons:invalid};}
+  const program=copy(p.program),remove=new Set(patch.remove||[]),upsert=patch.upsert||[];
+  if([...remove].some(id=>!program.components.some(c=>c.id===id))||new Set(upsert.map(c=>c?.id)).size!==upsert.length||upsert.some(c=>!record(c)||remove.has(c.id)))return {ok:false,reasons:['patch_id_invalid']};
+  program.components=program.components.filter(c=>!remove.has(c.id));for(const c of upsert){const at=program.components.findIndex(old=>old.id===c.id);if(at>=0)program.components[at]=copy(c);else program.components.push(copy(c));}
+  if(patch.conditions)Object.assign(program.conditions,patch.conditions);if(patch.title!==undefined)program.title=patch.title;
+  const result=previewProgram(s,{program,plots:plotsOf(p,s),id:p.id,presenter:p.presenter});
+  if(result.ok){result.proposal={...copy(p),...result.proposal,site:p.site,mine:p.mine};result.forecast=forecastProgram(s,result.proposal,p);}return result;
+}
+
+function initializeComposition(s,options={}){
+  s.v=4;s.gameId=s.gameId||options.gameId||null;s.revision=Number.isSafeInteger(s.revision)?s.revision:0;
+  s.actionHighWater=Number.isSafeInteger(s.actionHighWater)?s.actionHighWater:0;s.receipts=s.receipts||[];s.projectRecords=s.projectRecords||[];s.persuasionHistory=s.persuasionHistory||[];
+}
+const authoredProgram=(title,intent,components,conditions={})=>({version:2,title,intent,components,conditions:{hours:10,deliveries:'daytime',access:true,buffer:0,preserve:0,affordable:false,...conditions},assumptions:['Fictional operating facts are authored for this new campaign.'],omissions:[]});
+const authoredPart=(id,capability,quantity,area,sharedWith=null)=>({id,capability,label:id.replaceAll('_',' '),quantity,area,sharedWith});
+function installCompositionScenario(s){
+  if(s.scenarioId!=='millbrooke'||s.scenario.composition)return;
+  const farmPlots=copy(sitesOf(s).ridge),campusPlots=copy(sitesOf(s).campus_s),source='docs/reference/frozen-C/docs/contracts/proposal-council-v1/sources/approved-review/persona-dossier.md';
+  const profiles={
+    bowers_operator:{version:1,controller:'bowers_operator',authority:'own-proposal operating arrangement; no authority to sell leased land',source,interests:['working land','equipment and feed access','continuity under a recorded lease'],beliefs:['Fragmentation may make succession harder.'],
+      affectedPlots:farmPlots,prerequisites:[{fact:'bowersLeaseValid',value:true,reason:'The operating arrangement requires the recorded farm lease.'}],
+      hard:[{field:'component.agriculture',min:2,reason:'working_fields_removed: the proposal must keep productive fields in operation.'}],
+      preferences:[{field:'condition.access',equals:true,reason:'farm_access: keep equipment and feed access open.',concession:{conditions:{access:true}}},{field:'condition.preserve',min:3,reason:'farm_land: retain the leased field margin.',concession:{conditions:{preserve:3}}}],voice:'Explain a day of deliveries and field work; distinguish operation from title.'},
+    freight_operator:{version:1,controller:'freight_operator',authority:'own distribution proposal and loading schedule; no alcohol licensing power',source,interests:['usable storage','safe service access','reliable daytime loading'],
+      affectedPlots:campusPlots,prerequisites:[{fact:'campusLoadingDelegated',value:true,reason:'The service-lane arrangement requires a recorded operating delegation.'}],
+      hard:[{field:'component.storage',min:10,reason:'operating_viability: retain at least the authored minimum storage capacity.'},{field:'operation.onSiteConsumption',equals:false,reason:'consumption_scope: a drinking venue is outside this operator’s submitted distribution program.'}],
+      preferences:[{field:'condition.deliveries',equals:'daytime',reason:'delivery_conflict: daytime loading is the agreed operating window.',concession:{conditions:{deliveries:'daytime'}}}],voice:'Discuss loading and storage, without promising permits or council votes.'},
+    college_liaison:{version:1,controller:null,authority:'stakeholder statement only; cannot authorize neighboring business edits',source,interests:['campus pedestrian access','delivery conflict','student-facing sales safeguards'],beliefs:['Public-facing alcohol sales may create pressures; this is a concern, not a measured effect.'],
+      affectedPlots:campusPlots,prerequisites:[],hard:[{field:'operation.onSiteConsumption',equals:false,reason:'consumption_scope: the college does not endorse a drinking venue on the presented operating facts.'}],
+      preferences:[{field:'operation.crossingConflict',equals:false,reason:'delivery_conflict: loading crosses the authored campus entrance.'},{field:'operation.publicSales',equals:false,reason:'public_sales: customer-facing sales require a separately reviewed access and safeguards plan.'}],voice:'Ask concrete questions about loading and customers. A concern is not a veto.'}
+  };
+  s.scenario.composition={version:1,profiles,routes:{
+    'campus-entrance':{id:'campus-entrance',plots:campusPlots,crossingConflict:true,costK:0,upkeepK:0,source:'scenario-authored access conflict'},
+    'service-lane':{id:'service-lane',plots:campusPlots,crossingConflict:false,costK:25,upkeepK:2,source:'scenario-authored delegated service route'}},
+    authoredFacts:{bowersLeaseValid:{value:true,recordId:'bowers-lease-2027',source:'scenario-authored'},campusLoadingDelegated:{value:true,recordId:'campus-service-agreement-2027',source:'scenario-authored'}}};
+  Object.assign(s.facts,{bowersLeaseValid:true,campusLoadingDelegated:true});
+  for(const [id,name,role] of [['bowers_operator','Ruth Bowers','Working-farm tenant operator'],['freight_operator','Alex Moreno','Distribution operator'],['college_liaison','Dr. Leena Shah','College community liaison']]){
+    profiles[id].researchAmendment='docs/persona-research-v2.md';
+    s.scenario.people.presenters[id]={name,role,rel:55,comp:80,detail:85,flex:'medium',persona:profiles[id].voice};s.presenters[id]={rel:55};
+  }
+  const farm=authoredProgram('Bowers farm access and stand','Keep a leased working farm productive while adding a small stand and equipment access.',[
+    authoredPart('fields','agriculture',4,4),authoredPart('stand','shop',1,.25),authoredPart('lane','access',100,.25)],{preserve:4}),
+    campus=authoredProgram('College Avenue distribution loading','A freight-only storage operation with a delegated service lane, not a drinking venue.',[
+      authoredPart('warehouse','storage',40,1),authoredPart('loading','access',100,.25)],{buffer:.5,operations:[{componentId:'warehouse',stage:'operation',loadingRoute:'service-lane',publicSales:false,onSiteConsumption:false}]});
+  s.scenario.proposals.definitions['farm-access']={kind:'initiative',title:farm.title,presenter:'bowers_operator',site:'ridge',program:farm,controller:'bowers_operator',profileId:'bowers_operator',stakeholders:[],council:true};
+  s.scenario.proposals.definitions['campus-loading']={kind:'initiative',title:campus.title,presenter:'freight_operator',site:'campus_s',program:campus,controller:'freight_operator',profileId:'freight_operator',stakeholders:['college_liaison'],council:true};
+  s.scenario.proposals.schedule[1]=[...(s.scenario.proposals.schedule[1]||[]),'farm-access','campus-loading'];
+  s.scenario.programDefinitions={...(s.scenario.programDefinitions||{}),'working-farm-stand':{id:'working-farm-stand',label:'Working farm and stand',program:copy(farm)},'freight-storage':{id:'freight-storage',label:'Freight storage and access',program:copy(campus)}};
+}
+function programDefinitions(s){
+  const result=[];for(const [id,def] of Object.entries(scenarioOf(s).programDefinitions||{})){
+    if(!closed(def,['id','label','program'])||id!==def.id||!boundedText(id,1,80)||!boundedText(def.label,1,120))continue;
+    const checked=validateProgram(def.program);if(checked.ok)result.push({id,label:def.label,program:checked.program});
+  }return result;
+}
+
+function strictLegacyPlan(kind,plan){
+  if(!KINDS[kind]||!closed(plan,Object.keys(KINDS[kind].params)))return false;
+  return Object.entries(KINDS[kind].params).every(([k,rule])=>rule.type==='bool'?typeof plan[k]==='boolean':rule.type==='enum'?rule.options.includes(plan[k]):finite(plan[k],rule.min,rule.max)&&Number.isInteger(plan[k])&&Math.abs((plan[k]-rule.min)/rule.step-Math.round((plan[k]-rule.min)/rule.step))<1e-8);
+}
+function legacyRevision(p,s){return fingerprint({id:p.id,kind:p.kind,plan:p.plan,plots:plotsOf(p,s),presenter:p.presenter});}
+function previewLegacyRevision(s,p,changes){
+  if(!FLAGS.compositionPlans||!p||p.program||!KINDS[p.kind]||!closed(changes,Object.keys(KINDS[p.kind].params),[]))return {ok:false,reasons:['legacy_patch_invalid']};
+  const plan={...p.plan,...changes};if(!strictLegacyPlan(p.kind,plan))return {ok:false,reasons:['legacy_plan_out_of_bounds']};
+  if(p.kind==='initiative'&&needsSite(plan)&&plotsNeeded(plan)>plotsOf(p,s).length)return {ok:false,reasons:['site_capacity_exceeded']};
+  const candidate={...copy(p),plan};candidate.programRevision=legacyRevision(candidate,s);
+  return {ok:true,proposal:candidate,forecast:forecastProgram(s,candidate,p),layout:p.layout?copy(p.layout):null,reasons:[]};
+}
+function residentProfile(s,p,actorId){
+  const def=scenarioOf(s).proposals.definitions[p.id]||{},controller=def.controller||p.presenter;
+  const profiles=scenarioOf(s).composition?.profiles||{},id=actorId||def.profileId||controller;
+  const trusted=profiles[id]||(!actorId&&def.profile)||presentersOf(s)[id]?.profile;
+  if(trusted)return {profile:trusted,controller};
+  const pr=presentersOf(s)[p.presenter],profile={version:1,controller,authority:'own submitted proposal only',prerequisites:[],hard:[],preferences:[]};
+  if(!p.program){
+    for(const [field,rule] of Object.entries(KINDS[p.kind].params))if(rule.type==='int'&&p.plan[field]>0&&pr.flex==='low'&&['homes','beds','stores'].includes(field))profile.hard.push({field:'plan.'+field,min:p.plan[field]*.5,reason:'submitted_capacity: the proposer will not remove most of the submitted capacity.'});
+    if(p.kind==='park'&&p.plan.memorial)profile.preferences.push({field:'plan.memorial',equals:true,reason:'memorial_commitment: retain the submitted memorial.',concession:{changes:{memorial:true}}});
+  }
+  return {profile,controller};
+}
+function residentMetric(s,p,field){
+  const [type,...rest]=field.split('.'),name=rest.join('.');
+  if(type==='condition')return p.program?.conditions[name];if(type==='plan')return p.plan?.[name];
+  if(type==='component')return p.program?.components.filter(c=>c.capability===name).reduce((n,c)=>n+c.quantity,0)||0;
+  if(type==='effect')return effectsOf(p,s)[name];
+  if(type==='operation'){
+    const ops=p.program?.conditions.operations||[];
+    if(name==='crossingConflict')return ops.some(op=>scenarioOf(s).composition?.routes?.[op.loadingRoute]?.crossingConflict===true);
+    return ops.some(op=>op[name]===true);
+  }
+  return undefined;
+}
+function ruleFails(s,p,rule){const v=residentMetric(s,p,rule.field);return v===undefined||Object.hasOwn(rule,'equals')&&v!==rule.equals||Object.hasOwn(rule,'min')&&v<rule.min||Object.hasOwn(rule,'max')&&v>rule.max;}
+function trustedPrerequisite(s,gate){
+  if(!gate||typeof gate.fact!=='string'||s.facts?.[gate.fact]!==gate.value)return false;
+  const authored=scenarioOf(s).composition?.authoredFacts?.[gate.fact];
+  if(authored&&authored.value===gate.value&&authored.source==='scenario-authored'&&authored.recordId)return true;
+  return (s.built||[]).some(b=>!b.closed&&b.completionFacts?.[gate.fact]===gate.value&&scenarioOf(s).proposals.definitions[b.id]?.completionFacts?.[gate.fact]===gate.value);
+}
+function evaluateResident(s,proposal,candidate){
+  const fail=reasons=>({stance:'refuse',reasons,controller:null,prerequisites:[],stakeholders:[],authorizedRevision:null});
+  if(!FLAGS.compositionPlans||!proposal||!candidate)return fail(['resident_candidate_invalid']);
+  const p=s.proposals.find(q=>q.id===proposal.id)||proposal,option=candidate.proposal||candidate;
+  if(option.id!==p.id||option.presenter!==p.presenter||canonical(plotsOf(option,s))!==canonical(plotsOf(p,s))||option.kind!==p.kind)return fail(['resident_subject_or_site_mismatch']);
+  const checked=p.program?previewProgram(s,{program:option.program,plots:plotsOf(p,s),id:p.id,presenter:p.presenter}):previewLegacyRevision(s,p,option.plan);
+  if(!checked.ok)return fail(checked.reasons);const desired=checked.proposal,{profile,controller}=residentProfile(s,p),prerequisites=(profile.prerequisites||[]).map(g=>({...copy(g),satisfied:trustedPrerequisite(s,g)}));
+  const binding={controller,profileVersion:profile.version||1,programRevision:desired.programRevision,stateRevision:s.revision,prerequisites};
+  const def=scenarioOf(s).proposals.definitions[p.id]||{},stakeholders=(def.stakeholders||[]).map(id=>{
+    const other=residentProfile(s,p,id).profile,hard=(other.hard||[]).filter(r=>ruleFails(s,desired,r)),preferences=(other.preferences||[]).filter(r=>ruleFails(s,desired,r));
+    return {actorId:id,controller:false,stance:hard.length?'refuse':preferences.length?'counter':'agree',reasons:[...hard,...preferences].map(r=>r.reason)};
+  });
+  if(!controller||!presentersOf(s)[controller]&&controller!=='mayor')return {...fail(['controlling_authority_missing']),...binding,stakeholders};
+  if(prerequisites.some(g=>!g.satisfied))return {stance:'refuse',reasons:prerequisites.filter(g=>!g.satisfied).map(g=>g.reason||'condition_unresolved:'+g.fact),...binding,stakeholders,authorizedRevision:null};
+  const hard=(profile.hard||[]).filter(r=>ruleFails(s,desired,r));if(hard.length)return {stance:'refuse',reasons:hard.map(r=>r.reason),...binding,stakeholders,authorizedRevision:null};
+  const preferences=(profile.preferences||[]).filter(r=>ruleFails(s,desired,r));
+  if(preferences.length){let counter=desired;for(const rule of preferences){if(!rule.concession)return {stance:'refuse',reasons:preferences.map(r=>r.reason),...binding,stakeholders,authorizedRevision:null};
+      const result=counter.program?reviseProgram(s,counter,rule.concession):previewLegacyRevision(s,counter,rule.concession.changes);if(!result.ok)return {stance:'refuse',reasons:[rule.reason,...result.reasons],...binding,stakeholders,authorizedRevision:null};counter=result.proposal;}
+    if((profile.hard||[]).some(r=>ruleFails(s,counter,r))||(profile.preferences||[]).some(r=>ruleFails(s,counter,r)))return {...fail(['counter_not_authorized']),...binding,stakeholders};
+    return {stance:'counter',reasons:preferences.map(r=>r.reason),counter,...binding,stakeholders,authorizedRevision:counter.programRevision};
+  }
+  return {stance:'agree',reasons:['The requested revision respects the proposer’s recorded interests and operating authority.'],...binding,stakeholders,authorizedRevision:desired.programRevision};
+}
+
+const CLAIM_ALIASES={jobs:['jobs','work places','workers'],housing:['housing','homes','residents'],units:['stores','shops','storefronts'],cost:['cost','reserve','budget'],costHigh:['cost','budget'],upkeep:['upkeep','annual'],parking:['parking','spaces'],walk:['walk','paths','access'],live:['livability','quality of life','recreation','green'],conf:['business','confidence'],prop:['property','values'],approval:['approval','support'],farm:['farm','fields','land'],safety:['safe','safety'],afford:['affordable','affordability','housing'],storm:['stormwater','runoff','rain'],creek:['creek','flood'],hours:['hours'],deliveries:['deliveries','loading'],access:['access','lane','path'],buffer:['buffer','screening'],preserve:['preserve','retain','land'],affordable:['affordable','working families']};
+function claimPriority(type,field,value,e,s){
+  if(type==='effect'){
+    const priority={units:'stores',storm:'flood',creek:'flood',upkeep:'cost',costHigh:'cost'}[field]||field;
+    const useful=['cost','costHigh','upkeep'].includes(field)?value<=s.cash/2:['farm','creek','parking'].includes(field)?value<=0:value>0;
+    return useful?priority:null;
+  }
+  if(type==='condition')return {access:value?'walk':null,buffer:value>0?'live':null,preserve:value>0?'farm':null,affordable:value?'afford':null,hours:value<=12?'live':null,deliveries:value==='daytime'?'safety':null}[field]||null;
+  if(type==='component')return {housing:'housing',workplace:'jobs',shop:'stores',community:'live',recreation:'live',event:'conf',agriculture:'farm',storage:'jobs',access:'walk',parking:null,green:'live',stormwater:'flood',policy:'safety'}[field]||null;
+  return null;
+}
+function evaluateClaims(s,p,memberId,input){
+  const invalid=reason=>({ok:false,reasons:[reason],claims:[],addressed:[],credit:'none',tone:'respectful',notes:[reason],offers:[]});
+  if(!FLAGS.compositionPlans||!p||!councilOf(s).some(m=>m.id===memberId))return invalid('claim_subject_invalid');
+  if(!closed(input,['argument','source','programRevision','claims'])||!boundedText(input.argument,1,4000)||!['typed','quick'].includes(input.source)||!Array.isArray(input.claims)||input.claims.length>8)return invalid('claim_input_invalid');
+  const current=s.proposals.find(q=>q.id===p.id)||p,revision=current.programRevision||legacyRevision(current,s);
+  if(input.programRevision!==revision)return invalid('claim_revision_stale');
+  const e=effectsOf(current,s),m=councilOf(s).find(m=>m.id===memberId),addressed=[],results=[],seen=new Set(),notes=[];
+  for(const c of input.claims){
+    if(!closed(c,['id','type','field','operator','value','evidence'])||!boundedText(c.id,1,48)||seen.has(c.id)||!['effect','condition','component','town'].includes(c.type)||!boundedText(c.field,1,80)||!['eq','gte','lte'].includes(c.operator)||!(typeof c.value==='boolean'||boundedText(c.value,1,120)||finite(c.value,-1e9,1e9))||!closed(c.evidence,['start','end','quote']))return invalid('claim_schema_invalid');
+    seen.add(c.id);const span=c.evidence,quote=span.quote;
+    let code='verified',actual,valid=true;
+    if(!Number.isInteger(span.start)||!Number.isInteger(span.end)||span.start<0||span.end<=span.start||span.end>input.argument.length||typeof quote!=='string'||input.argument.slice(span.start,span.end)!==quote){valid=false;code='claim_evidence_mismatch';}
+    if(c.type==='effect'&&typeof e[c.field]==='number')actual=e[c.field];
+    if(c.type==='condition'&&CONDITION_KEYS.includes(c.field))actual=current.program?.conditions[c.field];
+    if(c.type==='component'&&Object.hasOwn(CAPABILITY_BY_ID,c.field))actual=current.program?.components.filter(p=>p.capability===c.field).reduce((n,c)=>n+c.quantity,0)||0;
+    if(c.type==='town'&&['pop','cash','farmLost'].includes(c.field))actual=s[c.field]||0;
+    if(valid){const equality=typeof c.value==='number'&&typeof actual==='number'?Math.abs(actual-c.value)<1e-7:actual===c.value;
+      if(actual===undefined||c.operator==='eq'&&!equality||c.operator==='gte'&&!(typeof actual==='number'&&typeof c.value==='number'&&actual>=c.value)||c.operator==='lte'&&!(typeof actual==='number'&&typeof c.value==='number'&&actual<=c.value)){valid=false;code=actual===undefined?'claim_unsupported':'claim_false';}}
+    if(valid){const lower=quote.toLowerCase(),aliases=CLAIM_ALIASES[c.field]||[CAPABILITY_BY_ID[c.field]?.label.toLowerCase()||c.field.toLowerCase()];
+      if(!aliases.some(a=>lower.includes(a))){valid=false;code='claim_evidence_unrelated';}
+      if(typeof c.value==='number'){const normalized=lower.replaceAll(',',''),number=String(c.value).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');if(!new RegExp('(^|[^0-9.])'+number+'($|[^0-9.])').test(normalized)){valid=false;code='claim_quantity_not_in_argument';}}
+      if((typeof c.value==='number'||c.value===true)&&/\b(no|without|not|never|doesn’t|doesn't|won't|cannot)\b/.test(lower)){valid=false;code='claim_evidence_negated';}
+      if(typeof c.value==='string'&&!lower.includes(c.value.toLowerCase())){valid=false;code='claim_value_not_in_argument';}
+    }
+    const key=fingerprint({proposalId:p.id,revision,type:c.type,field:c.field,operator:c.operator,value:c.value}),priority=valid?claimPriority(c.type,c.field,actual,e,s):null,
+      repeated=(s.persuasionHistory||[]).some(h=>h.memberId===memberId&&h.proposalId===p.id&&h.claimKey===key);
+    let creditEligible=valid&&!!priority&&!!m.pri[priority];if(valid&&!creditEligible)code='claim_irrelevant';if(valid&&repeated){creditEligible=false;code='claim_repeated';}
+    if(creditEligible)addressed.push(priority);results.push({id:c.id,type:c.type,field:c.field,claimedValue:c.value,valid,code,actual:actual??null,priority,creditEligible,claimKey:key});notes.push(c.id+': '+code);
+  }
+  const tone=/\b(idiot|stupid|moron|corrupt|hate you)\b/i.test(input.argument)?'hostile':/\b(you must|or else|do as i say)\b/i.test(input.argument)?'pushy':'respectful',unique=[...new Set(addressed)];
+  return {ok:true,reasons:[],claims:results,addressed:unique,credit:unique.length?(input.source==='quick'?'quick':'strong'):'none',tone,notes,offers:[],memberId,programRevision:revision,remainingConcerns:memberStatement(s,m,current,current.id).opposes};
+}
+function readReactionContext(s,ref){
+  const fail=reason=>({ok:false,reasons:[reason]});if(!closed(ref,['id','fingerprint','memberId']))return fail('reaction_reference_invalid');
+  const receipt=(s.receipts||[]).find(r=>r.id===ref.id);if(!receipt)return fail('receipt_not_found');if(receipt.type!=='persuade')return fail('reaction_type_mismatch');
+  if(receipt.memberId!==ref.memberId)return fail('reaction_member_mismatch');if(receipt.fingerprint!==ref.fingerprint)return fail('command_mismatch');
+  return {ok:true,receipt:copy(receipt),result:copy(receipt.originalResult),memberId:receipt.memberId,reasons:[]};
+}
+
+function programEligibility(s,p){
+  const r=previewProgram(s,{program:p.program,plots:plotsOf(p,s),id:p.id,presenter:p.presenter});if(!r.ok)return {ok:false,reasons:r.reasons};
+  const reasons=[];if(p.programRevision!==r.proposal.programRevision||canonical(p.layout)!==canonical(r.layout)||canonical(p.demo)!==canonical(r.proposal.demo))reasons.push('proposal_changed_repreview_required');
+  for(const [fact,value] of Object.entries(scenarioOf(s).proposals.definitions[p.id]?.requires||{}))if(s.facts[fact]!==value)reasons.push('condition_unresolved:'+fact);
+  return {ok:!reasons.length,reasons};
+}
+function projectRecord(s,p){
+  let record=(s.projectRecords||[]).find(r=>r.proposalId===p.id);
+  if(!record){record={proposalId:p.id,title:p.title,intent:p.program?.intent||p.desc||p.blurb||'',originalProgram:p.program?copy(p.program):null,originalPlan:copy(p.plan),plots:copy(plotsOf(p,s)),presenter:p.presenter,stage:'agenda',postedYear:s.year,revisions:[]};s.projectRecords.push(record);}
+  return record;
+}
+function approveProgram(s,p,funding,route){
+  const eligibility=programEligibility(s,p);if(!eligibility.ok)return eligibility;
+  if(s.phase!=='agenda'||p.status!=='open'||s.decided[p.id]==='approved'||s.pending.some(q=>q.id===p.id)||s.built.some(q=>q.id===p.id))return {ok:false,reasons:['proposal_not_open']};
+  const required=approvalRoute(s,p);if(route!==required.id)return {ok:false,reasons:['decision_route_invalid']};
+  if(!['cash','bond'].includes(funding))return {ok:false,reasons:['funding_invalid']};
+  const resident=evaluateResident(s,p,p);if(resident.stance!=='agree')return {ok:false,reasons:resident.reasons};
+  const e=effectsOf(p,s);if(funding==='cash'&&s.cash<e.cost)return {ok:false,reasons:['insufficient_cash']};
+  const votes=forecastVote(s,p,p.id);if(p.council&&votes.winner!==p.id)return {ok:false,reasons:['council_no_majority']};
+  if(!p.council&&e.cost>scenarioOf(s).decisionRoute.executiveLimit)return {ok:false,reasons:['executive_limit_exceeded']};
+  if(funding==='bond')s.bonds.push({name:p.title,annual:Math.round(e.cost*.125),left:10});else s.cash-=e.cost;
+  const accepted={...copy(p),cost:e.cost,costHigh:e.costHigh,funding,odds:deliveryOdds(s,p),year:s.year,operatingEffects:programBaseEffects(p,s),decision:{action:p.council?'vote':'approve',route,funding,year:s.year,votes:copy(votes)}};
+  p.status='approved';s.decided[p.id]='approved';s.pending.push(accepted);s.presenters[p.presenter].rel=clamp(s.presenters[p.presenter].rel+8,0,100);
+  const d=p.demo,changed=new Set(d.changedPlots.map(p=>p.join(',')));
+  for(const built of s.built)if(!built.closed&&(built.layout?built.layout.cells.filter(c=>c.usedArea>1e-8).map(c=>c.plot):plotsOf(built,s)).some(p=>changed.has(p.join(',')))){built.closed=true;built.demolished=s.year;const old=(s.projectRecords||[]).find(r=>r.proposalId===built.id);if(old){old.stage='demolished';old.demolishedYear=s.year;}}
+  if(d.collegeTiles)s.flags.collegeLost=(s.flags.collegeLost||0)+d.collegeTiles;
+  if(d.residents)s.pop=Math.max(0,s.pop-d.residents);
+  s.shocks=s.shocks||[];if(d.residents)s.shocks.push({v:0,m:'pop',r:`Displaced about ${d.residents} residents to build ${p.title}`});
+  for(const cell of p.layout.cells){if(!cell.usedArea)continue;const c=cellAt(s,...cell.plot);c.b={type:'construction',for:p.kind,projectId:p.id,programRevision:p.programRevision,role:cell.role};}
+  for(const q of s.proposals)if(q.id!==p.id&&q.status==='open'&&p.group&&q.group===p.group){q.status='rejected';s.decided[q.id]='rejected';}
+  const record=projectRecord(s,p);Object.assign(record,{stage:'construction',title:p.title,program:copy(p.program),programRevision:p.programRevision,layout:copy(p.layout),conditions:copy(p.program.conditions),commitments:copy(p.program.conditions),decision:copy(accepted.decision),estimatedCostK:e.cost,annualUpkeepK:e.upkeep,controller:resident.controller});
+  return {ok:true,reasons:[],votes};
+}
+function completeProgram(s,p,e,onBudget,causes){
+  for(const cell of p.layout.cells){if(!cell.usedArea)continue;const c=cellAt(s,...cell.plot);
+    c.b={type:'initiative',projectId:p.id,title:p.title,plan:copy(p.plan),programRevision:p.programRevision,role:cell.role,componentIds:cell.componentIds.slice(),allocation:copy(cell)};
+    if(c.t==='farm'&&p.program.components.some(part=>!['agriculture','green','stormwater','access','policy'].includes(part.capability)&&p.layout.allocations.find(a=>a.componentId===part.id)?.segments.some(segment=>canonical(segment.plot)===canonical(cell.plot))))c.t='grass';
+  }
+  for(const part of p.program.components)if(part.capability==='policy')s.policies['composition:'+p.id+':'+part.id]=s.year;
+  s.farmLost=precise((s.farmLost||0)+e.farm);const over=onBudget?0:p.costHigh-p.cost+Math.round(p.cost*.08),record=projectRecord(s,p);
+  Object.assign(record,{stage:'built',program:copy(p.program),programRevision:p.programRevision,layout:copy(p.layout),conditions:copy(p.program.conditions),deliveryYear:s.year,actualCostK:p.cost+over,overrunK:over,annualUpkeepK:e.upkeep,observedEffects:copy(e),onBudget});
+  causes.push({m:'cash',v:0,r:`${p.title}: approved $${p.cost}K, delivered $${p.cost+over}K; annual upkeep $${e.upkeep}K.`});
+  if(e.farm)causes.push({m:'farm',v:e.farm,r:`${p.title} converted ${e.farm} abstract farmland units`});
+}
+function programOpportunities(s){
+  if(!FLAGS.compositionPlans||!s||s.phase==='bankrupt'||s.year>s.maxYears)return [];
+  const ec=econ(s),open=s.grid.filter(c=>canBuildOn(s,c.x,c.y)&&!c.b&&!c.site&&c.t==='grass').map(c=>[c.x,c.y]),rural=s.grid.filter(c=>canBuildOn(s,c.x,c.y)&&!c.b&&c.t==='farm').map(c=>[c.x,c.y]),result=[];
+  const add=(key,title,reason,components,plots,conditions={})=>{const program=authoredProgram(title,reason,components,conditions),id='opportunity-'+s.year+'-'+key,r=previewProgram(s,{program,plots,id,presenter:'planner'});if(r.ok)result.push({id,key,title,reason,presenter:'planner',program,plots:copy(plots),forecast:r.forecast,layout:r.layout});};
+  if(open.length&&ec.housing<s.pop*1.15)add('homes','Homes near existing services','Housing capacity and current population indicate room for compact infill.',[authoredPart('homes','housing',10,.5)],open.slice(0,1),{affordable:s.meters.afford<55});
+  if(open.length&&ec.units<ec.demand*1.15)add('local-services','Neighborhood work and services','Current commercial demand exceeds the spare local supply.',[authoredPart('shops','shop',1,.25),authoredPart('work','workplace',3,.25)],open.slice(0,1));
+  if(open.length&&(s.flags.floodRisk>.05||ec.parking>100))add('water','Rain gardens and safer paths','Current runoff exposure and parking support preventive infrastructure.',[authoredPart('water','stormwater',.5,.5),authoredPart('path','access',100,.1)],open.slice(0,1));
+  if(rural.length&&(s.farmLost||0)>0)add('working-land','Keep working land connected','Recorded farmland conversion creates a reason to protect remaining productive access.',[authoredPart('fields','agriculture',.5,.5),authoredPart('lane','access',100,.1)],rural.slice(0,1));
+  if(s.built.some(p=>p.program&&!p.closed)&&open.length)add('follow-up','Follow through on public space','Completed projects create ongoing needs for neighborhood gathering and maintenance.',[authoredPart('gather','community',10,.2),authoredPart('green','green',.2,.2)],open.slice(0,1));
+  // There is always an eligible operating choice, including a built-out town.
+  add('operations','Review town operating commitments','Review access and operating commitments without acquiring another site.',[authoredPart('review','policy',1,0)],[]);
+  if(!result.length)result.push({id:'wait-'+s.year,key:'wait',title:'Let current commitments operate',reason:'Existing operating programs are already active; wait for delivery, changing demand, or an available site.',action:'wait',program:null,plots:[],presenter:'planner'});
+  return result;
+}
+
+function applyCommand(state,command){
+  const fail=(...reasons)=>({ok:false,applied:false,state,receipt:null,reasons});
+  if(!FLAGS.compositionPlans)return fail('composition_disabled');
+  if(!state||state.v!==4||!boundedText(state.gameId,1,120))return fail('game_identity_required');
+  if(!closed(command,['id','gameId','expectedRevision','expectedGeneration','type','payload'])||!Number.isSafeInteger(command.id)||command.id<=0||!boundedText(command.gameId,1,120)||!Number.isSafeInteger(command.expectedRevision)||command.expectedRevision<0||!Number.isSafeInteger(command.expectedGeneration)||command.expectedGeneration<0||!record(command.payload))return fail('command_schema_invalid');
+  let digest;try{digest=fingerprint(command);}catch{return fail('command_not_canonical');}
+  if(command.gameId!==state.gameId)return fail('game_mismatch');
+  const old=(state.receipts||[]).find(r=>r.id===command.id);
+  if(old)return old.fingerprint===digest?{ok:true,applied:false,state,receipt:copy(old),reasons:[]}:fail('command_mismatch');
+  if(command.id<=state.actionHighWater)return fail('duplicate_action');
+  if(command.id!==state.actionHighWater+1)return fail('command_sequence_invalid');
+  if(command.expectedRevision!==state.revision)return fail('state_revision_stale');
+  const supported=['postProgram','reviseProposal','persuade','decision','resolveYear','offer','grant'];if(!supported.includes(command.type))return fail('command_type_invalid');
+  if(state.phase!=='agenda')return fail('phase_not_agenda');
+  const s=copy(state),payload=command.payload,year=s.year;let result,proposalId=null,memberId=null,actorId='mayor',controller=null;
+  if(command.type==='postProgram'){
+    if(!closed(payload,['program','plots','acknowledgedScope'])||typeof payload.acknowledgedScope!=='boolean')return fail('post_payload_invalid');
+    if(!canProposeInitiative(s))return fail('initiative_used');
+    const r=previewProgram(s,{program:payload.program,plots:payload.plots});if(!r.ok)return fail(...r.reasons);
+    if(r.proposal.program.omissions.length&&!payload.acknowledgedScope)return fail('scope_ack_required');
+    if(s.proposals.some(p=>p.id===r.proposal.id)||s.pending.some(p=>p.id===r.proposal.id)||s.built.some(p=>p.id===r.proposal.id))return fail('proposal_id_used');
+    s.proposals.push(r.proposal);s.initiativeYear=s.year;proposalId=r.proposal.id;controller='mayor';projectRecord(s,r.proposal);
+    result={proposalId,programRevision:r.proposal.programRevision,forecast:r.forecast,stage:'agenda'};
+  }else if(command.type==='resolveYear'){
+    if(!closed(payload,[]))return fail('year_payload_invalid');
+    result=resolveYear(s);
+  }else{
+    proposalId=payload.proposalId;const p=s.proposals.find(q=>q.id===proposalId);
+    if(!p||p.status!=='open'||s.decided[p.id]==='approved')return fail('proposal_not_open');
+    if(command.type==='reviseProposal'){
+      const hasProgram=Object.hasOwn(payload,'program');
+      if(!closed(payload,hasProgram?['proposalId','program','confirmed']:['proposalId','plan','confirmed'])||payload.confirmed!==true||!!p.program!==hasProgram)return fail('revision_payload_invalid');
+      const r=hasProgram?previewProgram(s,{program:payload.program,plots:plotsOf(p,s),id:p.id,presenter:p.presenter}):previewLegacyRevision(s,p,payload.plan);if(!r.ok)return fail(...r.reasons);
+      const resident=evaluateResident(s,p,r.proposal);if(resident.stance!=='agree'||resident.authorizedRevision!==r.proposal.programRevision)return fail('resident_revision_not_authorized',...resident.reasons);
+      controller=resident.controller;actorId=controller;const record=projectRecord(s,p),candidate={...copy(p),...r.proposal,site:p.site,mine:p.mine,council:p.council,group:p.group};
+      // Undefined is never introduced into canonical save data.
+      if(candidate.group===undefined)delete candidate.group;
+      record.revisions.push({year:s.year,from:p.programRevision||legacyRevision(p,s),to:candidate.programRevision,program:candidate.program?copy(candidate.program):null,plan:copy(candidate.plan),controller});
+      Object.assign(p,candidate);record.title=p.title;record.programRevision=p.programRevision;result={proposalId,programRevision:p.programRevision,controller,prerequisites:resident.prerequisites,forecast:forecastProgram(s,p)};
+    }else if(command.type==='persuade'){
+      if(!closed(payload,['proposalId','memberId','argument','source','programRevision','claims']))return fail('persuasion_payload_invalid');
+      memberId=payload.memberId;if(!s.council[memberId]||!councilOf(s).some(m=>m.id===memberId))return fail('member_invalid');
+      if((s.lobbyCount?.[memberId]||0)>=2)return fail('quota_used');
+      const evaluation=evaluateClaims(s,p,memberId,{argument:payload.argument,source:payload.source,programRevision:payload.programRevision,claims:payload.claims});if(!evaluation.ok)return fail(...evaluation.reasons);
+      const m=councilOf(s).find(m=>m.id===memberId),leanBefore=lean(memberScore(s,m,p,p.id)),relationshipBefore=s.council[memberId].rel,applied=applyLobby(s,memberId,p.id,evaluation);
+      for(const claim of evaluation.claims)if(claim.creditEligible)s.persuasionHistory.push({memberId,proposalId:p.id,claimKey:claim.claimKey,year:s.year});
+      s.persuasionHistory=s.persuasionHistory.slice(-256);
+      result={proposalId,memberId,programRevision:evaluation.programRevision,credit:evaluation.credit,tone:evaluation.tone,addressed:evaluation.addressed,claims:evaluation.claims,points:applied.points,
+        notes:[...evaluation.notes,...applied.notes],leanBefore,leanAfter:lean(memberScore(s,m,p,p.id)),relationshipBefore,relationshipAfter:s.council[memberId].rel,pitchesUsed:s.lobbyCount[memberId],remainingConcerns:memberStatement(s,m,p,p.id).opposes};
+    }else if(command.type==='offer'){
+      if(!closed(payload,['proposalId','memberId','offer'])||!s.council[payload.memberId])return fail('offer_payload_invalid');
+      memberId=payload.memberId;const offer=payload.offer;
+      if(offer?.type==='favor'){if(!closed(offer,['type'])||s.capital<=0)return fail('favor_unavailable');}
+      else if(offer?.type==='earmark'){if(!closed(offer,['type','amount_k'])||!Number.isInteger(offer.amount_k)||!finite(offer.amount_k,1,150)||s.cash<offer.amount_k)return fail('earmark_unavailable');}
+      else return fail('offer_type_invalid');
+      const used=s.lobbyCount?.[memberId]||0,capital=s.capital,cash=s.cash,r=applyLobby(s,memberId,p.id,{addressed:[],credit:'none',tone:'respectful',offers:[offer]});s.lobbyCount[memberId]=used;
+      result={proposalId,memberId,offer:copy(offer),capitalSpent:capital-s.capital,cashSpentK:cash-s.cash,...r};
+    }else if(command.type==='grant'){
+      if(!closed(payload,['proposalId']))return fail('grant_payload_invalid');const grant=applyGrant(s,p);if(!grant)return fail('grant_unavailable');result={proposalId,grant:copy(grant),stage:'tabled'};
+    }else if(command.type==='decision'){
+      if(!closed(payload,['proposalId','action','funding','route'])||!['vote','approve','reject','table'].includes(payload.action))return fail('decision_payload_invalid');
+      const route=approvalRoute(s,p);if(payload.route!==route.id)return fail('decision_route_invalid');
+      if(['reject','table'].includes(payload.action)){
+        if(payload.funding!==null)return fail('funding_not_applicable');if(payload.action==='reject')reject(s,p);else table(s,p);projectRecord(s,p).stage=p.status;result={proposalId,outcome:p.status};
+      }else{
+        if(!['cash','bond'].includes(payload.funding))return fail('funding_invalid');
+        if(payload.action==='approve'&&p.council||payload.action==='vote'&&!p.council)return fail('decision_action_wrong_route');
+        const eligibility=proposalEligibility(s,p);if(!eligibility.ok)return fail(...eligibility.reasons);
+        const cost=effectsOf(p,s).cost;if(payload.funding==='cash'&&s.cash<cost)return fail('insufficient_cash');
+        if(!p.council&&cost>scenarioOf(s).decisionRoute.executiveLimit)return fail('executive_limit_exceeded');
+        const votes=forecastVote(s,p,p.id);
+        if(p.council&&votes.winner&&votes.winner!==p.id)return fail('winning_option_requires_funding_review:'+votes.winner);
+        if(p.council&&!votes.winner){
+          const options=hearingOptions(s,p);if(p.group){for(const option of options){table(s,option);projectRecord(s,option).stage='tabled';}}else {reject(s,p);projectRecord(s,p).stage='rejected';}
+          result={proposalId,outcome:p.group?'tabled':'rejected',reason:'failed-vote',votes};projectRecord(s,p).lastVote={year:s.year,...copy(votes)};
+        }
+        else{
+          const approved=approve(s,p,payload.funding,payload.route);if(!approved.ok)return fail(...approved.reasons);
+          if(!p.program){const record=projectRecord(s,p);Object.assign(record,{stage:'construction',decision:{action:payload.action,route:payload.route,funding:payload.funding,year:s.year,votes},plan:copy(p.plan)});}
+          result={proposalId,outcome:'approved',funding:payload.funding,costK:cost,votes,programRevision:p.programRevision||legacyRevision(p,s)};
+        }
+      }
+    }
+  }
+  s.revision=state.revision+1;s.actionHighWater=command.id;
+  const receipt={id:command.id,gameId:s.gameId,type:command.type,fingerprint:digest,commandFingerprint:digest,proposalId,memberId,actorId,controller,
+    subject:{proposalId,memberId,actorId},year,revision:s.revision,originalResult:copy(result)};
+  s.receipts=[...s.receipts,receipt].slice(-COMPOSITION_RECEIPTS);
+  return {ok:true,applied:true,state:s,receipt:copy(receipt),reasons:[]};
+}
+
 function scenarioContext(s){
   const map=mapSize(s),sites=Object.entries(sitesOf(s)).map(([id,plots])=>({id,name:parcelsOf(s)[id]?.name||id,plots}));
   return copy({scenarioId:s.scenarioId,turn:s.year,calendarYear:calendarYear(s),map,
@@ -759,5 +1312,5 @@ function scenarioContext(s){
     editableFields:Object.fromEntries(Object.entries(KINDS).map(([id,kind])=>[id,kind.params]))});
 }
 
-const ENGINE={MILLBROOKE,scenarioMeta,calendarYear,mapSize,sitesOf,parcelsOf,placesOf,presentersOf,councilOf,isSupportedSave,approvalRoute,proposalEligibility,scenarioContext,plotsOf,canBuildOn,PLACES,placePlots,describePlace,plotTraits,demolitionOf,plotsNeeded,fitPlanToPlots,refitInitiative,guessPlace,memberStatement,canProposeInitiative,floodRisk,FLAGS,defaultPlan,PARCELS,initiativeRoles,parcelsAvailable,needsSite,makeInitiative,heuristicDraft,grantInfo,applyGrant,migrate,N,KINDS,PRESENTERS,COUNCIL,P_DEFS,SITES,THEMES,MAYOR_AUTHORITY,newGame,effectsOf,deliveryOdds,validatePlan,forecastVote,memberScore,lean,hearingOptions,applyLobby,approve,reject,table,resolveYear,econ,jobsMeter,snapshotStats,fundingOptions,electionResult,recordFacts,rand,clamp};
+const ENGINE={applyCommand,readReactionContext,evaluateClaims,evaluateResident,previewLegacyRevision,programOpportunities,COMPOSITION_RECEIPTS,capabilities,programSchema,patchSchema,claimsSchema,validateProgram,previewProgram,reviseProgram,canonical,fingerprint,programDefinitions,MILLBROOKE,scenarioMeta,calendarYear,mapSize,sitesOf,parcelsOf,placesOf,presentersOf,councilOf,isSupportedSave,approvalRoute,proposalEligibility,scenarioContext,plotsOf,canBuildOn,PLACES,placePlots,describePlace,plotTraits,demolitionOf,plotsNeeded,fitPlanToPlots,refitInitiative,guessPlace,memberStatement,canProposeInitiative,floodRisk,FLAGS,defaultPlan,PARCELS,initiativeRoles,parcelsAvailable,needsSite,makeInitiative,heuristicDraft,grantInfo,applyGrant,migrate,N,KINDS,PRESENTERS,COUNCIL,P_DEFS,SITES,THEMES,MAYOR_AUTHORITY,newGame,effectsOf,deliveryOdds,validatePlan,forecastVote,memberScore,lean,hearingOptions,applyLobby,approve,reject,table,resolveYear,econ,jobsMeter,snapshotStats,fundingOptions,electionResult,recordFacts,rand,clamp};
 if(typeof module!=='undefined')module.exports=ENGINE;
