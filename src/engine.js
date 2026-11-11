@@ -316,6 +316,7 @@ function approve(s,p,funding,authorityId){
   else s.cash-=e.cost;
   p.status='approved';s.decided[p.id]='approved';
   s.pending.push({id:p.id,kind:p.kind,title:p.title,presenter:p.presenter,site:p.site,plots:p.plots,traits:p.traits,demo:p.demo,plan:{...p.plan},cost:e.cost,costHigh:e.costHigh,funding,odds:deliveryOdds(s,p),year:s.year,...(scenarioOf(s).proposals.definitions[p.id]?.completionFacts?{completionFacts:copy(scenarioOf(s).proposals.definitions[p.id].completionFacts)}:{})});
+  if(FLAGS.compositionPlans)Object.assign(s.pending[s.pending.length-1],{status:'approved',programRevision:p.programRevision||legacyRevision(p,s),plots:copy(plotsOf(p,s))});
   s.presenters[p.presenter].rel=clamp(s.presenters[p.presenter].rel+8,0,100);
   const d=p.demo;
   if(d){ // MP-034: what gets torn down stops counting now; people move out when construction starts
@@ -367,7 +368,8 @@ function resolveYear(s){
     s.built.push({...pj,done:s.year});
     const tl=plotsOf(pj,s);const roles=pj.kind==='initiative'?initiativeRoles(pj.plan,tl.length):[];
     if(FLAGS.compositionPlans&&pj.program)completeProgram(s,pj,e,ok,causes);
-    else tl.forEach((t,i)=>{const c=cellAt(s,t[0],t[1]);c.b=pj.kind==='bridge'?null:{type:pj.kind,plan:pj.plan,role:roles[i]};});
+    else {tl.forEach((t,i)=>{const c=cellAt(s,t[0],t[1]);c.b=pj.kind==='bridge'?null:{type:pj.kind,plan:pj.plan,role:roles[i]};});
+      if(FLAGS.compositionPlans)completeLegacyProject(s,pj,e,ok,causes);}
     if(pj.completionFacts)Object.assign(s.facts,pj.completionFacts);
     if(pj.kind==='initiative'&&!pj.program&&pj.plan.policy!=='none')s.policies[pj.plan.policy]=s.year;
     if(e.safety)add('safety',e.safety*0.5,`${pj.title} opened`);if(e.afford)add('afford',e.afford*0.5,`${pj.title} opened`);
@@ -1245,7 +1247,7 @@ function approveProgram(s,p,funding,route){
   const votes=forecastVote(s,p,p.id);if(p.council&&votes.winner!==p.id)return {ok:false,reasons:['council_no_majority']};
   if(!p.council&&e.cost>scenarioOf(s).decisionRoute.executiveLimit)return {ok:false,reasons:['executive_limit_exceeded']};
   if(funding==='bond')s.bonds.push({name:p.title,annual:Math.round(e.cost*.125),left:10});else s.cash-=e.cost;
-  const accepted={...copy(p),cost:e.cost,costHigh:e.costHigh,funding,odds:deliveryOdds(s,p),year:s.year,operatingEffects:programBaseEffects(p,s),decision:{action:p.council?'vote':'approve',route,funding,year:s.year,votes:copy(votes)}};
+  const accepted={...copy(p),status:'approved',cost:e.cost,costHigh:e.costHigh,funding,odds:deliveryOdds(s,p),year:s.year,operatingEffects:programBaseEffects(p,s),decision:{action:p.council?'vote':'approve',route,funding,year:s.year,votes:copy(votes)}};
   p.status='approved';s.decided[p.id]='approved';s.pending.push(accepted);s.presenters[p.presenter].rel=clamp(s.presenters[p.presenter].rel+8,0,100);
   const d=p.demo,changed=new Set(d.changedPlots.map(p=>p.join(',')));
   for(const built of s.built)if(!built.closed&&(built.layout?built.layout.cells.filter(c=>c.usedArea>1e-8).map(c=>c.plot):plotsOf(built,s)).some(p=>changed.has(p.join(',')))){built.closed=true;built.demolished=s.year;const old=(s.projectRecords||[]).find(r=>r.proposalId===built.id);if(old){old.stage='demolished';old.demolishedYear=s.year;}}
@@ -1256,6 +1258,13 @@ function approveProgram(s,p,funding,route){
   for(const q of s.proposals)if(q.id!==p.id&&q.status==='open'&&p.group&&q.group===p.group){q.status='rejected';s.decided[q.id]='rejected';}
   const record=projectRecord(s,p);Object.assign(record,{stage:'construction',title:p.title,program:copy(p.program),programRevision:p.programRevision,layout:copy(p.layout),conditions:copy(p.program.conditions),commitments:copy(p.program.conditions),decision:copy(accepted.decision),estimatedCostK:e.cost,annualUpkeepK:e.upkeep,controller:resident.controller});
   return {ok:true,reasons:[],votes};
+}
+function completeLegacyProject(s,p,e,onBudget,causes){
+  const over=onBudget?0:p.costHigh-p.cost+Math.round(p.cost*.08),record=projectRecord(s,p);
+  Object.assign(record,{stage:'built',kind:p.kind,title:p.title,site:p.site,plots:copy(plotsOf(p,s)),plan:copy(p.plan),programRevision:p.programRevision||legacyRevision(p,s),
+    estimatedCostK:p.cost,deliveryYear:s.year,actualCostK:p.cost+over,overrunK:over,annualUpkeepK:e.upkeep,observedEffects:copy(e),onBudget});
+  if(p.decision)record.decision=copy(p.decision);
+  causes.push({m:'cash',v:0,r:`${p.title}: approved $${p.cost}K, delivered $${p.cost+over}K; annual upkeep $${e.upkeep}K.`});
 }
 function completeProgram(s,p,e,onBudget,causes){
   for(const cell of p.layout.cells){if(!cell.usedArea)continue;const c=cellAt(s,...cell.plot);
@@ -1362,7 +1371,8 @@ function applyCommand(state,command){
         }
         else{
           const approved=approve(s,p,payload.funding,payload.route);if(!approved.ok)return fail(...approved.reasons);
-          if(!p.program){const record=projectRecord(s,p);Object.assign(record,{stage:'construction',decision:{action:payload.action,route:payload.route,funding:payload.funding,year:s.year,votes},plan:copy(p.plan)});}
+          if(!p.program){const record=projectRecord(s,p),pending=s.pending.find(q=>q.id===p.id),decision={action:payload.action,route:payload.route,funding:payload.funding,year:s.year,votes};
+            pending.decision=copy(decision);Object.assign(record,{stage:'construction',decision:copy(decision),plan:copy(p.plan),programRevision:pending.programRevision,estimatedCostK:pending.cost,annualUpkeepK:effectsOf(p,s).upkeep});}
           result={proposalId,outcome:'approved',funding:payload.funding,costK:cost,votes,programRevision:p.programRevision||legacyRevision(p,s)};
         }
       }

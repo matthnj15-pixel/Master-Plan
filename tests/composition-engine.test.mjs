@@ -68,7 +68,9 @@ test('MP-076 MP-079 retained assets avoid demolition and untouched land survives
   assert.equal(cleared.proposal.demo.residents,62);assert.ok(cleared.forecast.money.costK>r.forecast.money.costK);
   s=post(s,p,plots);const posted=s.proposals.at(-1);for(const m of Object.values(s.council))m.rel=100;
   s=commit(s,'decision',{proposalId:posted.id,action:'vote',funding:'bond',route:E.approvalRoute(s,posted).id});
+  assert.equal(s.pending.find(p=>p.id===posted.id).status,'approved');
   assert.equal(s.grid[house.y*24+house.x].b.type,'house');s=commit(s,'resolveYear',{});assert.equal(s.grid[house.y*24+house.x].b.type,'house');
+  assert.equal(s.built.find(p=>p.id===posted.id).status,'approved');
   assert.equal(s.built.find(b=>b.id===posted.id).programRevision,r.proposal.programRevision);
 });
 
@@ -359,4 +361,28 @@ test('MP-076 policy capacity is cumulative within a program and across active pr
   assert.equal(E.validateProgram(p).ok,false);assert.equal(preview(s,p,[]).ok,false);
   const result=E.applyCommand(s,command(s,'postProgram',{program:p,plots:[],acknowledgedScope:true}));assert.equal(result.ok,false);assert.equal(result.state,s);assert.equal(E.canonical(s),before);
   assert.equal(E.validateProgram(program([component('single','policy',1,0),component('land','green',.1,.1)])).ok,true);
+});
+
+test('MP-060 MP-079 legacy command deliveries finalize approved records with actual funding, costs, effects and replay',()=>{
+  for(const seed of [0,2])for(const funding of ['cash','bond']){
+    const initial=fresh(seed),bridge=initial.proposals.find(p=>p.id==='bridge'),plots=clone(E.plotsOf(bridge,initial)),input=E.canonical(initial),approveCommand=command(initial,'decision',{proposalId:bridge.id,action:'approve',funding,route:'mayor'});
+    const approval=E.applyCommand(initial,approveCommand);assert.equal(approval.ok,true,approval.reasons);assert.equal(E.canonical(initial),input);
+    const approved=approval.state,pending=clone(approved.pending.find(p=>p.id===bridge.id)),construction=approved.projectRecords.find(r=>r.proposalId===bridge.id),effects=clone(E.effectsOf(pending,approved));
+    assert.equal(pending.status,'approved');assert.deepEqual(pending.plots,plots);assert.equal(construction.stage,'construction');assert.equal(construction.programRevision,approval.receipt.originalResult.programRevision);
+    assert.equal(approved.cash,initial.cash-(funding==='cash'?pending.cost:0));assert.equal(approved.bonds.length,funding==='bond'?1:0);
+    const yearCommand=command(approved,'resolveYear',{}),resolved=E.applyCommand(approved,yearCommand);assert.equal(resolved.ok,true,resolved.reasons);
+    const delivered=resolved.state,built=delivered.built.find(p=>p.id===bridge.id),record=delivered.projectRecords.find(r=>r.proposalId===bridge.id),report=delivered.reports.find(r=>r.year===1&&r.after),cashGap=approved.cash+report.budget.net-delivered.cash;
+    assert.equal(record.stage,'built');assert.equal(record.deliveryYear,1);assert.equal(built.done,1);assert.equal(built.status,'approved');assert.equal(record.onBudget,seed===0);assert.equal(cashGap>0,seed===2);
+    assert.equal(record.estimatedCostK,pending.cost);assert.equal(record.actualCostK,pending.cost+cashGap);assert.equal(record.overrunK,cashGap);assert.equal(record.annualUpkeepK,effects.upkeep);
+    assert.deepEqual(clone(record.observedEffects),effects);assert.deepEqual(clone(record.plan),pending.plan);assert.deepEqual(clone(record.plots),plots);assert.equal(record.programRevision,pending.programRevision);
+    assert.deepEqual(clone(record.decision),pending.decision);assert.equal(record.decision.funding,funding);assert.equal(record.decision.route,'mayor');assert.equal(delivered.flags.bridgeRisk,effects.bridgeRisk);
+    assert.equal(report.budget.bonds,funding==='bond'?approved.bonds[0].annual:0);assert.deepEqual(clone(report.projects),[clone(record)]);assert.deepEqual(clone(resolved.receipt.originalResult.projects),[clone(record)]);
+    if(cashGap)assert.ok(report.causes.some(c=>c.m==='cash'&&c.v===-cashGap&&/over budget/.test(c.r)));
+    const restored=E.migrate(clone(delivered));assert.equal(E.isSupportedSave(restored),true);assert.equal(E.canonical(restored),E.canonical(delivered));
+    for(const replayCommand of [approveCommand,yearCommand]){const replay=E.applyCommand(restored,replayCommand);assert.equal(replay.ok,true);assert.equal(replay.applied,false);assert.equal(replay.state,restored);assert.equal(E.canonical(replay.receipt),E.canonical(replayCommand.type==='decision'?approval.receipt:resolved.receipt));}
+    const duplicate=E.applyCommand(restored,command(restored,'decision',approveCommand.payload));assert.equal(duplicate.ok,false);assert.equal(duplicate.state,restored);assert.equal(restored.built.filter(p=>p.id===bridge.id).length,1);
+    const later=commit(restored,'resolveYear',{});assert.equal(later.projectRecords.filter(r=>r.proposalId===bridge.id).length,1);assert.equal(later.reports.find(r=>r.year===2&&r.after).projects.some(r=>r.proposalId===bridge.id),false);
+  }
+  const off=engine(false),legacy=off.newGame(0);off.approve(legacy,legacy.proposals.find(p=>p.id==='bridge'),'cash');assert.equal(legacy.pending[0].status,undefined);
+  const report=off.resolveYear(legacy);assert.equal(legacy.built[0].status,undefined);assert.equal(legacy.projectRecords,undefined);assert.equal(report.projects,undefined);
 });
