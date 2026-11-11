@@ -133,6 +133,11 @@ const PLAIN_JSON_SUFFIX = '\n\nReply with one valid JSON object only. Do not wra
  * are deliberately guarded here, never inferred from HF limits or GPU bytes.
  * An incompatible runtime fails composition admission explicitly, while legacy
  * json callers remain usable. No mutation of the live conversation/KV cache.
+ * Source audit, integrity sha256-O/9MVc0vAgBxFRc0G6vOvnqRqO+FuYNCBDn88mg1pnQ=:
+ * lib/index.js reloadInternal:18248, constructor:11718, KV limits:11885,
+ * getConversationObject:12256, getInputData:13854, tokenizer.encode:14702.
+ * Both selected prebuilt records omit model_manifest (2066,2090), so their
+ * pipeline.artifact is undefined: it is assigned only for a modelPackage.
  */
 function loadedAdmission(engine, modelId, prompt, structured, runtimeVersion) {
   const unavailable = { ok:false, code:'runtime_metadata_unavailable' };

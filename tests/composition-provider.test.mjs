@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
 import {createRequire} from 'node:module';
+import {createHash} from 'node:crypto';
 
 const require=createRequire(import.meta.url);
 const {create}=require('../src/composition-requests.js');
@@ -106,4 +107,293 @@ test('MP-064 MP-081 hosted json-only transport preserves typed play with unverif
   assert.equal(failed.code,'context_limit');assert.equal(failed.attempts,1);assert.equal(failed.intent,'Complete input retained');assert.doesNotMatch(failed.blocker,/PRIVATE/);
   const unavailable=await runner.run({mode:'draft',state,plots:land(state),intent:'Offline requires real metadata',provider:{offline:true,json:hosted.json}});
   assert.equal(unavailable.code,'runtime_metadata_unavailable');
+});
+
+const deferred=()=>{let resolve,reject;const promise=new Promise((a,b)=>{resolve=a;reject=b;});return {promise,resolve,reject};};
+function logger(){
+  const D=require('../src/qwen-diagnostics.js');let stored={events:[],meta:{}};
+  const diagnostics=D.create({enabled:true,build:{channel:'dev',version:'provider-test',commit:'bounded-fixes'},now:()=>Date.parse('2026-11-11T12:00:00Z'),
+    storage:{async read(){return copy(stored);},async write(next){stored=copy(next);}}});
+  return diagnostics;
+}
+function pitched(){
+  const state=posted(),proposal=state.proposals.at(-1),jobs=E.effectsOf(proposal,state).jobs,argument='The accepted plan provides '+jobs+' jobs.';
+  const envelope={argument,source:'typed',programRevision:proposal.programRevision,claims:[{id:'jobs',type:'effect',field:'jobs',operator:'eq',value:jobs,evidence:{start:0,end:argument.length,quote:argument}}]};
+  const committed=E.applyCommand(state,command(state,'persuade',{proposalId:proposal.id,memberId:'marsh',...envelope}));
+  assert.equal(committed.ok,true,committed.reasons?.join('; '));
+  return {state:committed.state,proposal:committed.state.proposals.at(-1),intent:argument,memberId:'marsh',
+    receipt:{id:committed.receipt.id,fingerprint:committed.receipt.fingerprint,memberId:'marsh'},saved:copy(committed.receipt.originalResult)};
+}
+test('MP-075 MP-081 clarification has a retained terminal event and complete selected-date summary',async()=>{
+  const state=fresh(),diagnostics=logger(),intent='A flexible gathering activity';
+  const result=await create({engine:E,diagnostics}).run({mode:'draft',state,plots:land(state),intent,
+    provider:provider({status:'clarify',questions:['Which activity needs most of the space?'],omissions:[]})});
+  assert.equal(result.status,'clarify');assert.equal(result.intent,intent);
+  const doc=(await diagnostics.snapshot()).prepared.document,final=doc.events.find(e=>e.name==='composition.final');
+  assert.equal(final.outcome,'clarify');assert.equal(final.metadata.resultCode,'intent_unclear');
+  assert.equal(doc.attempts[0].status,'complete');assert.equal(doc.attempts[0].applicationStatus,'not-observed');
+});
+test('MP-076 MP-081 evaluator-added trusted definition reduces before fitting, without changing trusted data',async()=>{
+  const state=fresh(),base=program('A larger authored work cooperative');base.components=[part('work','workplace',80,2)];
+  state.scenario.programDefinitions['new-cooperative']={id:'new-cooperative',label:'Artisan cooperative',program:base};
+  const original=E.canonical(state),plots=land(state,1),intent='An artisan cooperative at one tenth the size';
+  assert.equal(E.previewProgram(state,{program:base,plots}).ok,false);
+  let prompt;
+  const result=await create({engine:E}).run({mode:'draft',state,plots,intent,provider:{json:async text=>{prompt=text;return {definitionId:'new-cooperative',patch:{upsert:[{id:'work',quantity:8,area:.5}]}};}}});
+  assert.equal(result.status,'ready',result.blocker);assert.equal(result.program.components[0].quantity,8);assert.equal(result.program.intent,intent);
+  assert.deepEqual(copy(result.proposal.plots),copy(plots));assert.equal(E.canonical(state),original);assert.match(prompt,/"id":"new-cooperative"/);
+  const unrelatedIntent='Zephyr research office',unrelatedProgram=program(unrelatedIntent);unrelatedProgram.title=unrelatedIntent;
+  const unrelated=await create({engine:E}).run({mode:'draft',state,plots,intent:unrelatedIntent,provider:{json:async text=>{assert.ok(!text.includes('"id":"new-cooperative"'));return {program:unrelatedProgram};}}});
+  assert.equal(unrelated.status,'ready',unrelated.blocker);
+  assert.equal(unrelated.program.title,unrelatedIntent);
+});
+test('MP-076 MP-077 uncatalogued activities and three narrow edits keep site, identity, sharing and unrelated fields',async()=>{
+  const state=fresh(),plots=land(state),intent='A novel cooperative with shared learning and a planted yard',runner=create({engine:E});
+  const p=program(intent);p.title='Uncatalogued Zephyr Guild';p.components.push(part('yard','green',.5,.5));
+  const draft=await runner.run({mode:'draft',state,plots,intent,provider:provider({program:p})});
+  const add=await runner.run({mode:'revise',state,proposal:draft.proposal,plots,intent:'Add 20 daily class participants sharing the work space',
+    provider:provider({patch:{upsert:[part('class','community',20,.2,'work')]}})});
+  const reduce=await runner.run({mode:'revise',state,proposal:add.proposal,plots,intent:'Reduce work places to 4',provider:provider({patch:{upsert:[{id:'work',quantity:4}]}})});
+  const hours=await runner.run({mode:'revise',state,proposal:reduce.proposal,plots,intent:'Operate eight hours with a buffer',provider:provider({patch:{conditions:{hours:8,buffer:.25}}})});
+  for(const result of [draft,add,reduce,hours]){assert.equal(result.status,'ready',result.blocker);assert.deepEqual(copy(result.proposal.plots),copy(plots));assert.equal(result.program.intent,intent);}
+  assert.deepEqual(hours.program.components.find(c=>c.id==='yard'),draft.program.components.find(c=>c.id==='yard'));
+  assert.equal(hours.program.components.find(c=>c.id==='class').sharedWith,'work');assert.equal(hours.program.title,p.title);
+  assert.notEqual(add.forecast.money.costK,draft.forecast.money.costK);assert.notEqual(reduce.forecast.effects.jobs,add.forecast.effects.jobs);
+  assert.equal(state.actionHighWater,0);assert.equal(state.initiativeYear,undefined);
+});
+test('MP-081 the 2000-character boundary is explicit and never clips over-limit input',async()=>{
+  const state=fresh(),runner=create({engine:E});let calls=0;
+  const ai={json:async()=>{calls++;return {program:program('x'.repeat(2000))};}};
+  assert.equal((await runner.run({mode:'draft',state,plots:land(state),intent:'x'.repeat(2000),provider:ai})).status,'ready');
+  const over=await runner.run({mode:'draft',state,plots:land(state),intent:'x'.repeat(2001),provider:ai});
+  assert.equal(over.code,'input_limit');assert.equal(over.intent.length,2001);assert.equal(calls,1);
+});
+test('MP-078 MP-081 typed route and operating changes receive closed vocabulary and scoped trusted facts only',async()=>{
+  const state=fresh(),proposal=state.proposals.find(p=>p.id==='campus-loading'),before=E.canonical(state);
+  const operation={...copy(proposal.program.conditions.operations[0]),loadingRoute:'campus-entrance',publicSales:true,onSiteConsumption:false};
+  const result=await create({engine:E}).run({mode:'revise',state,proposal,intent:'Move loading to the campus entrance and allow public sales',
+    provider:{json:async prompt=>{
+      const context=JSON.parse(prompt.split('\nContext: ')[1].split('\nOriginal input: ')[0]);
+      assert.equal(context.conditionSchema.additionalProperties,false);
+      const schema=context.conditionSchema.properties.operations.items;
+      assert.equal(schema.additionalProperties,false);assert.equal(schema.properties.stage.const,'operation');
+      assert.equal(schema.properties.publicSales.type,'boolean');assert.equal(schema.properties.onSiteConsumption.type,'boolean');
+      assert.deepEqual(context.loadingRoutes.map(r=>r.id).sort(),['campus-entrance','service-lane']);
+      assert.equal(context.loadingRoutes.find(r=>r.id==='campus-entrance').crossingConflict,true);
+      assert.ok(context.actors.some(a=>a.id==='college_liaison'&&a.exposed&&a.controller===null));assert.ok(context.actors.some(a=>a.id==='freight_operator'&&a.controller==='freight_operator'));
+      assert.doesNotMatch(JSON.stringify(context),/"(?:plots|grid|receipts|savedAt|gameId)"\s*:/);
+      return {patch:{conditions:{operations:[operation]}}};
+    }}});
+  assert.equal(result.status,'ready',result.blocker);assert.equal(result.program.conditions.operations[0].loadingRoute,'campus-entrance');
+  assert.equal(result.program.conditions.operations[0].publicSales,true);assert.equal(E.canonical(state),before);
+});
+test('MP-076 MP-081 unmodeled active-space reuse cannot silently become priced demolition',async()=>{
+  const state=fresh(),before=E.canonical(state),intent='Reuse the existing warehouse as a shared workshop';let calls=0;
+  const result=await create({engine:E}).run({mode:'draft',state,plots:land(state),intent,provider:{json:async()=>{calls++;return {program:program(intent)};}}});
+  assert.equal(result.status,'unsupported');assert.match(result.blocker,/reuse|Reuse/);assert.equal(result.intent,intent);assert.equal(calls,0);assert.equal(E.canonical(state),before);
+});
+test('MP-078 MP-081 mixed true and false claims preserve original Unicode spans and engine findings without scoring',async()=>{
+  const state=posted(),proposal=state.proposals.at(-1),diagnostics=logger(),intent='🌳 The plan provides 8 jobs and 999 homes.';
+  const quote='8 jobs',start=intent.indexOf(quote),bad='999 homes',badStart=intent.indexOf(bad);
+  const claims=[{id:'true',type:'effect',field:'jobs',operator:'eq',value:8,evidence:{start,end:start+quote.length,quote}},
+    {id:'false',type:'effect',field:'housing',operator:'eq',value:999,evidence:{start:badStart,end:badStart+bad.length,quote:bad}}];
+  const before=E.canonical(state),result=await create({engine:E,diagnostics}).run({mode:'claims',state,proposal,memberId:'marsh',intent,provider:provider({claims})});
+  assert.equal(result.status,'ready',result.blocker);assert.equal(result.claims.argument,intent);assert.deepEqual(copy(result.claims.claims),claims);
+  assert.equal(result.evaluation.claims[0].valid,true);assert.equal(result.evaluation.claims[1].code,'claim_false');assert.equal(result.evaluation.credit,'strong');
+  assert.equal(E.canonical(state),before);
+  const doc=(await diagnostics.snapshot()).prepared.document;
+  assert.ok(doc.events.some(e=>e.metadata.resultCode==='claim_false'));assert.ok(!JSON.stringify(doc).includes(intent));
+});
+test('MP-078 MP-081 forged claim quote repairs once and cannot substitute the argument or execute an offer',async()=>{
+  const state=posted(),proposal=state.proposals.at(-1),intent='This plan provides 8 jobs.',claim={id:'jobs',type:'effect',field:'jobs',operator:'eq',value:8,evidence:{start:0,end:intent.length,quote:intent}};
+  const wrong=copy(claim);wrong.evidence.quote='Invented evidence';
+  const repaired=await create({engine:E}).run({mode:'claims',state,proposal,memberId:'marsh',intent,provider:provider({claims:[wrong]},{claims:[claim]})});
+  assert.equal(repaired.status,'ready',repaired.blocker);assert.equal(repaired.attempts,2);
+  let calls=0;const bad=await create({engine:E}).run({mode:'claims',state,proposal,memberId:'marsh',intent,provider:{json:async()=>{calls++;return {claims:[claim],credit:'strong',offers:[{type:'favor'}]};}}});
+  assert.equal(bad.code,'unknown_field');assert.equal(calls,2);assert.equal(state.lobbyCount?.marsh||0,0);
+});
+test('MP-077 MP-081 late composition results reject changed state, intent, site, target, provider and ticket',async()=>{
+  for(const mutation of ['revision','year','game','target','closed','plots','provider','model','intent','member','ticket']){
+    const state=fresh(),proposal=preview(state),gate=deferred(),entered=deferred();let active=true,calls=0;
+    const ai=provider();ai.modelId='fixture-one';ai.json=()=>{calls++;entered.resolve();return gate.promise;};
+    const options={mode:'revise',state,proposal,plots:copy(proposal.plots),provider:ai,intent:'Operate eight hours',isCurrent:()=>active};
+    const pending=create({engine:E}).run(options);await entered.promise;
+    if(mutation==='revision')state.revision++;if(mutation==='year')state.year++;if(mutation==='game')state.gameId='replacement';
+    if(mutation==='target')proposal.program.conditions.hours=6;if(mutation==='closed')proposal.status='approved';
+    if(mutation==='plots')options.plots.reverse();if(mutation==='provider')options.provider=provider();if(mutation==='model')ai.modelId='fixture-two';
+    if(mutation==='intent')options.intent='Different input';if(mutation==='member')options.memberId='pryor';if(mutation==='ticket')active=false;
+    const before=E.canonical(state);gate.resolve({patch:{conditions:{hours:8}}});const result=await pending;
+    assert.equal(result.status,'stale',mutation+': '+result.blocker);assert.equal(result.program,undefined);assert.equal(E.canonical(state),before,mutation);assert.equal(calls,1);
+  }
+});
+test('MP-081 cancellation before admission, during admission and during generation preserves state and input',async()=>{
+  for(const stage of ['before','admission','generation']){
+    const state=fresh(),before=E.canonical(state),controller=new AbortController(),gate=deferred(),entered=deferred();let calls=0;
+    const ai=provider({program:program('A canceled idea')});
+    if(stage==='before')controller.abort();
+    if(stage==='admission')ai.admit=()=>{entered.resolve();return gate.promise;};
+    if(stage==='generation')ai.json=()=>{calls++;entered.resolve();return gate.promise;};
+    const pending=create({engine:E}).run({mode:'draft',state,plots:land(state),intent:'A canceled idea',provider:ai,signal:controller.signal});
+    if(stage!=='before'){await entered.promise;controller.abort();}
+    const result=await pending;assert.equal(result.status,'canceled',stage);assert.equal(result.intent,'A canceled idea');assert.equal(E.canonical(state),before);
+    assert.equal(calls,stage==='generation'?1:0);gate.resolve(stage==='admission'?{ok:true,promptTokens:1,contextWindowTokens:4096,maxOutputTokens:640}:{program:program('A canceled idea')});
+  }
+});
+test('MP-078 MP-081 valid receipt reactions, invalid selectors and retry never create a second persuasion',async()=>{
+  const p=pitched(),before=E.canonical(p.state),runner=create({engine:E});
+  for(const response of [{acknowledgement:'noted',concernIndexes:[]},{reply:'Invented new concern and guaranteed vote',points:100},{acknowledgement:'noted',concernIndexes:[999]}]){
+    const result=await runner.run({mode:'reaction',...p,provider:provider(response)});
+    assert.equal(result.status,'ready',result.blocker);assert.ok(result.reply.includes(String(p.saved.leanBefore)));assert.ok(result.reply.includes(String(p.saved.leanAfter)));
+    assert.doesNotMatch(result.reply,/Invented|guaranteed/);assert.ok(result.reply.length<=600);assert.equal(E.canonical(p.state),before);
+  }
+});
+test('MP-078 MP-081 wrong, missing, pruned and mismatched receipt references reject before generation',async()=>{
+  const p=pitched(),post=p.state.receipts.find(r=>r.type==='postProgram');
+  for(const kind of ['fingerprint','member','missing','pruned','type','target']){
+    const state=copy(p.state),options={mode:'reaction',...p,state};let calls=0;
+    if(kind==='fingerprint')options.receipt={...p.receipt,fingerprint:'wrong'};
+    if(kind==='member'){options.memberId='pryor';options.receipt={...p.receipt,memberId:'pryor'};}
+    if(kind==='missing')options.receipt={...p.receipt,id:999};if(kind==='pruned')state.receipts=[];
+    if(kind==='type')options.receipt={id:post.id,fingerprint:post.fingerprint,memberId:'marsh'};
+    if(kind==='target')options.proposal=state.proposals.find(p=>p.kind==='bridge');
+    const before=E.canonical(state),result=await create({engine:E}).run({...options,provider:{json:async()=>{calls++;return {};}}});
+    assert.equal(result.status,'invalid',kind);assert.equal(calls,0);assert.equal(result.reply,undefined);assert.equal(E.canonical(state),before);
+  }
+});
+test('MP-078 MP-081 a reaction deadline falls back to the saved result without modifying receipt, quota or support',async()=>{
+  const p=pitched(),before=E.canonical(p.state),gate=deferred(),diagnostics=logger();
+  const result=await create({engine:E,timeoutMs:10,diagnostics}).run({mode:'reaction',...p,provider:{json:()=>gate.promise}});
+  assert.equal(result.status,'ready',result.blocker);assert.equal(result.code,'reaction_fallback');assert.equal(result.fallback,true);
+  assert.ok(result.reply.includes(String(p.saved.leanBefore)));assert.ok(result.reply.includes(String(p.saved.leanAfter)));assert.equal(E.canonical(p.state),before);
+  gate.resolve({acknowledgement:'noted',concernIndexes:[]});await new Promise(r=>setImmediate(r));assert.equal(E.canonical(p.state),before);
+  assert.ok((await diagnostics.snapshot()).prepared.document.events.some(e=>e.metadata.resultCode==='generation_timeout'));
+});
+test('MP-078 MP-081 canceled or stale reactions never attach a deterministic fallback',async()=>{
+  for(const kind of ['cancel','state','ticket']){
+    const p=pitched(),gate=deferred(),entered=deferred(),controller=new AbortController();let active=true;
+    const pending=create({engine:E,timeoutMs:1000}).run({mode:'reaction',...p,signal:controller.signal,isCurrent:()=>active,provider:{json:()=>{entered.resolve();return gate.promise;}}});
+    await entered.promise;if(kind==='cancel')controller.abort();if(kind==='state')p.state.revision++;if(kind==='ticket')active=false;
+    gate.resolve({acknowledgement:'noted',concernIndexes:[]});const result=await pending;
+    assert.equal(result.status,kind==='cancel'?'canceled':'stale',kind);assert.equal(result.reply,undefined);assert.equal(result.fallback,undefined);
+  }
+});
+test('MP-065 MP-081 grammar fallback rechecks the exact added suffix before another generation',async()=>{
+  const f=runtime(),ai=createOfflineProvider(f.engine,modelId),fit=await ai.admit('small');
+  f.config.context_window_size=fit.promptTokens+640;f.pipeline.contextWindowSize=f.config.context_window_size;
+  f.engine.chat.completions.create=async options=>{f.calls.push(options);throw Object.assign(new Error('Private grammar details'),{name:'GrammarMatcherInitError'});};
+  await assert.rejects(ai.json('small',{requireAdmission:true}),{code:'context_limit'});
+  assert.equal(f.calls.length,1);assert.ok(f.encoded.some(s=>s.includes('valid JSON object only')));assert.equal(f.calls[0].max_tokens,640);assert.equal(f.calls[0].temperature,.2);
+});
+test('MP-065 MP-081 cached reload rechecks the replacement pipeline limits before generating',async()=>{
+  const first=runtime(),second=runtime({},64);let reloads=0,calls=0;
+  first.engine.chat.completions.create=async()=>{calls++;throw Object.assign(new Error('Private unloaded details'),{name:'ModelNotLoadedError'});};
+  const ai=createOfflineProvider(first.engine,modelId,async()=>{reloads++;return second.engine;});
+  assert.equal((await ai.admit('small')).ok,true);
+  await assert.rejects(ai.json('small',{requireAdmission:true}),{code:'context_limit'});
+  assert.equal(reloads,1);assert.equal(calls,1);assert.equal(second.calls.length,0);
+});
+test('MP-065 MP-081 incompatible reflection guards fail explicitly while legacy generation stays available',async()=>{
+  for(const kind of ['config-identity','artifact','sliding','missing-map','tokenizer','segments']){
+    const f=runtime();
+    if(kind==='config-identity')f.engine.loadedModelIdToChatConfig.set(modelId,copy(f.config));
+    if(kind==='artifact')f.pipeline.artifact={};
+    if(kind==='sliding')f.pipeline.slidingWindowSize=2048;
+    if(kind==='missing-map')f.engine.loadedModelIdToPipeline.delete(modelId);
+    if(kind==='tokenizer')f.pipeline.tokenizer.encode=()=>({length:1});
+    if(kind==='segments')f.pipeline.getConversationObject=()=>({constructor:class{constructor(){this.messages=[];}appendMessage(){}appendReplyHeader(){}getPromptArray(){return [['unexpected multimodal segment']];}}});
+    const ai=createOfflineProvider(f.engine,modelId);
+    assert.equal((await ai.admit('text')).code,'runtime_metadata_unavailable',kind);
+    assert.deepEqual(await ai.json('Legacy request'),{reply:'fixture'},kind);
+  }
+  const f=runtime(),changedVersion=createOfflineProvider(f.engine,modelId,null,undefined,{runtimeVersion:'0.2.88'});
+  assert.equal((await changedVersion.admit('text')).code,'runtime_metadata_unavailable');
+});
+test('MP-065 MP-081 syntactically valid but length-limited Qwen JSON cannot become an accepted program',async()=>{
+  const f=runtime();f.engine.chat.completions.create=async()=>({choices:[{message:{content:'{"program":{}}'},finish_reason:'length'}]});
+  const ai=createOfflineProvider(f.engine,modelId);
+  await assert.rejects(ai.json('A program',{requireAdmission:true}),{code:'output_limit'});
+  assert.deepEqual(await ai.json('Legacy request'),{program:{}});
+});
+test('MP-065 MP-081 a timed-out composition cannot release the shared GPU queue ahead of active work',async()=>{
+  const f=runtime(),gate=deferred(),entered=deferred();let active=0,max=0,calls=0;
+  // The fixture tokenizer is deliberately coarse; this tests queue ownership,
+  // while the separate source-parity probe verifies formatting and counting.
+  f.pipeline.tokenizer.encode=()=>new Uint32Array(2);
+  f.engine.chat.completions.create=async()=>{active++;max=Math.max(max,active);calls++;entered.resolve();await gate.promise;active--;return {choices:[{message:{content:'{}'},finish_reason:'stop'}]};};
+  const ai=createOfflineProvider(f.engine,modelId),state=fresh();
+  const pending=create({engine:E,timeoutMs:10}).run({mode:'draft',state,plots:land(state),intent:'A work cooperative',provider:ai});
+  await entered.promise;const timeout=await pending;assert.equal(timeout.code,'generation_timeout');
+  const next=ai.json('Legacy after timeout');await new Promise(r=>setImmediate(r));assert.equal(calls,1);
+  gate.resolve();await next;assert.equal(calls,2);assert.equal(max,1);
+});
+test('MP-081 known output truncation receives one compact repair and never accepts a length-limited program',async()=>{
+  const state=fresh();let calls=0;
+  const result=await create({engine:E}).run({mode:'draft',state,plots:land(state),intent:'A work cooperative',provider:{json:async()=>{calls++;throw Object.assign(new Error('Private truncated text'),{code:'output_limit'});}}});
+  assert.equal(result.code,'output_limit');assert.equal(result.status,'invalid');assert.equal(calls,2);assert.equal(state.actionHighWater,0);
+});
+test('MP-075 MP-081 density, shared-space and site rules retain precise allowlisted metadata without private IDs',async()=>{
+  const observed=[];
+  for(const id of ['PRIVATE_COMPONENT_A','PRIVATE_COMPONENT_B']){
+    const state=fresh(),diagnostics=logger(),p=program('Density check');p.components=[part(id,'workplace',8,.1)];
+    const result=await create({engine:E,diagnostics}).run({mode:'draft',state,plots:land(state),intent:'Density check',provider:provider({program:p})});
+    assert.equal(result.code,'site_infeasible');assert.equal(result.ruleId,'area_capacity');assert.equal(result.fieldId,'area');
+    const doc=(await diagnostics.snapshot()).prepared.document;assert.ok(!JSON.stringify(doc).includes(id));
+    observed.push(doc.events.filter(e=>e.metadata.ruleId).map(e=>({name:e.name,outcome:e.outcome,metadata:Object.fromEntries(Object.entries(e.metadata).filter(([k])=>!['requestId','durationMs'].includes(k)))})));
+  }
+  assert.deepEqual(observed[0],observed[1]);
+  for(const [kind,expected,field] of [['shared','shared_capacity','sharedWith'],['site','site_capacity_exceeded','plots']]){
+    const state=fresh(),p=program('Capacity check');
+    p.components=kind==='shared'?[part('host','workplace',8,1),part('one','community',10,.6,'host'),part('two','community',10,.6,'host')]:[part('big','workplace',8,2)];
+    const result=await create({engine:E}).run({mode:'draft',state,plots:land(state,1),intent:'Capacity check',provider:provider({program:p})});
+    assert.equal(result.ruleId,expected,kind);assert.equal(result.fieldId,field);
+  }
+});
+test('MP-075 MP-080 MP-081 actual failed persistence exports its fixed code and rejects arbitrary reason or rule text',async()=>{
+  const W=require('../src/workspace.js'),state=fresh(),key='masterplan.dev.save.v4',values=new Map([[key,JSON.stringify({format:'masterplan-save',formatVersion:4,writerProtocol:1,formatFloor:4,storageGeneration:1,state,legacyImportBackup:null})]]);
+  let failWrite=false;const storage={getItem:k=>values.get(k)??null,setItem(k,v){if(failWrite)throw new Error('PRIVATE_FAILURE');values.set(k,v);},removeItem:k=>values.delete(k)};
+  const store=W.create({engine:E,storage,locks:{request:async(_name,_options,fn)=>fn()},channel:'dev'});await store.load();failWrite=true;
+  const failed=await store.commit({...command(state,'postProgram',{program:program(),plots:land(state),acknowledgedScope:true}),expectedGeneration:store.generation});
+  assert.equal(failed.code,'persistence_failed');
+  const diagnostics=logger(),requestId=diagnostics.id();
+  await diagnostics.record('composition.application','failed',{requestId,stage:'persistence',action:'draft',resultCode:failed.code,applied:false,reason:'PRIVATE_FAILURE',ruleId:'area_capacity:PRIVATE_COMPONENT'});
+  await diagnostics.record('composition.application','not-applied',{requestId,stage:'persistence',resultCode:'read_only',applied:false,save:'PRIVATE_SAVE'});
+  await diagnostics.record('composition.application','failed',{requestId,stage:'persistence',resultCode:'PRIVATE_ARBITRARY_CODE',ruleId:'PRIVATE_RULE'});
+  const doc=(await diagnostics.snapshot()).prepared.document,events=doc.events;
+  assert.equal(events[0].metadata.resultCode,'persistence_failed');assert.equal(events[0].metadata.ruleId,undefined);
+  assert.equal(events[1].metadata.resultCode,'read_only');assert.equal(events[2].metadata.resultCode,undefined);assert.doesNotMatch(JSON.stringify(doc),/PRIVATE_/);
+});
+
+// Optional reproducible public-source probe, not live inference. Supply the
+// downloaded integrity-pinned bundle; normal CI remains offline/self-contained.
+test('MP-065 MP-081 pinned WebLLM source guards and actual getInputData match composition admission',{skip:!process.env.MP_WEBLLM_AUDIT_BUNDLE},async()=>{
+  const bytes=readFileSync(process.env.MP_WEBLLM_AUDIT_BUNDLE),source=bytes.toString();
+  assert.equal('sha256-'+createHash('sha256').update(bytes).digest('base64'),'sha256-O/9MVc0vAgBxFRc0G6vOvnqRqO+FuYNCBDn88mg1pnQ=');
+  const conversationStart=source.indexOf('class Conversation {'),pipelineStart=source.indexOf('class LLMChatPipeline {'),awaiterStart=source.indexOf('function __awaiter(');
+  assert.ok(conversationStart>0&&pipelineStart>0&&awaiterStart>0);
+  const declarations=source.slice(awaiterStart,source.indexOf('function __values(',awaiterStart))+
+    '\n'+source.slice(conversationStart,source.indexOf('function getConversation(',conversationStart))+
+    '\n'+source.slice(pipelineStart,source.indexOf('\nclass Chat {',pipelineStart))+'\n({Conversation,LLMChatPipeline})';
+  const actual=vm.runInNewContext(declarations,{Role:{user:'user',assistant:'assistant',tool:'tool'},
+    MessagePlaceholders:{system:'{system_message}',user:'{user_message}',assistant:'{assistant_message}',tool:'{tool_message}',function:'{function_string}'}});
+  assert.ok(source.includes('this.loadedModelIdToChatConfig.set(modelId, curModelConfig);'));
+  assert.ok(source.includes('new LLMChatPipeline(tvm, tokenizer, curModelConfig, logitProcessor, modelPackage, {'));
+  assert.ok(source.includes('this.config = config;'));assert.ok(source.includes('this.loadedModelIdToPipeline.set(modelId, newPipeline);'));
+  assert.ok(source.includes('const modelPackage = modelRecord.model_manifest === undefined'));
+  assert.ok(source.includes('if (modelPackage !== undefined) {'));assert.ok(source.includes('this.artifact = resolveChatCompletionArtifact('));
+  const appStart=source.indexOf('const prebuiltAppConfig = {'),appEnd=source.indexOf('\n};',appStart)+3;
+  const app=vm.runInNewContext(source.slice(appStart,appEnd)+'\nprebuiltAppConfig',{modelLibURLPrefix:'https://example.invalid/',modelVersion:'v0_2_87/base',ModelType:{LLM:0,embedding:1,VLM:2}});
+  for(const [id,file] of [[modelId,'qwen15-published-config.json'],['Qwen2.5-3B-Instruct-q4f16_1-MLC','qwen3-published-config.json']]){
+    const def=app.model_list.find(d=>d.model_id===id),hf=JSON.parse(readFileSync(new URL('../docs/evidence/autonomous-run/'+file,import.meta.url)));
+    assert.equal(def.model_manifest,undefined);assert.equal(hf.context_window_size,32768);assert.equal(def.overrides.context_window_size,4096);
+    const config={...hf,...def.overrides},pipeline=Object.create(actual.LLMChatPipeline.prototype);
+    const live=new actual.Conversation({...config.conv_template,...config.conv_config}),segments=[];
+    Object.assign(pipeline,{config,contextWindowSize:config.context_window_size,slidingWindowSize:config.sliding_window_size,filledKVCacheLength:0,imageDataCache:new Map(),conversation:live,
+      tokenizer:{encode(text){segments.push(text);return new Int32Array(text.includes('α')?7:11);}}});
+    const engine={loadedModelIdToPipeline:new Map([[id,pipeline]]),loadedModelIdToChatConfig:new Map([[id,config]])},ai=createOfflineProvider(engine,id),input='α🌳 Source formatting parity';
+    const admitted=await ai.admit(input);assert.equal(admitted.ok,true);assert.equal(live.messages.length,0);const admittedSegments=segments.splice(0);
+    live.appendMessage('user',input);live.appendReplyHeader('assistant');
+    const [tokens,promptTokens]=await pipeline.getInputData();
+    assert.deepEqual(segments,admittedSegments);assert.equal(admitted.promptTokens,promptTokens);assert.equal(tokens.flat().length,promptTokens);
+    assert.equal(admitted.contextWindowTokens,4096);assert.equal(pipeline.artifact,undefined);
+  }
 });

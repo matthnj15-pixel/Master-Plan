@@ -4,12 +4,17 @@
 const HOURS=168, RETENTION_MS=HOURS*60*60*1000, MAX_EVENTS=1000, MAX_BYTES=1024*1024;
 const encoder=new TextEncoder();
 const names=new Set(('app.launch model.choice startup.begin startup.check startup.initialization startup.ready startup.error startup.interrupted startup.retry shutdown.begin shutdown.finish request.queued request.admission generation.started generation.finished request.timeout request.aborted request.error grammar.fallback engine.reload plan.submitted plan.queued plan.dequeued plan.validation plan.repair plan.final plan.application composition.submitted composition.admission composition.validation composition.repair composition.final composition.application').split(' '));
-const outcomes=new Set(('started queued passed failed ready valid invalid malformed-json unsupported stale canceled timeout unavailable applied unchanged not-applied incomplete success off selected observed').split(' '));
+const outcomes=new Set(('started queued passed failed ready valid invalid malformed-json clarify unsupported stale canceled timeout unavailable applied unchanged not-applied incomplete success off selected observed').split(' '));
 const stages=new Set(('startup webgpu shader-f16 shell-cache runtime-cache model-cache initialization queue admission generation response reload validation repair application persistence shutdown launch').split(' '));
 const actions=new Set(['draft','revise','claims','reaction','briefing','other']);
 const tasks=new Set(['draft','revise','claims','reaction']);
 const resultCodes=new Set(('none malformed_json unknown_field wrong_type value_out_of_range schema_version input_limit context_limit output_limit runtime_metadata_unavailable intent_unclear intent_mismatch unsupported_operation scope_ack_required site_required plot_invalid site_infeasible site_conflict stale_revision target_closed runtime_unavailable generation_timeout request_canceled engine_rejected claim_evidence_mismatch claim_revision_stale receipt_not_found reaction_member_mismatch reaction_type_mismatch command_mismatch reaction_fallback claim_false claim_unsupported claim_evidence_unrelated claim_quantity_not_in_argument claim_evidence_negated claim_value_not_in_argument claim_irrelevant claim_repeated verified save_conflict save_lock_unavailable storage_unavailable workspace_conflict quota_used').split(' '));
 const fieldIds=new Set(('program version title intent components id capability label quantity area sharedWith conditions hours deliveries access buffer preserve affordable operations componentId stage loadingRoute publicSales onSiteConsumption assumptions omissions patch upsert remove changes claims argument source programRevision type field operator value evidence start end quote definitionId receipt acknowledgement concernIndexes').split(' '));
+fieldIds.add('plots');
+const ruleIds=new Set(('unsupported_capability program_version site_capacity_exceeded plots_invalid plot_invalid plot_duplicate plot_not_buildable loading_route_unavailable retained_building_cannot_be_split existing_project_partial_demolition quantity_bounds area_capacity shared_reference shared_capacity legacy_plan_out_of_bounds legacy_patch_invalid patch_unknown_field program_unknown_or_missing_field component_unknown_or_missing_field conditions_unknown_or_missing_field claim_revision_stale claim_schema_invalid claim_input_invalid receipt_not_found reaction_reference_invalid reaction_type_mismatch reaction_member_mismatch command_mismatch').split(' '));
+// Exact store codes only: no caller-provided reason, message or regex escape.
+for(const code of ['persistence_failed','read_only','unsupported_storage_format','workspace_unavailable','workspace_capacity','replica_unavailable','replica_stale','replica_failed'])resultCodes.add(code);
+for(const rule of ruleIds)resultCodes.add(rule);
 const models=new Set(['Qwen2.5-1.5B-Instruct-q4f16_1-MLC','Qwen2.5-3B-Instruct-q4f16_1-MLC']);
 const errorTypes={
  GrammarMatcherInitError:['grammar-init','grammar','JSON grammar initialization failed.'],
@@ -95,6 +100,7 @@ function sanitizeMetadata(input){
  if(['verified','unverified'].includes(input.admissionStatus))out.admissionStatus=input.admissionStatus;
  if(resultCodes.has(input.resultCode))out.resultCode=input.resultCode;
  if(fieldIds.has(input.fieldId))out.fieldId=input.fieldId;
+ if(ruleIds.has(input.ruleId))out.ruleId=input.ruleId;
  if(stages.has(input.stage))out.stage=input.stage;
  if(models.has(input.modelId)){out.modelId=input.modelId;out.runtimeVersion='0.2.87';}
  if(input.runtimeVersion==='0.2.87')out.runtimeVersion=input.runtimeVersion;
@@ -216,7 +222,7 @@ function attemptSummaries(events){
   const waitingStage=['unavailable','timeout','canceled','stale'].includes(final?.outcome)&&['queue','reload'].includes(runtimeBoundary?.metadata?.stage)?runtimeBoundary.metadata.stage:null;
   if(!isPlan&&!isComposition&&!isShutdown&&!startup&&!startupId&&!interrupted&&found('request.queued')&&!found('generation.finished')&&!found('request.error')&&!found('request.timeout')&&!found('request.aborted'))missing.push('generation.finished or request.error');
   const incomplete=missing.length>0||missingContext.length>0;
-  const completed=list.findLast(e=>['passed','success','ready','valid','invalid','malformed-json','unsupported','failed','applied','unchanged','not-applied'].includes(e.outcome)||e.name==='plan.dequeued');
+  const completed=list.findLast(e=>['passed','success','ready','valid','invalid','malformed-json','clarify','unsupported','failed','applied','unchanged','not-applied'].includes(e.outcome)||e.name==='plan.dequeued');
   const model=list.find(e=>e.metadata?.modelId)?.metadata.modelId||null;
   const elapsed=list.filter(e=>typeof e.metadata?.durationMs==='number').map(e=>e.metadata.durationMs);
   return {...(requestId?{requestId}:{}),...(startupId?{startupId}:{}),sessionId:first.sessionId,build:first.build,revision:first.revision,action:list.find(e=>e.metadata?.action)?.metadata.action||'other',...(isComposition?{task:list.find(e=>e.metadata?.task)?.metadata.task||null,resultCode:list.findLast(e=>e.metadata?.resultCode)?.metadata.resultCode||null,applicationStatus:application?(application.metadata.applied===true?'applied':'not-applied'):'not-observed'}:{}),modelId:model,runtimeVersion:list.find(e=>e.metadata?.runtimeVersion)?.metadata.runtimeVersion||null,firstRecordedAt:first.timestamp,lastRecordedAt:last.timestamp,lastEvent:last.name,lastStage:lastOpenStage||waitingStage||last.metadata?.stage||last.name,lastCompletedStage:completed?(completed.metadata?.stage||completed.name):null,outcome:last.outcome,status:incomplete?'incomplete':'complete',missingTerminalEvents:missing,missingContextEvents:missingContext,partialContext:missingContext.length>0,...(incomplete?{cause:'unknown'}:{}),observedDurationMs:Math.max(0,Date.parse(last.timestamp)-Date.parse(first.timestamp)),...(elapsed.length?{measuredDurationMs:Math.max(...elapsed)}:{}),...(application?{applied:application.metadata.applied===true}:{})};
