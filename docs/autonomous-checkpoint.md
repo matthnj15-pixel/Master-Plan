@@ -111,3 +111,12 @@ Confirmed Candidate A bug: inherited loading route names `__proto__` and
 correctly rejects. Engine owner RESUMED for bounded trusted-route lookup fix and
 regression, UI remains other writer. Provider waits next source slot. Independent
 review has reproduction; QA frozen Candidate A remains unchanged.
+
+Independent actual-browser Candidate A races: T1–T8 all PASS at 6da5d9a, two
+Chromium 153 pages, same HTTP origin/localStorage/native Web Locks, actual engine
+and workspace. Evidence /workspace/qa-private/evidence/integrated-6da5d9adc51751afb27236bfc27b769848a18d94/two-page-races/report.json.
+Account upload callback is a mock, not real-host proof. Recheck final revision.
+Engine route fix aeaae2c integrated 88a0900, 24 composition +33 legacy engine
++4 scenario tests passed; engine source paused. Provider resumed follow-ups;
+Frontend remains other source writer. Planner now independent sustained browser
+QA under /workspace/qa-sustained, same immutable Candidate A.
