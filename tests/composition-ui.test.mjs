@@ -66,7 +66,7 @@ before(async()=>{
   browser=await chromium.launch();
 });
 after(async()=>{await browser?.close();if(server)await new Promise(resolve=>server.close(resolve));rmSync(out,{recursive:true,force:true});});
-async function open(width=400,{ai=false,account=false}={}){
+async function open(width=400,{ai=false,account=false,pauseClock=false}={}){
   const context=await browser.newContext({viewport:{width,height:951},isMobile:true,hasTouch:true});
   if(ai||account)await context.addInitScript(({ai,account})=>{
     window.__uiReplies=[];window.__uiPrompts=[];window.__accountCopies={};window.__accountReads=[];window.__accountWrites=[];window.__holdAccountRead=false;
@@ -75,6 +75,7 @@ async function open(width=400,{ai=false,account=false}={}){
     window.claude={use:async name=>name==='sample'?(ai?provider:null):name==='user'?(account?{id:async()=>'account-qa'}:null):name==='db'?(account?db:null):null};
   },{ai,account});
   const page=await context.newPage(),errors=[];page.on('pageerror',error=>errors.push(String(error)));
+  if(pauseClock){await page.clock.install({time:new Date('2026-11-11T12:00:00Z')});await page.clock.pauseAt(new Date('2026-11-11T12:00:01Z'));}
   await page.goto(url+(ai||account?'/artifact':'/'));await page.locator('.item[data-open="bridge"]').waitFor();
   return{context,page,errors};
 }
@@ -334,9 +335,15 @@ test('MP-080 malformed account copies and failed import writes preserve the auth
   }finally{await context.close();}
 });
 test('MP-077 MP-080 a losing private workspace write keeps live input and its comparison baseline',async()=>{
-  const {context,page,errors}=await open();
+  const {context,page,errors}=await open(400,{pauseClock:true});
   try{
-    await genericDraft(page);await page.locator('[data-comp="saveDraft"]').click();const original=await privateDrafts(page),publicBefore=await saved(page);
+    await genericDraft(page);await page.waitForFunction(()=>localStorage.getItem('masterplan.dev.draft-workspace.v1')!==null);
+    const revision=()=>page.evaluate(()=>Object.values(JSON.parse(localStorage.getItem('masterplan.dev.draft-workspace.v1')).games)[0].revision),beforeSave=await revision();
+    await page.locator('[data-comp="saveDraft"]').click();await page.waitForFunction(previous=>Object.values(JSON.parse(localStorage.getItem('masterplan.dev.draft-workspace.v1')).games)[0].revision>previous,beforeSave);
+    // Explicit Save leaves the input debounce scheduled. Complete its actual
+    // durable write before the other page reads, so that page is the intended winner.
+    const beforeDebounce=await revision();await page.clock.runFor(350);await page.waitForFunction(previous=>Object.values(JSON.parse(localStorage.getItem('masterplan.dev.draft-workspace.v1')).games)[0].revision>previous,beforeDebounce);
+    const original=await privateDrafts(page),publicBefore=await saved(page);
     const other=await context.newPage();await other.goto(url+'/');await other.locator('#panel [data-comp="workspace"]').click();await other.locator('[data-comp-open]').first().click();await other.fill('#compositionTitle','Second page draft');await other.locator('[data-comp="saveDraft"]').click();
     await other.waitForFunction(()=>Object.values(JSON.parse(localStorage.getItem('masterplan.dev.draft-workspace.v1')).games)[0].drafts[0].program.title==='Second page draft');
     await page.fill('#compositionTitle','Keep the losing live title');await page.locator('[data-comp="saveDraft"]').click();await page.locator('[data-private-status]').filter({hasText:'Another page changed'}).waitFor();
