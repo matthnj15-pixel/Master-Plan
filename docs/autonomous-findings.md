@@ -36,14 +36,14 @@ final acceptance pass until its affected checks run on the integrated target.
 | U10 | Composition stages do not always pin the primary action while body scrolls. | Frontend / Sustained QA | Actual 400px screenshot shows long legacy controls with no review/confirm footer. Verify required primary region bounds in each stage at both widths, beyond target-size checks. |
 | U11 / R7 | Campus operator agrees while the computed college counter is hidden. | Frontend | Render named stakeholder evaluations/reasons/concessions separately from the one controlling authorizer. A stakeholder concern is not a veto. |
 | P1 | Hosted JSON-only transport was rejected for absent local admission API. | Provider | Fixed f37b6e7 / integrated 6da5d9a. Hosted context remains explicitly unverified; server rejection is recoverable. |
-| P2 | Clarify final diagnostic outcome was dropped. | Provider | Active follow-up. |
-| P3 | Definition reductions required unpatched template to fit first. | Provider | Active follow-up: apply bounded patch before final site preview. |
-| P4 | Reaction timeout gave unavailable instead of grounded deterministic fallback. | Provider | Active follow-up; cancellation/staleness must still prevent attachment. |
-| P5 | Composition stale/cancel/claims/reaction/grammar-fallback coverage incomplete. | Provider | Active focused tests. Initial 64 compatibility checks pass at f37b6e7. |
-| P6 | Loaded-tokenizer reflection verified only with mocks. | Provider | Read actual pinned WebLLM 0.2.87 source; verify config/pipeline/conversation/tokenizer assumptions without claiming live inference. |
-| P7 | Draft/revision context omitted full condition vocabulary and scoped trusted routes. | Provider | Active: compact closed conditions/routes/exposure facts and explicit unmodeled reuse boundary; remove irrelevant template context where appropriate. |
-| P8 | Capacity/density/sharing errors collapsed to one category without precise safe rule. | Provider | Active: closed `ruleId` plus safe `fieldId`, never private component IDs/raw reasons. Add persistence codes needed by U6. |
-| P9 / R9 | Revision context omits relevant built project history and actual commitment provenance. | Provider | Add at most three engine-verified relevant project records/conditions/stage/source IDs; never model-created history or authority. |
+| P2 | Clarify final diagnostic outcome was dropped. | Provider | Fixed 35c2225 / a884cdd; final independent retest pending. |
+| P3 | Definition reductions required unpatched template to fit first. | Provider | Fixed 35c2225 / a884cdd: bounded patch precedes final site preview. |
+| P4 | Reaction timeout gave unavailable instead of grounded deterministic fallback. | Provider | Fixed 35c2225 / a884cdd; cancellation/staleness still prevent attachment. |
+| P5 | Composition stale/cancel/claims/reaction/grammar-fallback coverage incomplete. | Provider | Expanded in 35c2225 / a884cdd; current provider checkpoint has 35 passing focused tests. |
+| P6 | Loaded-tokenizer reflection verified only with mocks. | Provider | Actual SRI-pinned WebLLM 0.2.87 source audited; real getInputData parity tested with a synthetic tokenizer. Actual override is 4096 tokens. No live inference claimed. |
+| P7 | Draft/revision context omitted full condition vocabulary and scoped trusted routes. | Provider | Fixed 35c2225 / a884cdd: closed conditions/routes/exposure facts and explicit unmodeled reuse boundary. |
+| P8 / R11 | Capacity/density/sharing errors collapsed to one category without precise safe rule. | Provider | Fixed 35c2225 / a884cdd: closed ruleId/fieldId and persistence codes; arbitrary raw text excluded. Final export retest pending. |
+| P9 / R9 | Revision context omits relevant built project history and actual commitment provenance. | Provider | Fixed 75510fa / ca975b9: up to three relevant records cross-checked with accepted pending/built snapshots, conditions, revision, site and decision; no historical authority. Final independent retest pending. |
 
 Independent A evidence: actual two-page T1–T8 all pass (real engine, storage and
 Web Locks; controlled account callback). First withheld twelve-case evaluation
