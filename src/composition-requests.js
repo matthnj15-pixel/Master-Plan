@@ -195,7 +195,7 @@ function create({engine:E,diagnostics,timeoutMs=90000}={}){
   }
   // Records alone are not proof of a historical commitment. Bind each one to
   // exactly one accepted pending/built snapshot, its engine fingerprint,
-  // ordered site, program, conditions and decision. Do not re-preview occupied
+  // ordered site, accepted plan/program and decision. Do not re-preview occupied
   // historical land or turn recorded commitments into present consent.
   function projectHistory(r){
     const records=Array.isArray(r.state.projectRecords)?r.state.projectRecords:[],snapshots=new Map(),counts=new Map(),
@@ -213,23 +213,37 @@ function create({engine:E,diagnostics,timeoutMs=90000}={}){
         if(!object(record)||counts.get(record.proposalId)!==1)continue;
         const sources=snapshots.get(record.proposalId);if(sources?.length!==1)continue;
         const {snapshot:p,collection}=sources[0],stage=collection==='built'?'built':'construction',plots=E.plotsOf(p,r.state);
-        if(record.stage!==stage||p.closed||!object(p.program)||!E.validateProgram(p.program).ok||
-          !Array.isArray(plots)||record.programRevision!==p.programRevision||record.presenter!==p.presenter||
-          record.title!==p.title||p.title!==p.program.title)continue;
-        const fingerprint=E.fingerprint({program:p.program,plots,presenter:p.presenter,id:p.id});
-        if(p.programRevision!==fingerprint)continue;
-        const same=(a,b)=>E.canonical(a)===E.canonical(b),conditions=p.program.conditions,decision=p.decision;
-        if(!same(record.program,p.program)||!same(record.plots,plots)||!same(record.layout,p.layout)||
-          !same(record.conditions,conditions)||!same(record.commitments,conditions)||
-          (p.conditions!==undefined&&!same(p.conditions,conditions))||!same(record.decision,decision))continue;
+        if(record.stage!==stage||p.closed||!Array.isArray(plots)||record.programRevision!==p.programRevision||
+          record.presenter!==p.presenter||record.title!==p.title||
+          (own(record,'kind')&&record.kind!==p.kind)||(own(record,'site')&&record.site!==p.site))continue;
+        const same=(a,b)=>E.canonical(a)===E.canonical(b),decision=p.decision;
+        if(!same(record.plots,plots)||!same(record.decision,decision))continue;
+        let accepted;
+        if(p.program!==undefined){
+          if(!object(p.program)||!E.validateProgram(p.program).ok||p.title!==p.program.title||
+            p.programRevision!==E.fingerprint({program:p.program,plots,presenter:p.presenter,id:p.id}))continue;
+          const conditions=p.program.conditions;
+          if(!same(record.program,p.program)||!same(record.layout,p.layout)||!same(record.conditions,conditions)||
+            !same(record.commitments,conditions)||(p.conditions!==undefined&&!same(p.conditions,conditions)))continue;
+          accepted={representation:'composition-v2',conditions:copy(conditions)};
+        }else{
+          // Validate accepted fields without forecasting or fitting an occupied
+          // historical site. The engine owns the legacy identity algorithm.
+          if(typeof E.legacyRevision!=='function'||typeof p.kind!=='string'||!own(E.KINDS,p.kind)||!object(p.plan)||
+            own(record,'program')||own(record,'conditions')||own(record,'commitments')||own(p,'conditions')||own(p,'commitments'))continue;
+          if(!same(E.validatePlan(p.kind,E.defaultPlan(p.kind),p.plan).plan,p.plan)||
+            !same(record.plan,p.plan)||p.programRevision!==E.legacyRevision(p,r.state))continue;
+          accepted={representation:'legacy-plan',kind:p.kind,plan:copy(p.plan)};
+        }
         if(!object(decision)||!['vote','approve'].includes(decision.action)||!['cash','bond'].includes(decision.funding)||
-          decision.route!==E.approvalRoute(r.state,p).id||!Number.isSafeInteger(decision.year)||decision.year<1||decision.year>r.state.year)continue;
+          decision.route!==E.approvalRoute(r.state,{...p,council:decision.action==='vote'}).id||
+          !Number.isSafeInteger(decision.year)||decision.year<1||decision.year>r.state.year)continue;
         if(!Number.isSafeInteger(record.postedYear)||record.postedYear<1||record.postedYear>decision.year)continue;
         if(collection==='built'&&(!Number.isSafeInteger(p.done)||p.done<decision.year||p.done>r.state.year||record.deliveryYear!==p.done))continue;
         const overlap=plots.some(p=>selected.has(E.canonical(p))),actor=actors.has(p.presenter);
         if(!overlap&&!actor)continue;
         verified.push({rank:overlap?2:1,year:collection==='built'?p.done:decision.year,value:{
-          title:p.title,actorId:p.presenter,stage,conditions:copy(conditions),relevance:overlap?'selected site':'target actor',
+          title:p.title,actorId:p.presenter,stage,...accepted,relevance:overlap?'selected site':'target actor',
           source:{record:'projectRecords',snapshot:collection,proposalId:p.id,programRevision:p.programRevision,
             decisionYear:decision.year,decisionRoute:decision.route,...(collection==='built'?{deliveryYear:p.done}:{})}
         }});
@@ -244,7 +258,7 @@ function create({engine:E,diagnostics,timeoutMs=90000}={}){
     const facts=Object.fromEntries(Object.entries({pop:r.state.pop,cash:r.state.cash,farmLost:r.state.farmLost||0,...r.state.facts})
       .filter(([,v])=>v===null||['string','number','boolean'].includes(typeof v)).slice(0,32));
     const context={site,facts,projectHistory:projectHistory(r),
-      historyPolicy:'These are accepted conditions recorded at the cited project decision, verified against the built/pending snapshot. They describe history, not present authority, ownership, permissions or prerequisite consent; historical assertions require the listed source IDs.'};
+      historyPolicy:'These are accepted program conditions or legacy kind/plan settings recorded at the cited project decision, verified against the built/pending snapshot. They describe history, not present authority, ownership, permissions or prerequisite consent; historical assertions require the listed source IDs.'};
     if(['draft','revise'].includes(r.mode)){
       context.capabilities=E.capabilities().map(d=>({id:d.id,label:d.label,unit:d.unit,quantity:d.quantity,area:d.area,capacityPerArea:d.capacityPerArea,shareable:d.shareable,supportsReuse:d.supportsReuse}));
       context.conditionSchema=E.programSchema().properties.conditions;

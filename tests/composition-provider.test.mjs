@@ -139,6 +139,72 @@ function historyWitness(build=true){
   return {state,gardenId:proposal.id,plots,farm:state.proposals.find(p=>p.id===farm.id)};
 }
 const promptContext=prompt=>JSON.parse(prompt.split('\nContext: ')[1].split('\nOriginal input: ')[0]);
+function legacyHistoryWitness(build=true,council=false){
+  let state=fresh(),proposal=state.proposals.find(p=>p.kind==='bridge'),funding='cash';
+  if(council){
+    for(const member of Object.values(state.council))member.rel=100;
+    const candidate=state.proposals.find(p=>p.council&&!p.program),vote=E.forecastVote(state,candidate,candidate.id);
+    proposal=state.proposals.find(p=>p.id===vote.winner);assert.ok(proposal,'use an actual winning council option');funding='bond';
+  }
+  const acceptedPlan=copy(proposal.plan),decision=E.applyCommand(state,command(state,'decision',{proposalId:proposal.id,action:council?'vote':'approve',funding,route:E.approvalRoute(state,proposal).id}));
+  assert.equal(decision.ok,true,decision.reasons?.join('; '));state=decision.state;
+  if(build){const year=E.applyCommand(state,command(state,'resolveYear',{}));assert.equal(year.ok,true,year.reasons?.join('; '));state=year.state;}
+  const snapshot=(build?state.built:state.pending).find(p=>p.id===proposal.id);
+  return {state,proposalId:proposal.id,acceptedPlan,snapshot,plots:copy(E.plotsOf(snapshot,state))};
+}
+test('MP-079 MP-081 R9-legacy actual cash bridge delivery supplies accepted kind/plan without historical repricing',async()=>{
+  assert.equal(typeof E.legacyRevision,'function','history must use the engine legacy fingerprint helper');
+  const {state,proposalId,acceptedPlan,snapshot,plots}=legacyHistoryWitness(),before=E.canonical(state);let context;
+  const engine={...E,previewLegacyRevision(){throw new Error('Do not preview historical occupied land');},effectsOf(){throw new Error('Do not reprice historical land');}};
+  const result=await create({engine}).run({mode:'draft',state,plots,intent:'Review the previously delivered work on this site',provider:{json:async prompt=>{
+    context=promptContext(prompt);return {status:'clarify',questions:['Which supported change do you want?']};
+  }}});
+  assert.equal(result.status,'clarify',result.blocker);
+  const history=context.projectHistory.find(h=>h.source.proposalId===proposalId);
+  assert.ok(history,'actual delivered legacy project must be included');assert.equal(history.kind,'bridge');assert.deepEqual(copy(history.plan),acceptedPlan);
+  assert.equal(history.stage,'built');assert.equal(history.source.programRevision,E.legacyRevision(snapshot,state));
+  assert.equal(history.source.deliveryYear,snapshot.done);assert.equal(Object.hasOwn(history,'program'),false);assert.equal(Object.hasOwn(history,'conditions'),false);
+  assert.doesNotMatch(JSON.stringify(context.projectHistory),/"(?:plots|grid|receipts|layout)"\s*:/);assert.equal(E.canonical(state),before);
+});
+test('MP-079 MP-081 R9-legacy pending council decisions and inconsistent archives share the generic history boundary',async()=>{
+  const pending=legacyHistoryWitness(false,true);let context;
+  await create({engine:E}).run({mode:'draft',state:pending.state,plots:pending.plots,intent:'Review the approved plan settings',
+    provider:{json:async prompt=>{context=promptContext(prompt);return {status:'clarify',questions:['Which settings should change?']};}}});
+  const history=context.projectHistory.find(h=>h.source.proposalId===pending.proposalId);
+  assert.ok(history,'pending council legacy history must be included');assert.equal(history.stage,'construction');assert.equal(history.kind,pending.snapshot.kind);
+  assert.deepEqual(copy(history.plan),pending.acceptedPlan);assert.equal(history.source.decisionRoute,pending.snapshot.decision.route);
+  for(const kind of ['plan','kind','site','decision','revision','invented-conditions','missing-source']){
+    const {state,plots,proposalId}=legacyHistoryWitness(),record=state.projectRecords.find(r=>r.proposalId===proposalId);
+    if(kind==='plan')record.plan.scope=record.plan.scope==='patch'?'full':'patch';
+    if(kind==='kind')record.kind='park';if(kind==='site')record.site='wrong-site';
+    if(kind==='decision')record.decision.funding='bond';if(kind==='revision')record.programRevision='wrong';
+    if(kind==='invented-conditions')record.conditions={access:true};if(kind==='missing-source')state.built=[];
+    const before=E.canonical(state);
+    await create({engine:E}).run({mode:'draft',state,plots,intent:'Review this site',provider:{json:async prompt=>{
+      context=promptContext(prompt);return {status:'clarify',questions:['What should change?']};
+    }}});
+    assert.equal(context.projectHistory.length,0,kind);assert.equal(E.canonical(state),before,kind);
+  }
+});
+test('MP-079 MP-081 R9-legacy and composed histories share one three-record budget',async()=>{
+  const composed=historyWitness(),legacy=legacyHistoryWitness(),state=composed.state,
+    legacyRecord=legacy.state.projectRecords.find(r=>r.proposalId===legacy.proposalId),
+    composedRecord=state.projectRecords.find(r=>r.proposalId===composed.gardenId),
+    composedSnapshot=state.built.find(p=>p.id===composed.gardenId);
+  state.built.push(copy(legacy.snapshot));state.projectRecords.push(copy(legacyRecord));
+  for(const [id,source,record] of [['a-composed-archive',composedSnapshot,composedRecord],['b-legacy-archive',legacy.snapshot,legacyRecord],['c-composed-archive',composedSnapshot,composedRecord]]){
+    const snapshot=copy(source),entry=copy(record);snapshot.id=id;
+    snapshot.programRevision=snapshot.program?E.fingerprint({program:snapshot.program,plots:E.plotsOf(snapshot,state),presenter:snapshot.presenter,id}):E.legacyRevision(snapshot,state);
+    entry.proposalId=id;entry.programRevision=snapshot.programRevision;state.built.push(snapshot);state.projectRecords.push(entry);
+  }
+  const before=E.canonical(state);let context;
+  await create({engine:E}).run({mode:'draft',state,plots:[...composed.plots,...legacy.plots],intent:'Review the accepted work on these sites',
+    provider:{json:async prompt=>{context=promptContext(prompt);return {status:'clarify',questions:['Which project should change?']};}}});
+  assert.equal(context.projectHistory.length,3);
+  assert.ok(context.projectHistory.some(h=>h.representation==='legacy-plan'));
+  assert.ok(context.projectHistory.some(h=>h.representation==='composition-v2'));
+  assert.equal(E.canonical(state),before);
+});
 test('MP-079 MP-081 R9 reopened farm revision receives the built overlapping garden commitment with source IDs',async()=>{
   const {state,farm,gardenId}=historyWitness(),before=E.canonical(state),intent='Retain the prior recorded garden access commitment';
   assert.equal(farm.status,'open');assert.equal(state.year,2);
