@@ -1,0 +1,27 @@
+{
+  "runtime": "@mlc-ai/web-llm@0.2.87",
+  "url": "https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.87/lib/index.js",
+  "sha256": "3bff4c55cd2f0200711517341babcebe7a91a8ef85b983420439fcf26835a674",
+  "sri": "sha256-O/9MVc0vAgBxFRc0G6vOvnqRqO+FuYNCBDn88mg1pnQ=",
+  "selectedModels": [
+    "Qwen2.5-1.5B-Instruct-q4f16_1-MLC",
+    "Qwen2.5-3B-Instruct-q4f16_1-MLC"
+  ],
+  "publishedContextTokens": 32768,
+  "webllmModelOverrideContextTokens": 4096,
+  "maxOutputTokens": 640,
+  "temperature": 0.2,
+  "evidenceType": "integrity-pinned public-source and actual Conversation/getInputData parity probe with synthetic tokenizer; no model weights or GPU inference",
+  "sourceLines": {
+    "loadedConfigMap": 18249,
+    "constructorConfig": 18327,
+    "directPipelineConfig": 11718,
+    "effectiveWindow": 11885,
+    "conversationGetter": 12256,
+    "templateMerge": 10762,
+    "segmentTokenization": 13854,
+    "tokenizerWrapper": 14702,
+    "artifactGuard": 11756
+  },
+  "probe": "MP_WEBLLM_AUDIT_BUNDLE=<downloaded SRI-verified bundle> node --test --test-name-pattern=\"pinned WebLLM source guards\" tests/composition-provider.test.mjs"
+}

@@ -1,0 +1,82 @@
+{
+  "sha": "35461a0acc6a21c723d97d90509bb1e8adb0cf49",
+  "evidenceType": "independent malformed-save durability fixtures, separate from normal-play evidence; real browser storage and Web Locks",
+  "elapsedMs": 8810,
+  "results": [
+    {
+      "fixture": "valid-control",
+      "supported": true,
+      "load": {
+        "ok": true,
+        "mode": "ready"
+      },
+      "command": {
+        "ok": true,
+        "mode": "ready",
+        "reasons": []
+      },
+      "bytesAfterLoadEqual": true,
+      "bytesAfterCommandEqual": false,
+      "admittedResolve": null,
+      "storedYear": 2,
+      "errors": [],
+      "status": "pass"
+    },
+    {
+      "fixture": "economy-null",
+      "supported": false,
+      "load": {
+        "ok": false,
+        "mode": "read-only",
+        "code": "unsupported_storage_format",
+        "reason": "This save format requires a compatible build. Its bytes were preserved."
+      },
+      "command": {
+        "ok": false,
+        "mode": "read-only",
+        "code": "read_only",
+        "reasons": [
+          "This save format requires a compatible build. Its bytes were preserved."
+        ]
+      },
+      "bytesAfterLoadEqual": true,
+      "bytesAfterCommandEqual": true,
+      "admittedResolve": null,
+      "storedYear": 1,
+      "errors": [],
+      "status": "pass"
+    },
+    {
+      "fixture": "schedule-null-id",
+      "supported": false,
+      "load": {
+        "ok": false,
+        "mode": "read-only",
+        "code": "unsupported_storage_format",
+        "reason": "This save format requires a compatible build. Its bytes were preserved."
+      },
+      "command": {
+        "ok": false,
+        "mode": "read-only",
+        "code": "read_only",
+        "reasons": [
+          "This save format requires a compatible build. Its bytes were preserved."
+        ]
+      },
+      "bytesAfterLoadEqual": true,
+      "bytesAfterCommandEqual": true,
+      "admittedResolve": null,
+      "storedYear": 1,
+      "errors": [],
+      "status": "pass"
+    }
+  ],
+  "passed": 3,
+  "total": 3,
+  "sourceVerification": {
+    "sha": "35461a0acc6a21c723d97d90509bb1e8adb0cf49",
+    "sourceCount": 16,
+    "buildCount": 6,
+    "mismatches": []
+  }
+}

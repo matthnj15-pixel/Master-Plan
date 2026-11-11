@@ -1,3 +1,4 @@
+import {legacyPlanningFixture} from './fixtures/legacy-build.mjs';
 // Exercise the actual Pages build and service worker with a small model-runtime fixture.
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
@@ -63,6 +64,7 @@ test('MP-065 opted-in dev Pages reopens offline and uses the saved model for fre
   let browser;
   try {
     execFileSync('node', ['scripts/build.mjs', '--channel', 'dev', '--out', out], { cwd: root, stdio: 'pipe' });
+    legacyPlanningFixture(out);
     await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
     const url = `http://127.0.0.1:${server.address().port}/dev/`;
     browser = await chromium.launch();

@@ -68,3 +68,31 @@ Decisions Nate made, with the date. New decisions go at the bottom.
 - Preserve supported save progress and stable/dev save identifiers, including the historic `millbrook.v1` browser key. Display-name changes do not rewrite historical records.
 - Epic A owns authoritative simulation, scenario data, eligibility, calendars and saves. Epic B owns provider orchestration and proposal drawings and can work against fixtures. The engine continues to validate plans and compute forecasts and outcomes. The showcase remains a separate follow-up.
 - Acceptance source is Nate's Scenario 01 · Millbrooke assignment dated November 9, 2026. No new pacing, defeat-role, agenda-growth or proposal-design behavior is accepted by this foundation.
+
+## 2026-11-11: Full autonomous planning loop (MP-076–082)
+
+- Nate explicitly instructed Codex to execute the attached full-run package.
+  This authorizes composition, simulation/rendering primitives, conditions,
+  normal farm/campus situations, opportunities and migrations. Routine design,
+  architecture, balancing and integration decisions proceed internally.
+- Actual remote Dev baseline is `18dded6207f7217021d84b42aad6cc8e00b68f43`.
+  There are no open PRs or published D/F branches at kickoff. Historical C
+  `028ad21...` is reference, preserved byte-for-byte in docs/reference/frozen-C.
+- C2 is the explicit successor. Project labels are identity; capability data
+  selects numeric/render rules. Exact ordered site and original intent persist.
+  Unknown physical mechanisms remain explicit scope gaps. Fictional costs and
+  bounded project-specific effects are engine balance assumptions.
+- `compositionPlans` is Dev-only. Dev v4 storage uses its own namespace with
+  protected legacy backup and a slot-stable lock; Stable keeps existing behavior.
+- Independent browser fixtures, live WebLLM, deployed checks and physical Duo
+  evidence are reported separately. No AI-ready verdict without real Qwen.
+  Dev integration is authorized after green checks; Stable remains Nate's gate.
+- Historical factual credit survives action-receipt pruning. New earned facts
+  carry a version marker and are retained independently of the bounded replay
+  ledger. Older facts are matched through verified recorded revisions or an
+  original retained persuasion receipt. If that provenance is unavailable,
+  migration records a conservative policy and awards no uncertain new credit;
+  existing relationships, points and original receipts remain intact. The
+  result identifies unresolved history rather than treating a truthful claim
+  as false. An unchanged earlier-engine save generated through 65 authorized
+  title revisions supplies the portable regression fixture.

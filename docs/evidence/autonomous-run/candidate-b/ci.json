@@ -1,0 +1,15 @@
+{
+  "runId": 42946301434,
+  "jobId": 130279843878,
+  "conclusion": "success",
+  "headSha": "c921f0add6f7c16682e6fa6d4b04523b17656e4f",
+  "url": "https://github.com/matthnj15-pixel/Master-Plan/actions/runs/42946301434",
+  "lines": [
+    "2026-11-11T02:29:59.1838932Z # tests 235",
+    "2026-11-11T02:29:59.1839276Z # pass 235",
+    "2026-11-11T02:29:59.1839438Z # fail 0",
+    "2026-11-11T02:29:59.1839768Z # skipped 0",
+    "2026-11-11T02:29:59.2145835Z Traceability: 62 requirements, 55 accepted, 48 verified by tests, 7 by play-test.",
+    "2026-11-11T02:29:59.2708906Z Built dev v0.6.0-dev (ad8757a) into /home/runner/work/Master-Plan/Master-Plan/dist (503 KB). Flags on: compositionPlans, devTools, offlineAI, planRequests, planDrawings"
+  ]
+}

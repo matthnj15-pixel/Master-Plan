@@ -1,0 +1,230 @@
+{
+  "manifestVersion": 1,
+  "release": "R1.1",
+  "contractVersion": "mp.proposals/1",
+  "baselineA": "18dded6207f7217021d84b42aad6cc8e00b68f43",
+  "commitBinding": {
+    "C": "the Git commit introducing this manifest and these exact artifacts",
+    "record": "Coordinator records the full containing commit SHA and this manifest hash in the external handoff after commit; no self-referential hash is embedded."
+  },
+  "frozenScope": "Approved first slice and private recovery defaults; four R1.1 fixes; no implementation or executable new fixtures in C.",
+  "wireSchema": "docs/contracts/proposal-council-v1/commands.schema.json",
+  "commandActionCount": 13,
+  "declarativeCaseCount": 149,
+  "expectedSampleFingerprint": "sha256:7dfc7c5d175af6e36a021cf0482b83ac39d581d927c9a3a6e6fd288c09f0b888",
+  "hashAlgorithm": "SHA-256 of exact file bytes",
+  "artifacts": [
+    {
+      "path": "docs/contracts/proposal-council-v1/README.md",
+      "bytes": 11529,
+      "sha256": "f17580b8b6f38713958fa848192531b13cf5006ad482d3b753a59b02d2d65176",
+      "classification": "normative-contract-or-shape"
+    },
+    {
+      "path": "docs/contracts/proposal-council-v1/acceptance.md",
+      "bytes": 14873,
+      "sha256": "72f95546fd4a713a34bddc5e175bfd172219fc2b06482f021ca15daabc5a655d",
+      "classification": "normative-contract-or-shape"
+    },
+    {
+      "path": "docs/contracts/proposal-council-v1/commands.schema.json",
+      "bytes": 101864,
+      "sha256": "41601be06d581daca17a03f0005dadf85ac3d3f1321e2815f51959db211e2f0a",
+      "classification": "normative-contract-or-shape"
+    },
+    {
+      "path": "docs/contracts/proposal-council-v1/contract.md",
+      "bytes": 58776,
+      "sha256": "21a17a6e42471adcec34b81416a3089724bf44d3a09583c463deb7b572efa1e6",
+      "classification": "normative-contract-or-shape"
+    },
+    {
+      "path": "docs/contracts/proposal-council-v1/fixture-specification.md",
+      "bytes": 35745,
+      "sha256": "df4e4c1718fb430bbde5b4a9dabc162f089ed219d28a5883bfe011e6cd5c03f8",
+      "classification": "normative-contract-or-shape"
+    },
+    {
+      "path": "docs/contracts/proposal-council-v1/references/seed2301-market-reference.json",
+      "bytes": 7217,
+      "sha256": "b3d079d4509ad67de681fe556175734d5ec6e2f61e47079d00fa02afa2e2c92a",
+      "classification": "old-engine-observed-reference"
+    },
+    {
+      "path": "docs/contracts/proposal-council-v1/references/seed2301-reference.json",
+      "bytes": 5161,
+      "sha256": "0bb54163349fce70b256c11e53ed422d31a8603e9c1756673f863fcfffaff209",
+      "classification": "old-engine-observed-reference"
+    },
+    {
+      "path": "docs/contracts/proposal-council-v1/sample-command-vector.json",
+      "bytes": 797,
+      "sha256": "80a3363e9ed6d0d7ce8b3f6ef781cb9f7b006fce0eba69f1e20a82d4dd7260ff",
+      "classification": "normative-contract-or-shape"
+    },
+    {
+      "path": "docs/contracts/proposal-council-v1/sample-command.canonical.json",
+      "bytes": 1445,
+      "sha256": "7dfc7c5d175af6e36a021cf0482b83ac39d581d927c9a3a6e6fd288c09f0b888",
+      "classification": "normative-contract-or-shape"
+    },
+    {
+      "path": "docs/contracts/proposal-council-v1/sample-command.fingerprint.txt",
+      "bytes": 72,
+      "sha256": "c81d4f6433020ef5f1c4c9c329aab1123156c27247570bb23a3362a29a7d8732",
+      "classification": "normative-contract-or-shape"
+    },
+    {
+      "path": "docs/contracts/proposal-council-v1/sample-command.json",
+      "bytes": 2593,
+      "sha256": "a4455d9235f0449f12bc931d090a4dfa7e4cfa9e3358f7b639c4438a48161314",
+      "classification": "normative-contract-or-shape"
+    },
+    {
+      "path": "docs/contracts/proposal-council-v1/sample-receipt.mock.json",
+      "bytes": 4176,
+      "sha256": "76bd60c9796c8954600c31a93a19fc6df11f6c881de55fd7f3485df443be84ae",
+      "classification": "normative-contract-or-shape"
+    },
+    {
+      "path": "docs/contracts/proposal-council-v1/sources/approved-review/acceptance-r1.1-matrix.md",
+      "bytes": 14440,
+      "sha256": "f73d9cd31d68a0878e90643cf9fe133b04f46553d98486ede91d3f4e2264fa39",
+      "classification": "approved-source"
+    },
+    {
+      "path": "docs/contracts/proposal-council-v1/sources/approved-review/audit-brief-reconciliation.md",
+      "bytes": 28206,
+      "sha256": "469a92779c3b2e553c788459baff83733a85065d26a3c7bba5425aaf5ec4b4c2",
+      "classification": "approved-source"
+    },
+    {
+      "path": "docs/contracts/proposal-council-v1/sources/approved-review/brief-reconciliation.md",
+      "bytes": 13295,
+      "sha256": "ac17e662df950a2843f4a51c6bd68afa1749be44929210d7b67d68ad38b6b724",
+      "classification": "approved-source"
+    },
+    {
+      "path": "docs/contracts/proposal-council-v1/sources/approved-review/contract-r1.1-for-review.md",
+      "bytes": 58190,
+      "sha256": "d92389bcdad0b6bed1716e8e2b9a846298ae953503c6f86d26c71ce6ce79508a",
+      "classification": "approved-source"
+    },
+    {
+      "path": "docs/contracts/proposal-council-v1/sources/approved-review/fixture-r1.1-specification.md",
+      "bytes": 35231,
+      "sha256": "807c04028a912765b4b8553bfe843a710e578d9ba6be7fd62877de212596b0eb",
+      "classification": "approved-source"
+    },
+    {
+      "path": "docs/contracts/proposal-council-v1/sources/approved-review/persona-brief-reconciliation.md",
+      "bytes": 25320,
+      "sha256": "45111065b77cea510132383696cae7dd0a7b44d53780d373fa1fe7d3cde11267",
+      "classification": "approved-source"
+    },
+    {
+      "path": "docs/contracts/proposal-council-v1/sources/approved-review/persona-dossier.md",
+      "bytes": 30018,
+      "sha256": "241ebc7a2b99c601ebee262d96958d89b2f63623de14dd84cd0885dee0d4116d",
+      "classification": "approved-source"
+    },
+    {
+      "path": "docs/contracts/proposal-council-v1/sources/approved-review/r1.1-request.md",
+      "bytes": 1312,
+      "sha256": "18ea76f2ee5da03be0232a9e7f0a0215d88216a9fc987a8ddcf26545c7173cbe",
+      "classification": "approved-source"
+    },
+    {
+      "path": "docs/contracts/proposal-council-v1/sources/approved-review/r1.1-review.md",
+      "bytes": 14014,
+      "sha256": "24ba6aecac52e6b91bb4c615bb041700824eb92f2e1f44ab3dbbd4bbea8587a7",
+      "classification": "approved-source"
+    },
+    {
+      "path": "docs/contracts/proposal-council-v1/sources/approved-review/r1.1-storage-notes.md",
+      "bytes": 4792,
+      "sha256": "b9ee8b82a131e98224c2a09c182143e0f3d6fa753d627056cba4c9c91a371988",
+      "classification": "approved-source"
+    },
+    {
+      "path": "docs/contracts/proposal-council-v1/sources/briefs/00_Master_Plan_Overhaul_Start_Here.md",
+      "bytes": 6526,
+      "sha256": "9d66ca35d0b8cdfc0c5bc85ee0d960b455b844427e1ffaa8f7eafe097a455c81",
+      "classification": "approved-source"
+    },
+    {
+      "path": "docs/contracts/proposal-council-v1/sources/briefs/01_Master_Plan_Code_Audit_and_Engine_Contract.md",
+      "bytes": 6586,
+      "sha256": "c6668055bc779919cb495ca904049b42a250f6ade09a34bda9851bc4d3602e35",
+      "classification": "approved-source"
+    },
+    {
+      "path": "docs/contracts/proposal-council-v1/sources/briefs/02_Master_Plan_Proposal_and_Council_Experience.md",
+      "bytes": 4007,
+      "sha256": "c5ca4db6f4f1af58e49f563a59274fd997feb8be835a1960be62f951059d7da7",
+      "classification": "approved-source"
+    },
+    {
+      "path": "docs/contracts/proposal-council-v1/sources/briefs/03_Master_Plan_Qwen_Orchestration_and_Evaluation.md",
+      "bytes": 4302,
+      "sha256": "3f0978238d3892f774fe53ef740365aea4fa78f54eca6e1f38a0fbcede586bbf",
+      "classification": "approved-source"
+    },
+    {
+      "path": "docs/contracts/proposal-council-v1/sources/briefs/04_Master_Plan_Persona_Research_and_Council.md",
+      "bytes": 6801,
+      "sha256": "1956a978809ecfb13516dba9f81b98a95e83feb2e028059278eef0fad047cc3d",
+      "classification": "approved-source"
+    },
+    {
+      "path": "docs/contracts/proposal-council-v1/sources/user-freeze-request.md",
+      "bytes": 304,
+      "sha256": "aa06a727905b34084525fb578fffb4db9321fa47af7d1a48112827c2c151c8c4",
+      "classification": "approved-source"
+    },
+    {
+      "path": "tests/fixtures/proposal-council-v1.expected-rules.json",
+      "bytes": 63445,
+      "sha256": "f89965ca96542c4ac561ab711f59368b6dde309dd87d3c6c2b13b58735ff0e9b",
+      "classification": "declarative-fixture"
+    },
+    {
+      "path": "tests/fixtures/proposal-council-v1.inputs.json",
+      "bytes": 121487,
+      "sha256": "cd4ca1b25fbb268a7dddd6075385f816576c8eb8604f8145869ac353fa9df9bc",
+      "classification": "declarative-fixture"
+    },
+    {
+      "path": "tests/fixtures/proposal-council-v1.mock-shapes.json",
+      "bytes": 69634,
+      "sha256": "d77eaa803c4062abce332e4c79a3c727905d1310bba6c5f1d1269db31b147846",
+      "classification": "declarative-fixture"
+    }
+  ],
+  "baselineDependencies": [
+    {
+      "path": "tests/fixtures/millbrooke-v2-save.json",
+      "atRevision": "18dded6207f7217021d84b42aad6cc8e00b68f43",
+      "sha256": "3546793afe2f817ed75c0a5ddd3a41708de2f9c0d8662a67a37e207956501f47",
+      "classification": "existing baseline input dependency; not a new executable fixture"
+    },
+    {
+      "path": "tests/fixtures/reconstruction.mjs",
+      "atRevision": "18dded6207f7217021d84b42aad6cc8e00b68f43",
+      "sha256": "e490436af6a688c703f703c31f71155f8509bd847dd96e565fd58709bdbf8b11",
+      "classification": "existing baseline input dependency; not a new executable fixture"
+    },
+    {
+      "path": "tests/fixtures/plans.cjs",
+      "atRevision": "18dded6207f7217021d84b42aad6cc8e00b68f43",
+      "sha256": "d18a134bc553c0c5766265080135925e1392ab4661b047fb550ae5b3bd323972",
+      "classification": "existing baseline input dependency; not a new executable fixture"
+    }
+  ],
+  "evidenceLimits": [
+    "Static shape and hash checks are not runtime acceptance.",
+    "Only the separately labeled B0/B1 references are measured existing-engine outputs.",
+    "D adds executable engine fixtures and assertions after C; F consumes the same pinned mock shapes.",
+    "W1 and integrated revision I are unset at C; live providers and physical Duo require separate evidence."
+  ]
+}

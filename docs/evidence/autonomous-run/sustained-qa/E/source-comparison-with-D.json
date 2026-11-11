@@ -1,0 +1,45 @@
+{
+  "beforeSHA": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d",
+  "afterSHA": "09f924bb305999932e8b74383f9d3f759f95895c",
+  "changedPinnedSources": [
+    "src/qwen-diagnostics.js"
+  ],
+  "unchangedPinnedSources": [
+    "flags.json",
+    "scripts/build.mjs",
+    "scripts/trace.mjs",
+    "src/composition-requests.js",
+    "src/engine.js",
+    "src/fonts/OFL.txt",
+    "src/fonts/host-grotesk-latin.woff2",
+    "src/index.html",
+    "src/offline-ai.js",
+    "src/offline-worker.js",
+    "src/package.json",
+    "src/plan-renderer.js",
+    "src/plan-requests.js",
+    "src/ui.js",
+    "src/workspace.js"
+  ],
+  "sourceCount": 16,
+  "buildCount": 6,
+  "mismatches": [],
+  "carryForward": {
+    "D": [
+      "3/3 normal twelve-year paths",
+      "nine genuine election wins and actual host continuation",
+      "3/3 nested-scenario fence controls",
+      "5/5 persisted-layout fence controls"
+    ],
+    "C": [
+      "2/2 UI widths",
+      "66 main-action footer-bound samples",
+      "4/4 pending working-input/site recovery",
+      "correct delivered history and four-plot legacy label"
+    ],
+    "A": [
+      "23m31.53s normal browser first term/election/year-five delivery/year-six reload"
+    ]
+  },
+  "strategyReplay": "none; explicitly waived for this diagnostic-only fixed-code addition after unchanged engine/UI/progression hashes"
+}

@@ -1,0 +1,111 @@
+{
+  "sha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d",
+  "evidenceType": "independent malformed persisted-allocation scalar probes with real browser storage and Web Locks; positive normal posted-plan control",
+  "elapsedMs": 25930,
+  "results": [
+    {
+      "field": "valid-control",
+      "errors": [],
+      "supported": true,
+      "load": {
+        "ok": true,
+        "mode": "ready"
+      },
+      "renderer": {
+        "threw": false,
+        "htmlLength": 3941
+      },
+      "bytesAfterLoadEqual": true,
+      "bytesAfterCommandEqual": false,
+      "command": {
+        "ok": true,
+        "mode": "ready"
+      },
+      "status": "pass"
+    },
+    {
+      "field": "label",
+      "errors": [],
+      "supported": false,
+      "load": {
+        "ok": false,
+        "mode": "read-only",
+        "code": "unsupported_storage_format"
+      },
+      "renderer": null,
+      "bytesAfterLoadEqual": true,
+      "bytesAfterCommandEqual": true,
+      "command": {
+        "ok": false,
+        "mode": "read-only",
+        "code": "read_only"
+      },
+      "status": "pass"
+    },
+    {
+      "field": "role",
+      "errors": [],
+      "supported": false,
+      "load": {
+        "ok": false,
+        "mode": "read-only",
+        "code": "unsupported_storage_format"
+      },
+      "renderer": null,
+      "bytesAfterLoadEqual": true,
+      "bytesAfterCommandEqual": true,
+      "command": {
+        "ok": false,
+        "mode": "read-only",
+        "code": "read_only"
+      },
+      "status": "pass"
+    },
+    {
+      "field": "componentId",
+      "errors": [],
+      "supported": false,
+      "load": {
+        "ok": false,
+        "mode": "read-only",
+        "code": "unsupported_storage_format"
+      },
+      "renderer": null,
+      "bytesAfterLoadEqual": true,
+      "bytesAfterCommandEqual": true,
+      "command": {
+        "ok": false,
+        "mode": "read-only",
+        "code": "read_only"
+      },
+      "status": "pass"
+    },
+    {
+      "field": "sharedWith",
+      "errors": [],
+      "supported": false,
+      "load": {
+        "ok": false,
+        "mode": "read-only",
+        "code": "unsupported_storage_format"
+      },
+      "renderer": null,
+      "bytesAfterLoadEqual": true,
+      "bytesAfterCommandEqual": true,
+      "command": {
+        "ok": false,
+        "mode": "read-only",
+        "code": "read_only"
+      },
+      "status": "pass"
+    }
+  ],
+  "passed": 5,
+  "total": 5,
+  "sourceVerification": {
+    "sha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d",
+    "sourceCount": 16,
+    "buildCount": 6,
+    "mismatches": []
+  }
+}

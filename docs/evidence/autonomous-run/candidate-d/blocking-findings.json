@@ -1,0 +1,21 @@
+{
+  "sha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d",
+  "disposition": "needs revision",
+  "findings": [
+    {
+      "id": "R11-HISTORY-REASON",
+      "severity": "P2",
+      "owner": "diagnostic closed result-code allowlist",
+      "criteria": [
+        "X5"
+      ],
+      "source": "src/qwen-diagnostics.js resultCodes; src/composition-requests.js claims logging",
+      "reproduction": "Use the authentic A pruned-credit fixture with projectRecords absent; C migrates conservatively. Run actual COMPOSITION_REQUESTS claims with a constant original-claim mock and actual diagnostics. Engine evaluation returns none/claim_history_unresolved, but prepared export drops that code and retains valid/none events.",
+      "evidence": "claim-history-diagnostics.json",
+      "amendment": "Add the exact fixed claim_history_unresolved code to the closed diagnostic allowlist and verify sanitized export. Preserve rejection of arbitrary text."
+    }
+  ],
+  "pendingChecks": [
+    "closed geometry/grid admission, renderer and account fixtures"
+  ]
+}

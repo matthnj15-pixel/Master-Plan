@@ -1,0 +1,8178 @@
+{
+  "state": {
+    "v": 4,
+    "seed": 0,
+    "scenarioId": "millbrooke",
+    "scenario": {
+      "id": "millbrooke",
+      "metadata": {
+        "displayName": "Scenario 01 · Millbrooke",
+        "town": "Millbrooke",
+        "region": "Pennsylvania"
+      },
+      "calendar": {
+        "startYear": 2027,
+        "yearsPerTurn": 1,
+        "electionEvery": 4,
+        "maxTurns": 32
+      },
+      "map": {
+        "width": 24,
+        "height": 24,
+        "sites": {
+          "oldmill": [
+            [
+              6,
+              12
+            ],
+            [
+              7,
+              12
+            ],
+            [
+              6,
+              13
+            ],
+            [
+              7,
+              13
+            ]
+          ],
+          "route22": [
+            [
+              13,
+              21
+            ],
+            [
+              14,
+              21
+            ],
+            [
+              15,
+              21
+            ],
+            [
+              13,
+              22
+            ],
+            [
+              14,
+              22
+            ],
+            [
+              15,
+              22
+            ]
+          ],
+          "campus_s": [
+            [
+              15,
+              9
+            ],
+            [
+              16,
+              9
+            ],
+            [
+              17,
+              9
+            ],
+            [
+              15,
+              10
+            ],
+            [
+              16,
+              10
+            ],
+            [
+              17,
+              10
+            ]
+          ],
+          "storefront": [
+            [
+              13,
+              12
+            ]
+          ],
+          "ridge": [
+            [
+              20,
+              13
+            ],
+            [
+              21,
+              13
+            ],
+            [
+              22,
+              13
+            ],
+            [
+              20,
+              14
+            ],
+            [
+              21,
+              14
+            ],
+            [
+              22,
+              14
+            ],
+            [
+              20,
+              15
+            ],
+            [
+              21,
+              15
+            ],
+            [
+              22,
+              15
+            ],
+            [
+              20,
+              16
+            ],
+            [
+              21,
+              16
+            ],
+            [
+              22,
+              16
+            ]
+          ],
+          "bridge": [
+            [
+              2,
+              11
+            ]
+          ],
+          "school_lot": [
+            [
+              13,
+              13
+            ],
+            [
+              14,
+              13
+            ],
+            [
+              13,
+              14
+            ],
+            [
+              14,
+              14
+            ]
+          ],
+          "creekside": [
+            [
+              4,
+              13
+            ],
+            [
+              5,
+              13
+            ],
+            [
+              4,
+              14
+            ],
+            [
+              5,
+              14
+            ]
+          ],
+          "east_end": [
+            [
+              16,
+              13
+            ],
+            [
+              17,
+              13
+            ],
+            [
+              18,
+              13
+            ],
+            [
+              16,
+              14
+            ],
+            [
+              17,
+              14
+            ],
+            [
+              18,
+              14
+            ]
+          ],
+          "pine_south": [
+            [
+              15,
+              17
+            ],
+            [
+              16,
+              17
+            ],
+            [
+              17,
+              17
+            ],
+            [
+              15,
+              18
+            ],
+            [
+              16,
+              18
+            ],
+            [
+              17,
+              18
+            ]
+          ]
+        },
+        "parcels": {
+          "oldmill": {
+            "name": "Old Mill lot",
+            "traits": [
+              "creek",
+              "main"
+            ],
+            "blurb": "Downtown on Kish Creek"
+          },
+          "school_lot": {
+            "name": "Lot behind the elementary school",
+            "tiles": [
+              [
+                13,
+                13
+              ],
+              [
+                14,
+                13
+              ],
+              [
+                13,
+                14
+              ],
+              [
+                14,
+                14
+              ]
+            ],
+            "traits": [
+              "neighbors"
+            ],
+            "blurb": "Next to homes and the school"
+          },
+          "creekside": {
+            "name": "Kish Creek bank",
+            "tiles": [
+              [
+                4,
+                13
+              ],
+              [
+                5,
+                13
+              ],
+              [
+                4,
+                14
+              ],
+              [
+                5,
+                14
+              ]
+            ],
+            "traits": [
+              "creek",
+              "neighbors"
+            ],
+            "blurb": "Floodplain with creek views"
+          },
+          "east_end": {
+            "name": "East End field",
+            "tiles": [
+              [
+                16,
+                13
+              ],
+              [
+                17,
+                13
+              ],
+              [
+                18,
+                13
+              ],
+              [
+                16,
+                14
+              ],
+              [
+                17,
+                14
+              ],
+              [
+                18,
+                14
+              ]
+            ],
+            "traits": [
+              "edge"
+            ],
+            "blurb": "Open field on the east side"
+          },
+          "pine_south": {
+            "name": "Pine Street field",
+            "tiles": [
+              [
+                15,
+                17
+              ],
+              [
+                16,
+                17
+              ],
+              [
+                17,
+                17
+              ],
+              [
+                15,
+                18
+              ],
+              [
+                16,
+                18
+              ],
+              [
+                17,
+                18
+              ]
+            ],
+            "traits": [
+              "edge",
+              "neighbors"
+            ],
+            "blurb": "South of Pine Street, near homes"
+          }
+        },
+        "places": {
+          "oldmill": {
+            "name": "Old Mill lot",
+            "kw": [
+              "old mill",
+              "mill lot",
+              "mill commons",
+              "commons"
+            ]
+          },
+          "downtown": {
+            "name": "Main Street storefronts",
+            "kw": [
+              "downtown",
+              "main street"
+            ],
+            "query": {
+              "buildings": [
+                "shop",
+                "vacant",
+                "boutique"
+              ],
+              "rows": [
+                10,
+                12
+              ],
+              "bounds": {
+                "minX": 8,
+                "maxX": 13,
+                "minY": 0,
+                "maxY": 23
+              }
+            }
+          },
+          "borough_hall": {
+            "name": "Borough Hall",
+            "kw": [
+              "borough hall",
+              "town hall",
+              "city hall"
+            ],
+            "query": {
+              "buildings": [
+                "civic"
+              ]
+            }
+          },
+          "school": {
+            "name": "Millbrooke Elementary",
+            "kw": [
+              "elementary",
+              "demolish the school",
+              "tear down the school"
+            ],
+            "query": {
+              "buildings": [
+                "school"
+              ]
+            }
+          },
+          "school_lot": {
+            "name": "Lot behind the elementary school",
+            "kw": [
+              "behind the school",
+              "school lot"
+            ]
+          },
+          "college": {
+            "name": "Penns Valley College campus",
+            "kw": [
+              "college",
+              "campus",
+              "university"
+            ],
+            "query": {
+              "buildings": [
+                "college",
+                "quad"
+              ]
+            }
+          },
+          "campus_s": {
+            "name": "South of campus on College Ave",
+            "kw": [
+              "college ave",
+              "south of campus"
+            ]
+          },
+          "creekside": {
+            "name": "Kish Creek bank",
+            "kw": [
+              "creek",
+              "riverfront",
+              "waterfront"
+            ]
+          },
+          "east_end": {
+            "name": "East End field",
+            "kw": [
+              "east end",
+              "east side"
+            ]
+          },
+          "pine_south": {
+            "name": "Pine Street field",
+            "kw": [
+              "pine street",
+              "pine st"
+            ]
+          },
+          "route22": {
+            "name": "Route 22 frontage",
+            "kw": [
+              "route 22",
+              "highway"
+            ]
+          },
+          "ridge": {
+            "name": "Ridge Road farmland",
+            "kw": [
+              "ridge road",
+              "farmland",
+              "dairy"
+            ]
+          }
+        },
+        "growth": {
+          "enabled": true,
+          "center": [
+            10,
+            11
+          ],
+          "bounds": {
+            "minX": 4,
+            "maxX": 19,
+            "minY": 1,
+            "maxY": 19
+          },
+          "main": {
+            "minX": 7,
+            "maxX": 16,
+            "minY": 9,
+            "maxY": 13
+          },
+          "traitsMain": {
+            "minX": 5,
+            "maxX": 14,
+            "minY": 10,
+            "maxY": 12
+          }
+        }
+      },
+      "people": {
+        "presenters": {
+          "planner": {
+            "name": "Dana Ruiz",
+            "role": "Borough Planner",
+            "rel": 65,
+            "comp": 78,
+            "detail": 82,
+            "flex": "high",
+            "persona": "Thoughtful, data-minded borough planner who wants Millbrooke to grow without losing its character. Likes walkable design. Will trade features to save money but protects the memorial."
+          },
+          "merchants": {
+            "name": "Walt Kessler",
+            "role": "Millbrooke Merchants Association",
+            "rel": 55,
+            "comp": 52,
+            "detail": 45,
+            "flex": "medium",
+            "persona": "Folksy hardware-store owner speaking for downtown merchants. Beloved in town, big-hearted, a little vague on numbers. Wants lots of stores and enough parking so customers come back."
+          },
+          "keystone": {
+            "name": "Brent Hollis",
+            "role": "Keystone Ridge Development",
+            "rel": 35,
+            "comp": 88,
+            "detail": 80,
+            "flex": "low",
+            "persona": "Polished regional developer. Competent and fast, but protects his margins. Resists anything that cuts leasable space or parking unless the borough gives something back."
+          },
+          "engineer": {
+            "name": "Sam Yoder",
+            "role": "Borough Engineer",
+            "rel": 60,
+            "comp": 70,
+            "detail": 70,
+            "flex": "high",
+            "persona": "Plainspoken engineer. Gives straight answers about risk and cost."
+          },
+          "brand": {
+            "name": "Celeste Varga",
+            "role": "Halden & Pierce (luxury retail)",
+            "rel": 40,
+            "comp": 85,
+            "detail": 70,
+            "flex": "low",
+            "persona": "Smooth corporate site-selection director for a national luxury handbag brand. Wants a big incentive and short commitments. Very wary of clawback clauses."
+          },
+          "bowers_operator": {
+            "name": "Ruth Bowers",
+            "role": "Working-farm tenant operator",
+            "rel": 55,
+            "comp": 80,
+            "detail": 85,
+            "flex": "medium",
+            "persona": "Explain a day of deliveries and field work; distinguish operation from title."
+          },
+          "freight_operator": {
+            "name": "Alex Moreno",
+            "role": "Distribution operator",
+            "rel": 55,
+            "comp": 80,
+            "detail": 85,
+            "flex": "medium",
+            "persona": "Discuss loading and storage, without promising permits or council votes."
+          },
+          "college_liaison": {
+            "name": "Dr. Leena Shah",
+            "role": "College community liaison",
+            "rel": 55,
+            "comp": 80,
+            "detail": 85,
+            "flex": "medium",
+            "persona": "Ask concrete questions about loading and customers. A concern is not a veto."
+          }
+        },
+        "council": [
+          {
+            "id": "marsh",
+            "name": "Greg Marsh",
+            "seat": "Ward 1",
+            "rival": true,
+            "rel": 25,
+            "blurb": "Wants your job. Pro-growth, low taxes, loves a ribbon cutting.",
+            "w": {
+              "jobs": 1.2,
+              "conf": 1,
+              "stores": 0.6,
+              "cost": -0.4,
+              "live": 0.3,
+              "walk": 0.1,
+              "housing": 0.5,
+              "safety": 0.3
+            },
+            "pri": {
+              "jobs": "new jobs",
+              "conf": "business growth",
+              "stores": "more stores",
+              "cost": "keeping costs reasonable"
+            }
+          },
+          {
+            "id": "pryor",
+            "name": "Ellen Pryor",
+            "seat": "Ward 2",
+            "rel": 42,
+            "blurb": "Retired accountant. Guards the reserve fund.",
+            "w": {
+              "cost": -1.5,
+              "prop": 0.5,
+              "live": 0.2
+            },
+            "pri": {
+              "cost": "lower cost to the borough",
+              "prop": "long-term property values and tax base",
+              "live": "quality of life"
+            }
+          },
+          {
+            "id": "okafor",
+            "name": "Rev. James Okafor",
+            "seat": "Ward 3",
+            "rel": 55,
+            "blurb": "Pastor at First Methodist. Neighborhoods first.",
+            "w": {
+              "live": 1.3,
+              "walk": 0.8,
+              "approval": 0.5,
+              "stores": 0.5,
+              "safety": 0.7,
+              "afford": 0.6
+            },
+            "pri": {
+              "live": "quality of life",
+              "walk": "walkability and safe streets",
+              "approval": "what residents want",
+              "stores": "places for families to shop",
+              "safety": "safe neighborhoods",
+              "afford": "housing families can afford"
+            }
+          },
+          {
+            "id": "brandt",
+            "name": "Tina Brandt",
+            "seat": "At-large",
+            "rel": 45,
+            "blurb": "Owns the Main Street diner. Watches foot traffic.",
+            "w": {
+              "conf": 1,
+              "walk": 0.6,
+              "stores": 0.8,
+              "downtown": 1,
+              "safety": 0.5
+            },
+            "pri": {
+              "conf": "business confidence",
+              "walk": "foot traffic downtown",
+              "stores": "more stores",
+              "downtown": "protecting downtown businesses",
+              "safety": "safe streets downtown"
+            }
+          },
+          {
+            "id": "weaver",
+            "name": "Hal Weaver",
+            "seat": "Ward 4 (east)",
+            "rel": 50,
+            "blurb": "Dairy farmer. Protects farmland, hates waste.",
+            "w": {
+              "farm": -1.5,
+              "cost": -0.7,
+              "live": 0.4,
+              "flood": -0.8
+            },
+            "pri": {
+              "farm": "protecting farmland",
+              "cost": "not wasting money",
+              "live": "quality of life",
+              "flood": "flood risk along the creek"
+            }
+          }
+        ]
+      },
+      "initial": {
+        "pop": 3200,
+        "cash": 900,
+        "flags": {
+          "bridgeRisk": 0.45
+        }
+      },
+      "proposals": {
+        "definitions": {
+          "bridge": {
+            "kind": "bridge",
+            "title": "Main Street bridge repair",
+            "presenter": "engineer",
+            "site": "bridge",
+            "council": false,
+            "blurb": "The 1958 bridge over Kish Creek failed its last inspection. It carries every car into downtown."
+          },
+          "stripmall": {
+            "kind": "stripmall",
+            "title": "Route 22 Shopping Plaza",
+            "presenter": "keystone",
+            "site": "route22",
+            "council": true,
+            "blurb": "A strip mall on farmland at Route 22. Fast to build, cheap stores, lots of parking."
+          },
+          "park": {
+            "kind": "park",
+            "title": "Old Mill Memorial Park",
+            "presenter": "planner",
+            "site": "oldmill",
+            "council": true,
+            "group": "oldmill",
+            "blurb": "Turn the vacant Old Mill lot into a veterans memorial park on the creek."
+          },
+          "commerce": {
+            "kind": "commerce",
+            "title": "Old Mill Commons",
+            "presenter": "merchants",
+            "site": "oldmill",
+            "council": true,
+            "group": "oldmill",
+            "blurb": "Merchants want new storefronts on the Old Mill lot. Stores downtown are always full.",
+            "petition": 800
+          },
+          "boutique": {
+            "kind": "boutique",
+            "title": "Halden & Pierce flagship",
+            "presenter": "brand",
+            "site": "storefront",
+            "council": true,
+            "blurb": "A luxury handbag brand wants the vacant Main Street storefront, with a tax incentive."
+          },
+          "studenthousing": {
+            "kind": "studenthousing",
+            "title": "College Ave Student Lofts",
+            "presenter": "keystone",
+            "site": "campus_s",
+            "council": true,
+            "blurb": "Penns Valley College is growing. Keystone wants to build student apartments south of campus."
+          },
+          "subdivision": {
+            "kind": "subdivision",
+            "title": "Ridge Road Estates",
+            "presenter": "keystone",
+            "site": "ridge",
+            "council": true,
+            "blurb": "Subdivide the old Bowers dairy on Ridge Road into single-family homes."
+          },
+          "farm-access": {
+            "kind": "initiative",
+            "title": "Bowers farm access and stand",
+            "presenter": "bowers_operator",
+            "site": "ridge",
+            "program": {
+              "version": 2,
+              "title": "Bowers farm access and stand",
+              "intent": "Keep a leased working farm productive while adding a small stand and equipment access.",
+              "components": [
+                {
+                  "id": "fields",
+                  "capability": "agriculture",
+                  "label": "fields",
+                  "quantity": 4,
+                  "area": 4,
+                  "sharedWith": null
+                },
+                {
+                  "id": "stand",
+                  "capability": "shop",
+                  "label": "stand",
+                  "quantity": 1,
+                  "area": 0.25,
+                  "sharedWith": null
+                },
+                {
+                  "id": "lane",
+                  "capability": "access",
+                  "label": "lane",
+                  "quantity": 100,
+                  "area": 0.25,
+                  "sharedWith": null
+                }
+              ],
+              "conditions": {
+                "hours": 10,
+                "deliveries": "daytime",
+                "access": true,
+                "buffer": 0,
+                "preserve": 4,
+                "affordable": false
+              },
+              "assumptions": [
+                "Fictional operating facts are authored for this new campaign."
+              ],
+              "omissions": []
+            },
+            "controller": "bowers_operator",
+            "profileId": "bowers_operator",
+            "stakeholders": [],
+            "council": true
+          },
+          "campus-loading": {
+            "kind": "initiative",
+            "title": "College Avenue distribution loading",
+            "presenter": "freight_operator",
+            "site": "campus_s",
+            "program": {
+              "version": 2,
+              "title": "College Avenue distribution loading",
+              "intent": "A freight-only storage operation with a delegated service lane, not a drinking venue.",
+              "components": [
+                {
+                  "id": "warehouse",
+                  "capability": "storage",
+                  "label": "warehouse",
+                  "quantity": 40,
+                  "area": 1,
+                  "sharedWith": null
+                },
+                {
+                  "id": "loading",
+                  "capability": "access",
+                  "label": "loading",
+                  "quantity": 100,
+                  "area": 0.25,
+                  "sharedWith": null
+                }
+              ],
+              "conditions": {
+                "hours": 10,
+                "deliveries": "daytime",
+                "access": true,
+                "buffer": 0.5,
+                "preserve": 0,
+                "affordable": false,
+                "operations": [
+                  {
+                    "componentId": "warehouse",
+                    "stage": "operation",
+                    "loadingRoute": "service-lane",
+                    "publicSales": false,
+                    "onSiteConsumption": false
+                  }
+                ]
+              },
+              "assumptions": [
+                "Fictional operating facts are authored for this new campaign."
+              ],
+              "omissions": []
+            },
+            "controller": "freight_operator",
+            "profileId": "freight_operator",
+            "stakeholders": [
+              "college_liaison"
+            ],
+            "council": true
+          }
+        },
+        "schedule": {
+          "1": [
+            "bridge",
+            "stripmall",
+            "farm-access",
+            "campus-loading"
+          ],
+          "2": [
+            "park",
+            "commerce"
+          ],
+          "3": [
+            "boutique",
+            "studenthousing"
+          ],
+          "4": [
+            "subdivision"
+          ]
+        }
+      },
+      "decisionRoute": {
+        "id": "borough-council",
+        "name": "Millbrooke Borough Council",
+        "executiveId": "mayor",
+        "executiveName": "Mayor of Millbrooke",
+        "executiveLimit": 300,
+        "votesRequired": 3,
+        "requireAuthority": false
+      },
+      "events": {
+        "bridge": true,
+        "boutique": true,
+        "flood": true
+      },
+      "economy": {
+        "jobs": 1180,
+        "upkeep": 150,
+        "roadCap": 6500
+      },
+      "labels": {
+        "creek": "Kish Creek",
+        "bridge": "Main Street bridge",
+        "bridgeShort": "Main St bridge",
+        "school": "Millbrooke Elementary",
+        "college": "Penns Valley College",
+        "luxuryStore": "Halden & Pierce"
+      },
+      "ownership": {
+        "school": "the Millbrooke Area School District",
+        "college": "Penns Valley College",
+        "quad": "Penns Valley College"
+      },
+      "composition": {
+        "version": 1,
+        "profiles": {
+          "bowers_operator": {
+            "version": 1,
+            "controller": "bowers_operator",
+            "authority": "own-proposal operating arrangement; no authority to sell leased land",
+            "source": "docs/reference/frozen-C/docs/contracts/proposal-council-v1/sources/approved-review/persona-dossier.md",
+            "interests": [
+              "working land",
+              "equipment and feed access",
+              "continuity under a recorded lease"
+            ],
+            "beliefs": [
+              "Fragmentation may make succession harder."
+            ],
+            "affectedPlots": [
+              [
+                20,
+                13
+              ],
+              [
+                21,
+                13
+              ],
+              [
+                22,
+                13
+              ],
+              [
+                20,
+                14
+              ],
+              [
+                21,
+                14
+              ],
+              [
+                22,
+                14
+              ],
+              [
+                20,
+                15
+              ],
+              [
+                21,
+                15
+              ],
+              [
+                22,
+                15
+              ],
+              [
+                20,
+                16
+              ],
+              [
+                21,
+                16
+              ],
+              [
+                22,
+                16
+              ]
+            ],
+            "prerequisites": [
+              {
+                "fact": "bowersLeaseValid",
+                "value": true,
+                "reason": "The operating arrangement requires the recorded farm lease."
+              }
+            ],
+            "hard": [
+              {
+                "field": "component.agriculture",
+                "min": 2,
+                "reason": "working_fields_removed: the proposal must keep productive fields in operation."
+              }
+            ],
+            "preferences": [
+              {
+                "field": "condition.access",
+                "equals": true,
+                "reason": "farm_access: keep equipment and feed access open.",
+                "concession": {
+                  "conditions": {
+                    "access": true
+                  }
+                }
+              },
+              {
+                "field": "condition.preserve",
+                "min": 3,
+                "reason": "farm_land: retain the leased field margin.",
+                "concession": {
+                  "conditions": {
+                    "preserve": 3
+                  }
+                }
+              }
+            ],
+            "voice": "Explain a day of deliveries and field work; distinguish operation from title.",
+            "researchAmendment": "docs/persona-research-v2.md"
+          },
+          "freight_operator": {
+            "version": 1,
+            "controller": "freight_operator",
+            "authority": "own distribution proposal and loading schedule; no alcohol licensing power",
+            "source": "docs/reference/frozen-C/docs/contracts/proposal-council-v1/sources/approved-review/persona-dossier.md",
+            "interests": [
+              "usable storage",
+              "safe service access",
+              "reliable daytime loading"
+            ],
+            "affectedPlots": [
+              [
+                15,
+                9
+              ],
+              [
+                16,
+                9
+              ],
+              [
+                17,
+                9
+              ],
+              [
+                15,
+                10
+              ],
+              [
+                16,
+                10
+              ],
+              [
+                17,
+                10
+              ]
+            ],
+            "prerequisites": [
+              {
+                "fact": "campusLoadingDelegated",
+                "value": true,
+                "reason": "The service-lane arrangement requires a recorded operating delegation."
+              }
+            ],
+            "hard": [
+              {
+                "field": "component.storage",
+                "min": 10,
+                "reason": "operating_viability: retain at least the authored minimum storage capacity."
+              },
+              {
+                "field": "operation.onSiteConsumption",
+                "equals": false,
+                "reason": "consumption_scope: a drinking venue is outside this operator’s submitted distribution program."
+              }
+            ],
+            "preferences": [
+              {
+                "field": "condition.deliveries",
+                "equals": "daytime",
+                "reason": "delivery_conflict: daytime loading is the agreed operating window.",
+                "concession": {
+                  "conditions": {
+                    "deliveries": "daytime"
+                  }
+                }
+              }
+            ],
+            "voice": "Discuss loading and storage, without promising permits or council votes.",
+            "researchAmendment": "docs/persona-research-v2.md"
+          },
+          "college_liaison": {
+            "version": 1,
+            "controller": null,
+            "authority": "stakeholder statement only; cannot authorize neighboring business edits",
+            "source": "docs/reference/frozen-C/docs/contracts/proposal-council-v1/sources/approved-review/persona-dossier.md",
+            "interests": [
+              "campus pedestrian access",
+              "delivery conflict",
+              "student-facing sales safeguards"
+            ],
+            "beliefs": [
+              "Public-facing alcohol sales may create pressures; this is a concern, not a measured effect."
+            ],
+            "affectedPlots": [
+              [
+                15,
+                9
+              ],
+              [
+                16,
+                9
+              ],
+              [
+                17,
+                9
+              ],
+              [
+                15,
+                10
+              ],
+              [
+                16,
+                10
+              ],
+              [
+                17,
+                10
+              ]
+            ],
+            "prerequisites": [],
+            "hard": [
+              {
+                "field": "operation.onSiteConsumption",
+                "equals": false,
+                "reason": "consumption_scope: the college does not endorse a drinking venue on the presented operating facts."
+              }
+            ],
+            "preferences": [
+              {
+                "field": "operation.crossingConflict",
+                "equals": false,
+                "reason": "delivery_conflict: loading crosses the authored campus entrance."
+              },
+              {
+                "field": "operation.publicSales",
+                "equals": false,
+                "reason": "public_sales: customer-facing sales require a separately reviewed access and safeguards plan."
+              }
+            ],
+            "voice": "Ask concrete questions about loading and customers. A concern is not a veto.",
+            "researchAmendment": "docs/persona-research-v2.md"
+          }
+        },
+        "routes": {
+          "campus-entrance": {
+            "id": "campus-entrance",
+            "plots": [
+              [
+                15,
+                9
+              ],
+              [
+                16,
+                9
+              ],
+              [
+                17,
+                9
+              ],
+              [
+                15,
+                10
+              ],
+              [
+                16,
+                10
+              ],
+              [
+                17,
+                10
+              ]
+            ],
+            "crossingConflict": true,
+            "costK": 0,
+            "upkeepK": 0,
+            "source": "scenario-authored access conflict"
+          },
+          "service-lane": {
+            "id": "service-lane",
+            "plots": [
+              [
+                15,
+                9
+              ],
+              [
+                16,
+                9
+              ],
+              [
+                17,
+                9
+              ],
+              [
+                15,
+                10
+              ],
+              [
+                16,
+                10
+              ],
+              [
+                17,
+                10
+              ]
+            ],
+            "crossingConflict": false,
+            "costK": 25,
+            "upkeepK": 2,
+            "source": "scenario-authored delegated service route"
+          }
+        },
+        "authoredFacts": {
+          "bowersLeaseValid": {
+            "value": true,
+            "recordId": "bowers-lease-2027",
+            "source": "scenario-authored"
+          },
+          "campusLoadingDelegated": {
+            "value": true,
+            "recordId": "campus-service-agreement-2027",
+            "source": "scenario-authored"
+          }
+        }
+      },
+      "programDefinitions": {
+        "working-farm-stand": {
+          "id": "working-farm-stand",
+          "label": "Working farm and stand",
+          "program": {
+            "version": 2,
+            "title": "Bowers farm access and stand",
+            "intent": "Keep a leased working farm productive while adding a small stand and equipment access.",
+            "components": [
+              {
+                "id": "fields",
+                "capability": "agriculture",
+                "label": "fields",
+                "quantity": 4,
+                "area": 4,
+                "sharedWith": null
+              },
+              {
+                "id": "stand",
+                "capability": "shop",
+                "label": "stand",
+                "quantity": 1,
+                "area": 0.25,
+                "sharedWith": null
+              },
+              {
+                "id": "lane",
+                "capability": "access",
+                "label": "lane",
+                "quantity": 100,
+                "area": 0.25,
+                "sharedWith": null
+              }
+            ],
+            "conditions": {
+              "hours": 10,
+              "deliveries": "daytime",
+              "access": true,
+              "buffer": 0,
+              "preserve": 4,
+              "affordable": false
+            },
+            "assumptions": [
+              "Fictional operating facts are authored for this new campaign."
+            ],
+            "omissions": []
+          }
+        },
+        "freight-storage": {
+          "id": "freight-storage",
+          "label": "Freight storage and access",
+          "program": {
+            "version": 2,
+            "title": "College Avenue distribution loading",
+            "intent": "A freight-only storage operation with a delegated service lane, not a drinking venue.",
+            "components": [
+              {
+                "id": "warehouse",
+                "capability": "storage",
+                "label": "warehouse",
+                "quantity": 40,
+                "area": 1,
+                "sharedWith": null
+              },
+              {
+                "id": "loading",
+                "capability": "access",
+                "label": "loading",
+                "quantity": 100,
+                "area": 0.25,
+                "sharedWith": null
+              }
+            ],
+            "conditions": {
+              "hours": 10,
+              "deliveries": "daytime",
+              "access": true,
+              "buffer": 0.5,
+              "preserve": 0,
+              "affordable": false,
+              "operations": [
+                {
+                  "componentId": "warehouse",
+                  "stage": "operation",
+                  "loadingRoute": "service-lane",
+                  "publicSales": false,
+                  "onSiteConsumption": false
+                }
+              ]
+            },
+            "assumptions": [
+              "Fictional operating facts are authored for this new campaign."
+            ],
+            "omissions": []
+          }
+        }
+      }
+    },
+    "calendar": {
+      "startYear": 2027,
+      "yearsPerTurn": 1,
+      "electionEvery": 4,
+      "maxTurns": 32
+    },
+    "year": 2,
+    "maxYears": 32,
+    "termYear": 2,
+    "term": 1,
+    "town": "Millbrooke",
+    "pop": 3263,
+    "cash": 810,
+    "taxRate": "hold",
+    "prevTax": "hold",
+    "propIdx": 1.004,
+    "meters": {
+      "walk": 48,
+      "live": 55,
+      "conf": 60.5,
+      "approval": 53.7,
+      "safety": 63.5,
+      "afford": 58.7
+    },
+    "policies": {},
+    "capital": 5,
+    "bonds": [],
+    "built": [
+      {
+        "id": "bridge",
+        "kind": "bridge",
+        "title": "Main Street bridge repair",
+        "presenter": "engineer",
+        "site": "bridge",
+        "plots": [
+          [
+            2,
+            11
+          ]
+        ],
+        "plan": {
+          "scope": "full"
+        },
+        "cost": 260,
+        "costHigh": 291,
+        "funding": "cash",
+        "odds": 0.88,
+        "year": 1,
+        "status": "approved",
+        "programRevision": "c3b5cca1033a54d88cf1e6b2fbba99751bbcc3e15750827885fa7e22f8a669fd",
+        "decision": {
+          "action": "approve",
+          "route": "mayor",
+          "funding": "cash",
+          "year": 1,
+          "votes": {
+            "votes": [
+              {
+                "member": "marsh",
+                "leans": [
+                  {
+                    "id": "bridge",
+                    "lean": 15
+                  }
+                ],
+                "vote": "no"
+              },
+              {
+                "member": "pryor",
+                "leans": [
+                  {
+                    "id": "bridge",
+                    "lean": 33
+                  }
+                ],
+                "vote": "no"
+              },
+              {
+                "member": "okafor",
+                "leans": [
+                  {
+                    "id": "bridge",
+                    "lean": 73
+                  }
+                ],
+                "vote": "bridge"
+              },
+              {
+                "member": "brandt",
+                "leans": [
+                  {
+                    "id": "bridge",
+                    "lean": 50
+                  }
+                ],
+                "vote": "bridge"
+              },
+              {
+                "member": "weaver",
+                "leans": [
+                  {
+                    "id": "bridge",
+                    "lean": 47
+                  }
+                ],
+                "vote": "no"
+              }
+            ],
+            "tally": {
+              "no": 3,
+              "bridge": 2
+            },
+            "winner": null,
+            "options": [
+              "bridge"
+            ]
+          }
+        },
+        "done": 1
+      }
+    ],
+    "pending": [],
+    "decided": {
+      "bridge": "approved",
+      "stripmall": "lapsed",
+      "farm-access": "lapsed",
+      "campus-loading": "lapsed"
+    },
+    "presenters": {
+      "planner": {
+        "rel": 65
+      },
+      "merchants": {
+        "rel": 55
+      },
+      "keystone": {
+        "rel": 35
+      },
+      "engineer": {
+        "rel": 68
+      },
+      "brand": {
+        "rel": 40
+      },
+      "bowers_operator": {
+        "rel": 55
+      },
+      "freight_operator": {
+        "rel": 55
+      },
+      "college_liaison": {
+        "rel": 55
+      }
+    },
+    "council": {
+      "marsh": {
+        "rel": 25
+      },
+      "pryor": {
+        "rel": 42
+      },
+      "okafor": {
+        "rel": 55
+      },
+      "brandt": {
+        "rel": 45
+      },
+      "weaver": {
+        "rel": 50
+      }
+    },
+    "lobby": {},
+    "flags": {
+      "bridgeRisk": 0,
+      "bridgeClosed": false,
+      "students": 0,
+      "boutique": null,
+      "deficitYears": 0,
+      "floodRisk": 0.06
+    },
+    "facts": {
+      "bowersLeaseValid": true,
+      "campusLoadingDelegated": true
+    },
+    "grid": [
+      {
+        "x": 0,
+        "y": 0,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 1,
+        "y": 0,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 2,
+        "y": 0,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 3,
+        "y": 0,
+        "t": "water",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 4,
+        "y": 0,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 5,
+        "y": 0,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 6,
+        "y": 0,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 7,
+        "y": 0,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 8,
+        "y": 0,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 9,
+        "y": 0,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 10,
+        "y": 0,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 11,
+        "y": 0,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 12,
+        "y": 0,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 13,
+        "y": 0,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 14,
+        "y": 0,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 15,
+        "y": 0,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 16,
+        "y": 0,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 17,
+        "y": 0,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 18,
+        "y": 0,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 19,
+        "y": 0,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 20,
+        "y": 0,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 21,
+        "y": 0,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 22,
+        "y": 0,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 23,
+        "y": 0,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 0,
+        "y": 1,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 1,
+        "y": 1,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 2,
+        "y": 1,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 3,
+        "y": 1,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 4,
+        "y": 1,
+        "t": "water",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 5,
+        "y": 1,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 6,
+        "y": 1,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 7,
+        "y": 1,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 8,
+        "y": 1,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 9,
+        "y": 1,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 10,
+        "y": 1,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 11,
+        "y": 1,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 12,
+        "y": 1,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 13,
+        "y": 1,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 14,
+        "y": 1,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 15,
+        "y": 1,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 16,
+        "y": 1,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 17,
+        "y": 1,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 18,
+        "y": 1,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 19,
+        "y": 1,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 20,
+        "y": 1,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 21,
+        "y": 1,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 22,
+        "y": 1,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 23,
+        "y": 1,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 0,
+        "y": 2,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 1,
+        "y": 2,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 2,
+        "y": 2,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 3,
+        "y": 2,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 4,
+        "y": 2,
+        "t": "water",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 5,
+        "y": 2,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 6,
+        "y": 2,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 7,
+        "y": 2,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 8,
+        "y": 2,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 9,
+        "y": 2,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 10,
+        "y": 2,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 11,
+        "y": 2,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 12,
+        "y": 2,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 13,
+        "y": 2,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 14,
+        "y": 2,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 15,
+        "y": 2,
+        "t": "grass",
+        "b": {
+          "type": "college"
+        },
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 16,
+        "y": 2,
+        "t": "grass",
+        "b": {
+          "type": "quad"
+        },
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 17,
+        "y": 2,
+        "t": "grass",
+        "b": {
+          "type": "college"
+        },
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 18,
+        "y": 2,
+        "t": "grass",
+        "b": {
+          "type": "college"
+        },
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 19,
+        "y": 2,
+        "t": "grass",
+        "b": {
+          "type": "quad"
+        },
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 20,
+        "y": 2,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 21,
+        "y": 2,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 22,
+        "y": 2,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 23,
+        "y": 2,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 0,
+        "y": 3,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 1,
+        "y": 3,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 2,
+        "y": 3,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 3,
+        "y": 3,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 4,
+        "y": 3,
+        "t": "water",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 5,
+        "y": 3,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 6,
+        "y": 3,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 7,
+        "y": 3,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 8,
+        "y": 3,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 9,
+        "y": 3,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 10,
+        "y": 3,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 11,
+        "y": 3,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 12,
+        "y": 3,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 13,
+        "y": 3,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 14,
+        "y": 3,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 15,
+        "y": 3,
+        "t": "grass",
+        "b": {
+          "type": "quad"
+        },
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 16,
+        "y": 3,
+        "t": "grass",
+        "b": {
+          "type": "college"
+        },
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 17,
+        "y": 3,
+        "t": "grass",
+        "b": {
+          "type": "college"
+        },
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 18,
+        "y": 3,
+        "t": "grass",
+        "b": {
+          "type": "quad"
+        },
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 19,
+        "y": 3,
+        "t": "grass",
+        "b": {
+          "type": "college"
+        },
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 20,
+        "y": 3,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 21,
+        "y": 3,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 22,
+        "y": 3,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 23,
+        "y": 3,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 0,
+        "y": 4,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 1,
+        "y": 4,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 2,
+        "y": 4,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 3,
+        "y": 4,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 4,
+        "y": 4,
+        "t": "water",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 5,
+        "y": 4,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 6,
+        "y": 4,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 7,
+        "y": 4,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 8,
+        "y": 4,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 9,
+        "y": 4,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 10,
+        "y": 4,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 11,
+        "y": 4,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 12,
+        "y": 4,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 13,
+        "y": 4,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 14,
+        "y": 4,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 15,
+        "y": 4,
+        "t": "grass",
+        "b": {
+          "type": "college"
+        },
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 16,
+        "y": 4,
+        "t": "grass",
+        "b": {
+          "type": "college"
+        },
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 17,
+        "y": 4,
+        "t": "grass",
+        "b": {
+          "type": "quad"
+        },
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 18,
+        "y": 4,
+        "t": "grass",
+        "b": {
+          "type": "college"
+        },
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 19,
+        "y": 4,
+        "t": "grass",
+        "b": {
+          "type": "college"
+        },
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 20,
+        "y": 4,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 21,
+        "y": 4,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 22,
+        "y": 4,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 23,
+        "y": 4,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 0,
+        "y": 5,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 1,
+        "y": 5,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 2,
+        "y": 5,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 3,
+        "y": 5,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 4,
+        "y": 5,
+        "t": "water",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 5,
+        "y": 5,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 6,
+        "y": 5,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 7,
+        "y": 5,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 8,
+        "y": 5,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 9,
+        "y": 5,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 10,
+        "y": 5,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 11,
+        "y": 5,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 12,
+        "y": 5,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 13,
+        "y": 5,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 14,
+        "y": 5,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 15,
+        "y": 5,
+        "t": "grass",
+        "b": {
+          "type": "college"
+        },
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 16,
+        "y": 5,
+        "t": "grass",
+        "b": {
+          "type": "quad"
+        },
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 17,
+        "y": 5,
+        "t": "grass",
+        "b": {
+          "type": "college"
+        },
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 18,
+        "y": 5,
+        "t": "grass",
+        "b": {
+          "type": "college"
+        },
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 19,
+        "y": 5,
+        "t": "grass",
+        "b": {
+          "type": "quad"
+        },
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 20,
+        "y": 5,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 21,
+        "y": 5,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 22,
+        "y": 5,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 23,
+        "y": 5,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 0,
+        "y": 6,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 1,
+        "y": 6,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 2,
+        "y": 6,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 3,
+        "y": 6,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 4,
+        "y": 6,
+        "t": "water",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 5,
+        "y": 6,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 6,
+        "y": 6,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 7,
+        "y": 6,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 8,
+        "y": 6,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 9,
+        "y": 6,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 10,
+        "y": 6,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 11,
+        "y": 6,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 12,
+        "y": 6,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 13,
+        "y": 6,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 14,
+        "y": 6,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 15,
+        "y": 6,
+        "t": "grass",
+        "b": {
+          "type": "quad"
+        },
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 16,
+        "y": 6,
+        "t": "grass",
+        "b": {
+          "type": "college"
+        },
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 17,
+        "y": 6,
+        "t": "grass",
+        "b": {
+          "type": "college"
+        },
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 18,
+        "y": 6,
+        "t": "grass",
+        "b": {
+          "type": "quad"
+        },
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 19,
+        "y": 6,
+        "t": "grass",
+        "b": {
+          "type": "college"
+        },
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 20,
+        "y": 6,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 21,
+        "y": 6,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 22,
+        "y": 6,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 23,
+        "y": 6,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 0,
+        "y": 7,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 1,
+        "y": 7,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 2,
+        "y": 7,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 3,
+        "y": 7,
+        "t": "water",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 4,
+        "y": 7,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 5,
+        "y": 7,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 6,
+        "y": 7,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 7,
+        "y": 7,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 8,
+        "y": 7,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 9,
+        "y": 7,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 10,
+        "y": 7,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 11,
+        "y": 7,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 12,
+        "y": 7,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 13,
+        "y": 7,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 14,
+        "y": 7,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 15,
+        "y": 7,
+        "t": "grass",
+        "b": {
+          "type": "college"
+        },
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 16,
+        "y": 7,
+        "t": "grass",
+        "b": {
+          "type": "college"
+        },
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 17,
+        "y": 7,
+        "t": "grass",
+        "b": {
+          "type": "quad"
+        },
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 18,
+        "y": 7,
+        "t": "grass",
+        "b": {
+          "type": "college"
+        },
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 19,
+        "y": 7,
+        "t": "grass",
+        "b": {
+          "type": "college"
+        },
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 20,
+        "y": 7,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 21,
+        "y": 7,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 22,
+        "y": 7,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 23,
+        "y": 7,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 0,
+        "y": 8,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 1,
+        "y": 8,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 2,
+        "y": 8,
+        "t": "water",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 3,
+        "y": 8,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 4,
+        "y": 8,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 5,
+        "y": 8,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 6,
+        "y": 8,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 7,
+        "y": 8,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 8,
+        "y": 8,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 9,
+        "y": 8,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 10,
+        "y": 8,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 11,
+        "y": 8,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 12,
+        "y": 8,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 13,
+        "y": 8,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 14,
+        "y": 8,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 15,
+        "y": 8,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 16,
+        "y": 8,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 17,
+        "y": 8,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 18,
+        "y": 8,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 19,
+        "y": 8,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 20,
+        "y": 8,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 21,
+        "y": 8,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 22,
+        "y": 8,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 23,
+        "y": 8,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 0,
+        "y": 9,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 1,
+        "y": 9,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 2,
+        "y": 9,
+        "t": "water",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 3,
+        "y": 9,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 4,
+        "y": 9,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 5,
+        "y": 9,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 6,
+        "y": 9,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 7,
+        "y": 9,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 8,
+        "y": 9,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 9,
+        "y": 9,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 10,
+        "y": 9,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 11,
+        "y": 9,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 12,
+        "y": 9,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 13,
+        "y": 9,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 14,
+        "y": 9,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 15,
+        "y": 9,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": "campus_s",
+        "var": 6
+      },
+      {
+        "x": 16,
+        "y": 9,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": "campus_s",
+        "var": 6
+      },
+      {
+        "x": 17,
+        "y": 9,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": "campus_s",
+        "var": 5
+      },
+      {
+        "x": 18,
+        "y": 9,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 19,
+        "y": 9,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 20,
+        "y": 9,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 21,
+        "y": 9,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 22,
+        "y": 9,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 23,
+        "y": 9,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 0,
+        "y": 10,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 1,
+        "y": 10,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 2,
+        "y": 10,
+        "t": "water",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 3,
+        "y": 10,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 4,
+        "y": 10,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 5,
+        "y": 10,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 6,
+        "y": 10,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 7,
+        "y": 10,
+        "t": "grass",
+        "b": {
+          "type": "shop",
+          "new": 1
+        },
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 8,
+        "y": 10,
+        "t": "grass",
+        "b": {
+          "type": "shop",
+          "d": "downtown"
+        },
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 9,
+        "y": 10,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 10,
+        "y": 10,
+        "t": "grass",
+        "b": {
+          "type": "civic"
+        },
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 11,
+        "y": 10,
+        "t": "grass",
+        "b": {
+          "type": "shop",
+          "d": "downtown"
+        },
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 12,
+        "y": 10,
+        "t": "grass",
+        "b": {
+          "type": "shop",
+          "d": "downtown"
+        },
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 13,
+        "y": 10,
+        "t": "grass",
+        "b": {
+          "type": "shop",
+          "d": "downtown"
+        },
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 14,
+        "y": 10,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 15,
+        "y": 10,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": "campus_s",
+        "var": 0
+      },
+      {
+        "x": 16,
+        "y": 10,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": "campus_s",
+        "var": 3
+      },
+      {
+        "x": 17,
+        "y": 10,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": "campus_s",
+        "var": 4
+      },
+      {
+        "x": 18,
+        "y": 10,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 19,
+        "y": 10,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 20,
+        "y": 10,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 21,
+        "y": 10,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 22,
+        "y": 10,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 23,
+        "y": 10,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 0,
+        "y": 11,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 1,
+        "y": 11,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 2,
+        "y": 11,
+        "t": "bridge",
+        "b": null,
+        "road": true,
+        "site": "bridge",
+        "var": 0
+      },
+      {
+        "x": 3,
+        "y": 11,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 4,
+        "y": 11,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 5,
+        "y": 11,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 6,
+        "y": 11,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 7,
+        "y": 11,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 8,
+        "y": 11,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 9,
+        "y": 11,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 10,
+        "y": 11,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 11,
+        "y": 11,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 12,
+        "y": 11,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 13,
+        "y": 11,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 14,
+        "y": 11,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 15,
+        "y": 11,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 16,
+        "y": 11,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 17,
+        "y": 11,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 18,
+        "y": 11,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 19,
+        "y": 11,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 20,
+        "y": 11,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 21,
+        "y": 11,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 22,
+        "y": 11,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 23,
+        "y": 11,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 0,
+        "y": 12,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 1,
+        "y": 12,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 2,
+        "y": 12,
+        "t": "water",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 3,
+        "y": 12,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 4,
+        "y": 12,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 5,
+        "y": 12,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 6,
+        "y": 12,
+        "t": "grass",
+        "b": {
+          "type": "lot"
+        },
+        "road": false,
+        "site": "oldmill",
+        "var": 6
+      },
+      {
+        "x": 7,
+        "y": 12,
+        "t": "grass",
+        "b": {
+          "type": "lot"
+        },
+        "road": false,
+        "site": "oldmill",
+        "var": 5
+      },
+      {
+        "x": 8,
+        "y": 12,
+        "t": "grass",
+        "b": {
+          "type": "shop",
+          "d": "downtown"
+        },
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 9,
+        "y": 12,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 10,
+        "y": 12,
+        "t": "grass",
+        "b": {
+          "type": "shop",
+          "d": "downtown"
+        },
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 11,
+        "y": 12,
+        "t": "grass",
+        "b": {
+          "type": "shop",
+          "d": "downtown"
+        },
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 12,
+        "y": 12,
+        "t": "grass",
+        "b": {
+          "type": "shop",
+          "d": "downtown"
+        },
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 13,
+        "y": 12,
+        "t": "grass",
+        "b": {
+          "type": "vacant",
+          "d": "downtown"
+        },
+        "road": false,
+        "site": "storefront",
+        "var": 5
+      },
+      {
+        "x": 14,
+        "y": 12,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 15,
+        "y": 12,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 16,
+        "y": 12,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 17,
+        "y": 12,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 18,
+        "y": 12,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 19,
+        "y": 12,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 20,
+        "y": 12,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 21,
+        "y": 12,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 22,
+        "y": 12,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 23,
+        "y": 12,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 0,
+        "y": 13,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 1,
+        "y": 13,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 2,
+        "y": 13,
+        "t": "water",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 3,
+        "y": 13,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 4,
+        "y": 13,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": "creekside",
+        "var": 4
+      },
+      {
+        "x": 5,
+        "y": 13,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": "creekside",
+        "var": 6
+      },
+      {
+        "x": 6,
+        "y": 13,
+        "t": "grass",
+        "b": {
+          "type": "lot"
+        },
+        "road": false,
+        "site": "oldmill",
+        "var": 4
+      },
+      {
+        "x": 7,
+        "y": 13,
+        "t": "grass",
+        "b": {
+          "type": "lot"
+        },
+        "road": false,
+        "site": "oldmill",
+        "var": 0
+      },
+      {
+        "x": 8,
+        "y": 13,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 9,
+        "y": 13,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 10,
+        "y": 13,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 11,
+        "y": 13,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 12,
+        "y": 13,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 13,
+        "y": 13,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": "school_lot",
+        "var": 3
+      },
+      {
+        "x": 14,
+        "y": 13,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": "school_lot",
+        "var": 3
+      },
+      {
+        "x": 15,
+        "y": 13,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 16,
+        "y": 13,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": "east_end",
+        "var": 1
+      },
+      {
+        "x": 17,
+        "y": 13,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": "east_end",
+        "var": 6
+      },
+      {
+        "x": 18,
+        "y": 13,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": "east_end",
+        "var": 2
+      },
+      {
+        "x": 19,
+        "y": 13,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 20,
+        "y": 13,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": "ridge",
+        "var": 3
+      },
+      {
+        "x": 21,
+        "y": 13,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": "ridge",
+        "var": 0
+      },
+      {
+        "x": 22,
+        "y": 13,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": "ridge",
+        "var": 0
+      },
+      {
+        "x": 23,
+        "y": 13,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 0,
+        "y": 14,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 1,
+        "y": 14,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 2,
+        "y": 14,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 3,
+        "y": 14,
+        "t": "water",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 4,
+        "y": 14,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": "creekside",
+        "var": 4
+      },
+      {
+        "x": 5,
+        "y": 14,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": "creekside",
+        "var": 1
+      },
+      {
+        "x": 6,
+        "y": 14,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 7,
+        "y": 14,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 8,
+        "y": 14,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 9,
+        "y": 14,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 10,
+        "y": 14,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 11,
+        "y": 14,
+        "t": "grass",
+        "b": {
+          "type": "school"
+        },
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 12,
+        "y": 14,
+        "t": "grass",
+        "b": {
+          "type": "school"
+        },
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 13,
+        "y": 14,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": "school_lot",
+        "var": 2
+      },
+      {
+        "x": 14,
+        "y": 14,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": "school_lot",
+        "var": 5
+      },
+      {
+        "x": 15,
+        "y": 14,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 16,
+        "y": 14,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": "east_end",
+        "var": 4
+      },
+      {
+        "x": 17,
+        "y": 14,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": "east_end",
+        "var": 3
+      },
+      {
+        "x": 18,
+        "y": 14,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": "east_end",
+        "var": 2
+      },
+      {
+        "x": 19,
+        "y": 14,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 20,
+        "y": 14,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": "ridge",
+        "var": 1
+      },
+      {
+        "x": 21,
+        "y": 14,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": "ridge",
+        "var": 0
+      },
+      {
+        "x": 22,
+        "y": 14,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": "ridge",
+        "var": 6
+      },
+      {
+        "x": 23,
+        "y": 14,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 0,
+        "y": 15,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 1,
+        "y": 15,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 2,
+        "y": 15,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 3,
+        "y": 15,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 4,
+        "y": 15,
+        "t": "water",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 5,
+        "y": 15,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 6,
+        "y": 15,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 7,
+        "y": 15,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 8,
+        "y": 15,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 9,
+        "y": 15,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 10,
+        "y": 15,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 11,
+        "y": 15,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 12,
+        "y": 15,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 13,
+        "y": 15,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 14,
+        "y": 15,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 15,
+        "y": 15,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 16,
+        "y": 15,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 17,
+        "y": 15,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 18,
+        "y": 15,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 19,
+        "y": 15,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 20,
+        "y": 15,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": "ridge",
+        "var": 6
+      },
+      {
+        "x": 21,
+        "y": 15,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": "ridge",
+        "var": 2
+      },
+      {
+        "x": 22,
+        "y": 15,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": "ridge",
+        "var": 4
+      },
+      {
+        "x": 23,
+        "y": 15,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 0,
+        "y": 16,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 1,
+        "y": 16,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 2,
+        "y": 16,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 3,
+        "y": 16,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 4,
+        "y": 16,
+        "t": "water",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 5,
+        "y": 16,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 6,
+        "y": 16,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 7,
+        "y": 16,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 8,
+        "y": 16,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 9,
+        "y": 16,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 10,
+        "y": 16,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 11,
+        "y": 16,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 12,
+        "y": 16,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 13,
+        "y": 16,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 14,
+        "y": 16,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 15,
+        "y": 16,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 16,
+        "y": 16,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 17,
+        "y": 16,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 18,
+        "y": 16,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 19,
+        "y": 16,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 20,
+        "y": 16,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": "ridge",
+        "var": 4
+      },
+      {
+        "x": 21,
+        "y": 16,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": "ridge",
+        "var": 4
+      },
+      {
+        "x": 22,
+        "y": 16,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": "ridge",
+        "var": 3
+      },
+      {
+        "x": 23,
+        "y": 16,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 0,
+        "y": 17,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 1,
+        "y": 17,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 2,
+        "y": 17,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 3,
+        "y": 17,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 4,
+        "y": 17,
+        "t": "water",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 5,
+        "y": 17,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 6,
+        "y": 17,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 7,
+        "y": 17,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 8,
+        "y": 17,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 9,
+        "y": 17,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 10,
+        "y": 17,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 11,
+        "y": 17,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 12,
+        "y": 17,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 13,
+        "y": 17,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 14,
+        "y": 17,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 15,
+        "y": 17,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": "pine_south",
+        "var": 2
+      },
+      {
+        "x": 16,
+        "y": 17,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": "pine_south",
+        "var": 2
+      },
+      {
+        "x": 17,
+        "y": 17,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": "pine_south",
+        "var": 5
+      },
+      {
+        "x": 18,
+        "y": 17,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 19,
+        "y": 17,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 20,
+        "y": 17,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 21,
+        "y": 17,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 22,
+        "y": 17,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 23,
+        "y": 17,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 0,
+        "y": 18,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 1,
+        "y": 18,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 2,
+        "y": 18,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 3,
+        "y": 18,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 4,
+        "y": 18,
+        "t": "water",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 5,
+        "y": 18,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 6,
+        "y": 18,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 7,
+        "y": 18,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 8,
+        "y": 18,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 9,
+        "y": 18,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 10,
+        "y": 18,
+        "t": "grass",
+        "b": {
+          "type": "house"
+        },
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 11,
+        "y": 18,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 12,
+        "y": 18,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 13,
+        "y": 18,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 14,
+        "y": 18,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 15,
+        "y": 18,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": "pine_south",
+        "var": 2
+      },
+      {
+        "x": 16,
+        "y": 18,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": "pine_south",
+        "var": 1
+      },
+      {
+        "x": 17,
+        "y": 18,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": "pine_south",
+        "var": 2
+      },
+      {
+        "x": 18,
+        "y": 18,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 19,
+        "y": 18,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 20,
+        "y": 18,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 21,
+        "y": 18,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 22,
+        "y": 18,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 23,
+        "y": 18,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 0,
+        "y": 19,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 1,
+        "y": 19,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 2,
+        "y": 19,
+        "t": "forest",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 3,
+        "y": 19,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 4,
+        "y": 19,
+        "t": "water",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 5,
+        "y": 19,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 6,
+        "y": 19,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 7,
+        "y": 19,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 8,
+        "y": 19,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 9,
+        "y": 19,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 10,
+        "y": 19,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 11,
+        "y": 19,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 12,
+        "y": 19,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 13,
+        "y": 19,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 14,
+        "y": 19,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 15,
+        "y": 19,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 16,
+        "y": 19,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 17,
+        "y": 19,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 18,
+        "y": 19,
+        "t": "grass",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 19,
+        "y": 19,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 20,
+        "y": 19,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 21,
+        "y": 19,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 22,
+        "y": 19,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 23,
+        "y": 19,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 0,
+        "y": 20,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 1,
+        "y": 20,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 2,
+        "y": 20,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 3,
+        "y": 20,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 4,
+        "y": 20,
+        "t": "bridge",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 5,
+        "y": 20,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 6,
+        "y": 20,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 7,
+        "y": 20,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 8,
+        "y": 20,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 9,
+        "y": 20,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 10,
+        "y": 20,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 11,
+        "y": 20,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 12,
+        "y": 20,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 13,
+        "y": 20,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 14,
+        "y": 20,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 15,
+        "y": 20,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 16,
+        "y": 20,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 17,
+        "y": 20,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 18,
+        "y": 20,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 19,
+        "y": 20,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 20,
+        "y": 20,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 21,
+        "y": 20,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 22,
+        "y": 20,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 23,
+        "y": 20,
+        "t": "grass",
+        "b": null,
+        "road": true,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 0,
+        "y": 21,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 1,
+        "y": 21,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 2,
+        "y": 21,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 3,
+        "y": 21,
+        "t": "water",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 4,
+        "y": 21,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 5,
+        "y": 21,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 6,
+        "y": 21,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 7,
+        "y": 21,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 8,
+        "y": 21,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 9,
+        "y": 21,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 10,
+        "y": 21,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 11,
+        "y": 21,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 12,
+        "y": 21,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 13,
+        "y": 21,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": "route22",
+        "var": 4
+      },
+      {
+        "x": 14,
+        "y": 21,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": "route22",
+        "var": 0
+      },
+      {
+        "x": 15,
+        "y": 21,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": "route22",
+        "var": 3
+      },
+      {
+        "x": 16,
+        "y": 21,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 17,
+        "y": 21,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 18,
+        "y": 21,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 19,
+        "y": 21,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 20,
+        "y": 21,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 21,
+        "y": 21,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 22,
+        "y": 21,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 23,
+        "y": 21,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 0,
+        "y": 22,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 1,
+        "y": 22,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 2,
+        "y": 22,
+        "t": "water",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 3,
+        "y": 22,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 4,
+        "y": 22,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 5,
+        "y": 22,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 6,
+        "y": 22,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 7,
+        "y": 22,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 8,
+        "y": 22,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 9,
+        "y": 22,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 10,
+        "y": 22,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 11,
+        "y": 22,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 12,
+        "y": 22,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 13,
+        "y": 22,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": "route22",
+        "var": 6
+      },
+      {
+        "x": 14,
+        "y": 22,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": "route22",
+        "var": 6
+      },
+      {
+        "x": 15,
+        "y": 22,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": "route22",
+        "var": 4
+      },
+      {
+        "x": 16,
+        "y": 22,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 17,
+        "y": 22,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 18,
+        "y": 22,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 19,
+        "y": 22,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 20,
+        "y": 22,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 21,
+        "y": 22,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 22,
+        "y": 22,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 23,
+        "y": 22,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 0,
+        "y": 23,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 1,
+        "y": 23,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 2,
+        "y": 23,
+        "t": "water",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 3,
+        "y": 23,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 4,
+        "y": 23,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 5,
+        "y": 23,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 6,
+        "y": 23,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 7,
+        "y": 23,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 0
+      },
+      {
+        "x": 8,
+        "y": 23,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 9,
+        "y": 23,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 10,
+        "y": 23,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 11,
+        "y": 23,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 12,
+        "y": 23,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 13,
+        "y": 23,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 1
+      },
+      {
+        "x": 14,
+        "y": 23,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 15,
+        "y": 23,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 16,
+        "y": 23,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 17,
+        "y": 23,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 3
+      },
+      {
+        "x": 18,
+        "y": 23,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 19,
+        "y": 23,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      },
+      {
+        "x": 20,
+        "y": 23,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 4
+      },
+      {
+        "x": 21,
+        "y": 23,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 2
+      },
+      {
+        "x": 22,
+        "y": 23,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 5
+      },
+      {
+        "x": 23,
+        "y": 23,
+        "t": "farm",
+        "b": null,
+        "road": false,
+        "site": null,
+        "var": 6
+      }
+    ],
+    "proposals": [
+      {
+        "id": "park",
+        "kind": "park",
+        "title": "Old Mill Memorial Park",
+        "presenter": "planner",
+        "site": "oldmill",
+        "council": true,
+        "group": "oldmill",
+        "blurb": "Turn the vacant Old Mill lot into a veterans memorial park on the creek.",
+        "plan": {
+          "memorial": true,
+          "trees": 2,
+          "playground": true,
+          "amphitheater": false,
+          "fountain": false,
+          "paths": true,
+          "parking": 10
+        },
+        "year": 2,
+        "status": "open"
+      },
+      {
+        "id": "commerce",
+        "kind": "commerce",
+        "title": "Old Mill Commons",
+        "presenter": "merchants",
+        "site": "oldmill",
+        "council": true,
+        "group": "oldmill",
+        "blurb": "Merchants want new storefronts on the Old Mill lot. Stores downtown are always full.",
+        "petition": 800,
+        "plan": {
+          "stores": 10,
+          "stories": 2,
+          "parking": 80,
+          "anchor": "grocery",
+          "plaza": false
+        },
+        "year": 2,
+        "status": "open"
+      },
+      {
+        "id": "opportunity-2-homes",
+        "kind": "initiative",
+        "title": "Homes near existing services",
+        "presenter": "planner",
+        "site": "custom",
+        "plots": [
+          [
+            4,
+            0
+          ]
+        ],
+        "traits": [
+          "creek",
+          "edge"
+        ],
+        "demo": {
+          "cost": 10,
+          "residents": 0,
+          "storefronts": 0,
+          "untrackedJobs": 0,
+          "farm": 0,
+          "live": 0,
+          "conf": 0,
+          "approval": 0,
+          "landmarks": [],
+          "projects": [],
+          "infeasible": false,
+          "warning": null,
+          "collegeTiles": 0,
+          "lostJobs": 0,
+          "lostHousing": 0,
+          "lostUnits": 0,
+          "retained": [],
+          "changedPlots": [
+            [
+              4,
+              0
+            ]
+          ]
+        },
+        "plan": {
+          "homes": 10,
+          "affordable": false,
+          "shops": 0,
+          "stories": 1,
+          "parking": 0,
+          "green": 0,
+          "plaza": false,
+          "civic": "none",
+          "safety": "none",
+          "stormwater": false,
+          "policy": "none",
+          "quality": 2
+        },
+        "program": {
+          "version": 2,
+          "title": "Homes near existing services",
+          "intent": "Housing capacity and current population indicate room for compact infill.",
+          "components": [
+            {
+              "id": "homes",
+              "capability": "housing",
+              "label": "homes",
+              "quantity": 10,
+              "area": 0.5,
+              "sharedWith": null
+            }
+          ],
+          "conditions": {
+            "hours": 10,
+            "deliveries": "daytime",
+            "access": true,
+            "buffer": 0,
+            "preserve": 0,
+            "affordable": false
+          },
+          "assumptions": [
+            "Fictional operating facts are authored for this new campaign."
+          ],
+          "omissions": []
+        },
+        "programRevision": "f2b380dc3f8478ce28305e8507bf7214b3dc711e96b67eef1e82935a6618f5f8",
+        "layout": {
+          "plots": [
+            [
+              4,
+              0
+            ]
+          ],
+          "allocations": [
+            {
+              "componentId": "homes",
+              "capability": "housing",
+              "label": "homes",
+              "quantity": 10,
+              "area": 0.5,
+              "sharedWith": null,
+              "role": "homes",
+              "segments": [
+                {
+                  "plot": [
+                    4,
+                    0
+                  ],
+                  "offset": 0,
+                  "area": 0.5
+                }
+              ]
+            }
+          ],
+          "cells": [
+            {
+              "plot": [
+                4,
+                0
+              ],
+              "componentIds": [
+                "homes"
+              ],
+              "role": "homes",
+              "usedArea": 0.5,
+              "bufferArea": 0,
+              "preservedArea": 0,
+              "freeArea": 0.5
+            }
+          ],
+          "capacity": 1,
+          "usedArea": 0.5,
+          "freeArea": 0.5,
+          "preservedArea": 0,
+          "bufferArea": 0,
+          "buffer": [],
+          "preserved": [],
+          "unused": [
+            {
+              "plot": [
+                4,
+                0
+              ],
+              "offset": 0.5,
+              "area": 0.5
+            }
+          ],
+          "illustrativeInterior": true
+        },
+        "conditions": {
+          "hours": 10,
+          "deliveries": "daytime",
+          "access": true,
+          "buffer": 0,
+          "preserve": 0,
+          "affordable": false
+        },
+        "council": true,
+        "blurb": "Housing capacity and current population indicate room for compact infill.",
+        "desc": "Housing capacity and current population indicate room for compact infill.",
+        "year": 2,
+        "status": "open",
+        "mine": false,
+        "outOfScope": null,
+        "opportunity": "opportunity-2-homes"
+      },
+      {
+        "id": "opportunity-2-local-services",
+        "kind": "initiative",
+        "title": "Neighborhood work and services",
+        "presenter": "planner",
+        "site": "custom",
+        "plots": [
+          [
+            4,
+            0
+          ]
+        ],
+        "traits": [
+          "creek",
+          "edge"
+        ],
+        "demo": {
+          "cost": 10,
+          "residents": 0,
+          "storefronts": 0,
+          "untrackedJobs": 0,
+          "farm": 0,
+          "live": 0,
+          "conf": 0,
+          "approval": 0,
+          "landmarks": [],
+          "projects": [],
+          "infeasible": false,
+          "warning": null,
+          "collegeTiles": 0,
+          "lostJobs": 0,
+          "lostHousing": 0,
+          "lostUnits": 0,
+          "retained": [],
+          "changedPlots": [
+            [
+              4,
+              0
+            ]
+          ]
+        },
+        "plan": {
+          "homes": 0,
+          "affordable": false,
+          "shops": 1,
+          "stories": 1,
+          "parking": 0,
+          "green": 0,
+          "plaza": false,
+          "civic": "none",
+          "safety": "none",
+          "stormwater": false,
+          "policy": "none",
+          "quality": 2
+        },
+        "program": {
+          "version": 2,
+          "title": "Neighborhood work and services",
+          "intent": "Current commercial demand exceeds the spare local supply.",
+          "components": [
+            {
+              "id": "shops",
+              "capability": "shop",
+              "label": "shops",
+              "quantity": 1,
+              "area": 0.25,
+              "sharedWith": null
+            },
+            {
+              "id": "work",
+              "capability": "workplace",
+              "label": "work",
+              "quantity": 3,
+              "area": 0.25,
+              "sharedWith": null
+            }
+          ],
+          "conditions": {
+            "hours": 10,
+            "deliveries": "daytime",
+            "access": true,
+            "buffer": 0,
+            "preserve": 0,
+            "affordable": false
+          },
+          "assumptions": [
+            "Fictional operating facts are authored for this new campaign."
+          ],
+          "omissions": []
+        },
+        "programRevision": "62003979ec41bce01f6ec274b9545cb2b07461da03e10dfbb6323ec8850fdbd7",
+        "layout": {
+          "plots": [
+            [
+              4,
+              0
+            ]
+          ],
+          "allocations": [
+            {
+              "componentId": "shops",
+              "capability": "shop",
+              "label": "shops",
+              "quantity": 1,
+              "area": 0.25,
+              "sharedWith": null,
+              "role": "mixed",
+              "segments": [
+                {
+                  "plot": [
+                    4,
+                    0
+                  ],
+                  "offset": 0,
+                  "area": 0.25
+                }
+              ]
+            },
+            {
+              "componentId": "work",
+              "capability": "workplace",
+              "label": "work",
+              "quantity": 3,
+              "area": 0.25,
+              "sharedWith": null,
+              "role": "workshop",
+              "segments": [
+                {
+                  "plot": [
+                    4,
+                    0
+                  ],
+                  "offset": 0.25,
+                  "area": 0.25
+                }
+              ]
+            }
+          ],
+          "cells": [
+            {
+              "plot": [
+                4,
+                0
+              ],
+              "componentIds": [
+                "shops",
+                "work"
+              ],
+              "role": "mixed",
+              "usedArea": 0.5,
+              "bufferArea": 0,
+              "preservedArea": 0,
+              "freeArea": 0.5
+            }
+          ],
+          "capacity": 1,
+          "usedArea": 0.5,
+          "freeArea": 0.5,
+          "preservedArea": 0,
+          "bufferArea": 0,
+          "buffer": [],
+          "preserved": [],
+          "unused": [
+            {
+              "plot": [
+                4,
+                0
+              ],
+              "offset": 0.5,
+              "area": 0.5
+            }
+          ],
+          "illustrativeInterior": true
+        },
+        "conditions": {
+          "hours": 10,
+          "deliveries": "daytime",
+          "access": true,
+          "buffer": 0,
+          "preserve": 0,
+          "affordable": false
+        },
+        "council": true,
+        "blurb": "Current commercial demand exceeds the spare local supply.",
+        "desc": "Current commercial demand exceeds the spare local supply.",
+        "year": 2,
+        "status": "open",
+        "mine": false,
+        "outOfScope": null,
+        "opportunity": "opportunity-2-local-services"
+      }
+    ],
+    "chats": {},
+    "reports": [
+      {
+        "year": 1,
+        "before": {
+          "year": 1,
+          "pop": 3200,
+          "cash": 640,
+          "jobs": 64,
+          "walk": 48,
+          "live": 55,
+          "conf": 58,
+          "approval": 52,
+          "safety": 62,
+          "afford": 58
+        },
+        "after": {
+          "year": 1,
+          "pop": 3263,
+          "cash": 810,
+          "jobs": 63,
+          "walk": 48,
+          "live": 55,
+          "conf": 60.5,
+          "approval": 53.7,
+          "safety": 63.5,
+          "afford": 58.7
+        },
+        "causes": [
+          {
+            "m": "cash",
+            "v": 0,
+            "r": "Main Street bridge repair: approved $260K, delivered $260K; annual upkeep $0K."
+          },
+          {
+            "m": "safety",
+            "v": 0.5,
+            "r": "Main Street bridge repair opened"
+          },
+          {
+            "m": "live",
+            "v": 1,
+            "r": "Main Street bridge repair opened"
+          },
+          {
+            "m": "approval",
+            "v": 2,
+            "r": "Ribbon cutting: Main Street bridge repair"
+          },
+          {
+            "m": "conf",
+            "v": 2.5,
+            "r": "Stores are in demand: 32 units of demand vs 16 storefronts"
+          },
+          {
+            "m": "live",
+            "v": -1,
+            "r": "Residents drive out of town to shop"
+          },
+          {
+            "m": "conf",
+            "v": 0,
+            "r": "A house on Main Street converted to a shop"
+          },
+          {
+            "m": "pop",
+            "v": 63,
+            "r": "0 new homes built; growth driven by jobs 64/100 and livability 55/100"
+          },
+          {
+            "m": "safety",
+            "v": 1,
+            "r": "Police coverage keeps up with the population"
+          },
+          {
+            "m": "afford",
+            "v": 0.7,
+            "r": "Housing costs held steady"
+          },
+          {
+            "m": "approval",
+            "v": -0.3,
+            "r": "Overall mood of the town"
+          }
+        ],
+        "budget": {
+          "propTax": 960,
+          "comTax": 224,
+          "services": 864,
+          "upkeep": 150,
+          "bonds": 0,
+          "net": 170
+        },
+        "projects": [
+          {
+            "proposalId": "bridge",
+            "title": "Main Street bridge repair",
+            "intent": "The 1958 bridge over Kish Creek failed its last inspection. It carries every car into downtown.",
+            "originalProgram": null,
+            "originalPlan": {
+              "scope": "full"
+            },
+            "plots": [
+              [
+                2,
+                11
+              ]
+            ],
+            "presenter": "engineer",
+            "stage": "built",
+            "postedYear": 1,
+            "revisions": [],
+            "decision": {
+              "action": "approve",
+              "route": "mayor",
+              "funding": "cash",
+              "year": 1,
+              "votes": {
+                "votes": [
+                  {
+                    "member": "marsh",
+                    "leans": [
+                      {
+                        "id": "bridge",
+                        "lean": 15
+                      }
+                    ],
+                    "vote": "no"
+                  },
+                  {
+                    "member": "pryor",
+                    "leans": [
+                      {
+                        "id": "bridge",
+                        "lean": 33
+                      }
+                    ],
+                    "vote": "no"
+                  },
+                  {
+                    "member": "okafor",
+                    "leans": [
+                      {
+                        "id": "bridge",
+                        "lean": 73
+                      }
+                    ],
+                    "vote": "bridge"
+                  },
+                  {
+                    "member": "brandt",
+                    "leans": [
+                      {
+                        "id": "bridge",
+                        "lean": 50
+                      }
+                    ],
+                    "vote": "bridge"
+                  },
+                  {
+                    "member": "weaver",
+                    "leans": [
+                      {
+                        "id": "bridge",
+                        "lean": 47
+                      }
+                    ],
+                    "vote": "no"
+                  }
+                ],
+                "tally": {
+                  "no": 3,
+                  "bridge": 2
+                },
+                "winner": null,
+                "options": [
+                  "bridge"
+                ]
+              }
+            },
+            "plan": {
+              "scope": "full"
+            },
+            "programRevision": "c3b5cca1033a54d88cf1e6b2fbba99751bbcc3e15750827885fa7e22f8a669fd",
+            "estimatedCostK": 260,
+            "annualUpkeepK": 0,
+            "kind": "bridge",
+            "site": "bridge",
+            "deliveryYear": 1,
+            "actualCostK": 260,
+            "overrunK": 0,
+            "observedEffects": {
+              "cost": 260,
+              "upkeep": 0,
+              "jobs": 0,
+              "units": 0,
+              "housing": 0,
+              "walk": 0,
+              "live": 1,
+              "conf": 0,
+              "prop": 0,
+              "approval": 1,
+              "farm": 0,
+              "parking": 0,
+              "bridgeRisk": 0,
+              "notes": [
+                "Fixes the Main St bridge for 30+ years"
+              ],
+              "safety": 1,
+              "afford": 0,
+              "creek": 0,
+              "costHigh": 291
+            },
+            "onBudget": true
+          }
+        ]
+      }
+    ],
+    "phase": "agenda",
+    "election": null,
+    "history": [
+      {
+        "year": 1,
+        "pop": 3200,
+        "cash": 900,
+        "jobs": 64,
+        "walk": 48,
+        "live": 55,
+        "conf": 58,
+        "approval": 52,
+        "safety": 62,
+        "afford": 58
+      },
+      {
+        "year": 1,
+        "pop": 3263,
+        "cash": 810,
+        "jobs": 63,
+        "walk": 48,
+        "live": 55,
+        "conf": 60.5,
+        "approval": 53.7,
+        "safety": 63.5,
+        "afford": 58.7
+      }
+    ],
+    "gameId": "review-B",
+    "revision": 2,
+    "actionHighWater": 2,
+    "receipts": [
+      {
+        "id": 1,
+        "gameId": "review-B",
+        "type": "decision",
+        "fingerprint": "ea916827156d6e6b39d78ea599c798d9a1511de12bfd2141395876228f049407",
+        "commandFingerprint": "ea916827156d6e6b39d78ea599c798d9a1511de12bfd2141395876228f049407",
+        "proposalId": "bridge",
+        "memberId": null,
+        "actorId": "mayor",
+        "controller": null,
+        "subject": {
+          "proposalId": "bridge",
+          "memberId": null,
+          "actorId": "mayor"
+        },
+        "year": 1,
+        "revision": 1,
+        "originalResult": {
+          "proposalId": "bridge",
+          "outcome": "approved",
+          "funding": "cash",
+          "costK": 260,
+          "votes": {
+            "votes": [
+              {
+                "member": "marsh",
+                "leans": [
+                  {
+                    "id": "bridge",
+                    "lean": 15
+                  }
+                ],
+                "vote": "no"
+              },
+              {
+                "member": "pryor",
+                "leans": [
+                  {
+                    "id": "bridge",
+                    "lean": 33
+                  }
+                ],
+                "vote": "no"
+              },
+              {
+                "member": "okafor",
+                "leans": [
+                  {
+                    "id": "bridge",
+                    "lean": 73
+                  }
+                ],
+                "vote": "bridge"
+              },
+              {
+                "member": "brandt",
+                "leans": [
+                  {
+                    "id": "bridge",
+                    "lean": 50
+                  }
+                ],
+                "vote": "bridge"
+              },
+              {
+                "member": "weaver",
+                "leans": [
+                  {
+                    "id": "bridge",
+                    "lean": 47
+                  }
+                ],
+                "vote": "no"
+              }
+            ],
+            "tally": {
+              "no": 3,
+              "bridge": 2
+            },
+            "winner": null,
+            "options": [
+              "bridge"
+            ]
+          },
+          "programRevision": "c3b5cca1033a54d88cf1e6b2fbba99751bbcc3e15750827885fa7e22f8a669fd"
+        }
+      },
+      {
+        "id": 2,
+        "gameId": "review-B",
+        "type": "resolveYear",
+        "fingerprint": "4e116888959fd86267656fb483b7fdb46531cbe21f2fbc08564e6bdf6ea3ae1f",
+        "commandFingerprint": "4e116888959fd86267656fb483b7fdb46531cbe21f2fbc08564e6bdf6ea3ae1f",
+        "proposalId": null,
+        "memberId": null,
+        "actorId": "mayor",
+        "controller": null,
+        "subject": {
+          "proposalId": null,
+          "memberId": null,
+          "actorId": "mayor"
+        },
+        "year": 1,
+        "revision": 2,
+        "originalResult": {
+          "year": 1,
+          "before": {
+            "year": 1,
+            "pop": 3200,
+            "cash": 640,
+            "jobs": 64,
+            "walk": 48,
+            "live": 55,
+            "conf": 58,
+            "approval": 52,
+            "safety": 62,
+            "afford": 58
+          },
+          "after": {
+            "year": 1,
+            "pop": 3263,
+            "cash": 810,
+            "jobs": 63,
+            "walk": 48,
+            "live": 55,
+            "conf": 60.5,
+            "approval": 53.7,
+            "safety": 63.5,
+            "afford": 58.7
+          },
+          "causes": [
+            {
+              "m": "cash",
+              "v": 0,
+              "r": "Main Street bridge repair: approved $260K, delivered $260K; annual upkeep $0K."
+            },
+            {
+              "m": "safety",
+              "v": 0.5,
+              "r": "Main Street bridge repair opened"
+            },
+            {
+              "m": "live",
+              "v": 1,
+              "r": "Main Street bridge repair opened"
+            },
+            {
+              "m": "approval",
+              "v": 2,
+              "r": "Ribbon cutting: Main Street bridge repair"
+            },
+            {
+              "m": "conf",
+              "v": 2.5,
+              "r": "Stores are in demand: 32 units of demand vs 16 storefronts"
+            },
+            {
+              "m": "live",
+              "v": -1,
+              "r": "Residents drive out of town to shop"
+            },
+            {
+              "m": "conf",
+              "v": 0,
+              "r": "A house on Main Street converted to a shop"
+            },
+            {
+              "m": "pop",
+              "v": 63,
+              "r": "0 new homes built; growth driven by jobs 64/100 and livability 55/100"
+            },
+            {
+              "m": "safety",
+              "v": 1,
+              "r": "Police coverage keeps up with the population"
+            },
+            {
+              "m": "afford",
+              "v": 0.7,
+              "r": "Housing costs held steady"
+            },
+            {
+              "m": "approval",
+              "v": -0.3,
+              "r": "Overall mood of the town"
+            }
+          ],
+          "budget": {
+            "propTax": 960,
+            "comTax": 224,
+            "services": 864,
+            "upkeep": 150,
+            "bonds": 0,
+            "net": 170
+          },
+          "projects": [
+            {
+              "proposalId": "bridge",
+              "title": "Main Street bridge repair",
+              "intent": "The 1958 bridge over Kish Creek failed its last inspection. It carries every car into downtown.",
+              "originalProgram": null,
+              "originalPlan": {
+                "scope": "full"
+              },
+              "plots": [
+                [
+                  2,
+                  11
+                ]
+              ],
+              "presenter": "engineer",
+              "stage": "built",
+              "postedYear": 1,
+              "revisions": [],
+              "decision": {
+                "action": "approve",
+                "route": "mayor",
+                "funding": "cash",
+                "year": 1,
+                "votes": {
+                  "votes": [
+                    {
+                      "member": "marsh",
+                      "leans": [
+                        {
+                          "id": "bridge",
+                          "lean": 15
+                        }
+                      ],
+                      "vote": "no"
+                    },
+                    {
+                      "member": "pryor",
+                      "leans": [
+                        {
+                          "id": "bridge",
+                          "lean": 33
+                        }
+                      ],
+                      "vote": "no"
+                    },
+                    {
+                      "member": "okafor",
+                      "leans": [
+                        {
+                          "id": "bridge",
+                          "lean": 73
+                        }
+                      ],
+                      "vote": "bridge"
+                    },
+                    {
+                      "member": "brandt",
+                      "leans": [
+                        {
+                          "id": "bridge",
+                          "lean": 50
+                        }
+                      ],
+                      "vote": "bridge"
+                    },
+                    {
+                      "member": "weaver",
+                      "leans": [
+                        {
+                          "id": "bridge",
+                          "lean": 47
+                        }
+                      ],
+                      "vote": "no"
+                    }
+                  ],
+                  "tally": {
+                    "no": 3,
+                    "bridge": 2
+                  },
+                  "winner": null,
+                  "options": [
+                    "bridge"
+                  ]
+                }
+              },
+              "plan": {
+                "scope": "full"
+              },
+              "programRevision": "c3b5cca1033a54d88cf1e6b2fbba99751bbcc3e15750827885fa7e22f8a669fd",
+              "estimatedCostK": 260,
+              "annualUpkeepK": 0,
+              "kind": "bridge",
+              "site": "bridge",
+              "deliveryYear": 1,
+              "actualCostK": 260,
+              "overrunK": 0,
+              "observedEffects": {
+                "cost": 260,
+                "upkeep": 0,
+                "jobs": 0,
+                "units": 0,
+                "housing": 0,
+                "walk": 0,
+                "live": 1,
+                "conf": 0,
+                "prop": 0,
+                "approval": 1,
+                "farm": 0,
+                "parking": 0,
+                "bridgeRisk": 0,
+                "notes": [
+                  "Fixes the Main St bridge for 30+ years"
+                ],
+                "safety": 1,
+                "afford": 0,
+                "creek": 0,
+                "costHigh": 291
+              },
+              "onBudget": true
+            }
+          ]
+        }
+      }
+    ],
+    "projectRecords": [
+      {
+        "proposalId": "bridge",
+        "title": "Main Street bridge repair",
+        "intent": "The 1958 bridge over Kish Creek failed its last inspection. It carries every car into downtown.",
+        "originalProgram": null,
+        "originalPlan": {
+          "scope": "full"
+        },
+        "plots": [
+          [
+            2,
+            11
+          ]
+        ],
+        "presenter": "engineer",
+        "stage": "built",
+        "postedYear": 1,
+        "revisions": [],
+        "decision": {
+          "action": "approve",
+          "route": "mayor",
+          "funding": "cash",
+          "year": 1,
+          "votes": {
+            "votes": [
+              {
+                "member": "marsh",
+                "leans": [
+                  {
+                    "id": "bridge",
+                    "lean": 15
+                  }
+                ],
+                "vote": "no"
+              },
+              {
+                "member": "pryor",
+                "leans": [
+                  {
+                    "id": "bridge",
+                    "lean": 33
+                  }
+                ],
+                "vote": "no"
+              },
+              {
+                "member": "okafor",
+                "leans": [
+                  {
+                    "id": "bridge",
+                    "lean": 73
+                  }
+                ],
+                "vote": "bridge"
+              },
+              {
+                "member": "brandt",
+                "leans": [
+                  {
+                    "id": "bridge",
+                    "lean": 50
+                  }
+                ],
+                "vote": "bridge"
+              },
+              {
+                "member": "weaver",
+                "leans": [
+                  {
+                    "id": "bridge",
+                    "lean": 47
+                  }
+                ],
+                "vote": "no"
+              }
+            ],
+            "tally": {
+              "no": 3,
+              "bridge": 2
+            },
+            "winner": null,
+            "options": [
+              "bridge"
+            ]
+          }
+        },
+        "plan": {
+          "scope": "full"
+        },
+        "programRevision": "c3b5cca1033a54d88cf1e6b2fbba99751bbcc3e15750827885fa7e22f8a669fd",
+        "estimatedCostK": 260,
+        "annualUpkeepK": 0,
+        "kind": "bridge",
+        "site": "bridge",
+        "deliveryYear": 1,
+        "actualCostK": 260,
+        "overrunK": 0,
+        "observedEffects": {
+          "cost": 260,
+          "upkeep": 0,
+          "jobs": 0,
+          "units": 0,
+          "housing": 0,
+          "walk": 0,
+          "live": 1,
+          "conf": 0,
+          "prop": 0,
+          "approval": 1,
+          "farm": 0,
+          "parking": 0,
+          "bridgeRisk": 0,
+          "notes": [
+            "Fixes the Main St bridge for 30+ years"
+          ],
+          "safety": 1,
+          "afford": 0,
+          "creek": 0,
+          "costHigh": 291
+        },
+        "onBudget": true
+      }
+    ],
+    "persuasionHistory": [],
+    "shocks": [],
+    "lastBudget": {
+      "propTax": 960,
+      "comTax": 224,
+      "services": 864,
+      "upkeep": 150,
+      "bonds": 0,
+      "net": 170
+    },
+    "lobbyCount": {},
+    "extraNext": []
+  },
+  "record": {
+    "proposalId": "bridge",
+    "title": "Main Street bridge repair",
+    "intent": "The 1958 bridge over Kish Creek failed its last inspection. It carries every car into downtown.",
+    "originalProgram": null,
+    "originalPlan": {
+      "scope": "full"
+    },
+    "plots": [
+      [
+        2,
+        11
+      ]
+    ],
+    "presenter": "engineer",
+    "stage": "built",
+    "postedYear": 1,
+    "revisions": [],
+    "decision": {
+      "action": "approve",
+      "route": "mayor",
+      "funding": "cash",
+      "year": 1,
+      "votes": {
+        "votes": [
+          {
+            "member": "marsh",
+            "leans": [
+              {
+                "id": "bridge",
+                "lean": 15
+              }
+            ],
+            "vote": "no"
+          },
+          {
+            "member": "pryor",
+            "leans": [
+              {
+                "id": "bridge",
+                "lean": 33
+              }
+            ],
+            "vote": "no"
+          },
+          {
+            "member": "okafor",
+            "leans": [
+              {
+                "id": "bridge",
+                "lean": 73
+              }
+            ],
+            "vote": "bridge"
+          },
+          {
+            "member": "brandt",
+            "leans": [
+              {
+                "id": "bridge",
+                "lean": 50
+              }
+            ],
+            "vote": "bridge"
+          },
+          {
+            "member": "weaver",
+            "leans": [
+              {
+                "id": "bridge",
+                "lean": 47
+              }
+            ],
+            "vote": "no"
+          }
+        ],
+        "tally": {
+          "no": 3,
+          "bridge": 2
+        },
+        "winner": null,
+        "options": [
+          "bridge"
+        ]
+      }
+    },
+    "plan": {
+      "scope": "full"
+    },
+    "programRevision": "c3b5cca1033a54d88cf1e6b2fbba99751bbcc3e15750827885fa7e22f8a669fd",
+    "estimatedCostK": 260,
+    "annualUpkeepK": 0,
+    "kind": "bridge",
+    "site": "bridge",
+    "deliveryYear": 1,
+    "actualCostK": 260,
+    "overrunK": 0,
+    "observedEffects": {
+      "cost": 260,
+      "upkeep": 0,
+      "jobs": 0,
+      "units": 0,
+      "housing": 0,
+      "walk": 0,
+      "live": 1,
+      "conf": 0,
+      "prop": 0,
+      "approval": 1,
+      "farm": 0,
+      "parking": 0,
+      "bridgeRisk": 0,
+      "notes": [
+        "Fixes the Main St bridge for 30+ years"
+      ],
+      "safety": 1,
+      "afford": 0,
+      "creek": 0,
+      "costHigh": 291
+    },
+    "onBudget": true
+  },
+  "contextHistory": [
+    {
+      "title": "Main Street bridge repair",
+      "actorId": "engineer",
+      "stage": "built",
+      "representation": "legacy-plan",
+      "kind": "bridge",
+      "plan": {
+        "scope": "full"
+      },
+      "relevance": "selected site",
+      "source": {
+        "record": "projectRecords",
+        "snapshot": "built",
+        "proposalId": "bridge",
+        "programRevision": "c3b5cca1033a54d88cf1e6b2fbba99751bbcc3e15750827885fa7e22f8a669fd",
+        "decisionYear": 1,
+        "decisionRoute": "mayor",
+        "deliveryYear": 1
+      }
+    }
+  ]
+}

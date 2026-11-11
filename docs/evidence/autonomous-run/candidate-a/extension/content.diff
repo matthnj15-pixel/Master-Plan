@@ -1,0 +1,71 @@
+--- /tmp/mp-extension-qa/base-program-definitions.json	2026-11-11 01:20:15.811297818 +0000
++++ /tmp/mp-extension-qa/extended-program-definitions.json	2026-11-11 01:20:15.811297818 +0000
+@@ -93,5 +93,68 @@
+       ],
+       "omissions": []
+     }
++  },
++  "lantern-repair-learning-yard": {
++    "id": "lantern-repair-learning-yard",
++    "label": "Lantern repair and learning yard",
++    "program": {
++      "version": 2,
++      "title": "Lantern Repair and Learning Yard",
++      "intent": "Repair small household items, teach practical classes in shared work space, store tools, and maintain a green access yard.",
++      "components": [
++        {
++          "id": "repair-benches",
++          "capability": "workplace",
++          "label": "Repair benches",
++          "quantity": 4,
++          "area": 0.2,
++          "sharedWith": null
++        },
++        {
++          "id": "shared-lessons",
++          "capability": "community",
++          "label": "Practical classes",
++          "quantity": 12,
++          "area": 0.2,
++          "sharedWith": "repair-benches"
++        },
++        {
++          "id": "tool-lockers",
++          "capability": "storage",
++          "label": "Tool lockers",
++          "quantity": 8,
++          "area": 0.1,
++          "sharedWith": null
++        },
++        {
++          "id": "green-yard",
++          "capability": "green",
++          "label": "Green yard",
++          "quantity": 0.5,
++          "area": 0.5,
++          "sharedWith": null
++        },
++        {
++          "id": "entry-path",
++          "capability": "access",
++          "label": "Entry path",
++          "quantity": 100,
++          "area": 0.1,
++          "sharedWith": null
++        }
++      ],
++      "conditions": {
++        "hours": 8,
++        "deliveries": "daytime",
++        "access": true,
++        "buffer": 0.2,
++        "preserve": 3,
++        "affordable": false
++      },
++      "assumptions": [
++        "QA-authored data-only combination; coefficients and shared-space accounting remain engine-owned game assumptions."
++      ],
++      "omissions": []
++    }
+   }
+ }

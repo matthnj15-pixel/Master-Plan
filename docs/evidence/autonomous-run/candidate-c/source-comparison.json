@@ -1,0 +1,25 @@
+{
+  "previousSHA": "c921f0add6f7c16682e6fa6d4b04523b17656e4f",
+  "reviewedSHA": "35461a0acc6a21c723d97d90509bb1e8adb0cf49",
+  "unchangedFiles": [
+    "flags.json",
+    "scripts/build.mjs",
+    "scripts/trace.mjs",
+    "src/fonts/OFL.txt",
+    "src/fonts/host-grotesk-latin.woff2",
+    "src/index.html",
+    "src/offline-ai.js",
+    "src/offline-worker.js",
+    "src/package.json",
+    "src/plan-renderer.js",
+    "src/plan-requests.js",
+    "src/qwen-diagnostics.js",
+    "src/workspace.js"
+  ],
+  "changedFiles": [
+    "src/composition-requests.js",
+    "src/engine.js",
+    "src/ui.js"
+  ],
+  "scope": "Only engine save/credit/helper, provider verified historical records, and UI working-state/site recovery changed in production."
+}

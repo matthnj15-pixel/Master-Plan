@@ -1,0 +1,142 @@
+{
+  "sha": "35461a0acc6a21c723d97d90509bb1e8adb0cf49",
+  "types": "actual legacy engine delivery; provider constant clarification mock; mixed archive identity fixtures",
+  "checks": [
+    {
+      "id": "actual-legacy",
+      "status": "PASS",
+      "history": [
+        {
+          "title": "Main Street bridge repair",
+          "actorId": "engineer",
+          "stage": "built",
+          "representation": "legacy-plan",
+          "kind": "bridge",
+          "plan": {
+            "scope": "full"
+          },
+          "relevance": "selected site",
+          "source": {
+            "record": "projectRecords",
+            "snapshot": "built",
+            "proposalId": "bridge",
+            "programRevision": "c3b5cca1033a54d88cf1e6b2fbba99751bbcc3e15750827885fa7e22f8a669fd",
+            "decisionYear": 1,
+            "decisionRoute": "mayor",
+            "deliveryYear": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "plan",
+      "status": "PASS",
+      "historyCount": 0
+    },
+    {
+      "id": "kind",
+      "status": "PASS",
+      "historyCount": 0
+    },
+    {
+      "id": "site",
+      "status": "PASS",
+      "historyCount": 0
+    },
+    {
+      "id": "decision",
+      "status": "PASS",
+      "historyCount": 0
+    },
+    {
+      "id": "revision",
+      "status": "PASS",
+      "historyCount": 0
+    },
+    {
+      "id": "invented-conditions",
+      "status": "PASS",
+      "historyCount": 0
+    },
+    {
+      "id": "missing-source",
+      "status": "PASS",
+      "historyCount": 0
+    },
+    {
+      "id": "combined-three",
+      "status": "PASS",
+      "history": [
+        {
+          "title": "Main Street bridge repair",
+          "actorId": "engineer",
+          "stage": "built",
+          "representation": "legacy-plan",
+          "kind": "bridge",
+          "plan": {
+            "scope": "full"
+          },
+          "relevance": "selected site",
+          "source": {
+            "record": "projectRecords",
+            "snapshot": "built",
+            "proposalId": "bridge",
+            "programRevision": "c3b5cca1033a54d88cf1e6b2fbba99751bbcc3e15750827885fa7e22f8a669fd",
+            "decisionYear": 1,
+            "decisionRoute": "mayor",
+            "deliveryYear": 1
+          }
+        },
+        {
+          "title": "Lantern Repair and Learning Yard",
+          "actorId": "planner",
+          "stage": "built",
+          "representation": "composition-v2",
+          "conditions": {
+            "hours": 8,
+            "deliveries": "daytime",
+            "access": true,
+            "buffer": 0.2,
+            "preserve": 3,
+            "affordable": false
+          },
+          "relevance": "selected site",
+          "source": {
+            "record": "projectRecords",
+            "snapshot": "built",
+            "proposalId": "z-archive-a",
+            "programRevision": "8942911ed15dfd673017edee689a137decbe4df6ca3639a22c9573e29438c95d",
+            "decisionYear": 1,
+            "decisionRoute": "borough-council",
+            "deliveryYear": 1
+          }
+        },
+        {
+          "title": "Lantern Repair and Learning Yard",
+          "actorId": "planner",
+          "stage": "built",
+          "representation": "composition-v2",
+          "conditions": {
+            "hours": 8,
+            "deliveries": "daytime",
+            "access": true,
+            "buffer": 0.2,
+            "preserve": 3,
+            "affordable": false
+          },
+          "relevance": "selected site",
+          "source": {
+            "record": "projectRecords",
+            "snapshot": "built",
+            "proposalId": "z-archive-b",
+            "programRevision": "21ac19aed452a103184925613b4516fdb7370432caef53824cf49934c48d7745",
+            "decisionYear": 1,
+            "decisionRoute": "borough-council",
+            "deliveryYear": 1
+          }
+        }
+      ],
+      "note": "Mixed identity-consistent archive fixtures copied from accepted A extension snapshots; not another normal browser lifecycle."
+    }
+  ]
+}

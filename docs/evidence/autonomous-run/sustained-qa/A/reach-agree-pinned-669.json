@@ -1,0 +1,87 @@
+{
+  "viewport": {
+    "width": 669,
+    "height": 951
+  },
+  "bodyScrollTop": 0,
+  "paneScrollTop": 3054,
+  "actions": [
+    {
+      "text": "Preview these controls",
+      "action": "previewControls",
+      "disabled": false,
+      "rect": {
+        "x": 45,
+        "y": -941.03125,
+        "width": 579,
+        "height": 47,
+        "top": -941.03125,
+        "right": 624,
+        "bottom": -894.03125,
+        "left": 45
+      },
+      "visible": false,
+      "position": "static",
+      "ancestors": [
+        {
+          "class": "sheet",
+          "position": "fixed",
+          "bottom": "0px"
+        }
+      ]
+    },
+    {
+      "text": "Recheck resident response",
+      "action": "resident",
+      "disabled": false,
+      "rect": {
+        "x": 24,
+        "y": 694.8125,
+        "width": 621,
+        "height": 47,
+        "top": 694.8125,
+        "right": 645,
+        "bottom": 741.8125,
+        "left": 24
+      },
+      "visible": true,
+      "position": "static",
+      "ancestors": [
+        {
+          "class": "sheet",
+          "position": "fixed",
+          "bottom": "0px"
+        }
+      ]
+    },
+    {
+      "text": "Confirm public revision",
+      "action": "confirmRevision",
+      "disabled": false,
+      "rect": {
+        "x": 24,
+        "y": 891,
+        "width": 621,
+        "height": 48,
+        "top": 891,
+        "right": 645,
+        "bottom": 939,
+        "left": 24
+      },
+      "visible": true,
+      "position": "static",
+      "ancestors": [
+        {
+          "class": "composition-primary",
+          "position": "sticky",
+          "bottom": "0px"
+        },
+        {
+          "class": "sheet",
+          "position": "fixed",
+          "bottom": "0px"
+        }
+      ]
+    }
+  ]
+}

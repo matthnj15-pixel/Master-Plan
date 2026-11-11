@@ -1,0 +1,57 @@
+{
+  "sha": "6da5d9adc51751afb27236bfc27b769848a18d94",
+  "scope": "integrated",
+  "finalIntegratedTarget": false,
+  "browserVersion": "153.0.8010.12",
+  "origin": "http://127.0.0.1:43643",
+  "engineSha256": "a579864490fbd00757b45835f2970d190412d2bee67cbcddc3e6828e0334411d",
+  "workspaceSha256": "660c0fcea98c3f9468ebab3a6a1fa650def761e2e2c65fc9fff49bf625785f7e",
+  "interleavingsExecuted": 8,
+  "allRequiredPass": true,
+  "evidenceType": "two actual Chromium pages; shared localStorage and native Web Locks; actual engine/workspace; targeted timing/fault injection",
+  "account": "controlled upload callback only",
+  "results": [
+    {
+      "id": "T1",
+      "status": "pass",
+      "executed": true
+    },
+    {
+      "id": "T2",
+      "status": "pass",
+      "executed": true
+    },
+    {
+      "id": "T3",
+      "status": "pass",
+      "executed": true
+    },
+    {
+      "id": "T4",
+      "status": "pass",
+      "executed": true
+    },
+    {
+      "id": "T5",
+      "status": "pass",
+      "executed": true
+    },
+    {
+      "id": "T6",
+      "status": "pass",
+      "executed": true
+    },
+    {
+      "id": "T7",
+      "status": "pass",
+      "executed": true
+    },
+    {
+      "id": "T8",
+      "status": "pass",
+      "executed": true
+    }
+  ],
+  "integratedCandidate": "A",
+  "final": false
+}

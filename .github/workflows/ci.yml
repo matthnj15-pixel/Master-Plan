@@ -16,7 +16,11 @@ jobs:
           node-version: 22
       - run: npm ci
       - run: npx playwright install --with-deps chromium
+      - name: Fetch pinned WebLLM source for the CPU admission audit
+        run: curl --fail --location --connect-timeout 15 --max-time 60 --retry 3 https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.87/lib/index.js -o "${{ runner.temp }}/webllm-0.2.87.js"
       - run: npm test
+        env:
+          MP_WEBLLM_AUDIT_BUNDLE: ${{ runner.temp }}/webllm-0.2.87.js
       - run: node scripts/build.mjs --channel ${{ (github.base_ref || github.ref_name) == 'main' && 'stable' || 'dev' }}
       - uses: actions/upload-artifact@v4
         with:

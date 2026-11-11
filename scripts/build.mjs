@@ -16,11 +16,11 @@ if (!['stable', 'dev'].includes(channel)) throw new Error(`Unknown channel "${ch
 const out = resolve(root, arg('out', 'dist'));
 
 const { version } = JSON.parse(read('package.json'));
-let commit = 'local';
-try { commit = execSync('git rev-parse --short HEAD', { cwd: root }).toString().trim(); } catch {}
+let commit = 'local', commitFull = 'local';
+try { commitFull = execSync('git rev-parse HEAD', { cwd: root }).toString().trim(); commit = commitFull.slice(0, 7); } catch {}
 const flagDefs = JSON.parse(read('flags.json')).flags;
 const flags = Object.fromEntries(Object.entries(flagDefs).map(([k, v]) => [k, !!v[channel]]));
-const build = { channel, version, commit, flags, flagInfo: Object.fromEntries(Object.entries(flagDefs).map(([k, v]) => [k, v.description])) };
+const build = { channel, version, commit, commitFull, flags, flagInfo: Object.fromEntries(Object.entries(flagDefs).map(([k, v]) => [k, v.description])) };
 
 // Build info runs before the engine. On dev, flags can be overridden from the in-game menu.
 const prelude = `var MP_BUILD=${JSON.stringify(build)};
@@ -35,7 +35,7 @@ for (const marker of ['/*ENGINE*/', '/*UI*/', '/*HOST_GROTESK*/', '/*HOST_GROTES
 const font = readFileSync(join(root, 'src/fonts/host-grotesk-latin.woff2')).toString('base64');
 let html = template.replace('/*HOST_GROTESK_LICENSE*/', () => '/*\n' + read('src/fonts/OFL.txt') + '\n*/')
   .replace('/*HOST_GROTESK*/', () => font)
-  .replace('/*ENGINE*/', () => prelude + read('src/engine.js')).replace('/*UI*/', () => ['src/plan-requests.js', 'src/plan-renderer.js', 'src/ui.js'].map(read).join('\n'));
+  .replace('/*ENGINE*/', () => prelude + read('src/engine.js')).replace('/*UI*/', () => ['src/composition-requests.js', 'src/workspace.js', 'src/plan-requests.js', 'src/plan-renderer.js', 'src/ui.js'].map(read).join('\n'));
 if (channel === 'dev') html = html.replace('<title>Master Plan</title>', '<title>Master Plan Dev</title>');
 
 mkdirSync(out, { recursive: true });

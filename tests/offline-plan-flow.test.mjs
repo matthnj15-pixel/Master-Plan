@@ -1,3 +1,4 @@
+import {legacyPlanningFixture} from './fixtures/legacy-build.mjs';
 // Real Pages shell/worker and provider adapter; Qwen replies are controlled fixtures.
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
@@ -10,6 +11,7 @@ import {chromium} from 'playwright';
 const root=new URL('..',import.meta.url).pathname;
 const out=mkdtempSync(join(tmpdir(),'mp-plan-offline-'));
 execFileSync('node',['scripts/build.mjs','--channel','dev','--out',out],{cwd:root,stdio:'pipe'});
+legacyPlanningFixture(out);
 const runtimeURL='https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.87/lib/index.js';
 const runtime=`
 export async function hasModelInCache(){return true;}

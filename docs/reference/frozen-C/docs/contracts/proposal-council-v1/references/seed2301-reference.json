@@ -1,0 +1,270 @@
+{
+  "baseline": "18dded6207f7217021d84b42aad6cc8e00b68f43",
+  "kind": "existing-engine-reference; not a new lifecycle acceptance test",
+  "seed": 2301,
+  "initialYear": 1,
+  "plots": [
+    [
+      16,
+      13
+    ],
+    [
+      18,
+      13
+    ],
+    [
+      16,
+      14
+    ],
+    [
+      18,
+      14
+    ],
+    [
+      16,
+      15
+    ],
+    [
+      18,
+      15
+    ]
+  ],
+  "plan": {
+    "homes": 20,
+    "affordable": false,
+    "shops": 4,
+    "stories": 2,
+    "parking": 20,
+    "green": 2,
+    "plaza": false,
+    "civic": "none",
+    "safety": "none",
+    "stormwater": true,
+    "policy": "none",
+    "quality": 2
+  },
+  "fitNotes": [],
+  "cost": 820,
+  "upkeep": 28,
+  "vote": {
+    "votes": [
+      {
+        "member": "marsh",
+        "leans": [
+          {
+            "id": "init1",
+            "lean": 43
+          }
+        ],
+        "vote": "no"
+      },
+      {
+        "member": "pryor",
+        "leans": [
+          {
+            "id": "init1",
+            "lean": 21
+          }
+        ],
+        "vote": "no"
+      },
+      {
+        "member": "okafor",
+        "leans": [
+          {
+            "id": "init1",
+            "lean": 97
+          }
+        ],
+        "vote": "init1"
+      },
+      {
+        "member": "brandt",
+        "leans": [
+          {
+            "id": "init1",
+            "lean": 87
+          }
+        ],
+        "vote": "init1"
+      },
+      {
+        "member": "weaver",
+        "leans": [
+          {
+            "id": "init1",
+            "lean": 55
+          }
+        ],
+        "vote": "init1"
+      }
+    ],
+    "tally": {
+      "no": 2,
+      "init1": 3
+    },
+    "winner": "init1",
+    "options": [
+      "init1"
+    ]
+  },
+  "baselineMakeInitiativeSpendsAnnualInitiative": true,
+  "funding": "bond",
+  "approval": {
+    "ok": true,
+    "reasons": []
+  },
+  "pendingAfterApproval": 1,
+  "afterResolution": {
+    "year": 2,
+    "phase": "agenda",
+    "cash": 995,
+    "pending": 0,
+    "actualPlotRoles": [
+      {
+        "plot": [
+          16,
+          13
+        ],
+        "building": {
+          "type": "initiative",
+          "plan": {
+            "homes": 20,
+            "affordable": false,
+            "shops": 4,
+            "stories": 2,
+            "parking": 20,
+            "green": 2,
+            "plaza": false,
+            "civic": "none",
+            "safety": "none",
+            "stormwater": true,
+            "policy": "none",
+            "quality": 2
+          },
+          "role": "mixed"
+        }
+      },
+      {
+        "plot": [
+          18,
+          13
+        ],
+        "building": {
+          "type": "initiative",
+          "plan": {
+            "homes": 20,
+            "affordable": false,
+            "shops": 4,
+            "stories": 2,
+            "parking": 20,
+            "green": 2,
+            "plaza": false,
+            "civic": "none",
+            "safety": "none",
+            "stormwater": true,
+            "policy": "none",
+            "quality": 2
+          },
+          "role": "homes"
+        }
+      },
+      {
+        "plot": [
+          16,
+          14
+        ],
+        "building": {
+          "type": "initiative",
+          "plan": {
+            "homes": 20,
+            "affordable": false,
+            "shops": 4,
+            "stories": 2,
+            "parking": 20,
+            "green": 2,
+            "plaza": false,
+            "civic": "none",
+            "safety": "none",
+            "stormwater": true,
+            "policy": "none",
+            "quality": 2
+          },
+          "role": "parking"
+        }
+      },
+      {
+        "plot": [
+          18,
+          14
+        ],
+        "building": {
+          "type": "initiative",
+          "plan": {
+            "homes": 20,
+            "affordable": false,
+            "shops": 4,
+            "stories": 2,
+            "parking": 20,
+            "green": 2,
+            "plaza": false,
+            "civic": "none",
+            "safety": "none",
+            "stormwater": true,
+            "policy": "none",
+            "quality": 2
+          },
+          "role": "pond"
+        }
+      },
+      {
+        "plot": [
+          16,
+          15
+        ],
+        "building": {
+          "type": "initiative",
+          "plan": {
+            "homes": 20,
+            "affordable": false,
+            "shops": 4,
+            "stories": 2,
+            "parking": 20,
+            "green": 2,
+            "plaza": false,
+            "civic": "none",
+            "safety": "none",
+            "stormwater": true,
+            "policy": "none",
+            "quality": 2
+          },
+          "role": "green"
+        }
+      },
+      {
+        "plot": [
+          18,
+          15
+        ],
+        "building": {
+          "type": "initiative",
+          "plan": {
+            "homes": 20,
+            "affordable": false,
+            "shops": 4,
+            "stories": 2,
+            "parking": 20,
+            "green": 2,
+            "plaza": false,
+            "civic": "none",
+            "safety": "none",
+            "stormwater": true,
+            "policy": "none",
+            "quality": 2
+          },
+          "role": "green"
+        }
+      }
+    ]
+  }
+}

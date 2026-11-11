@@ -1,0 +1,591 @@
+{
+  "capturedUTC": "2026-11-11T03:38:33.792171+00:00",
+  "reports": [
+    {
+      "path": "/workspace/qa-private/evidence/integrated-d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d/pending-recovery/report.json",
+      "sha256": "6d1b98ea07d35f20a5a7a401f4ea00ad28468ddc2efa9351f46d0cf2976b513b",
+      "sourceSHA": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d",
+      "passed": 2,
+      "total": 2,
+      "declaredFinal": null,
+      "evidenceType": null,
+      "results": [
+        {
+          "width": 400,
+          "status": "pass"
+        },
+        {
+          "width": 669,
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "path": "/workspace/qa-private/evidence/integrated-d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d/offline-failure-diagnostics/report.json",
+      "sha256": "c11e70ca95aa7d2b729ce7c34abbf51e4abe9986054145fdfd21be21c6e1014a",
+      "sourceSHA": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d",
+      "passed": 2,
+      "total": 2,
+      "declaredFinal": false,
+      "evidenceType": {
+        "type": "browser-mock",
+        "gpu": "synthetic shader-f16 feature",
+        "runtime": "WebLLM 0.2.87 interface fixture",
+        "tokenizer": "synthetic one token per four UTF-8 bytes, per template segment",
+        "contextWindow": 4096,
+        "modelWeights": "none; cache marker only",
+        "generation": "queued evaluator replies; no prompt/title dispatch",
+        "admission": "actual production loadedAdmission and serialized provider queue"
+      },
+      "results": [
+        {
+          "id": "failure-recovery-diagnostics",
+          "width": 400,
+          "status": "pass"
+        },
+        {
+          "id": "cached-offline-flow",
+          "width": 669,
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "path": "/workspace/qa-private/evidence/integrated-d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d/scope-acknowledgment/report.json",
+      "sha256": "8e2ed0c219c26b53f14aee1d4a281f976825f52fc6b84753bb7ba8fc255cd55c",
+      "sourceSHA": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d",
+      "passed": 2,
+      "total": 2,
+      "declaredFinal": null,
+      "evidenceType": null,
+      "results": [
+        {
+          "id": "explicit-supported-subset-400",
+          "width": 400,
+          "status": "pass"
+        },
+        {
+          "id": "explicit-supported-subset-669",
+          "width": 669,
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "path": "/workspace/qa-private/evidence/integrated-d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d/loader-software/report.json",
+      "sha256": "8cd335b585d4102ccfa971139e755e86373e65e9378043a15e4bede60a6e044f",
+      "sourceSHA": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d",
+      "passed": null,
+      "total": null,
+      "declaredFinal": null,
+      "evidenceType": "actual Chromium loader capability failure; browser touch emulation",
+      "results": [
+        {
+          "width": 400,
+          "status": "blocked"
+        },
+        {
+          "width": 400,
+          "status": "blocked"
+        },
+        {
+          "width": 400
+        },
+        {
+          "width": 669,
+          "status": "blocked"
+        },
+        {
+          "width": 669,
+          "status": "blocked"
+        },
+        {
+          "width": 669
+        }
+      ]
+    },
+    {
+      "path": "/workspace/qa-private/evidence/integrated-d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d/typed-lifecycles/report.json",
+      "sha256": "b76a74178994282e2836a51c3cf6a3e9b421964ee25092dbb9ede3ade8cc2645",
+      "sourceSHA": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d",
+      "passed": 3,
+      "total": 3,
+      "declaredFinal": false,
+      "evidenceType": {
+        "type": "browser-mock",
+        "gpu": "synthetic shader-f16 feature",
+        "runtime": "WebLLM 0.2.87 interface fixture",
+        "tokenizer": "synthetic one token per four UTF-8 bytes, per template segment",
+        "contextWindow": 4096,
+        "modelWeights": "none; cache marker only",
+        "generation": "queued evaluator replies; no prompt/title dispatch",
+        "admission": "actual production loadedAdmission and serialized provider queue"
+      },
+      "results": [
+        {
+          "id": "S01",
+          "width": 400,
+          "status": "pass"
+        },
+        {
+          "id": "S02",
+          "width": 669,
+          "status": "pass"
+        },
+        {
+          "id": "S04",
+          "width": 400,
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "path": "/workspace/qa-private/evidence/integrated-d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d/load-render-account-validation/report.json",
+      "sha256": "76d20428c7cc68bb612ba1f9c48f8045955db03a876a5decc4394129387d3837",
+      "sourceSHA": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d",
+      "passed": 26,
+      "total": 26,
+      "declaredFinal": null,
+      "evidenceType": null,
+      "results": [
+        {
+          "id": "nested-economy-null/dev-on",
+          "status": "pass"
+        },
+        {
+          "id": "nested-economy-null/dev-off",
+          "status": "pass"
+        },
+        {
+          "id": "nested-economy-null/stable-off",
+          "status": "pass"
+        },
+        {
+          "id": "nested-economy-null/account-current",
+          "status": "pass"
+        },
+        {
+          "id": "nested-economy-null/account-legacy",
+          "status": "pass"
+        },
+        {
+          "id": "nested-null-schedule/dev-on",
+          "status": "pass"
+        },
+        {
+          "id": "nested-null-schedule/dev-off",
+          "status": "pass"
+        },
+        {
+          "id": "nested-null-schedule/stable-off",
+          "status": "pass"
+        },
+        {
+          "id": "nested-null-schedule/account-current",
+          "status": "pass"
+        },
+        {
+          "id": "nested-null-schedule/account-legacy",
+          "status": "pass"
+        },
+        {
+          "id": "allocation-label/dev-on",
+          "status": "pass"
+        },
+        {
+          "id": "allocation-label/dev-off",
+          "status": "pass"
+        },
+        {
+          "id": "allocation-label/stable-off",
+          "status": "pass"
+        },
+        {
+          "id": "allocation-label/account-current",
+          "status": "pass"
+        },
+        {
+          "id": "allocation-role/dev-on",
+          "status": "pass"
+        },
+        {
+          "id": "allocation-role/dev-off",
+          "status": "pass"
+        },
+        {
+          "id": "allocation-role/stable-off",
+          "status": "pass"
+        },
+        {
+          "id": "allocation-role/account-current",
+          "status": "pass"
+        },
+        {
+          "id": "allocation-componentId/dev-on",
+          "status": "pass"
+        },
+        {
+          "id": "allocation-componentId/dev-off",
+          "status": "pass"
+        },
+        {
+          "id": "allocation-componentId/stable-off",
+          "status": "pass"
+        },
+        {
+          "id": "allocation-componentId/account-current",
+          "status": "pass"
+        },
+        {
+          "id": "allocation-sharedWith/dev-on",
+          "status": "pass"
+        },
+        {
+          "id": "allocation-sharedWith/dev-off",
+          "status": "pass"
+        },
+        {
+          "id": "allocation-sharedWith/stable-off",
+          "status": "pass"
+        },
+        {
+          "id": "allocation-sharedWith/account-current",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "path": "/workspace/qa-private/evidence/integrated-d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d/footer-touch-stages/report.json",
+      "sha256": "0d12647766fb551c50df37914478b8901f9804aaab6618978ab32211b1befce1",
+      "sourceSHA": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d",
+      "passed": 4,
+      "total": 4,
+      "declaredFinal": null,
+      "evidenceType": null,
+      "results": [
+        {
+          "width": 400,
+          "status": "pass"
+        },
+        {
+          "width": 400,
+          "status": "pass"
+        },
+        {
+          "width": 669,
+          "status": "pass"
+        },
+        {
+          "width": 669,
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "path": "/workspace/qa-private/evidence/integrated-d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d/council-negative-boundaries/report.json",
+      "sha256": "fec46b4e6314430172d9a957eb17375272909658de3f8f2a38820b0462d89ce7",
+      "sourceSHA": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d",
+      "passed": 3,
+      "total": 3,
+      "declaredFinal": null,
+      "evidenceType": null,
+      "results": [
+        {
+          "id": "irrelevant-truth",
+          "status": "pass"
+        },
+        {
+          "id": "hostile-truth",
+          "status": "pass"
+        },
+        {
+          "id": "narrative-offer-not-authorization",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "path": "/workspace/qa-private/evidence/integrated-d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d/grid-load-render-account-validation/report.json",
+      "sha256": "ce03158ea5968a832a34190ee21b59f0a43077a63e0890650913635a412313d7",
+      "sourceSHA": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d",
+      "passed": 12,
+      "total": 12,
+      "declaredFinal": null,
+      "evidenceType": null,
+      "results": [
+        {
+          "id": "grid-site-object/dev-on",
+          "status": "pass"
+        },
+        {
+          "id": "grid-site-object/dev-off",
+          "status": "pass"
+        },
+        {
+          "id": "grid-site-object/stable-off",
+          "status": "pass"
+        },
+        {
+          "id": "grid-site-object/account-current",
+          "status": "pass"
+        },
+        {
+          "id": "grid-var-object/dev-on",
+          "status": "pass"
+        },
+        {
+          "id": "grid-var-object/dev-off",
+          "status": "pass"
+        },
+        {
+          "id": "grid-var-object/stable-off",
+          "status": "pass"
+        },
+        {
+          "id": "grid-var-object/account-current",
+          "status": "pass"
+        },
+        {
+          "id": "grid-building-role-object/dev-on",
+          "status": "pass"
+        },
+        {
+          "id": "grid-building-role-object/dev-off",
+          "status": "pass"
+        },
+        {
+          "id": "grid-building-role-object/stable-off",
+          "status": "pass"
+        },
+        {
+          "id": "grid-building-role-object/account-current",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "path": "/workspace/qa-private/evidence/integrated-d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d/persona-council/report.json",
+      "sha256": "5ac5b680b8d471d44de40fa88c9f024093e5f9d5d2b3e1613dde26c7dd7d65db",
+      "sourceSHA": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d",
+      "passed": 5,
+      "total": 5,
+      "declaredFinal": false,
+      "evidenceType": {
+        "type": "browser-mock",
+        "gpu": "synthetic shader-f16 feature",
+        "runtime": "WebLLM 0.2.87 interface fixture",
+        "tokenizer": "synthetic one token per four UTF-8 bytes, per template segment",
+        "contextWindow": 4096,
+        "modelWeights": "none; cache marker only",
+        "generation": "queued evaluator replies; no prompt/title dispatch",
+        "admission": "actual production loadedAdmission and serialized provider queue"
+      },
+      "results": [
+        {
+          "id": "farm-agree",
+          "width": 400,
+          "status": "pass"
+        },
+        {
+          "id": "farm-counter",
+          "width": 669,
+          "status": "pass"
+        },
+        {
+          "id": "farm-refuse",
+          "width": 400,
+          "status": "pass"
+        },
+        {
+          "id": "campus-contrast",
+          "width": 669,
+          "status": "pass"
+        },
+        {
+          "id": "council-claims-receipts",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "path": "/workspace/qa-private/evidence/integrated-d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d/loader-default/report.json",
+      "sha256": "ecae892a33c55a31eba595698a8a0c841065603f05af17bc622aeae72980ac9c",
+      "sourceSHA": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d",
+      "passed": null,
+      "total": null,
+      "declaredFinal": null,
+      "evidenceType": "actual Chromium loader capability failure; browser touch emulation",
+      "results": [
+        {
+          "width": 400,
+          "status": "blocked"
+        },
+        {
+          "width": 400,
+          "status": "blocked"
+        },
+        {
+          "width": 400
+        },
+        {
+          "width": 669,
+          "status": "blocked"
+        },
+        {
+          "width": 669,
+          "status": "blocked"
+        },
+        {
+          "width": 669
+        }
+      ]
+    },
+    {
+      "path": "/workspace/qa-private/evidence/integrated-d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d/account-ui-format-fences/report.json",
+      "sha256": "cbc56906d2ad224a7edfcc679cd567211206528a42b89edfbd157e43a50b8b3f",
+      "sourceSHA": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d",
+      "passed": 9,
+      "total": 9,
+      "declaredFinal": null,
+      "evidenceType": null,
+      "results": [
+        {
+          "id": "explicit-account-ui-import",
+          "status": "pass"
+        },
+        {
+          "id": "delayed-account-ui-import",
+          "status": "pass"
+        },
+        {
+          "id": "feature-off",
+          "status": "pass"
+        },
+        {
+          "id": "newer-format",
+          "status": "pass"
+        },
+        {
+          "id": "corrupt-format",
+          "status": "pass"
+        },
+        {
+          "id": "nested-economy-null",
+          "status": "pass"
+        },
+        {
+          "id": "nested-null-schedule",
+          "status": "pass"
+        },
+        {
+          "id": "channel-isolation",
+          "status": "pass"
+        },
+        {
+          "id": "private-capacity",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "path": "/workspace/qa-private/evidence/integrated-d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d/two-page-races/report.json",
+      "sha256": "6ef4a5d468dbd7eb1a773055b1ebbe86e6adc5d68cbe69de1dd535e32a43ccb2",
+      "sourceSHA": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d",
+      "passed": null,
+      "total": null,
+      "declaredFinal": true,
+      "evidenceType": "two actual Chromium pages; shared localStorage and native Web Locks; actual engine/workspace; targeted timing/fault injection",
+      "results": [
+        {
+          "id": "T1",
+          "status": "pass"
+        },
+        {
+          "id": "T2",
+          "status": "pass"
+        },
+        {
+          "id": "T3",
+          "status": "pass"
+        },
+        {
+          "id": "T4",
+          "status": "pass"
+        },
+        {
+          "id": "T5",
+          "status": "pass"
+        },
+        {
+          "id": "T6",
+          "status": "pass"
+        },
+        {
+          "id": "T7",
+          "status": "pass"
+        },
+        {
+          "id": "T8",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "path": "/workspace/qa-sustained/D/layout-validation/report.json",
+      "sha256": "a3c30c9ab366361ca601fdbf50d9494414b626b89687fbb0e4bf308f7f097fcf",
+      "sourceSHA": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d",
+      "passed": 5,
+      "total": 5,
+      "declaredFinal": null,
+      "evidenceType": "independent malformed persisted-allocation scalar probes with real browser storage and Web Locks; positive normal posted-plan control",
+      "results": [
+        {
+          "status": "pass"
+        },
+        {
+          "status": "pass"
+        },
+        {
+          "status": "pass"
+        },
+        {
+          "status": "pass"
+        },
+        {
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "path": "/workspace/qa-sustained/D/validation/report.json",
+      "sha256": "aee29c66aaab55fdb8bc75b2aa0d5275e91f718edf1556368c96909fed3e34b9",
+      "sourceSHA": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d",
+      "passed": 3,
+      "total": 3,
+      "declaredFinal": null,
+      "evidenceType": "independent malformed-save durability fixtures, separate from normal-play evidence; real browser storage and Web Locks",
+      "results": [
+        {
+          "status": "pass"
+        },
+        {
+          "status": "pass"
+        },
+        {
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "path": "/workspace/qa-sustained/D/strategies/report.json",
+      "sha256": "8ab0cbf629641211039e0987d99ea83b5312642a51aa9b1f8f9d3ffeeb82b336",
+      "sourceSHA": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d",
+      "passed": 3,
+      "total": 3,
+      "declaredFinal": null,
+      "evidenceType": "independent final-D actual engine/store paths plus normal host election controls; not full manual browser play or live AI",
+      "results": []
+    }
+  ],
+  "carryForward": "Unchanged C/B/A paths explicitly retained via source-comparison.json and final review matrix."
+}

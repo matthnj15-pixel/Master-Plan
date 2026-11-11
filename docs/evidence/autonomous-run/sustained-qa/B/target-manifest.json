@@ -1,0 +1,50 @@
+{
+  "candidate": "B",
+  "sha": "c921f0add6f7c16682e6fa6d4b04523b17656e4f",
+  "contract": "C2.1",
+  "contractRevision": "781a2491330e86cca15281437edc9ac3074a26e3",
+  "requirements": "MP-076..082 plus mapped existing requirements",
+  "matrix": "docs/autonomous-evidence.md \u2014 same 34 G1\u2013G4/X1\u2013X7 criteria",
+  "buildDev": "/tmp/mp-candidate-b",
+  "buildStable": "/tmp/mp-candidate-b-stable",
+  "devCompositionPlans": true,
+  "stableCompositionPlans": false,
+  "sourceHashes": {
+    "flags.json": "0980b7a3c4005aceac1f64739236a7591d5a20fb8cd1342398f2c467d6b2a76d",
+    "scripts/build.mjs": "f5bcbe87038a8bceabcc5c39f2202ba33f62378914d8c010de676597491498f0",
+    "scripts/trace.mjs": "e0264db2ec5905fcdefc13cbc83558fb9423200e4b645c479ac0d62d3bdb5e92",
+    "src/composition-requests.js": "556d2c7e7c7b557502adf393afbd909079da82da6a8f75df661b43838397e4b1",
+    "src/engine.js": "775b807ca4130c7cce371869452727509965bcbe8517e2a17abfaf0058a87eb3",
+    "src/fonts/OFL.txt": "567af61acf3c9f93aea10185a7a06ebb3e010d35bdee19b7c7b73f9b9e7e21f7",
+    "src/fonts/host-grotesk-latin.woff2": "ce9c9db8a488852eb7e4a52f51fd8ce0c93ef61a8d3bfa054b509ec92958dcfe",
+    "src/index.html": "7c578f0a65f17fd3c5db4d8fd26a928cc15c34879736a97b66290e0d36fb0090",
+    "src/offline-ai.js": "88267cf985e46b6f8fb8c2a5d2972e0f78edf0d7cd18e85c88a705ca9ad00bf9",
+    "src/offline-worker.js": "4319e857bb33006c38f6425ddfaa782d37a34e535bbf314412e6540d608ffe04",
+    "src/package.json": "d18f120db5a99372058690f86a1332484253e3cdbdbddbc0f5effa6a392b26e0",
+    "src/plan-renderer.js": "0096dbc35f8755f9047415ab1ac94a74970098a94c63b01f6421b90fb98ca979",
+    "src/plan-requests.js": "25bcb5d8bf7d39c585e1c252779637b13fe29bed84d757c7ed27d5dae0b7fea4",
+    "src/qwen-diagnostics.js": "5d94205c63dafdddae21f65198c376dd8d838a09b4ec829accdd91c8d01f91c6",
+    "src/ui.js": "e9e711fcefa57878f71dca26a64f141d4c78b4ba300342620ac2136c24bc7656",
+    "src/workspace.js": "660c0fcea98c3f9468ebab3a6a1fa650def761e2e2c65fc9fff49bf625785f7e"
+  },
+  "buildHashes": {
+    "dev": {
+      "offline-ai.js": "88267cf985e46b6f8fb8c2a5d2972e0f78edf0d7cd18e85c88a705ca9ad00bf9",
+      "master-plan.html": "163e74484840791e70ff6934424b69045b39c237e4d75d7436880f854d90b92b",
+      "offline-worker.js": "645e8a31b7f3ca6e2a1f57a6821662d14b4a035b388879ef9f637bb3d5e76eac",
+      "index.html": "b340e34045aed65e6c9d28bfab77e8658077a866ff1b572f33f8bd09563b7f92"
+    },
+    "stable": {
+      "master-plan.html": "b4435f217767611bf83af123219100439a9da4566e7e74a7e214789fea477b29",
+      "index.html": "3042b861d74eb64e1d0acc3f617c788355999591c9adef6f88e01bab6439a291"
+    }
+  },
+  "provider": "Qwen2.5 1.5B/3B q4f16_1-MLC, WebLLM0.2.87; real inference blocked shader-f16; mocks must be labeled",
+  "disposableSeed": 31,
+  "externalGates": [
+    "live Qwen inference",
+    "physical Duo offline inference",
+    "real Claude artifact and account host"
+  ],
+  "fullSuiteLog": "/tmp/mp-final-full.log"
+}

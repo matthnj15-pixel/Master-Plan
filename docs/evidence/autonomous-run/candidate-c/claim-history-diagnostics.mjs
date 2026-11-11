@@ -1,0 +1,7 @@
+import fs from 'node:fs';import vm from 'node:vm';import {createRequire} from 'node:module';
+const sourceRoot=process.argv[2]||'/tmp/mp-candidate-c-review/source',require=createRequire(sourceRoot+'/package.json'),C=require(sourceRoot+'/src/composition-requests.js'),D=require(sourceRoot+'/src/qwen-diagnostics.js'),context={module:{exports:{}},MP_BUILD:{flags:{compositionPlans:true}}};
+vm.runInNewContext(fs.readFileSync(sourceRoot+'/src/engine.js','utf8'),context);const E=context.module.exports,fixture=JSON.parse(fs.readFileSync(sourceRoot+'/tests/fixtures/composition-v2-pruned-credit.json','utf8'));
+fixture.state.projectRecords=[];const state=E.migrate(fixture.state);let stored={events:[],meta:{}};
+const diagnostics=D.create({enabled:true,build:{channel:'dev',version:'0.6.0-dev',commit:process.argv[3]||'35461a0acc6a21c723d97d90509bb1e8adb0cf49'},storage:{read:async()=>stored,write:async value=>{stored=JSON.parse(JSON.stringify(value));}}});
+const result=await C.create({engine:E,diagnostics}).run({mode:'claims',state,proposal:state.proposals.at(-1),memberId:'okafor',intent:fixture.input.argument,provider:{json:async()=>({claims:fixture.input.claims})}}),document=(await diagnostics.snapshot()).prepared.document;
+console.log(JSON.stringify({observed:{status:result.status,credit:result.evaluation?.credit,engineCode:result.evaluation?.claims[0]?.code,validationEvents:document.events.filter(e=>e.name==='composition.validation'),codePresentInExport:JSON.stringify(document).includes('claim_history_unresolved')},document},null,2));

@@ -1,0 +1,167 @@
+{
+  "sha": "c921f0add6f7c16682e6fa6d4b04523b17656e4f",
+  "types": [
+    "real engine",
+    "real workspace with memory storage and lock fixture",
+    "constant provider mock"
+  ],
+  "checks": [
+    {
+      "ids": [
+        "R1",
+        "R2"
+      ],
+      "result": "PASS",
+      "evidence": "Malformed capability/presenter/member JSON values reject without throw or mutation."
+    },
+    {
+      "ids": [
+        "R5"
+      ],
+      "result": "PASS",
+      "evidence": "Inherited route names reject in actual preview and revision command."
+    },
+    {
+      "ids": [
+        "R8"
+      ],
+      "result": "PASS",
+      "evidence": "Two policy components reject with policy_capacity_exceeded."
+    },
+    {
+      "ids": [
+        "R4"
+      ],
+      "result": "PASS",
+      "evidence": "A cosmetic rename cannot renew previously earned factual credit."
+    },
+    {
+      "ids": [
+        "R3"
+      ],
+      "result": "FAIL",
+      "evidence": [
+        {
+          "name": "scenario.economy=null",
+          "isSupportedSave": true,
+          "workspaceLoadOK": true,
+          "exception": "TypeError: Cannot read properties of null (reading 'jobs')",
+          "inputPreserved": true
+        },
+        {
+          "name": "scenario.proposals.schedule[2]=[null]",
+          "isSupportedSave": true,
+          "workspaceLoadOK": true,
+          "exception": "TypeError: Cannot read properties of undefined (reading 'program')",
+          "inputPreserved": true
+        }
+      ]
+    },
+    {
+      "ids": [
+        "legacy-stage"
+      ],
+      "result": "PASS",
+      "evidence": {
+        "approvedStatus": "approved",
+        "recordStage": "built",
+        "cost": 260,
+        "upkeep": 0,
+        "decision": {
+          "action": "approve",
+          "route": "mayor",
+          "funding": "cash",
+          "year": 1,
+          "votes": {
+            "votes": [
+              {
+                "member": "marsh",
+                "leans": [
+                  {
+                    "id": "bridge",
+                    "lean": 15
+                  }
+                ],
+                "vote": "no"
+              },
+              {
+                "member": "pryor",
+                "leans": [
+                  {
+                    "id": "bridge",
+                    "lean": 33
+                  }
+                ],
+                "vote": "no"
+              },
+              {
+                "member": "okafor",
+                "leans": [
+                  {
+                    "id": "bridge",
+                    "lean": 73
+                  }
+                ],
+                "vote": "bridge"
+              },
+              {
+                "member": "brandt",
+                "leans": [
+                  {
+                    "id": "bridge",
+                    "lean": 50
+                  }
+                ],
+                "vote": "bridge"
+              },
+              {
+                "member": "weaver",
+                "leans": [
+                  {
+                    "id": "bridge",
+                    "lean": 47
+                  }
+                ],
+                "vote": "no"
+              }
+            ],
+            "tally": {
+              "no": 3,
+              "bridge": 2
+            },
+            "winner": null,
+            "options": [
+              "bridge"
+            ]
+          }
+        },
+        "replayApplied": false
+      }
+    },
+    {
+      "ids": [
+        "R9-legacy"
+      ],
+      "result": "FAIL",
+      "evidence": {
+        "note": "A normal mayoral cash approval and annual delivery produce a built legacy record, but a same-site subsequent provider context receives no project history.",
+        "source": "composition-requests.js:216",
+        "history": []
+      }
+    },
+    {
+      "ids": [
+        "G1.6-carryforward"
+      ],
+      "result": "PASS",
+      "evidence": {
+        "note": "Accepted A full browser lifecycle retained; B detached interpretation and final-save compatibility checked, no repeated browser lifecycle.",
+        "definitionId": "lantern-repair-learning-yard",
+        "previewRevision": "5f4cbbd885722146d83e3c7e1771bcad833cf3f2b60a8bc72307ff497e3feba5",
+        "initialPreviewAndLayoutMatchA": true,
+        "costK": 275,
+        "finalSaveSupported": true
+      }
+    }
+  ]
+}

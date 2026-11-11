@@ -1,0 +1,39 @@
+{
+  "previousSHA": "6da5d9adc51751afb27236bfc27b769848a18d94",
+  "targetEngine": "/tmp/mp-candidate-d-review/source/src/engine.js",
+  "targetEngineSHA256": "23698a9c9e9541b29154875295e971a623b45bcd8f58a25036c56f9bcf0fdb21",
+  "resourceOrRelationshipEdits": false,
+  "firstCredit": "strong",
+  "oldPersuasionReceiptRetained": false,
+  "BSupportsOldSave": true,
+  "historyCount": 1,
+  "pitchesUsed": 1,
+  "newEvaluation": {
+    "ok": true,
+    "reasons": [],
+    "claims": [
+      {
+        "id": "walk",
+        "type": "effect",
+        "field": "walk",
+        "claimedValue": 0.8,
+        "valid": true,
+        "code": "claim_repeated",
+        "actual": 0.8,
+        "priority": "walk",
+        "creditEligible": false,
+        "claimKey": "9e833653cc1154b51dda4b5c5c1919bfc494007615ef35eb649abeab9f518a7e"
+      }
+    ],
+    "addressed": [],
+    "credit": "none",
+    "tone": "respectful",
+    "notes": [
+      "walk: claim_repeated"
+    ],
+    "offers": [],
+    "memberId": "okafor",
+    "programRevision": "c91b70a1a228c5e77636e6fb3b3360fce07916dabd4a1526b23b922c2f1c717a",
+    "remainingConcerns": []
+  }
+}

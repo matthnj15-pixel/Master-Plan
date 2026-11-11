@@ -1,0 +1,15 @@
+{
+  "sha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d",
+  "browserVersion": "153.0.8010.12",
+  "origin": "http://127.0.0.1:8785",
+  "viewport": {
+    "width": 400,
+    "height": 951
+  },
+  "account": "controlled local callback only",
+  "pageErrors": [],
+  "protectedFixtureErrors": [],
+  "sourceEdits": false,
+  "externalAccountWrites": false,
+  "cleanup": "contexts/browser/server closed"
+}

@@ -1,0 +1,44 @@
+[
+  {
+    "field": "label",
+    "message": "This account town is not supported by the current build.",
+    "replacementControls": 0,
+    "localBytesPreserved": true
+  },
+  {
+    "field": "role",
+    "message": "This account town is not supported by the current build.",
+    "replacementControls": 0,
+    "localBytesPreserved": true
+  },
+  {
+    "field": "componentId",
+    "message": "This account town is not supported by the current build.",
+    "replacementControls": 0,
+    "localBytesPreserved": true
+  },
+  {
+    "field": "sharedWith",
+    "message": "This account town is not supported by the current build.",
+    "replacementControls": 0,
+    "localBytesPreserved": true
+  },
+  {
+    "field": "strip",
+    "message": "This account town is not supported by the current build.",
+    "replacementControls": 0,
+    "localBytesPreserved": true
+  },
+  {
+    "field": "cell",
+    "message": "This account town is not supported by the current build.",
+    "replacementControls": 0,
+    "localBytesPreserved": true
+  },
+  {
+    "field": "grid",
+    "message": "This account town is not supported by the current build.",
+    "replacementControls": 0,
+    "localBytesPreserved": true
+  }
+]

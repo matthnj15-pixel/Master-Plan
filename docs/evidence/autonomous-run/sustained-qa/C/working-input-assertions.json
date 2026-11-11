@@ -1,0 +1,1931 @@
+{
+  "sha": "35461a0acc6a21c723d97d90509bb1e8adb0cf49",
+  "evidenceType": "normal Qwen-off browser controls on one ordinary seed31 per isolated recovery fixture; no public agenda action",
+  "elapsedMs": 28570,
+  "results": [
+    {
+      "width": 400,
+      "scenario": "invalid-quantity",
+      "sha": "35461a0acc6a21c723d97d90509bb1e8adb0cf49",
+      "errors": [],
+      "accepted": {
+        "id": "b4c81b6f-06ad-4d87-bbc6-b8f85c228616",
+        "targetId": null,
+        "text": "Provide six local jobs on this site.",
+        "editText": "",
+        "plots": [
+          [
+            16,
+            13
+          ],
+          [
+            17,
+            13
+          ],
+          [
+            18,
+            13
+          ],
+          [
+            16,
+            14
+          ],
+          [
+            17,
+            14
+          ],
+          [
+            18,
+            14
+          ]
+        ],
+        "program": {
+          "version": 2,
+          "title": "C pending workspace invalid-quantity",
+          "intent": "Provide six local jobs on this site.",
+          "components": [
+            {
+              "id": "activity-7f2ba4d9-70a2-4893-af62-d6399dfa3d24",
+              "capability": "workplace",
+              "label": "Workplace",
+              "quantity": 6,
+              "area": 0.5,
+              "sharedWith": null
+            }
+          ],
+          "conditions": {
+            "hours": 10,
+            "deliveries": "daytime",
+            "access": true,
+            "buffer": 0,
+            "preserve": 0,
+            "affordable": false
+          },
+          "assumptions": [],
+          "omissions": []
+        },
+        "legacyPlan": null,
+        "versions": [
+          {
+            "id": "f32b075c-983e-4e4a-b0f5-f6fe23f1750f",
+            "input": "Provide six local jobs on this site.",
+            "program": {
+              "version": 2,
+              "title": "C pending workspace invalid-quantity",
+              "intent": "Provide six local jobs on this site.",
+              "components": [
+                {
+                  "id": "activity-7f2ba4d9-70a2-4893-af62-d6399dfa3d24",
+                  "capability": "workplace",
+                  "label": "Workplace",
+                  "quantity": 6,
+                  "area": 0.5,
+                  "sharedWith": null
+                }
+              ],
+              "conditions": {
+                "hours": 10,
+                "deliveries": "daytime",
+                "access": true,
+                "buffer": 0,
+                "preserve": 0,
+                "affordable": false
+              },
+              "assumptions": [],
+              "omissions": []
+            },
+            "legacyPlan": null,
+            "plots": [
+              [
+                16,
+                13
+              ],
+              [
+                17,
+                13
+              ],
+              [
+                18,
+                13
+              ],
+              [
+                16,
+                14
+              ],
+              [
+                17,
+                14
+              ],
+              [
+                18,
+                14
+              ]
+            ],
+            "request": null
+          }
+        ],
+        "selectedVersion": "f32b075c-983e-4e4a-b0f5-f6fe23f1750f",
+        "previewDirty": false,
+        "controlsEdited": false,
+        "requestDetails": null,
+        "feedback": "",
+        "baselineVersion": "f32b075c-983e-4e4a-b0f5-f6fe23f1750f"
+      },
+      "pending": {
+        "id": "b4c81b6f-06ad-4d87-bbc6-b8f85c228616",
+        "targetId": null,
+        "text": "Unsubmitted working description: retain the six-job plan while I compare the unfinished change.",
+        "editText": "Unsubmitted requested edit: keep this sentence exactly, including the unfinished loading-space idea.",
+        "plots": [
+          [
+            16,
+            13
+          ],
+          [
+            17,
+            13
+          ],
+          [
+            18,
+            13
+          ],
+          [
+            16,
+            14
+          ],
+          [
+            17,
+            14
+          ],
+          [
+            18,
+            14
+          ]
+        ],
+        "program": {
+          "version": 2,
+          "title": "C pending workspace invalid-quantity",
+          "intent": "Provide six local jobs on this site.",
+          "components": [
+            {
+              "id": "activity-7f2ba4d9-70a2-4893-af62-d6399dfa3d24",
+              "capability": "workplace",
+              "label": "Workplace",
+              "quantity": 999,
+              "area": 0.5,
+              "sharedWith": null
+            }
+          ],
+          "conditions": {
+            "hours": 10,
+            "deliveries": "daytime",
+            "access": true,
+            "buffer": 0,
+            "preserve": 0,
+            "affordable": false
+          },
+          "assumptions": [],
+          "omissions": []
+        },
+        "legacyPlan": null,
+        "versions": [
+          {
+            "id": "f32b075c-983e-4e4a-b0f5-f6fe23f1750f",
+            "input": "Provide six local jobs on this site.",
+            "program": {
+              "version": 2,
+              "title": "C pending workspace invalid-quantity",
+              "intent": "Provide six local jobs on this site.",
+              "components": [
+                {
+                  "id": "activity-7f2ba4d9-70a2-4893-af62-d6399dfa3d24",
+                  "capability": "workplace",
+                  "label": "Workplace",
+                  "quantity": 6,
+                  "area": 0.5,
+                  "sharedWith": null
+                }
+              ],
+              "conditions": {
+                "hours": 10,
+                "deliveries": "daytime",
+                "access": true,
+                "buffer": 0,
+                "preserve": 0,
+                "affordable": false
+              },
+              "assumptions": [],
+              "omissions": []
+            },
+            "legacyPlan": null,
+            "plots": [
+              [
+                16,
+                13
+              ],
+              [
+                17,
+                13
+              ],
+              [
+                18,
+                13
+              ],
+              [
+                16,
+                14
+              ],
+              [
+                17,
+                14
+              ],
+              [
+                18,
+                14
+              ]
+            ],
+            "request": null
+          }
+        ],
+        "selectedVersion": "f32b075c-983e-4e4a-b0f5-f6fe23f1750f",
+        "previewDirty": true,
+        "controlsEdited": true,
+        "requestDetails": null,
+        "feedback": "quantity_bounds:activity-7f2ba4d9-70a2-4893-af62-d6399dfa3d24 area_capacity:activity-7f2ba4d9-70a2-4893-af62-d6399dfa3d24",
+        "baselineVersion": "f32b075c-983e-4e4a-b0f5-f6fe23f1750f"
+      },
+      "reopened": {
+        "quantity": 999,
+        "originalText": "Unsubmitted working description: retain the six-job plan while I compare the unfinished change.",
+        "requestedEdit": "Unsubmitted requested edit: keep this sentence exactly, including the unfinished loading-space idea.",
+        "title": "C pending workspace invalid-quantity",
+        "body": "PRIVATE DRAFT · 1/8 SAVED VERSIONS\nC pending workspace invalid-quantity\n\nDrafting and comparing alternatives leave the public agenda and annual initiative unchanged.\n\nPrivate · Nothing is posted until you choose Put on agenda.\n\nPlan title\nYour original idea\nChange plots on the map\n6 plots selected: 6 × Open land\nOr select a named site\nKeep selected plots\nOld Mill lot · 4 plots\nroute22 · 6 plots\ncampus_s · 6 plots\nstorefront · 1 plots\nridge · 12 plots\nbridge · 1 plots\nLot behind the elementary school · 4 plots\nKish Creek bank · 4 plots\nEast End field · 6 plots\nPine Street field · 6 plots\nRequested edit\n\nQwen is off. Compose activities and conditions below to make an engine preview.\n\nquantity_bounds:activity-7f2ba4d9-70a2-4893-af62-d6399dfa3d24 area_capacity:activity-7f2ba4d9-70a2-4893-af62-d6399dfa3d24 Your recovered input is kept. Preview again before posting or confirming.\n\nActivities and operating conditions\nTitle\nWorkplace · Workplace\nActivity name\nQuantity · staffed work places\nArea · plot equivalents\nShares floor space with\nSeparate space\nRemove activity\nAdd an activity\nHousing · homes\nWorkplace · staffed work places\nShop · storefronts\nCommunity · daily participants\nRecreation · daily participants\nEvent · peak attendees\nAgriculture · productive plot equivalents\nStorage · pallet bays\nAccess · daily passages\nParking · spaces\nGreen · landscaped plot equivalents\nStormwater · treated plot equivalents\nPolicy · operating program\nAdd activity\nOperating hours per day (0–24)\nDeliveries\nnone\ndaytime\nanytime\nBuffer area · plots\nRetained area · plots\nMaintain farm/service access\nAffordable homes\nLAST ACCEPTED PREVIEW\nC PENDING WORKSPACE INVALID-QUANTITY\nNORTH UP · EXACT PLOT GRID\n6 Workplace · staffed work places\n0.5 allocated plots\n0 retained plots\n5.5 unused plots\n\nEngine cost $134K · upkeep $4K/year\n\nEngine allocations on the exact selected boundary. Strips preserve plot-equivalent areas; shared activities overlap their named host. Interior symbols and fractional plot use are schematic game assumptions.\n\nRevision 96c0c194\n\nEngine forecast\n\nVersion 1 · comparison baseline → requested preview. Both forecasts use the current town and exact site.\n\nCost ($K)\n134 → 134 (0)\nAnnual upkeep ($K)\n4 → 4 (0)\nJobs\n6 → 6 (0)\nStorefronts\n0 → 0 (0)\nResidents housed\n0 → 0 (0)\nWalkability\n0.5 → 0.5 (0)\nLivability\n0.0825 → 0.0825 (0)\nBusiness\n0.36 → 0.36 (0)\nResidents displaced\n0 → 0 (0)\nStorefronts lost\n0 → 0 (0)\nSafety\n1 → 1 (0)\nAffordability\n0 → 0 (0)\nFlood risk\n0% → 0% (0%)\nApproval\n-0.0037 → -0.0037 (0)\nProperty value/yr\n0.006% → 0.006% (0%)\nFarm fields\n0 → 0 (0)\nParking spaces\n0 → 0 (0)\nDaily activity\n6 → 6 (0)\nFreight activity\n0 → 0 (0)\nNoise exposure\n0.03 → 0.03 (0)\nStormwater capacity\n0 → 0 (0)\nAllocated site (plots)\n0.5 → 0.5 (0)\nUnused site (plots)\n5.5 → 5.5 (0)\nRetained site (plots)\n0 → 0 (0)\nBuffer (plots)\n0 → 0 (0)\nCouncil support\nGreg Marsh\n17% → 17% (0%)\nEllen Pryor\n37% → 37% (0%)\nRev. James Okafor\n64% → 64% (0%)\nTina Brandt\n55% → 55% (0%)\nHal Weaver\n47% → 47% (0%)\nChanges from baseline\n\nNo component or condition changes.\n\nFictional balance estimates; plot allocations and shared activity are schematic.\n\nSave private draft\nSave as alternative on this site\nInput versions\n\nReturn to any version on the same site. Forecasts are refreshed against the current town.\n\nVersion 1 · comparison baseline\nCompare against the selected version\nOpen saved drafts\nSave recovered input as new draft\nPreview these controls",
+        "postAllowed": false,
+        "main": {
+          "label": "Preview these controls",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 889,
+            "width": 360,
+            "height": 48,
+            "top": 889,
+            "right": 380,
+            "bottom": 937,
+            "left": 20
+          },
+          "inside": true,
+          "thumb": true
+        },
+        "paneScrollTop": 659,
+        "horizontalOverflow": false
+      },
+      "scrolled": {
+        "quantity": 999,
+        "originalText": "Unsubmitted working description: retain the six-job plan while I compare the unfinished change.",
+        "requestedEdit": "Unsubmitted requested edit: keep this sentence exactly, including the unfinished loading-space idea.",
+        "title": "C pending workspace invalid-quantity",
+        "body": "PRIVATE DRAFT · 1/8 SAVED VERSIONS\nC pending workspace invalid-quantity\n\nDrafting and comparing alternatives leave the public agenda and annual initiative unchanged.\n\nPrivate · Nothing is posted until you choose Put on agenda.\n\nPlan title\nYour original idea\nChange plots on the map\n6 plots selected: 6 × Open land\nOr select a named site\nKeep selected plots\nOld Mill lot · 4 plots\nroute22 · 6 plots\ncampus_s · 6 plots\nstorefront · 1 plots\nridge · 12 plots\nbridge · 1 plots\nLot behind the elementary school · 4 plots\nKish Creek bank · 4 plots\nEast End field · 6 plots\nPine Street field · 6 plots\nRequested edit\n\nQwen is off. Compose activities and conditions below to make an engine preview.\n\nquantity_bounds:activity-7f2ba4d9-70a2-4893-af62-d6399dfa3d24 area_capacity:activity-7f2ba4d9-70a2-4893-af62-d6399dfa3d24 Your recovered input is kept. Preview again before posting or confirming.\n\nActivities and operating conditions\nTitle\nWorkplace · Workplace\nActivity name\nQuantity · staffed work places\nArea · plot equivalents\nShares floor space with\nSeparate space\nRemove activity\nAdd an activity\nHousing · homes\nWorkplace · staffed work places\nShop · storefronts\nCommunity · daily participants\nRecreation · daily participants\nEvent · peak attendees\nAgriculture · productive plot equivalents\nStorage · pallet bays\nAccess · daily passages\nParking · spaces\nGreen · landscaped plot equivalents\nStormwater · treated plot equivalents\nPolicy · operating program\nAdd activity\nOperating hours per day (0–24)\nDeliveries\nnone\ndaytime\nanytime\nBuffer area · plots\nRetained area · plots\nMaintain farm/service access\nAffordable homes\nLAST ACCEPTED PREVIEW\nC PENDING WORKSPACE INVALID-QUANTITY\nNORTH UP · EXACT PLOT GRID\n6 Workplace · staffed work places\n0.5 allocated plots\n0 retained plots\n5.5 unused plots\n\nEngine cost $134K · upkeep $4K/year\n\nEngine allocations on the exact selected boundary. Strips preserve plot-equivalent areas; shared activities overlap their named host. Interior symbols and fractional plot use are schematic game assumptions.\n\nRevision 96c0c194\n\nEngine forecast\n\nVersion 1 · comparison baseline → requested preview. Both forecasts use the current town and exact site.\n\nCost ($K)\n134 → 134 (0)\nAnnual upkeep ($K)\n4 → 4 (0)\nJobs\n6 → 6 (0)\nStorefronts\n0 → 0 (0)\nResidents housed\n0 → 0 (0)\nWalkability\n0.5 → 0.5 (0)\nLivability\n0.0825 → 0.0825 (0)\nBusiness\n0.36 → 0.36 (0)\nResidents displaced\n0 → 0 (0)\nStorefronts lost\n0 → 0 (0)\nSafety\n1 → 1 (0)\nAffordability\n0 → 0 (0)\nFlood risk\n0% → 0% (0%)\nApproval\n-0.0037 → -0.0037 (0)\nProperty value/yr\n0.006% → 0.006% (0%)\nFarm fields\n0 → 0 (0)\nParking spaces\n0 → 0 (0)\nDaily activity\n6 → 6 (0)\nFreight activity\n0 → 0 (0)\nNoise exposure\n0.03 → 0.03 (0)\nStormwater capacity\n0 → 0 (0)\nAllocated site (plots)\n0.5 → 0.5 (0)\nUnused site (plots)\n5.5 → 5.5 (0)\nRetained site (plots)\n0 → 0 (0)\nBuffer (plots)\n0 → 0 (0)\nCouncil support\nGreg Marsh\n17% → 17% (0%)\nEllen Pryor\n37% → 37% (0%)\nRev. James Okafor\n64% → 64% (0%)\nTina Brandt\n55% → 55% (0%)\nHal Weaver\n47% → 47% (0%)\nChanges from baseline\n\nNo component or condition changes.\n\nFictional balance estimates; plot allocations and shared activity are schematic.\n\nSave private draft\nSave as alternative on this site\nInput versions\n\nReturn to any version on the same site. Forecasts are refreshed against the current town.\n\nVersion 1 · comparison baseline\nCompare against the selected version\nOpen saved drafts\nSave recovered input as new draft\nPreview these controls",
+        "postAllowed": false,
+        "main": {
+          "label": "Preview these controls",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 889,
+            "width": 360,
+            "height": 48,
+            "top": 889,
+            "right": 380,
+            "bottom": 937,
+            "left": 20
+          },
+          "inside": true,
+          "thumb": true
+        },
+        "paneScrollTop": 2559,
+        "horizontalOverflow": false
+      },
+      "afterClose": {
+        "id": "b4c81b6f-06ad-4d87-bbc6-b8f85c228616",
+        "targetId": null,
+        "text": "Unsubmitted working description: retain the six-job plan while I compare the unfinished change.",
+        "editText": "Unsubmitted requested edit: keep this sentence exactly, including the unfinished loading-space idea.",
+        "plots": [
+          [
+            16,
+            13
+          ],
+          [
+            17,
+            13
+          ],
+          [
+            18,
+            13
+          ],
+          [
+            16,
+            14
+          ],
+          [
+            17,
+            14
+          ],
+          [
+            18,
+            14
+          ]
+        ],
+        "program": {
+          "version": 2,
+          "title": "C pending workspace invalid-quantity",
+          "intent": "Provide six local jobs on this site.",
+          "components": [
+            {
+              "id": "activity-7f2ba4d9-70a2-4893-af62-d6399dfa3d24",
+              "capability": "workplace",
+              "label": "Workplace",
+              "quantity": 999,
+              "area": 0.5,
+              "sharedWith": null
+            }
+          ],
+          "conditions": {
+            "hours": 10,
+            "deliveries": "daytime",
+            "access": true,
+            "buffer": 0,
+            "preserve": 0,
+            "affordable": false
+          },
+          "assumptions": [],
+          "omissions": []
+        },
+        "legacyPlan": null,
+        "versions": [
+          {
+            "id": "f32b075c-983e-4e4a-b0f5-f6fe23f1750f",
+            "input": "Provide six local jobs on this site.",
+            "program": {
+              "version": 2,
+              "title": "C pending workspace invalid-quantity",
+              "intent": "Provide six local jobs on this site.",
+              "components": [
+                {
+                  "id": "activity-7f2ba4d9-70a2-4893-af62-d6399dfa3d24",
+                  "capability": "workplace",
+                  "label": "Workplace",
+                  "quantity": 6,
+                  "area": 0.5,
+                  "sharedWith": null
+                }
+              ],
+              "conditions": {
+                "hours": 10,
+                "deliveries": "daytime",
+                "access": true,
+                "buffer": 0,
+                "preserve": 0,
+                "affordable": false
+              },
+              "assumptions": [],
+              "omissions": []
+            },
+            "legacyPlan": null,
+            "plots": [
+              [
+                16,
+                13
+              ],
+              [
+                17,
+                13
+              ],
+              [
+                18,
+                13
+              ],
+              [
+                16,
+                14
+              ],
+              [
+                17,
+                14
+              ],
+              [
+                18,
+                14
+              ]
+            ],
+            "request": null
+          }
+        ],
+        "selectedVersion": "f32b075c-983e-4e4a-b0f5-f6fe23f1750f",
+        "previewDirty": true,
+        "controlsEdited": true,
+        "requestDetails": null,
+        "feedback": "quantity_bounds:activity-7f2ba4d9-70a2-4893-af62-d6399dfa3d24 area_capacity:activity-7f2ba4d9-70a2-4893-af62-d6399dfa3d24",
+        "baselineVersion": "f32b075c-983e-4e4a-b0f5-f6fe23f1750f"
+      },
+      "explicitVersion": {
+        "quantity": 6,
+        "originalText": "Unsubmitted working description: retain the six-job plan while I compare the unfinished change.",
+        "requestedEdit": "Unsubmitted requested edit: keep this sentence exactly, including the unfinished loading-space idea.",
+        "title": "C pending workspace invalid-quantity",
+        "body": "PRIVATE DRAFT · 1/8 SAVED VERSIONS\nC pending workspace invalid-quantity\n\nDrafting and comparing alternatives leave the public agenda and annual initiative unchanged.\n\nSaved privately on this device · 1/8 versions. No agenda action taken.\n\nPlan title\nYour original idea\nChange plots on the map\n6 plots selected: 6 × Open land\nOr select a named site\nKeep selected plots\nOld Mill lot · 4 plots\nroute22 · 6 plots\ncampus_s · 6 plots\nstorefront · 1 plots\nridge · 12 plots\nbridge · 1 plots\nLot behind the elementary school · 4 plots\nKish Creek bank · 4 plots\nEast End field · 6 plots\nPine Street field · 6 plots\nRequested edit\n\nQwen is off. Compose activities and conditions below to make an engine preview.\n\nRequested preview is private. Review its engine forecast before continuing.\n\nActivities and operating conditions\nTitle\nWorkplace · Workplace\nActivity name\nQuantity · staffed work places\nArea · plot equivalents\nShares floor space with\nSeparate space\nRemove activity\nAdd an activity\nHousing · homes\nWorkplace · staffed work places\nShop · storefronts\nCommunity · daily participants\nRecreation · daily participants\nEvent · peak attendees\nAgriculture · productive plot equivalents\nStorage · pallet bays\nAccess · daily passages\nParking · spaces\nGreen · landscaped plot equivalents\nStormwater · treated plot equivalents\nPolicy · operating program\nAdd activity\nOperating hours per day (0–24)\nDeliveries\nnone\ndaytime\nanytime\nBuffer area · plots\nRetained area · plots\nMaintain farm/service access\nAffordable homes\nREQUESTED PREVIEW\nC PENDING WORKSPACE INVALID-QUANTITY\nNORTH UP · EXACT PLOT GRID\n6 Workplace · staffed work places\n0.5 allocated plots\n0 retained plots\n5.5 unused plots\n\nEngine cost $134K · upkeep $4K/year\n\nEngine allocations on the exact selected boundary. Strips preserve plot-equivalent areas; shared activities overlap their named host. Interior symbols and fractional plot use are schematic game assumptions.\n\nRevision 96c0c194\n\nEngine forecast\n\nVersion 1 · comparison baseline → requested preview. Both forecasts use the current town and exact site.\n\nCost ($K)\n134 → 134 (0)\nAnnual upkeep ($K)\n4 → 4 (0)\nJobs\n6 → 6 (0)\nStorefronts\n0 → 0 (0)\nResidents housed\n0 → 0 (0)\nWalkability\n0.5 → 0.5 (0)\nLivability\n0.0825 → 0.0825 (0)\nBusiness\n0.36 → 0.36 (0)\nResidents displaced\n0 → 0 (0)\nStorefronts lost\n0 → 0 (0)\nSafety\n1 → 1 (0)\nAffordability\n0 → 0 (0)\nFlood risk\n0% → 0% (0%)\nApproval\n-0.0037 → -0.0037 (0)\nProperty value/yr\n0.006% → 0.006% (0%)\nFarm fields\n0 → 0 (0)\nParking spaces\n0 → 0 (0)\nDaily activity\n6 → 6 (0)\nFreight activity\n0 → 0 (0)\nNoise exposure\n0.03 → 0.03 (0)\nStormwater capacity\n0 → 0 (0)\nAllocated site (plots)\n0.5 → 0.5 (0)\nUnused site (plots)\n5.5 → 5.5 (0)\nRetained site (plots)\n0 → 0 (0)\nBuffer (plots)\n0 → 0 (0)\nCouncil support\nGreg Marsh\n17% → 17% (0%)\nEllen Pryor\n37% → 37% (0%)\nRev. James Okafor\n64% → 64% (0%)\nTina Brandt\n55% → 55% (0%)\nHal Weaver\n47% → 47% (0%)\nChanges from baseline\n\nNo component or condition changes.\n\nFictional balance estimates; plot allocations and shared activity are schematic.\n\nSave private draft\nSave as alternative on this site\nInput versions\n\nReturn to any version on the same site. Forecasts are refreshed against the current town.\n\nVersion 1 · comparison baseline\nCompare against the selected version\nOpen saved drafts\nSave recovered input as new draft\nPut on agenda\nEdit request",
+        "postAllowed": true,
+        "main": {
+          "label": "Put on agenda",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 889,
+            "width": 176,
+            "height": 48,
+            "top": 889,
+            "right": 196,
+            "bottom": 937,
+            "left": 20
+          },
+          "inside": true,
+          "thumb": true
+        },
+        "paneScrollTop": 3981,
+        "horizontalOverflow": false
+      },
+      "publicBytesUnchanged": true,
+      "status": "pass"
+    },
+    {
+      "width": 400,
+      "scenario": "changed-site",
+      "sha": "35461a0acc6a21c723d97d90509bb1e8adb0cf49",
+      "errors": [],
+      "accepted": {
+        "id": "f2be4d66-858f-4c94-a1e0-58f63d77e8b4",
+        "targetId": null,
+        "text": "Provide six local jobs on this site.",
+        "editText": "",
+        "plots": [
+          [
+            16,
+            13
+          ],
+          [
+            17,
+            13
+          ],
+          [
+            18,
+            13
+          ],
+          [
+            16,
+            14
+          ],
+          [
+            17,
+            14
+          ],
+          [
+            18,
+            14
+          ]
+        ],
+        "program": {
+          "version": 2,
+          "title": "C pending workspace changed-site",
+          "intent": "Provide six local jobs on this site.",
+          "components": [
+            {
+              "id": "activity-42dc9e25-018e-442e-8d08-b5001f4a69d1",
+              "capability": "workplace",
+              "label": "Workplace",
+              "quantity": 6,
+              "area": 0.5,
+              "sharedWith": null
+            }
+          ],
+          "conditions": {
+            "hours": 10,
+            "deliveries": "daytime",
+            "access": true,
+            "buffer": 0,
+            "preserve": 0,
+            "affordable": false
+          },
+          "assumptions": [],
+          "omissions": []
+        },
+        "legacyPlan": null,
+        "versions": [
+          {
+            "id": "49ba80cc-7b1c-4dc4-b423-3497e7718163",
+            "input": "Provide six local jobs on this site.",
+            "program": {
+              "version": 2,
+              "title": "C pending workspace changed-site",
+              "intent": "Provide six local jobs on this site.",
+              "components": [
+                {
+                  "id": "activity-42dc9e25-018e-442e-8d08-b5001f4a69d1",
+                  "capability": "workplace",
+                  "label": "Workplace",
+                  "quantity": 6,
+                  "area": 0.5,
+                  "sharedWith": null
+                }
+              ],
+              "conditions": {
+                "hours": 10,
+                "deliveries": "daytime",
+                "access": true,
+                "buffer": 0,
+                "preserve": 0,
+                "affordable": false
+              },
+              "assumptions": [],
+              "omissions": []
+            },
+            "legacyPlan": null,
+            "plots": [
+              [
+                16,
+                13
+              ],
+              [
+                17,
+                13
+              ],
+              [
+                18,
+                13
+              ],
+              [
+                16,
+                14
+              ],
+              [
+                17,
+                14
+              ],
+              [
+                18,
+                14
+              ]
+            ],
+            "request": null
+          }
+        ],
+        "selectedVersion": "49ba80cc-7b1c-4dc4-b423-3497e7718163",
+        "previewDirty": false,
+        "controlsEdited": false,
+        "requestDetails": null,
+        "feedback": "",
+        "baselineVersion": "49ba80cc-7b1c-4dc4-b423-3497e7718163"
+      },
+      "pending": {
+        "id": "f2be4d66-858f-4c94-a1e0-58f63d77e8b4",
+        "targetId": null,
+        "text": "Unsubmitted working description: retain the six-job plan while I compare the unfinished change.",
+        "editText": "Unsubmitted requested edit: keep this sentence exactly, including the unfinished loading-space idea.",
+        "plots": [
+          [
+            20,
+            13
+          ],
+          [
+            21,
+            13
+          ],
+          [
+            22,
+            13
+          ],
+          [
+            20,
+            14
+          ],
+          [
+            21,
+            14
+          ],
+          [
+            22,
+            14
+          ],
+          [
+            20,
+            15
+          ],
+          [
+            21,
+            15
+          ],
+          [
+            22,
+            15
+          ],
+          [
+            20,
+            16
+          ],
+          [
+            21,
+            16
+          ],
+          [
+            22,
+            16
+          ]
+        ],
+        "program": {
+          "version": 2,
+          "title": "C pending workspace changed-site",
+          "intent": "Provide six local jobs on this site.",
+          "components": [
+            {
+              "id": "activity-42dc9e25-018e-442e-8d08-b5001f4a69d1",
+              "capability": "workplace",
+              "label": "Workplace",
+              "quantity": 6,
+              "area": 0.5,
+              "sharedWith": null
+            }
+          ],
+          "conditions": {
+            "hours": 10,
+            "deliveries": "daytime",
+            "access": true,
+            "buffer": 0,
+            "preserve": 0,
+            "affordable": false
+          },
+          "assumptions": [],
+          "omissions": []
+        },
+        "legacyPlan": null,
+        "versions": [
+          {
+            "id": "49ba80cc-7b1c-4dc4-b423-3497e7718163",
+            "input": "Provide six local jobs on this site.",
+            "program": {
+              "version": 2,
+              "title": "C pending workspace changed-site",
+              "intent": "Provide six local jobs on this site.",
+              "components": [
+                {
+                  "id": "activity-42dc9e25-018e-442e-8d08-b5001f4a69d1",
+                  "capability": "workplace",
+                  "label": "Workplace",
+                  "quantity": 6,
+                  "area": 0.5,
+                  "sharedWith": null
+                }
+              ],
+              "conditions": {
+                "hours": 10,
+                "deliveries": "daytime",
+                "access": true,
+                "buffer": 0,
+                "preserve": 0,
+                "affordable": false
+              },
+              "assumptions": [],
+              "omissions": []
+            },
+            "legacyPlan": null,
+            "plots": [
+              [
+                16,
+                13
+              ],
+              [
+                17,
+                13
+              ],
+              [
+                18,
+                13
+              ],
+              [
+                16,
+                14
+              ],
+              [
+                17,
+                14
+              ],
+              [
+                18,
+                14
+              ]
+            ],
+            "request": null
+          }
+        ],
+        "selectedVersion": "49ba80cc-7b1c-4dc4-b423-3497e7718163",
+        "previewDirty": true,
+        "controlsEdited": false,
+        "requestDetails": null,
+        "feedback": "",
+        "baselineVersion": "49ba80cc-7b1c-4dc4-b423-3497e7718163"
+      },
+      "reopened": {
+        "quantity": 6,
+        "originalText": "Unsubmitted working description: retain the six-job plan while I compare the unfinished change.",
+        "requestedEdit": "Unsubmitted requested edit: keep this sentence exactly, including the unfinished loading-space idea.",
+        "title": "C pending workspace changed-site",
+        "body": "PRIVATE DRAFT · 1/8 SAVED VERSIONS\nC pending workspace changed-site\n\nDrafting and comparing alternatives leave the public agenda and annual initiative unchanged.\n\nPrivate · Nothing is posted until you choose Put on agenda.\n\nPlan title\nYour original idea\nChange plots on the map\n12 plots selected: 12 × Farmland\nOr select a named site\nKeep selected plots\nOld Mill lot · 4 plots\nroute22 · 6 plots\ncampus_s · 6 plots\nstorefront · 1 plots\nridge · 12 plots\nbridge · 1 plots\nLot behind the elementary school · 4 plots\nKish Creek bank · 4 plots\nEast End field · 6 plots\nPine Street field · 6 plots\nRequested edit\n\nQwen is off. Compose activities and conditions below to make an engine preview.\n\nYour recovered input is kept. Preview again before posting or confirming.\n\nActivities and operating conditions\nTitle\nWorkplace · Workplace\nActivity name\nQuantity · staffed work places\nArea · plot equivalents\nShares floor space with\nSeparate space\nRemove activity\nAdd an activity\nHousing · homes\nWorkplace · staffed work places\nShop · storefronts\nCommunity · daily participants\nRecreation · daily participants\nEvent · peak attendees\nAgriculture · productive plot equivalents\nStorage · pallet bays\nAccess · daily passages\nParking · spaces\nGreen · landscaped plot equivalents\nStormwater · treated plot equivalents\nPolicy · operating program\nAdd activity\nOperating hours per day (0–24)\nDeliveries\nnone\ndaytime\nanytime\nBuffer area · plots\nRetained area · plots\nMaintain farm/service access\nAffordable homes\nLAST ACCEPTED PREVIEW\nC PENDING WORKSPACE CHANGED-SITE\nNORTH UP · EXACT PLOT GRID\n6 Workplace · staffed work places\n0.5 allocated plots\n0 retained plots\n5.5 unused plots\n\nEngine cost $134K · upkeep $4K/year\n\nEngine allocations on the exact selected boundary. Strips preserve plot-equivalent areas; shared activities overlap their named host. Interior symbols and fractional plot use are schematic game assumptions.\n\nRevision 5ebc4ba6\n\nEngine forecast\n\nVersion 1 · comparison baseline → requested preview. Both forecasts use the current town and exact site.\n\nCost ($K)\n134 → 134 (0)\nAnnual upkeep ($K)\n4 → 4 (0)\nJobs\n6 → 6 (0)\nStorefronts\n0 → 0 (0)\nResidents housed\n0 → 0 (0)\nWalkability\n0.5 → 0.5 (0)\nLivability\n0.0825 → 0.0825 (0)\nBusiness\n0.36 → 0.36 (0)\nResidents displaced\n0 → 0 (0)\nStorefronts lost\n0 → 0 (0)\nSafety\n1 → 1 (0)\nAffordability\n0 → 0 (0)\nFlood risk\n0% → 0% (0%)\nApproval\n-0.0037 → -0.0037 (0)\nProperty value/yr\n0.006% → 0.006% (0%)\nFarm fields\n0 → 0 (0)\nParking spaces\n0 → 0 (0)\nDaily activity\n6 → 6 (0)\nFreight activity\n0 → 0 (0)\nNoise exposure\n0.03 → 0.03 (0)\nStormwater capacity\n0 → 0 (0)\nAllocated site (plots)\n0.5 → 0.5 (0)\nUnused site (plots)\n5.5 → 5.5 (0)\nRetained site (plots)\n0 → 0 (0)\nBuffer (plots)\n0 → 0 (0)\nCouncil support\nGreg Marsh\n17% → 17% (0%)\nEllen Pryor\n37% → 37% (0%)\nRev. James Okafor\n64% → 64% (0%)\nTina Brandt\n55% → 55% (0%)\nHal Weaver\n47% → 47% (0%)\nChanges from baseline\n\nNo component or condition changes.\n\nFictional balance estimates; plot allocations and shared activity are schematic.\n\nSave private draft\nSave as alternative on this site\nInput versions\n\nReturn to any version on the same site. Forecasts are refreshed against the current town.\n\nVersion 1 · comparison baseline\nCompare against the selected version\nOpen saved drafts\nSave recovered input as new draft\nPreview these controls",
+        "postAllowed": false,
+        "main": {
+          "label": "Preview these controls",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 889,
+            "width": 360,
+            "height": 48,
+            "top": 889,
+            "right": 380,
+            "bottom": 937,
+            "left": 20
+          },
+          "inside": true,
+          "thumb": true
+        },
+        "paneScrollTop": 617,
+        "horizontalOverflow": false
+      },
+      "scrolled": {
+        "quantity": 6,
+        "originalText": "Unsubmitted working description: retain the six-job plan while I compare the unfinished change.",
+        "requestedEdit": "Unsubmitted requested edit: keep this sentence exactly, including the unfinished loading-space idea.",
+        "title": "C pending workspace changed-site",
+        "body": "PRIVATE DRAFT · 1/8 SAVED VERSIONS\nC pending workspace changed-site\n\nDrafting and comparing alternatives leave the public agenda and annual initiative unchanged.\n\nPrivate · Nothing is posted until you choose Put on agenda.\n\nPlan title\nYour original idea\nChange plots on the map\n12 plots selected: 12 × Farmland\nOr select a named site\nKeep selected plots\nOld Mill lot · 4 plots\nroute22 · 6 plots\ncampus_s · 6 plots\nstorefront · 1 plots\nridge · 12 plots\nbridge · 1 plots\nLot behind the elementary school · 4 plots\nKish Creek bank · 4 plots\nEast End field · 6 plots\nPine Street field · 6 plots\nRequested edit\n\nQwen is off. Compose activities and conditions below to make an engine preview.\n\nYour recovered input is kept. Preview again before posting or confirming.\n\nActivities and operating conditions\nTitle\nWorkplace · Workplace\nActivity name\nQuantity · staffed work places\nArea · plot equivalents\nShares floor space with\nSeparate space\nRemove activity\nAdd an activity\nHousing · homes\nWorkplace · staffed work places\nShop · storefronts\nCommunity · daily participants\nRecreation · daily participants\nEvent · peak attendees\nAgriculture · productive plot equivalents\nStorage · pallet bays\nAccess · daily passages\nParking · spaces\nGreen · landscaped plot equivalents\nStormwater · treated plot equivalents\nPolicy · operating program\nAdd activity\nOperating hours per day (0–24)\nDeliveries\nnone\ndaytime\nanytime\nBuffer area · plots\nRetained area · plots\nMaintain farm/service access\nAffordable homes\nLAST ACCEPTED PREVIEW\nC PENDING WORKSPACE CHANGED-SITE\nNORTH UP · EXACT PLOT GRID\n6 Workplace · staffed work places\n0.5 allocated plots\n0 retained plots\n5.5 unused plots\n\nEngine cost $134K · upkeep $4K/year\n\nEngine allocations on the exact selected boundary. Strips preserve plot-equivalent areas; shared activities overlap their named host. Interior symbols and fractional plot use are schematic game assumptions.\n\nRevision 5ebc4ba6\n\nEngine forecast\n\nVersion 1 · comparison baseline → requested preview. Both forecasts use the current town and exact site.\n\nCost ($K)\n134 → 134 (0)\nAnnual upkeep ($K)\n4 → 4 (0)\nJobs\n6 → 6 (0)\nStorefronts\n0 → 0 (0)\nResidents housed\n0 → 0 (0)\nWalkability\n0.5 → 0.5 (0)\nLivability\n0.0825 → 0.0825 (0)\nBusiness\n0.36 → 0.36 (0)\nResidents displaced\n0 → 0 (0)\nStorefronts lost\n0 → 0 (0)\nSafety\n1 → 1 (0)\nAffordability\n0 → 0 (0)\nFlood risk\n0% → 0% (0%)\nApproval\n-0.0037 → -0.0037 (0)\nProperty value/yr\n0.006% → 0.006% (0%)\nFarm fields\n0 → 0 (0)\nParking spaces\n0 → 0 (0)\nDaily activity\n6 → 6 (0)\nFreight activity\n0 → 0 (0)\nNoise exposure\n0.03 → 0.03 (0)\nStormwater capacity\n0 → 0 (0)\nAllocated site (plots)\n0.5 → 0.5 (0)\nUnused site (plots)\n5.5 → 5.5 (0)\nRetained site (plots)\n0 → 0 (0)\nBuffer (plots)\n0 → 0 (0)\nCouncil support\nGreg Marsh\n17% → 17% (0%)\nEllen Pryor\n37% → 37% (0%)\nRev. James Okafor\n64% → 64% (0%)\nTina Brandt\n55% → 55% (0%)\nHal Weaver\n47% → 47% (0%)\nChanges from baseline\n\nNo component or condition changes.\n\nFictional balance estimates; plot allocations and shared activity are schematic.\n\nSave private draft\nSave as alternative on this site\nInput versions\n\nReturn to any version on the same site. Forecasts are refreshed against the current town.\n\nVersion 1 · comparison baseline\nCompare against the selected version\nOpen saved drafts\nSave recovered input as new draft\nPreview these controls",
+        "postAllowed": false,
+        "main": {
+          "label": "Preview these controls",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 889,
+            "width": 360,
+            "height": 48,
+            "top": 889,
+            "right": 380,
+            "bottom": 937,
+            "left": 20
+          },
+          "inside": true,
+          "thumb": true
+        },
+        "paneScrollTop": 2517,
+        "horizontalOverflow": false
+      },
+      "afterClose": {
+        "id": "f2be4d66-858f-4c94-a1e0-58f63d77e8b4",
+        "targetId": null,
+        "text": "Unsubmitted working description: retain the six-job plan while I compare the unfinished change.",
+        "editText": "Unsubmitted requested edit: keep this sentence exactly, including the unfinished loading-space idea.",
+        "plots": [
+          [
+            20,
+            13
+          ],
+          [
+            21,
+            13
+          ],
+          [
+            22,
+            13
+          ],
+          [
+            20,
+            14
+          ],
+          [
+            21,
+            14
+          ],
+          [
+            22,
+            14
+          ],
+          [
+            20,
+            15
+          ],
+          [
+            21,
+            15
+          ],
+          [
+            22,
+            15
+          ],
+          [
+            20,
+            16
+          ],
+          [
+            21,
+            16
+          ],
+          [
+            22,
+            16
+          ]
+        ],
+        "program": {
+          "version": 2,
+          "title": "C pending workspace changed-site",
+          "intent": "Provide six local jobs on this site.",
+          "components": [
+            {
+              "id": "activity-42dc9e25-018e-442e-8d08-b5001f4a69d1",
+              "capability": "workplace",
+              "label": "Workplace",
+              "quantity": 6,
+              "area": 0.5,
+              "sharedWith": null
+            }
+          ],
+          "conditions": {
+            "hours": 10,
+            "deliveries": "daytime",
+            "access": true,
+            "buffer": 0,
+            "preserve": 0,
+            "affordable": false
+          },
+          "assumptions": [],
+          "omissions": []
+        },
+        "legacyPlan": null,
+        "versions": [
+          {
+            "id": "49ba80cc-7b1c-4dc4-b423-3497e7718163",
+            "input": "Provide six local jobs on this site.",
+            "program": {
+              "version": 2,
+              "title": "C pending workspace changed-site",
+              "intent": "Provide six local jobs on this site.",
+              "components": [
+                {
+                  "id": "activity-42dc9e25-018e-442e-8d08-b5001f4a69d1",
+                  "capability": "workplace",
+                  "label": "Workplace",
+                  "quantity": 6,
+                  "area": 0.5,
+                  "sharedWith": null
+                }
+              ],
+              "conditions": {
+                "hours": 10,
+                "deliveries": "daytime",
+                "access": true,
+                "buffer": 0,
+                "preserve": 0,
+                "affordable": false
+              },
+              "assumptions": [],
+              "omissions": []
+            },
+            "legacyPlan": null,
+            "plots": [
+              [
+                16,
+                13
+              ],
+              [
+                17,
+                13
+              ],
+              [
+                18,
+                13
+              ],
+              [
+                16,
+                14
+              ],
+              [
+                17,
+                14
+              ],
+              [
+                18,
+                14
+              ]
+            ],
+            "request": null
+          }
+        ],
+        "selectedVersion": "49ba80cc-7b1c-4dc4-b423-3497e7718163",
+        "previewDirty": true,
+        "controlsEdited": false,
+        "requestDetails": null,
+        "feedback": "",
+        "baselineVersion": "49ba80cc-7b1c-4dc4-b423-3497e7718163"
+      },
+      "explicitVersion": {
+        "quantity": 6,
+        "originalText": "Unsubmitted working description: retain the six-job plan while I compare the unfinished change.",
+        "requestedEdit": "Unsubmitted requested edit: keep this sentence exactly, including the unfinished loading-space idea.",
+        "title": "C pending workspace changed-site",
+        "body": "PRIVATE DRAFT · 1/8 SAVED VERSIONS\nC pending workspace changed-site\n\nDrafting and comparing alternatives leave the public agenda and annual initiative unchanged.\n\nSaved privately on this device · 1/8 versions. No agenda action taken.\n\nPlan title\nYour original idea\nChange plots on the map\n6 plots selected: 6 × Open land\nOr select a named site\nKeep selected plots\nOld Mill lot · 4 plots\nroute22 · 6 plots\ncampus_s · 6 plots\nstorefront · 1 plots\nridge · 12 plots\nbridge · 1 plots\nLot behind the elementary school · 4 plots\nKish Creek bank · 4 plots\nEast End field · 6 plots\nPine Street field · 6 plots\nRequested edit\n\nQwen is off. Compose activities and conditions below to make an engine preview.\n\nRequested preview is private. Review its engine forecast before continuing.\n\nActivities and operating conditions\nTitle\nWorkplace · Workplace\nActivity name\nQuantity · staffed work places\nArea · plot equivalents\nShares floor space with\nSeparate space\nRemove activity\nAdd an activity\nHousing · homes\nWorkplace · staffed work places\nShop · storefronts\nCommunity · daily participants\nRecreation · daily participants\nEvent · peak attendees\nAgriculture · productive plot equivalents\nStorage · pallet bays\nAccess · daily passages\nParking · spaces\nGreen · landscaped plot equivalents\nStormwater · treated plot equivalents\nPolicy · operating program\nAdd activity\nOperating hours per day (0–24)\nDeliveries\nnone\ndaytime\nanytime\nBuffer area · plots\nRetained area · plots\nMaintain farm/service access\nAffordable homes\nREQUESTED PREVIEW\nC PENDING WORKSPACE CHANGED-SITE\nNORTH UP · EXACT PLOT GRID\n6 Workplace · staffed work places\n0.5 allocated plots\n0 retained plots\n5.5 unused plots\n\nEngine cost $134K · upkeep $4K/year\n\nEngine allocations on the exact selected boundary. Strips preserve plot-equivalent areas; shared activities overlap their named host. Interior symbols and fractional plot use are schematic game assumptions.\n\nRevision 5ebc4ba6\n\nEngine forecast\n\nVersion 1 · comparison baseline → requested preview. Both forecasts use the current town and exact site.\n\nCost ($K)\n134 → 134 (0)\nAnnual upkeep ($K)\n4 → 4 (0)\nJobs\n6 → 6 (0)\nStorefronts\n0 → 0 (0)\nResidents housed\n0 → 0 (0)\nWalkability\n0.5 → 0.5 (0)\nLivability\n0.0825 → 0.0825 (0)\nBusiness\n0.36 → 0.36 (0)\nResidents displaced\n0 → 0 (0)\nStorefronts lost\n0 → 0 (0)\nSafety\n1 → 1 (0)\nAffordability\n0 → 0 (0)\nFlood risk\n0% → 0% (0%)\nApproval\n-0.0037 → -0.0037 (0)\nProperty value/yr\n0.006% → 0.006% (0%)\nFarm fields\n0 → 0 (0)\nParking spaces\n0 → 0 (0)\nDaily activity\n6 → 6 (0)\nFreight activity\n0 → 0 (0)\nNoise exposure\n0.03 → 0.03 (0)\nStormwater capacity\n0 → 0 (0)\nAllocated site (plots)\n0.5 → 0.5 (0)\nUnused site (plots)\n5.5 → 5.5 (0)\nRetained site (plots)\n0 → 0 (0)\nBuffer (plots)\n0 → 0 (0)\nCouncil support\nGreg Marsh\n17% → 17% (0%)\nEllen Pryor\n37% → 37% (0%)\nRev. James Okafor\n64% → 64% (0%)\nTina Brandt\n55% → 55% (0%)\nHal Weaver\n47% → 47% (0%)\nChanges from baseline\n\nNo component or condition changes.\n\nFictional balance estimates; plot allocations and shared activity are schematic.\n\nSave private draft\nSave as alternative on this site\nInput versions\n\nReturn to any version on the same site. Forecasts are refreshed against the current town.\n\nVersion 1 · comparison baseline\nCompare against the selected version\nOpen saved drafts\nSave recovered input as new draft\nPut on agenda\nEdit request",
+        "postAllowed": true,
+        "main": {
+          "label": "Put on agenda",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 889,
+            "width": 176,
+            "height": 48,
+            "top": 889,
+            "right": 196,
+            "bottom": 937,
+            "left": 20
+          },
+          "inside": true,
+          "thumb": true
+        },
+        "paneScrollTop": 3981,
+        "horizontalOverflow": false
+      },
+      "publicBytesUnchanged": true,
+      "status": "pass"
+    },
+    {
+      "width": 669,
+      "scenario": "invalid-quantity",
+      "sha": "35461a0acc6a21c723d97d90509bb1e8adb0cf49",
+      "errors": [],
+      "accepted": {
+        "id": "68f91f67-f035-4299-ac20-98137b033b07",
+        "targetId": null,
+        "text": "Provide six local jobs on this site.",
+        "editText": "",
+        "plots": [
+          [
+            16,
+            13
+          ],
+          [
+            17,
+            13
+          ],
+          [
+            18,
+            13
+          ],
+          [
+            16,
+            14
+          ],
+          [
+            17,
+            14
+          ],
+          [
+            18,
+            14
+          ]
+        ],
+        "program": {
+          "version": 2,
+          "title": "C pending workspace invalid-quantity",
+          "intent": "Provide six local jobs on this site.",
+          "components": [
+            {
+              "id": "activity-6424974a-97ab-449e-9830-7d960dbb5cfa",
+              "capability": "workplace",
+              "label": "Workplace",
+              "quantity": 6,
+              "area": 0.5,
+              "sharedWith": null
+            }
+          ],
+          "conditions": {
+            "hours": 10,
+            "deliveries": "daytime",
+            "access": true,
+            "buffer": 0,
+            "preserve": 0,
+            "affordable": false
+          },
+          "assumptions": [],
+          "omissions": []
+        },
+        "legacyPlan": null,
+        "versions": [
+          {
+            "id": "b6e8e544-944b-46c3-b0a9-46fed389837d",
+            "input": "Provide six local jobs on this site.",
+            "program": {
+              "version": 2,
+              "title": "C pending workspace invalid-quantity",
+              "intent": "Provide six local jobs on this site.",
+              "components": [
+                {
+                  "id": "activity-6424974a-97ab-449e-9830-7d960dbb5cfa",
+                  "capability": "workplace",
+                  "label": "Workplace",
+                  "quantity": 6,
+                  "area": 0.5,
+                  "sharedWith": null
+                }
+              ],
+              "conditions": {
+                "hours": 10,
+                "deliveries": "daytime",
+                "access": true,
+                "buffer": 0,
+                "preserve": 0,
+                "affordable": false
+              },
+              "assumptions": [],
+              "omissions": []
+            },
+            "legacyPlan": null,
+            "plots": [
+              [
+                16,
+                13
+              ],
+              [
+                17,
+                13
+              ],
+              [
+                18,
+                13
+              ],
+              [
+                16,
+                14
+              ],
+              [
+                17,
+                14
+              ],
+              [
+                18,
+                14
+              ]
+            ],
+            "request": null
+          }
+        ],
+        "selectedVersion": "b6e8e544-944b-46c3-b0a9-46fed389837d",
+        "previewDirty": false,
+        "controlsEdited": false,
+        "requestDetails": null,
+        "feedback": "",
+        "baselineVersion": "b6e8e544-944b-46c3-b0a9-46fed389837d"
+      },
+      "pending": {
+        "id": "68f91f67-f035-4299-ac20-98137b033b07",
+        "targetId": null,
+        "text": "Unsubmitted working description: retain the six-job plan while I compare the unfinished change.",
+        "editText": "Unsubmitted requested edit: keep this sentence exactly, including the unfinished loading-space idea.",
+        "plots": [
+          [
+            16,
+            13
+          ],
+          [
+            17,
+            13
+          ],
+          [
+            18,
+            13
+          ],
+          [
+            16,
+            14
+          ],
+          [
+            17,
+            14
+          ],
+          [
+            18,
+            14
+          ]
+        ],
+        "program": {
+          "version": 2,
+          "title": "C pending workspace invalid-quantity",
+          "intent": "Provide six local jobs on this site.",
+          "components": [
+            {
+              "id": "activity-6424974a-97ab-449e-9830-7d960dbb5cfa",
+              "capability": "workplace",
+              "label": "Workplace",
+              "quantity": 999,
+              "area": 0.5,
+              "sharedWith": null
+            }
+          ],
+          "conditions": {
+            "hours": 10,
+            "deliveries": "daytime",
+            "access": true,
+            "buffer": 0,
+            "preserve": 0,
+            "affordable": false
+          },
+          "assumptions": [],
+          "omissions": []
+        },
+        "legacyPlan": null,
+        "versions": [
+          {
+            "id": "b6e8e544-944b-46c3-b0a9-46fed389837d",
+            "input": "Provide six local jobs on this site.",
+            "program": {
+              "version": 2,
+              "title": "C pending workspace invalid-quantity",
+              "intent": "Provide six local jobs on this site.",
+              "components": [
+                {
+                  "id": "activity-6424974a-97ab-449e-9830-7d960dbb5cfa",
+                  "capability": "workplace",
+                  "label": "Workplace",
+                  "quantity": 6,
+                  "area": 0.5,
+                  "sharedWith": null
+                }
+              ],
+              "conditions": {
+                "hours": 10,
+                "deliveries": "daytime",
+                "access": true,
+                "buffer": 0,
+                "preserve": 0,
+                "affordable": false
+              },
+              "assumptions": [],
+              "omissions": []
+            },
+            "legacyPlan": null,
+            "plots": [
+              [
+                16,
+                13
+              ],
+              [
+                17,
+                13
+              ],
+              [
+                18,
+                13
+              ],
+              [
+                16,
+                14
+              ],
+              [
+                17,
+                14
+              ],
+              [
+                18,
+                14
+              ]
+            ],
+            "request": null
+          }
+        ],
+        "selectedVersion": "b6e8e544-944b-46c3-b0a9-46fed389837d",
+        "previewDirty": true,
+        "controlsEdited": true,
+        "requestDetails": null,
+        "feedback": "quantity_bounds:activity-6424974a-97ab-449e-9830-7d960dbb5cfa area_capacity:activity-6424974a-97ab-449e-9830-7d960dbb5cfa",
+        "baselineVersion": "b6e8e544-944b-46c3-b0a9-46fed389837d"
+      },
+      "reopened": {
+        "quantity": 999,
+        "originalText": "Unsubmitted working description: retain the six-job plan while I compare the unfinished change.",
+        "requestedEdit": "Unsubmitted requested edit: keep this sentence exactly, including the unfinished loading-space idea.",
+        "title": "C pending workspace invalid-quantity",
+        "body": "PRIVATE DRAFT · 1/8 SAVED VERSIONS\nC pending workspace invalid-quantity\n\nDrafting and comparing alternatives leave the public agenda and annual initiative unchanged.\n\nPrivate · Nothing is posted until you choose Put on agenda.\n\nPlan title\nYour original idea\nChange plots on the map\n6 plots selected: 6 × Open land\nOr select a named site\nKeep selected plots\nOld Mill lot · 4 plots\nroute22 · 6 plots\ncampus_s · 6 plots\nstorefront · 1 plots\nridge · 12 plots\nbridge · 1 plots\nLot behind the elementary school · 4 plots\nKish Creek bank · 4 plots\nEast End field · 6 plots\nPine Street field · 6 plots\nRequested edit\n\nQwen is off. Compose activities and conditions below to make an engine preview.\n\nquantity_bounds:activity-6424974a-97ab-449e-9830-7d960dbb5cfa area_capacity:activity-6424974a-97ab-449e-9830-7d960dbb5cfa Your recovered input is kept. Preview again before posting or confirming.\n\nActivities and operating conditions\nTitle\nWorkplace · Workplace\nActivity name\nQuantity · staffed work places\nArea · plot equivalents\nShares floor space with\nSeparate space\nRemove activity\nAdd an activity\nHousing · homes\nWorkplace · staffed work places\nShop · storefronts\nCommunity · daily participants\nRecreation · daily participants\nEvent · peak attendees\nAgriculture · productive plot equivalents\nStorage · pallet bays\nAccess · daily passages\nParking · spaces\nGreen · landscaped plot equivalents\nStormwater · treated plot equivalents\nPolicy · operating program\nAdd activity\nOperating hours per day (0–24)\nDeliveries\nnone\ndaytime\nanytime\nBuffer area · plots\nRetained area · plots\nMaintain farm/service access\nAffordable homes\nLAST ACCEPTED PREVIEW\nC PENDING WORKSPACE INVALID-QUANTITY\nNORTH UP · EXACT PLOT GRID\n6 Workplace · staffed work places\n0.5 allocated plots\n0 retained plots\n5.5 unused plots\n\nEngine cost $134K · upkeep $4K/year\n\nEngine allocations on the exact selected boundary. Strips preserve plot-equivalent areas; shared activities overlap their named host. Interior symbols and fractional plot use are schematic game assumptions.\n\nRevision a69e9ebc\n\nEngine forecast\n\nVersion 1 · comparison baseline → requested preview. Both forecasts use the current town and exact site.\n\nCost ($K)\n134 → 134 (0)\nAnnual upkeep ($K)\n4 → 4 (0)\nJobs\n6 → 6 (0)\nStorefronts\n0 → 0 (0)\nResidents housed\n0 → 0 (0)\nWalkability\n0.5 → 0.5 (0)\nLivability\n0.0825 → 0.0825 (0)\nBusiness\n0.36 → 0.36 (0)\nResidents displaced\n0 → 0 (0)\nStorefronts lost\n0 → 0 (0)\nSafety\n1 → 1 (0)\nAffordability\n0 → 0 (0)\nFlood risk\n0% → 0% (0%)\nApproval\n-0.0037 → -0.0037 (0)\nProperty value/yr\n0.006% → 0.006% (0%)\nFarm fields\n0 → 0 (0)\nParking spaces\n0 → 0 (0)\nDaily activity\n6 → 6 (0)\nFreight activity\n0 → 0 (0)\nNoise exposure\n0.03 → 0.03 (0)\nStormwater capacity\n0 → 0 (0)\nAllocated site (plots)\n0.5 → 0.5 (0)\nUnused site (plots)\n5.5 → 5.5 (0)\nRetained site (plots)\n0 → 0 (0)\nBuffer (plots)\n0 → 0 (0)\nCouncil support\nGreg Marsh\n17% → 17% (0%)\nEllen Pryor\n37% → 37% (0%)\nRev. James Okafor\n64% → 64% (0%)\nTina Brandt\n55% → 55% (0%)\nHal Weaver\n47% → 47% (0%)\nChanges from baseline\n\nNo component or condition changes.\n\nFictional balance estimates; plot allocations and shared activity are schematic.\n\nSave private draft\nSave as alternative on this site\nInput versions\n\nReturn to any version on the same site. Forecasts are refreshed against the current town.\n\nVersion 1 · comparison baseline\nCompare against the selected version\nOpen saved drafts\nSave recovered input as new draft\nPreview these controls",
+        "postAllowed": false,
+        "main": {
+          "label": "Preview these controls",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 889,
+            "width": 629,
+            "height": 48,
+            "top": 889,
+            "right": 649,
+            "bottom": 937,
+            "left": 20
+          },
+          "inside": true,
+          "thumb": true
+        },
+        "paneScrollTop": 548,
+        "horizontalOverflow": false
+      },
+      "scrolled": {
+        "quantity": 999,
+        "originalText": "Unsubmitted working description: retain the six-job plan while I compare the unfinished change.",
+        "requestedEdit": "Unsubmitted requested edit: keep this sentence exactly, including the unfinished loading-space idea.",
+        "title": "C pending workspace invalid-quantity",
+        "body": "PRIVATE DRAFT · 1/8 SAVED VERSIONS\nC pending workspace invalid-quantity\n\nDrafting and comparing alternatives leave the public agenda and annual initiative unchanged.\n\nPrivate · Nothing is posted until you choose Put on agenda.\n\nPlan title\nYour original idea\nChange plots on the map\n6 plots selected: 6 × Open land\nOr select a named site\nKeep selected plots\nOld Mill lot · 4 plots\nroute22 · 6 plots\ncampus_s · 6 plots\nstorefront · 1 plots\nridge · 12 plots\nbridge · 1 plots\nLot behind the elementary school · 4 plots\nKish Creek bank · 4 plots\nEast End field · 6 plots\nPine Street field · 6 plots\nRequested edit\n\nQwen is off. Compose activities and conditions below to make an engine preview.\n\nquantity_bounds:activity-6424974a-97ab-449e-9830-7d960dbb5cfa area_capacity:activity-6424974a-97ab-449e-9830-7d960dbb5cfa Your recovered input is kept. Preview again before posting or confirming.\n\nActivities and operating conditions\nTitle\nWorkplace · Workplace\nActivity name\nQuantity · staffed work places\nArea · plot equivalents\nShares floor space with\nSeparate space\nRemove activity\nAdd an activity\nHousing · homes\nWorkplace · staffed work places\nShop · storefronts\nCommunity · daily participants\nRecreation · daily participants\nEvent · peak attendees\nAgriculture · productive plot equivalents\nStorage · pallet bays\nAccess · daily passages\nParking · spaces\nGreen · landscaped plot equivalents\nStormwater · treated plot equivalents\nPolicy · operating program\nAdd activity\nOperating hours per day (0–24)\nDeliveries\nnone\ndaytime\nanytime\nBuffer area · plots\nRetained area · plots\nMaintain farm/service access\nAffordable homes\nLAST ACCEPTED PREVIEW\nC PENDING WORKSPACE INVALID-QUANTITY\nNORTH UP · EXACT PLOT GRID\n6 Workplace · staffed work places\n0.5 allocated plots\n0 retained plots\n5.5 unused plots\n\nEngine cost $134K · upkeep $4K/year\n\nEngine allocations on the exact selected boundary. Strips preserve plot-equivalent areas; shared activities overlap their named host. Interior symbols and fractional plot use are schematic game assumptions.\n\nRevision a69e9ebc\n\nEngine forecast\n\nVersion 1 · comparison baseline → requested preview. Both forecasts use the current town and exact site.\n\nCost ($K)\n134 → 134 (0)\nAnnual upkeep ($K)\n4 → 4 (0)\nJobs\n6 → 6 (0)\nStorefronts\n0 → 0 (0)\nResidents housed\n0 → 0 (0)\nWalkability\n0.5 → 0.5 (0)\nLivability\n0.0825 → 0.0825 (0)\nBusiness\n0.36 → 0.36 (0)\nResidents displaced\n0 → 0 (0)\nStorefronts lost\n0 → 0 (0)\nSafety\n1 → 1 (0)\nAffordability\n0 → 0 (0)\nFlood risk\n0% → 0% (0%)\nApproval\n-0.0037 → -0.0037 (0)\nProperty value/yr\n0.006% → 0.006% (0%)\nFarm fields\n0 → 0 (0)\nParking spaces\n0 → 0 (0)\nDaily activity\n6 → 6 (0)\nFreight activity\n0 → 0 (0)\nNoise exposure\n0.03 → 0.03 (0)\nStormwater capacity\n0 → 0 (0)\nAllocated site (plots)\n0.5 → 0.5 (0)\nUnused site (plots)\n5.5 → 5.5 (0)\nRetained site (plots)\n0 → 0 (0)\nBuffer (plots)\n0 → 0 (0)\nCouncil support\nGreg Marsh\n17% → 17% (0%)\nEllen Pryor\n37% → 37% (0%)\nRev. James Okafor\n64% → 64% (0%)\nTina Brandt\n55% → 55% (0%)\nHal Weaver\n47% → 47% (0%)\nChanges from baseline\n\nNo component or condition changes.\n\nFictional balance estimates; plot allocations and shared activity are schematic.\n\nSave private draft\nSave as alternative on this site\nInput versions\n\nReturn to any version on the same site. Forecasts are refreshed against the current town.\n\nVersion 1 · comparison baseline\nCompare against the selected version\nOpen saved drafts\nSave recovered input as new draft\nPreview these controls",
+        "postAllowed": false,
+        "main": {
+          "label": "Preview these controls",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 889,
+            "width": 629,
+            "height": 48,
+            "top": 889,
+            "right": 649,
+            "bottom": 937,
+            "left": 20
+          },
+          "inside": true,
+          "thumb": true
+        },
+        "paneScrollTop": 2448,
+        "horizontalOverflow": false
+      },
+      "afterClose": {
+        "id": "68f91f67-f035-4299-ac20-98137b033b07",
+        "targetId": null,
+        "text": "Unsubmitted working description: retain the six-job plan while I compare the unfinished change.",
+        "editText": "Unsubmitted requested edit: keep this sentence exactly, including the unfinished loading-space idea.",
+        "plots": [
+          [
+            16,
+            13
+          ],
+          [
+            17,
+            13
+          ],
+          [
+            18,
+            13
+          ],
+          [
+            16,
+            14
+          ],
+          [
+            17,
+            14
+          ],
+          [
+            18,
+            14
+          ]
+        ],
+        "program": {
+          "version": 2,
+          "title": "C pending workspace invalid-quantity",
+          "intent": "Provide six local jobs on this site.",
+          "components": [
+            {
+              "id": "activity-6424974a-97ab-449e-9830-7d960dbb5cfa",
+              "capability": "workplace",
+              "label": "Workplace",
+              "quantity": 999,
+              "area": 0.5,
+              "sharedWith": null
+            }
+          ],
+          "conditions": {
+            "hours": 10,
+            "deliveries": "daytime",
+            "access": true,
+            "buffer": 0,
+            "preserve": 0,
+            "affordable": false
+          },
+          "assumptions": [],
+          "omissions": []
+        },
+        "legacyPlan": null,
+        "versions": [
+          {
+            "id": "b6e8e544-944b-46c3-b0a9-46fed389837d",
+            "input": "Provide six local jobs on this site.",
+            "program": {
+              "version": 2,
+              "title": "C pending workspace invalid-quantity",
+              "intent": "Provide six local jobs on this site.",
+              "components": [
+                {
+                  "id": "activity-6424974a-97ab-449e-9830-7d960dbb5cfa",
+                  "capability": "workplace",
+                  "label": "Workplace",
+                  "quantity": 6,
+                  "area": 0.5,
+                  "sharedWith": null
+                }
+              ],
+              "conditions": {
+                "hours": 10,
+                "deliveries": "daytime",
+                "access": true,
+                "buffer": 0,
+                "preserve": 0,
+                "affordable": false
+              },
+              "assumptions": [],
+              "omissions": []
+            },
+            "legacyPlan": null,
+            "plots": [
+              [
+                16,
+                13
+              ],
+              [
+                17,
+                13
+              ],
+              [
+                18,
+                13
+              ],
+              [
+                16,
+                14
+              ],
+              [
+                17,
+                14
+              ],
+              [
+                18,
+                14
+              ]
+            ],
+            "request": null
+          }
+        ],
+        "selectedVersion": "b6e8e544-944b-46c3-b0a9-46fed389837d",
+        "previewDirty": true,
+        "controlsEdited": true,
+        "requestDetails": null,
+        "feedback": "quantity_bounds:activity-6424974a-97ab-449e-9830-7d960dbb5cfa area_capacity:activity-6424974a-97ab-449e-9830-7d960dbb5cfa",
+        "baselineVersion": "b6e8e544-944b-46c3-b0a9-46fed389837d"
+      },
+      "explicitVersion": {
+        "quantity": 6,
+        "originalText": "Unsubmitted working description: retain the six-job plan while I compare the unfinished change.",
+        "requestedEdit": "Unsubmitted requested edit: keep this sentence exactly, including the unfinished loading-space idea.",
+        "title": "C pending workspace invalid-quantity",
+        "body": "PRIVATE DRAFT · 1/8 SAVED VERSIONS\nC pending workspace invalid-quantity\n\nDrafting and comparing alternatives leave the public agenda and annual initiative unchanged.\n\nSaved privately on this device · 1/8 versions. No agenda action taken.\n\nPlan title\nYour original idea\nChange plots on the map\n6 plots selected: 6 × Open land\nOr select a named site\nKeep selected plots\nOld Mill lot · 4 plots\nroute22 · 6 plots\ncampus_s · 6 plots\nstorefront · 1 plots\nridge · 12 plots\nbridge · 1 plots\nLot behind the elementary school · 4 plots\nKish Creek bank · 4 plots\nEast End field · 6 plots\nPine Street field · 6 plots\nRequested edit\n\nQwen is off. Compose activities and conditions below to make an engine preview.\n\nRequested preview is private. Review its engine forecast before continuing.\n\nActivities and operating conditions\nTitle\nWorkplace · Workplace\nActivity name\nQuantity · staffed work places\nArea · plot equivalents\nShares floor space with\nSeparate space\nRemove activity\nAdd an activity\nHousing · homes\nWorkplace · staffed work places\nShop · storefronts\nCommunity · daily participants\nRecreation · daily participants\nEvent · peak attendees\nAgriculture · productive plot equivalents\nStorage · pallet bays\nAccess · daily passages\nParking · spaces\nGreen · landscaped plot equivalents\nStormwater · treated plot equivalents\nPolicy · operating program\nAdd activity\nOperating hours per day (0–24)\nDeliveries\nnone\ndaytime\nanytime\nBuffer area · plots\nRetained area · plots\nMaintain farm/service access\nAffordable homes\nREQUESTED PREVIEW\nC PENDING WORKSPACE INVALID-QUANTITY\nNORTH UP · EXACT PLOT GRID\n6 Workplace · staffed work places\n0.5 allocated plots\n0 retained plots\n5.5 unused plots\n\nEngine cost $134K · upkeep $4K/year\n\nEngine allocations on the exact selected boundary. Strips preserve plot-equivalent areas; shared activities overlap their named host. Interior symbols and fractional plot use are schematic game assumptions.\n\nRevision a69e9ebc\n\nEngine forecast\n\nVersion 1 · comparison baseline → requested preview. Both forecasts use the current town and exact site.\n\nCost ($K)\n134 → 134 (0)\nAnnual upkeep ($K)\n4 → 4 (0)\nJobs\n6 → 6 (0)\nStorefronts\n0 → 0 (0)\nResidents housed\n0 → 0 (0)\nWalkability\n0.5 → 0.5 (0)\nLivability\n0.0825 → 0.0825 (0)\nBusiness\n0.36 → 0.36 (0)\nResidents displaced\n0 → 0 (0)\nStorefronts lost\n0 → 0 (0)\nSafety\n1 → 1 (0)\nAffordability\n0 → 0 (0)\nFlood risk\n0% → 0% (0%)\nApproval\n-0.0037 → -0.0037 (0)\nProperty value/yr\n0.006% → 0.006% (0%)\nFarm fields\n0 → 0 (0)\nParking spaces\n0 → 0 (0)\nDaily activity\n6 → 6 (0)\nFreight activity\n0 → 0 (0)\nNoise exposure\n0.03 → 0.03 (0)\nStormwater capacity\n0 → 0 (0)\nAllocated site (plots)\n0.5 → 0.5 (0)\nUnused site (plots)\n5.5 → 5.5 (0)\nRetained site (plots)\n0 → 0 (0)\nBuffer (plots)\n0 → 0 (0)\nCouncil support\nGreg Marsh\n17% → 17% (0%)\nEllen Pryor\n37% → 37% (0%)\nRev. James Okafor\n64% → 64% (0%)\nTina Brandt\n55% → 55% (0%)\nHal Weaver\n47% → 47% (0%)\nChanges from baseline\n\nNo component or condition changes.\n\nFictional balance estimates; plot allocations and shared activity are schematic.\n\nSave private draft\nSave as alternative on this site\nInput versions\n\nReturn to any version on the same site. Forecasts are refreshed against the current town.\n\nVersion 1 · comparison baseline\nCompare against the selected version\nOpen saved drafts\nSave recovered input as new draft\nPut on agenda\nEdit request",
+        "postAllowed": true,
+        "main": {
+          "label": "Put on agenda",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 888.546875,
+            "width": 309.5,
+            "height": 48,
+            "top": 888.546875,
+            "right": 329.5,
+            "bottom": 936.546875,
+            "left": 20
+          },
+          "inside": true,
+          "thumb": true
+        },
+        "paneScrollTop": 3228,
+        "horizontalOverflow": false
+      },
+      "publicBytesUnchanged": true,
+      "status": "pass"
+    },
+    {
+      "width": 669,
+      "scenario": "changed-site",
+      "sha": "35461a0acc6a21c723d97d90509bb1e8adb0cf49",
+      "errors": [],
+      "accepted": {
+        "id": "cdcebc38-2f47-469c-89ce-c9e209333d71",
+        "targetId": null,
+        "text": "Provide six local jobs on this site.",
+        "editText": "",
+        "plots": [
+          [
+            16,
+            13
+          ],
+          [
+            17,
+            13
+          ],
+          [
+            18,
+            13
+          ],
+          [
+            16,
+            14
+          ],
+          [
+            17,
+            14
+          ],
+          [
+            18,
+            14
+          ]
+        ],
+        "program": {
+          "version": 2,
+          "title": "C pending workspace changed-site",
+          "intent": "Provide six local jobs on this site.",
+          "components": [
+            {
+              "id": "activity-e738e759-3710-4168-af3e-0f0b86b94fad",
+              "capability": "workplace",
+              "label": "Workplace",
+              "quantity": 6,
+              "area": 0.5,
+              "sharedWith": null
+            }
+          ],
+          "conditions": {
+            "hours": 10,
+            "deliveries": "daytime",
+            "access": true,
+            "buffer": 0,
+            "preserve": 0,
+            "affordable": false
+          },
+          "assumptions": [],
+          "omissions": []
+        },
+        "legacyPlan": null,
+        "versions": [
+          {
+            "id": "6ed803e0-e019-414d-ae02-6af576a69eed",
+            "input": "Provide six local jobs on this site.",
+            "program": {
+              "version": 2,
+              "title": "C pending workspace changed-site",
+              "intent": "Provide six local jobs on this site.",
+              "components": [
+                {
+                  "id": "activity-e738e759-3710-4168-af3e-0f0b86b94fad",
+                  "capability": "workplace",
+                  "label": "Workplace",
+                  "quantity": 6,
+                  "area": 0.5,
+                  "sharedWith": null
+                }
+              ],
+              "conditions": {
+                "hours": 10,
+                "deliveries": "daytime",
+                "access": true,
+                "buffer": 0,
+                "preserve": 0,
+                "affordable": false
+              },
+              "assumptions": [],
+              "omissions": []
+            },
+            "legacyPlan": null,
+            "plots": [
+              [
+                16,
+                13
+              ],
+              [
+                17,
+                13
+              ],
+              [
+                18,
+                13
+              ],
+              [
+                16,
+                14
+              ],
+              [
+                17,
+                14
+              ],
+              [
+                18,
+                14
+              ]
+            ],
+            "request": null
+          }
+        ],
+        "selectedVersion": "6ed803e0-e019-414d-ae02-6af576a69eed",
+        "previewDirty": false,
+        "controlsEdited": false,
+        "requestDetails": null,
+        "feedback": "",
+        "baselineVersion": "6ed803e0-e019-414d-ae02-6af576a69eed"
+      },
+      "pending": {
+        "id": "cdcebc38-2f47-469c-89ce-c9e209333d71",
+        "targetId": null,
+        "text": "Unsubmitted working description: retain the six-job plan while I compare the unfinished change.",
+        "editText": "Unsubmitted requested edit: keep this sentence exactly, including the unfinished loading-space idea.",
+        "plots": [
+          [
+            20,
+            13
+          ],
+          [
+            21,
+            13
+          ],
+          [
+            22,
+            13
+          ],
+          [
+            20,
+            14
+          ],
+          [
+            21,
+            14
+          ],
+          [
+            22,
+            14
+          ],
+          [
+            20,
+            15
+          ],
+          [
+            21,
+            15
+          ],
+          [
+            22,
+            15
+          ],
+          [
+            20,
+            16
+          ],
+          [
+            21,
+            16
+          ],
+          [
+            22,
+            16
+          ]
+        ],
+        "program": {
+          "version": 2,
+          "title": "C pending workspace changed-site",
+          "intent": "Provide six local jobs on this site.",
+          "components": [
+            {
+              "id": "activity-e738e759-3710-4168-af3e-0f0b86b94fad",
+              "capability": "workplace",
+              "label": "Workplace",
+              "quantity": 6,
+              "area": 0.5,
+              "sharedWith": null
+            }
+          ],
+          "conditions": {
+            "hours": 10,
+            "deliveries": "daytime",
+            "access": true,
+            "buffer": 0,
+            "preserve": 0,
+            "affordable": false
+          },
+          "assumptions": [],
+          "omissions": []
+        },
+        "legacyPlan": null,
+        "versions": [
+          {
+            "id": "6ed803e0-e019-414d-ae02-6af576a69eed",
+            "input": "Provide six local jobs on this site.",
+            "program": {
+              "version": 2,
+              "title": "C pending workspace changed-site",
+              "intent": "Provide six local jobs on this site.",
+              "components": [
+                {
+                  "id": "activity-e738e759-3710-4168-af3e-0f0b86b94fad",
+                  "capability": "workplace",
+                  "label": "Workplace",
+                  "quantity": 6,
+                  "area": 0.5,
+                  "sharedWith": null
+                }
+              ],
+              "conditions": {
+                "hours": 10,
+                "deliveries": "daytime",
+                "access": true,
+                "buffer": 0,
+                "preserve": 0,
+                "affordable": false
+              },
+              "assumptions": [],
+              "omissions": []
+            },
+            "legacyPlan": null,
+            "plots": [
+              [
+                16,
+                13
+              ],
+              [
+                17,
+                13
+              ],
+              [
+                18,
+                13
+              ],
+              [
+                16,
+                14
+              ],
+              [
+                17,
+                14
+              ],
+              [
+                18,
+                14
+              ]
+            ],
+            "request": null
+          }
+        ],
+        "selectedVersion": "6ed803e0-e019-414d-ae02-6af576a69eed",
+        "previewDirty": true,
+        "controlsEdited": false,
+        "requestDetails": null,
+        "feedback": "",
+        "baselineVersion": "6ed803e0-e019-414d-ae02-6af576a69eed"
+      },
+      "reopened": {
+        "quantity": 6,
+        "originalText": "Unsubmitted working description: retain the six-job plan while I compare the unfinished change.",
+        "requestedEdit": "Unsubmitted requested edit: keep this sentence exactly, including the unfinished loading-space idea.",
+        "title": "C pending workspace changed-site",
+        "body": "PRIVATE DRAFT · 1/8 SAVED VERSIONS\nC pending workspace changed-site\n\nDrafting and comparing alternatives leave the public agenda and annual initiative unchanged.\n\nPrivate · Nothing is posted until you choose Put on agenda.\n\nPlan title\nYour original idea\nChange plots on the map\n12 plots selected: 12 × Farmland\nOr select a named site\nKeep selected plots\nOld Mill lot · 4 plots\nroute22 · 6 plots\ncampus_s · 6 plots\nstorefront · 1 plots\nridge · 12 plots\nbridge · 1 plots\nLot behind the elementary school · 4 plots\nKish Creek bank · 4 plots\nEast End field · 6 plots\nPine Street field · 6 plots\nRequested edit\n\nQwen is off. Compose activities and conditions below to make an engine preview.\n\nYour recovered input is kept. Preview again before posting or confirming.\n\nActivities and operating conditions\nTitle\nWorkplace · Workplace\nActivity name\nQuantity · staffed work places\nArea · plot equivalents\nShares floor space with\nSeparate space\nRemove activity\nAdd an activity\nHousing · homes\nWorkplace · staffed work places\nShop · storefronts\nCommunity · daily participants\nRecreation · daily participants\nEvent · peak attendees\nAgriculture · productive plot equivalents\nStorage · pallet bays\nAccess · daily passages\nParking · spaces\nGreen · landscaped plot equivalents\nStormwater · treated plot equivalents\nPolicy · operating program\nAdd activity\nOperating hours per day (0–24)\nDeliveries\nnone\ndaytime\nanytime\nBuffer area · plots\nRetained area · plots\nMaintain farm/service access\nAffordable homes\nLAST ACCEPTED PREVIEW\nC PENDING WORKSPACE CHANGED-SITE\nNORTH UP · EXACT PLOT GRID\n6 Workplace · staffed work places\n0.5 allocated plots\n0 retained plots\n5.5 unused plots\n\nEngine cost $134K · upkeep $4K/year\n\nEngine allocations on the exact selected boundary. Strips preserve plot-equivalent areas; shared activities overlap their named host. Interior symbols and fractional plot use are schematic game assumptions.\n\nRevision 0fd48095\n\nEngine forecast\n\nVersion 1 · comparison baseline → requested preview. Both forecasts use the current town and exact site.\n\nCost ($K)\n134 → 134 (0)\nAnnual upkeep ($K)\n4 → 4 (0)\nJobs\n6 → 6 (0)\nStorefronts\n0 → 0 (0)\nResidents housed\n0 → 0 (0)\nWalkability\n0.5 → 0.5 (0)\nLivability\n0.0825 → 0.0825 (0)\nBusiness\n0.36 → 0.36 (0)\nResidents displaced\n0 → 0 (0)\nStorefronts lost\n0 → 0 (0)\nSafety\n1 → 1 (0)\nAffordability\n0 → 0 (0)\nFlood risk\n0% → 0% (0%)\nApproval\n-0.0037 → -0.0037 (0)\nProperty value/yr\n0.006% → 0.006% (0%)\nFarm fields\n0 → 0 (0)\nParking spaces\n0 → 0 (0)\nDaily activity\n6 → 6 (0)\nFreight activity\n0 → 0 (0)\nNoise exposure\n0.03 → 0.03 (0)\nStormwater capacity\n0 → 0 (0)\nAllocated site (plots)\n0.5 → 0.5 (0)\nUnused site (plots)\n5.5 → 5.5 (0)\nRetained site (plots)\n0 → 0 (0)\nBuffer (plots)\n0 → 0 (0)\nCouncil support\nGreg Marsh\n17% → 17% (0%)\nEllen Pryor\n37% → 37% (0%)\nRev. James Okafor\n64% → 64% (0%)\nTina Brandt\n55% → 55% (0%)\nHal Weaver\n47% → 47% (0%)\nChanges from baseline\n\nNo component or condition changes.\n\nFictional balance estimates; plot allocations and shared activity are schematic.\n\nSave private draft\nSave as alternative on this site\nInput versions\n\nReturn to any version on the same site. Forecasts are refreshed against the current town.\n\nVersion 1 · comparison baseline\nCompare against the selected version\nOpen saved drafts\nSave recovered input as new draft\nPreview these controls",
+        "postAllowed": false,
+        "main": {
+          "label": "Preview these controls",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 889,
+            "width": 629,
+            "height": 48,
+            "top": 889,
+            "right": 649,
+            "bottom": 937,
+            "left": 20
+          },
+          "inside": true,
+          "thumb": true
+        },
+        "paneScrollTop": 507,
+        "horizontalOverflow": false
+      },
+      "scrolled": {
+        "quantity": 6,
+        "originalText": "Unsubmitted working description: retain the six-job plan while I compare the unfinished change.",
+        "requestedEdit": "Unsubmitted requested edit: keep this sentence exactly, including the unfinished loading-space idea.",
+        "title": "C pending workspace changed-site",
+        "body": "PRIVATE DRAFT · 1/8 SAVED VERSIONS\nC pending workspace changed-site\n\nDrafting and comparing alternatives leave the public agenda and annual initiative unchanged.\n\nPrivate · Nothing is posted until you choose Put on agenda.\n\nPlan title\nYour original idea\nChange plots on the map\n12 plots selected: 12 × Farmland\nOr select a named site\nKeep selected plots\nOld Mill lot · 4 plots\nroute22 · 6 plots\ncampus_s · 6 plots\nstorefront · 1 plots\nridge · 12 plots\nbridge · 1 plots\nLot behind the elementary school · 4 plots\nKish Creek bank · 4 plots\nEast End field · 6 plots\nPine Street field · 6 plots\nRequested edit\n\nQwen is off. Compose activities and conditions below to make an engine preview.\n\nYour recovered input is kept. Preview again before posting or confirming.\n\nActivities and operating conditions\nTitle\nWorkplace · Workplace\nActivity name\nQuantity · staffed work places\nArea · plot equivalents\nShares floor space with\nSeparate space\nRemove activity\nAdd an activity\nHousing · homes\nWorkplace · staffed work places\nShop · storefronts\nCommunity · daily participants\nRecreation · daily participants\nEvent · peak attendees\nAgriculture · productive plot equivalents\nStorage · pallet bays\nAccess · daily passages\nParking · spaces\nGreen · landscaped plot equivalents\nStormwater · treated plot equivalents\nPolicy · operating program\nAdd activity\nOperating hours per day (0–24)\nDeliveries\nnone\ndaytime\nanytime\nBuffer area · plots\nRetained area · plots\nMaintain farm/service access\nAffordable homes\nLAST ACCEPTED PREVIEW\nC PENDING WORKSPACE CHANGED-SITE\nNORTH UP · EXACT PLOT GRID\n6 Workplace · staffed work places\n0.5 allocated plots\n0 retained plots\n5.5 unused plots\n\nEngine cost $134K · upkeep $4K/year\n\nEngine allocations on the exact selected boundary. Strips preserve plot-equivalent areas; shared activities overlap their named host. Interior symbols and fractional plot use are schematic game assumptions.\n\nRevision 0fd48095\n\nEngine forecast\n\nVersion 1 · comparison baseline → requested preview. Both forecasts use the current town and exact site.\n\nCost ($K)\n134 → 134 (0)\nAnnual upkeep ($K)\n4 → 4 (0)\nJobs\n6 → 6 (0)\nStorefronts\n0 → 0 (0)\nResidents housed\n0 → 0 (0)\nWalkability\n0.5 → 0.5 (0)\nLivability\n0.0825 → 0.0825 (0)\nBusiness\n0.36 → 0.36 (0)\nResidents displaced\n0 → 0 (0)\nStorefronts lost\n0 → 0 (0)\nSafety\n1 → 1 (0)\nAffordability\n0 → 0 (0)\nFlood risk\n0% → 0% (0%)\nApproval\n-0.0037 → -0.0037 (0)\nProperty value/yr\n0.006% → 0.006% (0%)\nFarm fields\n0 → 0 (0)\nParking spaces\n0 → 0 (0)\nDaily activity\n6 → 6 (0)\nFreight activity\n0 → 0 (0)\nNoise exposure\n0.03 → 0.03 (0)\nStormwater capacity\n0 → 0 (0)\nAllocated site (plots)\n0.5 → 0.5 (0)\nUnused site (plots)\n5.5 → 5.5 (0)\nRetained site (plots)\n0 → 0 (0)\nBuffer (plots)\n0 → 0 (0)\nCouncil support\nGreg Marsh\n17% → 17% (0%)\nEllen Pryor\n37% → 37% (0%)\nRev. James Okafor\n64% → 64% (0%)\nTina Brandt\n55% → 55% (0%)\nHal Weaver\n47% → 47% (0%)\nChanges from baseline\n\nNo component or condition changes.\n\nFictional balance estimates; plot allocations and shared activity are schematic.\n\nSave private draft\nSave as alternative on this site\nInput versions\n\nReturn to any version on the same site. Forecasts are refreshed against the current town.\n\nVersion 1 · comparison baseline\nCompare against the selected version\nOpen saved drafts\nSave recovered input as new draft\nPreview these controls",
+        "postAllowed": false,
+        "main": {
+          "label": "Preview these controls",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 889,
+            "width": 629,
+            "height": 48,
+            "top": 889,
+            "right": 649,
+            "bottom": 937,
+            "left": 20
+          },
+          "inside": true,
+          "thumb": true
+        },
+        "paneScrollTop": 2407,
+        "horizontalOverflow": false
+      },
+      "afterClose": {
+        "id": "cdcebc38-2f47-469c-89ce-c9e209333d71",
+        "targetId": null,
+        "text": "Unsubmitted working description: retain the six-job plan while I compare the unfinished change.",
+        "editText": "Unsubmitted requested edit: keep this sentence exactly, including the unfinished loading-space idea.",
+        "plots": [
+          [
+            20,
+            13
+          ],
+          [
+            21,
+            13
+          ],
+          [
+            22,
+            13
+          ],
+          [
+            20,
+            14
+          ],
+          [
+            21,
+            14
+          ],
+          [
+            22,
+            14
+          ],
+          [
+            20,
+            15
+          ],
+          [
+            21,
+            15
+          ],
+          [
+            22,
+            15
+          ],
+          [
+            20,
+            16
+          ],
+          [
+            21,
+            16
+          ],
+          [
+            22,
+            16
+          ]
+        ],
+        "program": {
+          "version": 2,
+          "title": "C pending workspace changed-site",
+          "intent": "Provide six local jobs on this site.",
+          "components": [
+            {
+              "id": "activity-e738e759-3710-4168-af3e-0f0b86b94fad",
+              "capability": "workplace",
+              "label": "Workplace",
+              "quantity": 6,
+              "area": 0.5,
+              "sharedWith": null
+            }
+          ],
+          "conditions": {
+            "hours": 10,
+            "deliveries": "daytime",
+            "access": true,
+            "buffer": 0,
+            "preserve": 0,
+            "affordable": false
+          },
+          "assumptions": [],
+          "omissions": []
+        },
+        "legacyPlan": null,
+        "versions": [
+          {
+            "id": "6ed803e0-e019-414d-ae02-6af576a69eed",
+            "input": "Provide six local jobs on this site.",
+            "program": {
+              "version": 2,
+              "title": "C pending workspace changed-site",
+              "intent": "Provide six local jobs on this site.",
+              "components": [
+                {
+                  "id": "activity-e738e759-3710-4168-af3e-0f0b86b94fad",
+                  "capability": "workplace",
+                  "label": "Workplace",
+                  "quantity": 6,
+                  "area": 0.5,
+                  "sharedWith": null
+                }
+              ],
+              "conditions": {
+                "hours": 10,
+                "deliveries": "daytime",
+                "access": true,
+                "buffer": 0,
+                "preserve": 0,
+                "affordable": false
+              },
+              "assumptions": [],
+              "omissions": []
+            },
+            "legacyPlan": null,
+            "plots": [
+              [
+                16,
+                13
+              ],
+              [
+                17,
+                13
+              ],
+              [
+                18,
+                13
+              ],
+              [
+                16,
+                14
+              ],
+              [
+                17,
+                14
+              ],
+              [
+                18,
+                14
+              ]
+            ],
+            "request": null
+          }
+        ],
+        "selectedVersion": "6ed803e0-e019-414d-ae02-6af576a69eed",
+        "previewDirty": true,
+        "controlsEdited": false,
+        "requestDetails": null,
+        "feedback": "",
+        "baselineVersion": "6ed803e0-e019-414d-ae02-6af576a69eed"
+      },
+      "explicitVersion": {
+        "quantity": 6,
+        "originalText": "Unsubmitted working description: retain the six-job plan while I compare the unfinished change.",
+        "requestedEdit": "Unsubmitted requested edit: keep this sentence exactly, including the unfinished loading-space idea.",
+        "title": "C pending workspace changed-site",
+        "body": "PRIVATE DRAFT · 1/8 SAVED VERSIONS\nC pending workspace changed-site\n\nDrafting and comparing alternatives leave the public agenda and annual initiative unchanged.\n\nSaved privately on this device · 1/8 versions. No agenda action taken.\n\nPlan title\nYour original idea\nChange plots on the map\n6 plots selected: 6 × Open land\nOr select a named site\nKeep selected plots\nOld Mill lot · 4 plots\nroute22 · 6 plots\ncampus_s · 6 plots\nstorefront · 1 plots\nridge · 12 plots\nbridge · 1 plots\nLot behind the elementary school · 4 plots\nKish Creek bank · 4 plots\nEast End field · 6 plots\nPine Street field · 6 plots\nRequested edit\n\nQwen is off. Compose activities and conditions below to make an engine preview.\n\nRequested preview is private. Review its engine forecast before continuing.\n\nActivities and operating conditions\nTitle\nWorkplace · Workplace\nActivity name\nQuantity · staffed work places\nArea · plot equivalents\nShares floor space with\nSeparate space\nRemove activity\nAdd an activity\nHousing · homes\nWorkplace · staffed work places\nShop · storefronts\nCommunity · daily participants\nRecreation · daily participants\nEvent · peak attendees\nAgriculture · productive plot equivalents\nStorage · pallet bays\nAccess · daily passages\nParking · spaces\nGreen · landscaped plot equivalents\nStormwater · treated plot equivalents\nPolicy · operating program\nAdd activity\nOperating hours per day (0–24)\nDeliveries\nnone\ndaytime\nanytime\nBuffer area · plots\nRetained area · plots\nMaintain farm/service access\nAffordable homes\nREQUESTED PREVIEW\nC PENDING WORKSPACE CHANGED-SITE\nNORTH UP · EXACT PLOT GRID\n6 Workplace · staffed work places\n0.5 allocated plots\n0 retained plots\n5.5 unused plots\n\nEngine cost $134K · upkeep $4K/year\n\nEngine allocations on the exact selected boundary. Strips preserve plot-equivalent areas; shared activities overlap their named host. Interior symbols and fractional plot use are schematic game assumptions.\n\nRevision 0fd48095\n\nEngine forecast\n\nVersion 1 · comparison baseline → requested preview. Both forecasts use the current town and exact site.\n\nCost ($K)\n134 → 134 (0)\nAnnual upkeep ($K)\n4 → 4 (0)\nJobs\n6 → 6 (0)\nStorefronts\n0 → 0 (0)\nResidents housed\n0 → 0 (0)\nWalkability\n0.5 → 0.5 (0)\nLivability\n0.0825 → 0.0825 (0)\nBusiness\n0.36 → 0.36 (0)\nResidents displaced\n0 → 0 (0)\nStorefronts lost\n0 → 0 (0)\nSafety\n1 → 1 (0)\nAffordability\n0 → 0 (0)\nFlood risk\n0% → 0% (0%)\nApproval\n-0.0037 → -0.0037 (0)\nProperty value/yr\n0.006% → 0.006% (0%)\nFarm fields\n0 → 0 (0)\nParking spaces\n0 → 0 (0)\nDaily activity\n6 → 6 (0)\nFreight activity\n0 → 0 (0)\nNoise exposure\n0.03 → 0.03 (0)\nStormwater capacity\n0 → 0 (0)\nAllocated site (plots)\n0.5 → 0.5 (0)\nUnused site (plots)\n5.5 → 5.5 (0)\nRetained site (plots)\n0 → 0 (0)\nBuffer (plots)\n0 → 0 (0)\nCouncil support\nGreg Marsh\n17% → 17% (0%)\nEllen Pryor\n37% → 37% (0%)\nRev. James Okafor\n64% → 64% (0%)\nTina Brandt\n55% → 55% (0%)\nHal Weaver\n47% → 47% (0%)\nChanges from baseline\n\nNo component or condition changes.\n\nFictional balance estimates; plot allocations and shared activity are schematic.\n\nSave private draft\nSave as alternative on this site\nInput versions\n\nReturn to any version on the same site. Forecasts are refreshed against the current town.\n\nVersion 1 · comparison baseline\nCompare against the selected version\nOpen saved drafts\nSave recovered input as new draft\nPut on agenda\nEdit request",
+        "postAllowed": true,
+        "main": {
+          "label": "Put on agenda",
+          "disabled": false,
+          "rect": {
+            "x": 20,
+            "y": 888.546875,
+            "width": 309.5,
+            "height": 48,
+            "top": 888.546875,
+            "right": 329.5,
+            "bottom": 936.546875,
+            "left": 20
+          },
+          "inside": true,
+          "thumb": true
+        },
+        "paneScrollTop": 3228,
+        "horizontalOverflow": false
+      },
+      "publicBytesUnchanged": true,
+      "status": "pass"
+    }
+  ],
+  "passed": 4,
+  "total": 4,
+  "sourceVerification": {
+    "sha": "35461a0acc6a21c723d97d90509bb1e8adb0cf49",
+    "sourceCount": 16,
+    "buildCount": 6,
+    "mismatches": []
+  }
+}

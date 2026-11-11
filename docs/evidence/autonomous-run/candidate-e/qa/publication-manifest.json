@@ -1,0 +1,52 @@
+{
+  "sourceSha": "09f924bb305999932e8b74383f9d3f759f95895c",
+  "gameplayObservedSha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d",
+  "exclusiveRepositoryDirectory": "docs/evidence/autonomous-run/candidate-e/qa",
+  "files": [
+    {
+      "path": "coverage.json",
+      "sha256": "9ddc1a8dcbea8ec92361d04ce5ed01ec0001360dc7678e9974e3fd528c8aad79",
+      "bytes": 15038
+    },
+    {
+      "path": "coverage.md",
+      "sha256": "e45c12b26c90a08138ef7272b8671debe9fd6b87de43122dcd4a2ca0565475a3",
+      "bytes": 5247
+    },
+    {
+      "path": "duo-checklist.md",
+      "sha256": "a711bfa3f39e8d0a5f9eed637a13c91e85b6123a0ace7eda3a5adbd1be28650c",
+      "bytes": 1921
+    },
+    {
+      "path": "qa-summary.json",
+      "sha256": "e60b66e2ed35d7b4eff20905b8b5e3461a7b676d05ef315d0312c2925ecd8357",
+      "bytes": 217246
+    },
+    {
+      "path": "qa-summary.md",
+      "sha256": "ab0b550d18702f4d5b75cfec5e747690caeea822220177f9fac8b4e4adf9c2ed",
+      "bytes": 9116
+    },
+    {
+      "path": "screenshots/01-draft-plan-view.png",
+      "sha256": "68d63655f82350fedff347c1a6e5ed7e666607ec096b72f01eacec0dec010d29",
+      "bytes": 51988
+    },
+    {
+      "path": "screenshots/02-draft-plan-view.png",
+      "sha256": "23304b737cf06c6338b8336468fcc268498ad9bf8769bb94d2162b0a3a395558",
+      "bytes": 57059
+    },
+    {
+      "path": "screenshots/05-post-after-eight-versions-and-deltas-after-scroll.png",
+      "sha256": "b998ea7539011cc38345469b51fb4114b33251d5a1960d6a4b16b83a67d43074",
+      "bytes": 51057
+    },
+    {
+      "path": "screenshots/E-exact-reason-ui-export.png",
+      "sha256": "71afce7c8cefdd93e9647a1e83e8d8caf938f901c16a6f710fa0241c68c3be08",
+      "bytes": 53098
+    }
+  ]
+}

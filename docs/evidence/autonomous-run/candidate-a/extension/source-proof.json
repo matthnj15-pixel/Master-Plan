@@ -1,0 +1,41 @@
+{
+  "candidate": "6da5d9adc51751afb27236bfc27b769848a18d94",
+  "bundleSha256": "a5490655bbec7d0958ec7f51f80d5c27652f6bd882ec095018363414d8af6efd",
+  "source": [
+    {
+      "path": "src/engine.js",
+      "sha256": "a579864490fbd00757b45835f2970d190412d2bee67cbcddc3e6828e0334411d",
+      "exactBytesEmbeddedInCandidateA": true,
+      "extensionIdAbsentFromSource": true,
+      "extensionTitleAbsentFromSource": true
+    },
+    {
+      "path": "src/workspace.js",
+      "sha256": "660c0fcea98c3f9468ebab3a6a1fa650def761e2e2c65fc9fff49bf625785f7e",
+      "exactBytesEmbeddedInCandidateA": true,
+      "extensionIdAbsentFromSource": true,
+      "extensionTitleAbsentFromSource": true
+    },
+    {
+      "path": "src/composition-requests.js",
+      "sha256": "793cf232c8d158c902b82bf8c1ce8d4f3e8cf225955d0c0fa0f6b66a1742a313",
+      "exactBytesEmbeddedInCandidateA": true,
+      "extensionIdAbsentFromSource": true,
+      "extensionTitleAbsentFromSource": true
+    },
+    {
+      "path": "src/plan-renderer.js",
+      "sha256": "f9efdc0fbf10f10ffc6697db3f2a9f537615952629fe3e4a385c20e5abb3bf73",
+      "exactBytesEmbeddedInCandidateA": true,
+      "extensionIdAbsentFromSource": true,
+      "extensionTitleAbsentFromSource": true
+    },
+    {
+      "path": "src/ui.js",
+      "sha256": "52f97bd60e366f053a034040df7016122797be1e79ead26758ae76d650f20d8c",
+      "exactBytesEmbeddedInCandidateA": true,
+      "extensionIdAbsentFromSource": true,
+      "extensionTitleAbsentFromSource": true
+    }
+  ]
+}

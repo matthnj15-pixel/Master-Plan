@@ -1,0 +1,830 @@
+{
+  "sha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d",
+  "negativeCases": [
+    {
+      "name": "allocation.label",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "allocation.role",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "allocation.componentId",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "allocation.sharedWith",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "allocation.capability",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "allocation.quantity",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "allocation.area",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "segment.plot",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "segment.offset",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "segment.area",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "cell.plot",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "cell.componentIds",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "cell.role",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "cell.usedArea",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "cell.bufferArea",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "cell.preservedArea",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "cell.freeArea",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "layout.plots",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "layout.allocations",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "layout.cells",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "layout.buffer",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "layout.preserved",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "layout.unused",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "layout.capacity",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "layout.usedArea",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "layout.freeArea",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "layout.preservedArea",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "layout.bufferArea",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "layout.illustrativeInterior",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "extra-key",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "altered-strip-area",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "reordered-site",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "grid.role",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "grid.projectId",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "grid.programRevision",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "grid.title",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "grid.for",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "grid.d",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "grid.new",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "grid.componentIds",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "grid.var",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "grid.site",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "grid.plan",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "grid.allocation",
+      "status": "PASS",
+      "flags": [
+        {
+          "flag": true,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        },
+        {
+          "flag": false,
+          "readOnly": true,
+          "zeroWrites": true,
+          "bytesPreserved": true
+        }
+      ]
+    }
+  ],
+  "positiveCases": [
+    {
+      "name": "fresh",
+      "status": "PASS",
+      "renders": true
+    },
+    {
+      "name": "A-delivered-extension",
+      "status": "PASS",
+      "renders": true
+    },
+    {
+      "name": "C-legacy-delivery",
+      "status": "PASS",
+      "renders": true
+    },
+    {
+      "name": "authentic-A-pruned-credit",
+      "status": "PASS",
+      "renders": true
+    },
+    {
+      "name": "real-v2-migration",
+      "flag": true,
+      "status": "PASS"
+    },
+    {
+      "name": "real-v2-migration",
+      "flag": false,
+      "status": "PASS"
+    }
+  ],
+  "types": "real engine, actual renderer, real workspace with controlled storage/lock fixtures; A delivered save is unchanged accepted browser evidence"
+}

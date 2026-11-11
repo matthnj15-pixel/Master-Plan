@@ -1,0 +1,12 @@
+{
+  "sha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d",
+  "log": "/tmp/mp-d-full-tests.log",
+  "logSHA256": "8786a1ab68a482bd78e923b40c520649db9b7c7a8b0d703e331ebf6b2fc999c6",
+  "tests": 247,
+  "passed": 247,
+  "failed": 0,
+  "skipped": 0,
+  "elapsedMs": 179773.751768,
+  "trace": true,
+  "pinnedRuntimeAuditPassed": true
+}

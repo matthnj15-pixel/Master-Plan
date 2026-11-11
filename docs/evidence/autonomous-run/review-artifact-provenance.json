@@ -1,0 +1,272 @@
+[
+  {
+    "source": "/tmp/mp-candidate-c-review/history-consistency.json",
+    "path": "docs/evidence/autonomous-run/candidate-c/history-consistency.json",
+    "originalSHA256": "c2d4a08a73cc6c83ad2957a4f48149a0dfce1056c192e3601a9e9ceaafd46439",
+    "packagedSHA256": "c2d4a08a73cc6c83ad2957a4f48149a0dfce1056c192e3601a9e9ceaafd46439"
+  },
+  {
+    "source": "/tmp/mp-candidate-c-review/pending-recovery-400.json",
+    "path": "docs/evidence/autonomous-run/candidate-c/pending-recovery-400.json",
+    "originalSHA256": "8ae3f525613d7824e969d5f2aeccd4a5b3f9fd70bd4e135023b79f61b780ac81",
+    "packagedSHA256": "8ae3f525613d7824e969d5f2aeccd4a5b3f9fd70bd4e135023b79f61b780ac81"
+  },
+  {
+    "source": "/tmp/mp-candidate-c-review/probe-results.json",
+    "path": "docs/evidence/autonomous-run/candidate-c/probe-results.json",
+    "originalSHA256": "970012018693b6cddfb34d501a20daac29e9c0a911c0bbd60959c267288b9c68",
+    "packagedSHA256": "970012018693b6cddfb34d501a20daac29e9c0a911c0bbd60959c267288b9c68"
+  },
+  {
+    "source": "/tmp/mp-candidate-c-review/browser-session.json",
+    "path": "docs/evidence/autonomous-run/candidate-c/browser-session.json",
+    "originalSHA256": "702b25da752f1fda57fc19e707196917a51be06913f6a2bae7110022f40c726f",
+    "packagedSHA256": "702b25da752f1fda57fc19e707196917a51be06913f6a2bae7110022f40c726f"
+  },
+  {
+    "source": "/tmp/mp-candidate-c-review/qa-evidence-index.json",
+    "path": "docs/evidence/autonomous-run/candidate-c/qa-evidence-index.json",
+    "originalSHA256": "4252703c63b3c2ec8d633692967af6c15b9db4949e7a963e1f8abce30d588c81",
+    "packagedSHA256": "4252703c63b3c2ec8d633692967af6c15b9db4949e7a963e1f8abce30d588c81"
+  },
+  {
+    "source": "/tmp/mp-candidate-c-review/hash-verification.json",
+    "path": "docs/evidence/autonomous-run/candidate-c/hash-verification.json",
+    "originalSHA256": "d653412a16bfcadf4f74c3104ef88d366d3bc2ad702e18645ee0046446937dd4",
+    "packagedSHA256": "d653412a16bfcadf4f74c3104ef88d366d3bc2ad702e18645ee0046446937dd4"
+  },
+  {
+    "source": "/tmp/mp-candidate-c-review/pending-recovery-669.json",
+    "path": "docs/evidence/autonomous-run/candidate-c/pending-recovery-669.json",
+    "originalSHA256": "1c9217692a3342ea04339185c63bd130b18698f4044d51cc474b3f853bc3c8c2",
+    "packagedSHA256": "1c9217692a3342ea04339185c63bd130b18698f4044d51cc474b3f853bc3c8c2"
+  },
+  {
+    "source": "/tmp/mp-candidate-c-review/legacy-delivery.json",
+    "path": "docs/evidence/autonomous-run/candidate-c/legacy-delivery.json",
+    "originalSHA256": "1a0c9c5e348a21f30ed65c192c83a57aa56e619ddcbdde2f92e22555854f0dd2",
+    "packagedSHA256": "1a0c9c5e348a21f30ed65c192c83a57aa56e619ddcbdde2f92e22555854f0dd2"
+  },
+  {
+    "source": "/tmp/mp-candidate-c-review/legacy-sites.json",
+    "path": "docs/evidence/autonomous-run/candidate-c/legacy-sites.json",
+    "originalSHA256": "dccefdf4d5b4c05efe2beef6460ad05c3b549fd5104016957b0d31d99d578a93",
+    "packagedSHA256": "dccefdf4d5b4c05efe2beef6460ad05c3b549fd5104016957b0d31d99d578a93"
+  },
+  {
+    "source": "/tmp/mp-candidate-c-review/old-credit-pruning.json",
+    "path": "docs/evidence/autonomous-run/candidate-c/old-credit-pruning.json",
+    "originalSHA256": "ee39d5d72c444ef6c37b8b4efebba4f3a90eaefca7d371e68e007c5baf9eee16",
+    "packagedSHA256": "ee39d5d72c444ef6c37b8b4efebba4f3a90eaefca7d371e68e007c5baf9eee16"
+  },
+  {
+    "source": "/tmp/mp-candidate-c-review/claim-history-diagnostics.json",
+    "path": "docs/evidence/autonomous-run/candidate-c/claim-history-diagnostics.json",
+    "originalSHA256": "37ccb82f51abcef43b1a23e208306df6339a71cc95c2e666d7a24bc5fd35591c",
+    "packagedSHA256": "37ccb82f51abcef43b1a23e208306df6339a71cc95c2e666d7a24bc5fd35591c"
+  },
+  {
+    "source": "/tmp/mp-candidate-c-review/blocking-findings.json",
+    "path": "docs/evidence/autonomous-run/candidate-c/blocking-findings.json",
+    "originalSHA256": "f388f082dd81da42d37ba796f0a26314601e2478044bc6c0777f2eaf55ede716",
+    "packagedSHA256": "f388f082dd81da42d37ba796f0a26314601e2478044bc6c0777f2eaf55ede716"
+  },
+  {
+    "source": "/tmp/mp-candidate-c-review/nested-admission.json",
+    "path": "docs/evidence/autonomous-run/candidate-c/nested-admission.json",
+    "originalSHA256": "016f21b7e70f5b89df0551a798f64735d148f3280e8f5d7182f95b118641e773",
+    "packagedSHA256": "016f21b7e70f5b89df0551a798f64735d148f3280e8f5d7182f95b118641e773"
+  },
+  {
+    "source": "/tmp/mp-candidate-c-review/source-comparison.json",
+    "path": "docs/evidence/autonomous-run/candidate-c/source-comparison.json",
+    "originalSHA256": "e94b6ad2cce29d27a81f0268f3e389b9e682e7301f4d7e17866f3a61ea293d9f",
+    "packagedSHA256": "e94b6ad2cce29d27a81f0268f3e389b9e682e7301f4d7e17866f3a61ea293d9f"
+  },
+  {
+    "source": "/tmp/mp-candidate-c-review/target.json",
+    "path": "docs/evidence/autonomous-run/candidate-c/review-target.json",
+    "originalSHA256": "af231f61c11f900f6f7aea768fd02dbf15ffc19bfab52607225501f513f0716c",
+    "packagedSHA256": "af231f61c11f900f6f7aea768fd02dbf15ffc19bfab52607225501f513f0716c"
+  },
+  {
+    "source": "/tmp/mp-candidate-c-review/review.json",
+    "path": "docs/evidence/autonomous-run/candidate-c/review.json",
+    "originalSHA256": "e231c66ed1de2e917e22ed1a8f686045dec1d88575dfd2e83c180cdd9d43e9f6",
+    "packagedSHA256": "e231c66ed1de2e917e22ed1a8f686045dec1d88575dfd2e83c180cdd9d43e9f6"
+  },
+  {
+    "source": "/tmp/mp-candidate-c-review/layout-display-browser.json",
+    "path": "docs/evidence/autonomous-run/candidate-c/layout-display-browser.json",
+    "originalSHA256": "d0602639a4990700ecfefb13e92636070bc11d908a9dde66acb50a033e3e0b47",
+    "packagedSHA256": "d0602639a4990700ecfefb13e92636070bc11d908a9dde66acb50a033e3e0b47"
+  },
+  {
+    "source": "/tmp/mp-candidate-c-review/layout-display-probe.json",
+    "path": "docs/evidence/autonomous-run/candidate-c/layout-display-probe.json",
+    "originalSHA256": "024f01c3b2ee98ec5013c33b3fdd7a15c35feefaf13763834a20b6efae12c4aa",
+    "packagedSHA256": "024f01c3b2ee98ec5013c33b3fdd7a15c35feefaf13763834a20b6efae12c4aa"
+  },
+  {
+    "source": "/tmp/mp-candidate-c-review/review.md",
+    "path": "docs/evidence/autonomous-run/candidate-c/review.md",
+    "originalSHA256": "a0d47d59260bb9e3fb3c76b6f4a0cd58ca6a63af24c3b833ec3c84c04e06ec71",
+    "packagedSHA256": "8a94a42a4a46290488332dbcc07cad4ff4bfeac37f1b048603845ba563e9bb44"
+  },
+  {
+    "source": "/tmp/mp-candidate-c-review/probes.mjs",
+    "path": "docs/evidence/autonomous-run/candidate-c/probes.mjs",
+    "originalSHA256": "67d5943ef66dbe1a2b7574e1ce9655821d39bdd7bb192b00db6f1520f0f8ced3",
+    "packagedSHA256": "67d5943ef66dbe1a2b7574e1ce9655821d39bdd7bb192b00db6f1520f0f8ced3"
+  },
+  {
+    "source": "/tmp/mp-candidate-c-review/claim-history-diagnostics.mjs",
+    "path": "docs/evidence/autonomous-run/candidate-c/claim-history-diagnostics.mjs",
+    "originalSHA256": "c220d720ac103982685a883e6d32a83c345317462337ba10ee6509cfc1e73254",
+    "packagedSHA256": "c220d720ac103982685a883e6d32a83c345317462337ba10ee6509cfc1e73254"
+  },
+  {
+    "source": "/tmp/mp-candidate-c-review/history-consistency.mjs",
+    "path": "docs/evidence/autonomous-run/candidate-c/history-consistency.mjs",
+    "originalSHA256": "5716560c37ec5f6da8a4a8b133d847f644f5f51ac9473d8dc0f25a560fef3a90",
+    "packagedSHA256": "5716560c37ec5f6da8a4a8b133d847f644f5f51ac9473d8dc0f25a560fef3a90"
+  },
+  {
+    "source": "/tmp/mp-candidate-c-review/nested-admission.mjs",
+    "path": "docs/evidence/autonomous-run/candidate-c/nested-admission.mjs",
+    "originalSHA256": "1e0a3b8d29eb3927d05b34ce5bfe6d90a17265445dee17819e358c5deb92055f",
+    "packagedSHA256": "1e0a3b8d29eb3927d05b34ce5bfe6d90a17265445dee17819e358c5deb92055f"
+  },
+  {
+    "source": "/tmp/mp-candidate-d-review/account-geometry.json",
+    "path": "docs/evidence/autonomous-run/candidate-d/account-geometry.json",
+    "originalSHA256": "bc86e51abe437f1c0b34f81c53c6ee9d9d8170f9a427d2f6b15fa977b55b4812",
+    "packagedSHA256": "bc86e51abe437f1c0b34f81c53c6ee9d9d8170f9a427d2f6b15fa977b55b4812"
+  },
+  {
+    "source": "/tmp/mp-candidate-d-review/browser-session.json",
+    "path": "docs/evidence/autonomous-run/candidate-d/browser-session.json",
+    "originalSHA256": "0d7c1415da7532724ef68a60453b34c63fa1a54c7746bd8fc0f47454d5efa648",
+    "packagedSHA256": "0d7c1415da7532724ef68a60453b34c63fa1a54c7746bd8fc0f47454d5efa648"
+  },
+  {
+    "source": "/tmp/mp-candidate-d-review/qa-evidence-index.json",
+    "path": "docs/evidence/autonomous-run/candidate-d/qa-evidence-index.json",
+    "originalSHA256": "cab33a1288fc381fb3c4929b247bccca7e620261ccdfe6ae176b3958d5a2c4b2",
+    "packagedSHA256": "cab33a1288fc381fb3c4929b247bccca7e620261ccdfe6ae176b3958d5a2c4b2"
+  },
+  {
+    "source": "/tmp/mp-candidate-d-review/geometry-probe.json",
+    "path": "docs/evidence/autonomous-run/candidate-d/geometry-probe.json",
+    "originalSHA256": "b6c74f3ac6e62f52ad9a490835029eba6292c7d6c8f100a7b22e991133dd6921",
+    "packagedSHA256": "b6c74f3ac6e62f52ad9a490835029eba6292c7d6c8f100a7b22e991133dd6921"
+  },
+  {
+    "source": "/tmp/mp-candidate-d-review/hash-verification.json",
+    "path": "docs/evidence/autonomous-run/candidate-d/hash-verification.json",
+    "originalSHA256": "ee7aad8e8c6cae086aa8d6f8a7cb0942c9f54ee1f3a41fe80df813fa31cb42bb",
+    "packagedSHA256": "ee7aad8e8c6cae086aa8d6f8a7cb0942c9f54ee1f3a41fe80df813fa31cb42bb"
+  },
+  {
+    "source": "/tmp/mp-candidate-d-review/account-positive-A.json",
+    "path": "docs/evidence/autonomous-run/candidate-d/account-positive-A.json",
+    "originalSHA256": "01b91313b2d0dac864adf9425b889de6014f814f0c0307b019a623bf7554a331",
+    "packagedSHA256": "01b91313b2d0dac864adf9425b889de6014f814f0c0307b019a623bf7554a331"
+  },
+  {
+    "source": "/tmp/mp-candidate-d-review/old-credit-pruning.json",
+    "path": "docs/evidence/autonomous-run/candidate-d/old-credit-pruning.json",
+    "originalSHA256": "b18a97e788ba10402619c8e7d899e1df47377055a6258169108e16492ea96719",
+    "packagedSHA256": "b18a97e788ba10402619c8e7d899e1df47377055a6258169108e16492ea96719"
+  },
+  {
+    "source": "/tmp/mp-candidate-d-review/protected-layout-browser.json",
+    "path": "docs/evidence/autonomous-run/candidate-d/protected-layout-browser.json",
+    "originalSHA256": "9c2ce7d0b3bed0ebfe7825d9a8eeb942f5ae2e24919cd377c2cba13dc8c385c9",
+    "packagedSHA256": "9c2ce7d0b3bed0ebfe7825d9a8eeb942f5ae2e24919cd377c2cba13dc8c385c9"
+  },
+  {
+    "source": "/tmp/mp-candidate-d-review/claim-history-diagnostics.json",
+    "path": "docs/evidence/autonomous-run/candidate-d/claim-history-diagnostics.json",
+    "originalSHA256": "b8c7e7cbb217624562bb44a177f252577aa483c391b4b6e90737c1778534b948",
+    "packagedSHA256": "b8c7e7cbb217624562bb44a177f252577aa483c391b4b6e90737c1778534b948"
+  },
+  {
+    "source": "/tmp/mp-candidate-d-review/blocking-findings.json",
+    "path": "docs/evidence/autonomous-run/candidate-d/blocking-findings.json",
+    "originalSHA256": "b8ff990e7abe870b71b444a20b6e526eb4e06d54399d029b76bbeb0c873fc55f",
+    "packagedSHA256": "b8ff990e7abe870b71b444a20b6e526eb4e06d54399d029b76bbeb0c873fc55f"
+  },
+  {
+    "source": "/tmp/mp-candidate-d-review/source-comparison.json",
+    "path": "docs/evidence/autonomous-run/candidate-d/source-comparison.json",
+    "originalSHA256": "315ee990c8a2f8dfa2768799994aa0a766886e835bd3ccb9e3c88985284dbdea",
+    "packagedSHA256": "315ee990c8a2f8dfa2768799994aa0a766886e835bd3ccb9e3c88985284dbdea"
+  },
+  {
+    "source": "/tmp/mp-candidate-d-review/target.json",
+    "path": "docs/evidence/autonomous-run/candidate-d/review-target.json",
+    "originalSHA256": "78eae79013c9856c2d0fcf0ecc1412d2d634d00c6e7dc750a3b4b097453219ea",
+    "packagedSHA256": "78eae79013c9856c2d0fcf0ecc1412d2d634d00c6e7dc750a3b4b097453219ea"
+  },
+  {
+    "source": "/tmp/mp-candidate-d-review/review.json",
+    "path": "docs/evidence/autonomous-run/candidate-d/review.json",
+    "originalSHA256": "69479900643d0ee46b50deef6f2747b1de28a0dfb5ddfc95b7b5f6f1a0054c91",
+    "packagedSHA256": "69479900643d0ee46b50deef6f2747b1de28a0dfb5ddfc95b7b5f6f1a0054c91"
+  },
+  {
+    "source": "/tmp/mp-candidate-d-review/review.md",
+    "path": "docs/evidence/autonomous-run/candidate-d/review.md",
+    "originalSHA256": "14704feb1b76554eed2c4e2e52dd4f5324015857f6b9ced1789dafe8da14b4e5",
+    "packagedSHA256": "567e6c562187a82e2d0b6fc5c5df7a6a761813036f76e01e9544604141f070b4"
+  },
+  {
+    "source": "/tmp/mp-candidate-d-review/geometry-probe.mjs",
+    "path": "docs/evidence/autonomous-run/candidate-d/geometry-probe.mjs",
+    "originalSHA256": "e82258030cf116774bf5f45de6aeb1c7d708b4b8f460a24daf6f44f67649740c",
+    "packagedSHA256": "e82258030cf116774bf5f45de6aeb1c7d708b4b8f460a24daf6f44f67649740c"
+  },
+  {
+    "source": "/tmp/mp-candidate-e-review/hash-verification.json",
+    "path": "docs/evidence/autonomous-run/candidate-e/hash-verification.json",
+    "originalSHA256": "afcf189c1f23b34f928e2e6ef080ecd4cd973096975de466d77d9dc4edf1490e",
+    "packagedSHA256": "afcf189c1f23b34f928e2e6ef080ecd4cd973096975de466d77d9dc4edf1490e"
+  },
+  {
+    "source": "/tmp/mp-candidate-e-review/claim-history-diagnostics.json",
+    "path": "docs/evidence/autonomous-run/candidate-e/claim-history-diagnostics.json",
+    "originalSHA256": "dfb9bf8fb4918b1488d36e3955daab975a781bf4af7707016cb340420cbe0657",
+    "packagedSHA256": "dfb9bf8fb4918b1488d36e3955daab975a781bf4af7707016cb340420cbe0657"
+  },
+  {
+    "source": "/tmp/mp-candidate-e-review/source-comparison.json",
+    "path": "docs/evidence/autonomous-run/candidate-e/source-comparison.json",
+    "originalSHA256": "0b3a1ffee4f8089ddd4e1c1cb436d76c1f903e413c4e2ae4f3d4f97a795335d6",
+    "packagedSHA256": "0b3a1ffee4f8089ddd4e1c1cb436d76c1f903e413c4e2ae4f3d4f97a795335d6"
+  },
+  {
+    "source": "/tmp/mp-candidate-e-review/target.json",
+    "path": "docs/evidence/autonomous-run/candidate-e/review-target.json",
+    "originalSHA256": "aa0652d5169b1f93e2f463170d53b3cf4b8e1c3c8036ba362f26fa2eb6083e56",
+    "packagedSHA256": "aa0652d5169b1f93e2f463170d53b3cf4b8e1c3c8036ba362f26fa2eb6083e56"
+  },
+  {
+    "source": "/tmp/mp-candidate-e-review/review.json",
+    "path": "docs/evidence/autonomous-run/candidate-e/review.json",
+    "originalSHA256": "8a8d5eec4dc5473acb2af09bb5e4079af63df5ae5e313f25b6f676d96fbbd40c",
+    "packagedSHA256": "8a8d5eec4dc5473acb2af09bb5e4079af63df5ae5e313f25b6f676d96fbbd40c"
+  },
+  {
+    "source": "/tmp/mp-candidate-e-review/arbitrary-code-exclusion.json",
+    "path": "docs/evidence/autonomous-run/candidate-e/arbitrary-code-exclusion.json",
+    "originalSHA256": "d595a7a17180027fbc9f801c57a2ab90900222917919685614a2d5367f129b3f",
+    "packagedSHA256": "d595a7a17180027fbc9f801c57a2ab90900222917919685614a2d5367f129b3f"
+  },
+  {
+    "source": "/tmp/mp-candidate-e-review/review.md",
+    "path": "docs/evidence/autonomous-run/candidate-e/review.md",
+    "originalSHA256": "9a77b1b4b50f0e4db55ef47987415d70b5dd684c791fa5689ca59c6265893ec3",
+    "packagedSHA256": "8465df0174f32735998c7d8a6f90d14c9bcd7b2557bc1f82b185e6a112623b04"
+  }
+]

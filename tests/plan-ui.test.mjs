@@ -1,3 +1,4 @@
+import {legacyPlanningFixture} from './fixtures/legacy-build.mjs';
 // Normal-entry dev presentation checks, separate from real Qwen/Duo evidence.
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
@@ -9,6 +10,7 @@ import { chromium } from 'playwright';
 const root=new URL('..',import.meta.url).pathname;
 const out=mkdtempSync(join(tmpdir(),'mp-plan-ui-'));
 execFileSync('node',['scripts/build.mjs','--channel','dev','--out',out],{cwd:root,stdio:'pipe'});
+legacyPlanningFixture(out);
 let browser;
 before(async()=>{browser=await chromium.launch();});
 after(async()=>{await browser?.close();rmSync(out,{recursive:true,force:true});});

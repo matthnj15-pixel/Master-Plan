@@ -1,0 +1,56 @@
+{
+  "beforeSHA": "c921f0add6f7c16682e6fa6d4b04523b17656e4f",
+  "afterSHA": "35461a0acc6a21c723d97d90509bb1e8adb0cf49",
+  "evidenceType": "same ordinary seed31, same strategy commands and actual host election choices; compare all annual observed outcomes, selections, funding, formal results, sites, maps, semantic opportunities and election results",
+  "paths": [
+    {
+      "strategy": "compact",
+      "comparedResolutions": 12,
+      "comparedElections": 3,
+      "differences": [],
+      "sameNormalOutcomes": true,
+      "deliveredOpportunities": 2,
+      "carryoverUptakeTurns": [
+        4
+      ],
+      "electionShares": [
+        59.4,
+        63.5,
+        61
+      ]
+    },
+    {
+      "strategy": "outward",
+      "comparedResolutions": 12,
+      "comparedElections": 3,
+      "differences": [],
+      "sameNormalOutcomes": true,
+      "deliveredOpportunities": 2,
+      "carryoverUptakeTurns": [
+        4
+      ],
+      "electionShares": [
+        60.1,
+        64.7,
+        62
+      ]
+    },
+    {
+      "strategy": "preservation",
+      "comparedResolutions": 12,
+      "comparedElections": 3,
+      "differences": [],
+      "sameNormalOutcomes": true,
+      "deliveredOpportunities": 2,
+      "carryoverUptakeTurns": [
+        4
+      ],
+      "electionShares": [
+        59.6,
+        64.1,
+        61.5
+      ]
+    }
+  ],
+  "allNormalOutcomesUnchanged": true
+}

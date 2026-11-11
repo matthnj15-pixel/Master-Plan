@@ -1,0 +1,358 @@
+{
+  "capturedUTC": "2026-11-11T02:45:44.391987+00:00",
+  "observedReports": [
+    {
+      "path": "/workspace/qa-private/evidence/integrated-c921f0add6f7c16682e6fa6d4b04523b17656e4f/corpus-initial/initial-evaluation.json",
+      "sha256": "7ef9defe0a9aa36b863928f3d6610849f2b7f09c6ee28b806ddfbcffea63150d",
+      "bytes": 1689128,
+      "sourceSHA": "c921f0add6f7c16682e6fa6d4b04523b17656e4f",
+      "evidenceType": {
+        "type": "browser-mock",
+        "gpu": "synthetic shader-f16 feature",
+        "runtime": "WebLLM 0.2.87 interface fixture",
+        "tokenizer": "synthetic one token per four UTF-8 bytes, per template segment",
+        "contextWindow": 4096,
+        "modelWeights": "none; cache marker only",
+        "generation": "queued evaluator replies; no prompt/title dispatch",
+        "admission": "actual production loadedAdmission and serialized provider queue"
+      },
+      "declaredFinal": null,
+      "passed": 12,
+      "failed": 0,
+      "caseCount": 12,
+      "results": [
+        {
+          "id": "S01",
+          "width": 400,
+          "status": "pass"
+        },
+        {
+          "id": "S02",
+          "width": 669,
+          "status": "pass"
+        },
+        {
+          "id": "S03",
+          "width": 400,
+          "status": "pass"
+        },
+        {
+          "id": "S04",
+          "width": 669,
+          "status": "pass"
+        },
+        {
+          "id": "S05",
+          "width": 400,
+          "status": "pass"
+        },
+        {
+          "id": "S06",
+          "width": 669,
+          "status": "pass"
+        },
+        {
+          "id": "S07",
+          "width": 400,
+          "status": "pass"
+        },
+        {
+          "id": "S08",
+          "width": 669,
+          "status": "pass"
+        },
+        {
+          "id": "A01",
+          "width": 400,
+          "status": "pass"
+        },
+        {
+          "id": "A02",
+          "width": 669,
+          "status": "pass"
+        },
+        {
+          "id": "U01",
+          "width": 400,
+          "status": "pass"
+        },
+        {
+          "id": "U02",
+          "width": 669,
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "path": "/workspace/qa-private/evidence/integrated-c921f0add6f7c16682e6fa6d4b04523b17656e4f/typed-lifecycles-review-stage-retest/report.json",
+      "sha256": "6d4fca9f8e8a55ebfbf811e3e85ecadd1b6f77118e6c99bc70eb6ef595cd31b2",
+      "bytes": 1873748,
+      "sourceSHA": "c921f0add6f7c16682e6fa6d4b04523b17656e4f",
+      "evidenceType": {
+        "type": "browser-mock",
+        "gpu": "synthetic shader-f16 feature",
+        "runtime": "WebLLM 0.2.87 interface fixture",
+        "tokenizer": "synthetic one token per four UTF-8 bytes, per template segment",
+        "contextWindow": 4096,
+        "modelWeights": "none; cache marker only",
+        "generation": "queued evaluator replies; no prompt/title dispatch",
+        "admission": "actual production loadedAdmission and serialized provider queue"
+      },
+      "declaredFinal": false,
+      "passed": 3,
+      "total": 3,
+      "results": [
+        {
+          "id": "S01",
+          "width": 400,
+          "status": "pass"
+        },
+        {
+          "id": "S02",
+          "width": 669,
+          "status": "pass"
+        },
+        {
+          "id": "S04",
+          "width": 400,
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "path": "/workspace/qa-private/evidence/integrated-c921f0add6f7c16682e6fa6d4b04523b17656e4f/persona-council/report.json",
+      "sha256": "bc4b75908c6464691d65a9dc86712e8fa9e7583866cff84fa6de2a28cdf561b3",
+      "bytes": 7746345,
+      "sourceSHA": "c921f0add6f7c16682e6fa6d4b04523b17656e4f",
+      "evidenceType": {
+        "type": "browser-mock",
+        "gpu": "synthetic shader-f16 feature",
+        "runtime": "WebLLM 0.2.87 interface fixture",
+        "tokenizer": "synthetic one token per four UTF-8 bytes, per template segment",
+        "contextWindow": 4096,
+        "modelWeights": "none; cache marker only",
+        "generation": "queued evaluator replies; no prompt/title dispatch",
+        "admission": "actual production loadedAdmission and serialized provider queue"
+      },
+      "declaredFinal": false,
+      "passed": 5,
+      "total": 5,
+      "results": [
+        {
+          "id": "farm-agree",
+          "width": 400,
+          "status": "pass"
+        },
+        {
+          "id": "farm-counter",
+          "width": 669,
+          "status": "pass"
+        },
+        {
+          "id": "farm-refuse",
+          "width": 400,
+          "status": "pass"
+        },
+        {
+          "id": "campus-contrast",
+          "width": 669,
+          "status": "pass"
+        },
+        {
+          "id": "council-claims-receipts",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "path": "/workspace/qa-private/evidence/integrated-c921f0add6f7c16682e6fa6d4b04523b17656e4f/two-page-races/report.json",
+      "sha256": "4ddeeda0ded86cfe29a70010fa668c34d81ba17d893da1bfa7d697b76b629763",
+      "bytes": 1306,
+      "sourceSHA": "c921f0add6f7c16682e6fa6d4b04523b17656e4f",
+      "evidenceType": "two actual Chromium pages; shared localStorage and native Web Locks; actual engine/workspace; targeted timing/fault injection",
+      "declaredFinal": true,
+      "allRequiredPass": true,
+      "interleavingsExecuted": 8,
+      "results": [
+        {
+          "id": "T1",
+          "status": "pass"
+        },
+        {
+          "id": "T2",
+          "status": "pass"
+        },
+        {
+          "id": "T3",
+          "status": "pass"
+        },
+        {
+          "id": "T4",
+          "status": "pass"
+        },
+        {
+          "id": "T5",
+          "status": "pass"
+        },
+        {
+          "id": "T6",
+          "status": "pass"
+        },
+        {
+          "id": "T7",
+          "status": "pass"
+        },
+        {
+          "id": "T8",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "path": "/workspace/qa-private/evidence/integrated-c921f0add6f7c16682e6fa6d4b04523b17656e4f/account-ui-format-fences/report.json",
+      "sha256": "8f94eef747ce826d8ec4643073b572942ad17b0922ec8677c1684bcf3f3b3cc7",
+      "bytes": 6688808,
+      "sourceSHA": "c921f0add6f7c16682e6fa6d4b04523b17656e4f",
+      "evidenceType": null,
+      "declaredFinal": true,
+      "passed": 7,
+      "total": 9,
+      "results": [
+        {
+          "id": "explicit-account-ui-import",
+          "status": "pass"
+        },
+        {
+          "id": "delayed-account-ui-import",
+          "status": "pass"
+        },
+        {
+          "id": "feature-off",
+          "status": "pass"
+        },
+        {
+          "id": "newer-format",
+          "status": "pass"
+        },
+        {
+          "id": "corrupt-format",
+          "status": "pass"
+        },
+        {
+          "id": "nested-economy-null",
+          "status": "fail",
+          "error": "Protected nested-economy-null was writable or lost bytes"
+        },
+        {
+          "id": "nested-null-schedule",
+          "status": "fail",
+          "error": "Protected nested-null-schedule was writable or lost bytes"
+        },
+        {
+          "id": "channel-isolation",
+          "status": "pass"
+        },
+        {
+          "id": "private-capacity",
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "path": "/workspace/qa-private/evidence/integrated-c921f0add6f7c16682e6fa6d4b04523b17656e4f/offline-failure-diagnostics/report.json",
+      "sha256": "b7b3742e50c272c6a67f7175dbbcb2222be3075b75c0cce29ce65fb303da680d",
+      "bytes": 2314660,
+      "sourceSHA": "c921f0add6f7c16682e6fa6d4b04523b17656e4f",
+      "evidenceType": {
+        "type": "browser-mock",
+        "gpu": "synthetic shader-f16 feature",
+        "runtime": "WebLLM 0.2.87 interface fixture",
+        "tokenizer": "synthetic one token per four UTF-8 bytes, per template segment",
+        "contextWindow": 4096,
+        "modelWeights": "none; cache marker only",
+        "generation": "queued evaluator replies; no prompt/title dispatch",
+        "admission": "actual production loadedAdmission and serialized provider queue"
+      },
+      "declaredFinal": false,
+      "passed": 2,
+      "total": 2,
+      "results": [
+        {
+          "id": "failure-recovery-diagnostics",
+          "width": 400,
+          "status": "pass"
+        },
+        {
+          "id": "cached-offline-flow",
+          "width": 669,
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "path": "/workspace/qa-private/evidence/integrated-c921f0add6f7c16682e6fa6d4b04523b17656e4f/diagnostics-bounds.json",
+      "sha256": "5a98ee739739e9b98d92eb9c6b971291b010b7fe72c54d278ab7a69594a1d401",
+      "bytes": 640,
+      "sourceSHA": "c921f0add6f7c16682e6fa6d4b04523b17656e4f",
+      "evidenceType": "actual frozen diagnostics module; controlled clock and storage adapter, separate from browser export",
+      "declaredFinal": null,
+      "passed": 2,
+      "results": [
+        {
+          "status": "pass"
+        },
+        {
+          "status": "pass"
+        }
+      ]
+    },
+    {
+      "path": "/workspace/qa-sustained/B/focus/report.json",
+      "sha256": "28b28bd6c90c75ded2cead3b5fecf913d1a1b77b4548eebc3abf2fd985c38cb7",
+      "bytes": 664024,
+      "sourceSHA": "c921f0add6f7c16682e6fa6d4b04523b17656e4f",
+      "evidenceType": "focused normal UI retest on labeled ordinary-engine/store fixture; Qwen off; not full first-term replay",
+      "declaredFinal": null,
+      "passed": 0,
+      "total": 2,
+      "results": [
+        {
+          "width": 669,
+          "status": "fail",
+          "error": "SUST-A-02 persists: physical legacy site is labeled zero/no-site policy. Other focused checks continued independently.",
+          "siteLabelFailure": true
+        },
+        {
+          "width": 400,
+          "status": "fail",
+          "error": "SUST-A-02 persists: physical legacy site is labeled zero/no-site policy. Other focused checks continued independently.",
+          "siteLabelFailure": true
+        }
+      ]
+    },
+    {
+      "path": "/workspace/qa-sustained/B/strategies/report.json",
+      "sha256": "bd54fc692e50de21aac7b462d4964f6c1fb1e00bc68a947a6d69bffe7f2eb03d",
+      "bytes": 19556154,
+      "sourceSHA": "c921f0add6f7c16682e6fa6d4b04523b17656e4f",
+      "evidenceType": "independent final-B actual engine/store paths plus normal host election controls; not full manual browser play or live AI",
+      "declaredFinal": null,
+      "passed": 3,
+      "total": 3,
+      "results": [
+        {
+          "strategy": "compact",
+          "status": "pass"
+        },
+        {
+          "strategy": "outward",
+          "status": "pass"
+        },
+        {
+          "strategy": "preservation",
+          "status": "pass"
+        }
+      ]
+    }
+  ]
+}

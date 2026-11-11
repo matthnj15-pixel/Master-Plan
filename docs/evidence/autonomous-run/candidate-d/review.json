@@ -1,0 +1,216 @@
+{
+  "candidate": "D",
+  "sha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d",
+  "disposition": "needs revision",
+  "criteriaCounts": {
+    "PASS": 31,
+    "UNVERIFIED": 2,
+    "FAIL": 1
+  },
+  "criteria": [
+    {
+      "id": "G1.1",
+      "status": "PASS",
+      "evidence": "Typed browser mock lifecycles retain exact ordered sites, original intent, private state and annual initiative availability."
+    },
+    {
+      "id": "G1.2",
+      "status": "PASS",
+      "evidence": "Generic multi-component schema, scale, sharing and operating conditions; malformed identities and cumulative policy validation now reject safely."
+    },
+    {
+      "id": "G1.3",
+      "status": "PASS",
+      "evidence": "C legacy park editor shows four exact ordered plots at 400/669 before preview and after reload; exhibit matches. Public bytes unchanged. Composed renderer/map implementation is unchanged from B."
+    },
+    {
+      "id": "G1.4",
+      "status": "PASS",
+      "evidence": "Engine conservation/sharing, occupied-site demolition and retention checks pass; unsupported active-space reuse is disclosed."
+    },
+    {
+      "id": "G1.5",
+      "status": "PASS",
+      "evidence": "All 12 corpus cases pass at the code/browser-fixture boundary, including clarification and unsupported/capacity handling; actual live interpretation remains X1."
+    },
+    {
+      "id": "G1.6",
+      "status": "PASS",
+      "evidence": "Accepted A data-only extension lifecycle retained. C detached interpretation reproduces the identical initial revision/layout/$275K cost and supports its delivered save. No long browser lifecycle repeated."
+    },
+    {
+      "id": "G1.7",
+      "status": "PASS",
+      "evidence": "Independent frozen-catalog corpus and three uncatalogued typed browser mock lifecycles pass; this establishes the shared pipeline, not live-model generalization."
+    },
+    {
+      "id": "G2.1",
+      "status": "PASS",
+      "evidence": "Three typed additive/reductive edits in three actual browser mock lifecycles preserve site, unrelated components and synchronized forecasts."
+    },
+    {
+      "id": "G2.2",
+      "status": "PASS",
+      "evidence": "QA alternatives round trips and reviewer comparison/reload identify the baseline without consuming a public action."
+    },
+    {
+      "id": "G2.3",
+      "status": "PASS",
+      "evidence": "Requested previews precede resident responses. Farm counter/confirmation and named campus stakeholder views pass."
+    },
+    {
+      "id": "G2.4",
+      "status": "PASS",
+      "evidence": "Independent C browser checks retain quantity 999, full original/edit text and changed four-plot site across close/reload at both widths; last accepted preview stays separate, posting requires valid re-preview, and explicit version selection restores the former site."
+    },
+    {
+      "id": "G2.5",
+      "status": "PASS",
+      "evidence": "C typed lifecycle/working-input checks preserve accepted baseline versus pending edits. B numerical comparison and after-reload delta evidence is carried with source comparison; coefficient/render/workspace sources are unchanged."
+    },
+    {
+      "id": "G2.6",
+      "status": "PASS",
+      "evidence": "Four drafts/eight versions/128KiB capacity and explicit no-eviction handling pass storage fixtures and QA. Structurally malformed private recovery now reports unavailable while retaining bytes/live text/site."
+    },
+    {
+      "id": "G3.1",
+      "status": "PASS",
+      "evidence": "Five browser persona/council cases include farm agree/counter/refuse and concrete campus objections."
+    },
+    {
+      "id": "G3.2",
+      "status": "PASS",
+      "evidence": "The controlling freight operator agrees while the named college stakeholder counters the campus-entrance loading conflict; both are displayed."
+    },
+    {
+      "id": "G3.3",
+      "status": "PASS",
+      "evidence": "Farm concession is previewed, explicitly confirmed and re-evaluated; route changes affect engine costs and actor evaluations."
+    },
+    {
+      "id": "G3.4",
+      "status": "PASS",
+      "evidence": "One controlling authorizer and prerequisite checks remain engine-owned. Inherited route IDs and malformed presenter/member identities reject."
+    },
+    {
+      "id": "G3.5",
+      "status": "PASS",
+      "evidence": "The unchanged A-engine reproduction now returns none/claim_repeated on C after 65 cosmetic revisions and receipt pruning. Authentic old provenance and conservative missing-provenance fallback pass; new distinct facts remain eligible when proven."
+    },
+    {
+      "id": "G3.6",
+      "status": "PASS",
+      "evidence": "Actual saved persuasion receipts govern reactions. Wrong/member/missing/pruned/stale receipts and retries are covered without a second score."
+    },
+    {
+      "id": "G3.7",
+      "status": "PASS",
+      "evidence": "Explicit favors/earmarks/funding/votes and existing per-member caps remain intact; historical repeated-fact eligibility is failed separately under G3.5."
+    },
+    {
+      "id": "G4.1",
+      "status": "PASS",
+      "evidence": "Real engine/store post and native-lock browser races consume the initiative once; failed actions preserve durable state."
+    },
+    {
+      "id": "G4.2",
+      "status": "PASS",
+      "evidence": "Valid-state vote/funding eligibility and all eight real-browser shared-storage/native-Web-Locks interleavings pass. Corrupt save admission is failed under X4."
+    },
+    {
+      "id": "G4.3",
+      "status": "PASS",
+      "evidence": "Approved program/layout/conditions/revision survive pending/built/reload. New legacy delivery records retain plan/site/revision/decision; actual cost, upkeep and replay pass."
+    },
+    {
+      "id": "G4.4",
+      "status": "PASS",
+      "evidence": "Three browser mock lifecycles retain delivered geometry and reports. Legacy record/UI now show built, actual cost/upkeep, and mayoral approval without a fictitious council vote."
+    },
+    {
+      "id": "G4.5",
+      "status": "PASS",
+      "evidence": "Actual cash-approved legacy bridge record reaches bounded context with kind/plan and source identity. Seven inconsistent archives reject; legacy/composed copies share a combined limit of three without repricing historical land or granting present authority."
+    },
+    {
+      "id": "G4.6",
+      "status": "PASS",
+      "evidence": "Independent C compact/outward/preservation engine/store paths each complete 12 normal-rule years and demonstrate traceable outcome/opportunity divergence."
+    },
+    {
+      "id": "G4.7",
+      "status": "PASS",
+      "evidence": "Accepted A normal first-term/election/later-opportunity browser evidence is retained with B progression/three 12-year path and affected-flow checks. No forced loss continuation or resource gifts."
+    },
+    {
+      "id": "X1",
+      "status": "UNVERIFIED",
+      "evidence": "Live Qwen is blocked by measured shader-f16 capability. Zero real-model generation acceptance; all provider substitutes are labeled."
+    },
+    {
+      "id": "X2",
+      "status": "UNVERIFIED",
+      "evidence": "Cached offline/failure recovery browser mocks pass; actual model-cache inference and physical Duo airplane-mode operation remain unverified."
+    },
+    {
+      "id": "X3",
+      "status": "PASS",
+      "evidence": "C browser touch emulation at 400x951 and 669x951 covers pinned primary actions, scrolling, controls, fit and affected views. Physical device behavior is not inferred."
+    },
+    {
+      "id": "X4",
+      "status": "PASS",
+      "evidence": "D closes nested layout/grid admission: 44 independent corrupted saves reject with bytes preserved on both flags; seven actual controlled account imports reject without replacement. Six valid-save cases and actual A delivered-extension import/render pass. Real account host remains unverified."
+    },
+    {
+      "id": "X5",
+      "status": "FAIL",
+      "evidence": "B density/site reason and retention/date/export checks remain valid, but C introduces claim_history_unresolved without adding it to the diagnostic closed-code allowlist; actual prepared export loses the credit-withholding reason (R11-HISTORY-REASON)."
+    },
+    {
+      "id": "X6",
+      "status": "PASS",
+      "evidence": "Deterministic engine owns all outcomes and now compares saved layouts to pure canonical geometry without repricing historical sites. Consumed grid metadata is validated before load/render/account admission."
+    },
+    {
+      "id": "X7",
+      "status": "PASS",
+      "evidence": "C source/build manifest verified 22/22. Current C browser/mock/engine evidence, B/A carried evidence and unchanged sources are identified separately. Missing live/device/account-host checks remain explicit; no deployment or D pass is claimed."
+    }
+  ],
+  "findings": [
+    {
+      "id": "R11-HISTORY-REASON",
+      "severity": "P2",
+      "owner": "diagnostic closed result-code allowlist",
+      "criteria": [
+        "X5"
+      ],
+      "source": "src/qwen-diagnostics.js resultCodes; src/composition-requests.js claims logging",
+      "reproduction": "Use the authentic A pruned-credit fixture with projectRecords absent; C migrates conservatively. Run actual COMPOSITION_REQUESTS claims with a constant original-claim mock and actual diagnostics. Engine evaluation returns none/claim_history_unresolved, but prepared export drops that code and retains valid/none events.",
+      "evidence": "claim-history-diagnostics.json",
+      "amendment": "Add the exact fixed claim_history_unresolved code to the closed diagnostic allowlist and verify sanitized export. Preserve rejection of arbitrary text."
+    }
+  ],
+  "geometry": "44 negative + 6 positive independent cases; seven rejected account imports; positive actual A import/render; local browser protected landing both flags, zero page errors",
+  "validation": {
+    "independentFocused": {
+      "total": 86,
+      "pass": 85,
+      "fail": 0,
+      "skip": 1
+    },
+    "coordinatorFull": {
+      "total": 247,
+      "pass": 247,
+      "fail": 0,
+      "skip": 0,
+      "trace": "pass"
+    }
+  },
+  "noOtherKnownSourceBlockers": true,
+  "onlyKnownBlocker": "R11-HISTORY-REASON",
+  "carryForward": "source-comparison.json and qa-evidence-index.json",
+  "productSourceReadOnly": true
+}

@@ -1,0 +1,13 @@
+{
+  "on": {
+    "protected": "Your saved town is protected",
+    "gameHidden": true,
+    "bytesPreserved": true
+  },
+  "off": {
+    "protected": "Your saved town is protected",
+    "gameHidden": true,
+    "bytesPreserved": true
+  },
+  "errors": []
+}

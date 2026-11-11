@@ -1,0 +1,75 @@
+# Historical autonomous findings and fix sequence
+
+Coordinator-owned ledger. Candidate A is immutable
+`6da5d9adc51751afb27236bfc27b769848a18d94`; subsequent fixes require a common
+Candidate B for independent QA and Reviewer. A fixed source finding is not a
+final acceptance pass until its affected checks run on the integrated target.
+
+Final independent disposition at E `09f924bb305999932e8b74383f9d3f759f95895c`:
+**32 PASS, 0 FAIL, 2 UNVERIFIED; ready for experimental Dev integration.**
+All concrete source findings below are closed. The detailed statuses in the
+table record the earlier fix/retest sequence; the authoritative final closure
+matrix is [Reviewer E](candidate-e/review.md).
+Local full verification is 248/248 with no skips, plus trace and both builds.
+Live Qwen, physical Duo/offline inference and the real Claude/account host
+remain named external gates. CI/merge/deployment are recorded in PR #17.
+
+| ID | Finding / concrete check | Owner | Status / evidence |
+|---|---|---|---|
+| S1 | Delayed replacement without a pre-read expected generation rewinds local progress. | Coordinator | Fixed c62580f; explicit expectation required. |
+| S2 | Channel defaults could use Dev keys under Stable lock. | Coordinator | Fixed c62580f; derive keys and reject mismatches. |
+| S3 | Outgoing unsupported state and malformed/empty/null/newer legacy data could pass. | Coordinator | Fixed c62580f/235dd5f; 11 storage tests, independent original-case recheck. |
+| S4 | Account A→B→A could acknowledge an obsolete upload. | Coordinator | Fixed c62580f; account epoch checked before/after upload. |
+| S5 | Private entry corruption and stale workspace updates could appear valid. | Coordinator / Reviewer | Outer/entry shapes and limits fixed c62580f. Reviewer checking full UI draft/version defensive handling separately. Preserve bytes and live input on corrupt recovery. |
+| S6 | Replay mismatch got masked by stale generation. | Coordinator | Fixed c62580f; retained/pruned-ID identity rejection precedes freshness. |
+| S7 | Feature-off protected v4 could look like a fresh town. | Reviewer | Assess explicit protected-save landing/summary; never price a composed save using legacy rules or imply reset. No bytes may change. |
+| E1 | Candidate revision excluded exact site identity. | Engine | Fixed 40ce66e / integrated 915ebb7. |
+| E2 | Numeric negation/string claim values could earn unsupported credit; false finding lacked field identity. | Engine | Fixed 40ce66e; per-claim semantic fields persist in actual receipt. Reviewer checking remaining cases. |
+| E3 | Failed votes remained open; grouped winner/funding behavior needed explicit binding. | Engine | Fixed 5aafe88/40ce66e; preserve actual rejection/tabling and require reviewed winner funding. |
+| E4 | Inherited `__proto__` / `constructor` loading routes were accepted. | Engine | Confirmed on A; fixed aeaae2c / integrated 88a0900. One trusted route helper, 24 composition +33 legacy engine +4 scenario tests pass. |
+| E5 / R8 | Repeated operating review could stack identical policy benefits. | Engine / Reviewer | Cross-project repeat blocked in 40ce66e; program-wide policy quantity limited to one in 6e7ff34 / integrated 0b09012. Final independent retest pending. |
+| E6 / R1 | JSON capability object with null toString/valueOf throws during rejection. | Engine | Fixed 6e7ff34 / 0b09012: type-check before lookup/coercion; malformed JSON returns reasons. Final independent retest pending. |
+| E7 / R2 | Inherited presenter/member identities produce accepted NaN forecasts or throw. | Engine | Fixed 6e7ff34 / 0b09012: typed own-property actor identity and council membership. Final independent retest pending. |
+| E8 / R3 | v4 proposals:[null] passes save recognition then grant dispatch throws. | Engine | Fixed 6e7ff34 / 0b09012: validate collection entries before migration/dispatch, preserve valid old-save fixtures. Final independent retest pending. |
+| E9 / R4 | A title-only revision renews credit for an unchanged factual claim. | Engine | Fixed 6e7ff34 / 0b09012: stable factual-content credit identity with revision freshness retained. Final independent retest pending. |
+| E10 / R3 follow-up | Nested scenario.economy=null or schedule[2]=[null] loads as supported, then annual resolution throws. | Engine | Confirmed by independent Candidate B probe. Bounded nested scenario/state validation fix active; Candidate C retest required. |
+| E11 / R4 pruned history | A supported A save can earn the same fact credit after its original receipt is pruned. | Engine | Independent unchanged-A reproduction uses 65 authorized title revisions. Preserve deduplication independently of bounded receipts; conservative unrecoverable-legacy migration is allowed and must be explicit. C fix/retest active. |
+| E12 / R3 layout display | Corrupt persisted allocation scalar fields pass admission, then renderer coercion throws. | Engine | Independently confirmed on C for label/role/componentId/sharedWith. General pure-layout and consumed building-data validation active for D; preserve bytes and valid historical geometry. |
+| T1 | Three legacy browser reload assertions failed after a new storage-writing init script. | Coordinator | Fixture setup fixed 0acb7a2: set legacy flag in build metadata. All three original assertions pass; full c652bee suite 184/184 plus trace passes. |
+| U1 | Private alternatives lacked an identifiable baseline and synchronized physical/member support deltas. | Frontend | Active: current-state same-site baseline, changed components/conditions, money/upkeep/capacity/effect/support deltas. |
+| U2 | Deliveries label markup and full coordinate dump impaired mobile controls. | Frontend | Active: close label; show count/plot summary with exact geometry retained in engine. |
+| U3 | Project history dumped raw JSON/full hashes. | Frontend | Fixed in 8cfbc77 / aed2350: readable project provenance and short revision labels. Verify actual display. |
+| U4 | No explicit generation-bound account import in composed mode. | Frontend | Active: capture generation before remote read, preview current/legacy source, explicit replacement, safe stale rejection. Keep account namespaces and original legacy source protected. Real host remains separate gate. |
+| U5 | Menu mutated composition engine flag immediately while UI captured startup flag. | Frontend | Active: persist next-launch override; keep loaded runtime internally consistent until reload. |
+| U6 | Preview success and failed persistence lacked linked diagnostics. | Frontend / Provider | Active: retain opaque request ID; sanitized application/persistence event/result code and applied outcome. Diagnostics failure cannot affect play. |
+| U7 | Clarification questions/omissions were dropped by UI in favor of generic blocker. | Frontend | Active: display bounded validated questions/omissions, preserve input/site and explicit subset acknowledgment. |
+| U8 | First corpus run timed out in rapid adjacent plot selection; normal double-tap threshold also runs while picking. | Frontend / QA | Reproduce gesture classification; picking must retain exact ordered taps. Preserve outside-picking zoom gestures. Most first-pass cases stopped before inference. |
+| U9 | Typed-revision submit selector also matches agenda action in the form. | Frontend / QA | Explicit intended submit and type=button for non-submit actions; inspect actual DOM/form ownership. Preserve the initial failure and use uniquely meaningful controls. |
+| U10 | Composition stages do not always pin the primary action while body scrolls. | Frontend / Sustained QA | Actual 400px screenshot shows long legacy controls with no review/confirm footer. Verify required primary region bounds in each stage at both widths, beyond target-size checks. |
+| U11 / R7 | Campus operator agrees while the computed college counter is hidden. | Frontend | Render named stakeholder evaluations/reasons/concessions separately from the one controlling authorizer. A stakeholder concern is not a veto. |
+| U12 / R10 pending recovery | Reopening a private draft silently restores its accepted version over saved pending controls/plots. | Frontend | B independently reproduces persisted invalid quantity 999 becoming accepted 6, then closing overwrites working input. Restore working data and accepted preview separately; require re-preview until valid. C fix/retest active. |
+| U13 / SUST-A-02 | Legacy park editor still labels its four real plots as zero/no-site policy. | Frontend | Confirmed on B at both widths; initialize from engine-resolved ordered site, preserve preview/cancel/reload identity. C fix/retest active. |
+| P1 | Hosted JSON-only transport was rejected for absent local admission API. | Provider | Fixed f37b6e7 / integrated 6da5d9a. Hosted context remains explicitly unverified; server rejection is recoverable. |
+| P2 | Clarify final diagnostic outcome was dropped. | Provider | Fixed 35c2225 / a884cdd; final independent retest pending. |
+| P3 | Definition reductions required unpatched template to fit first. | Provider | Fixed 35c2225 / a884cdd: bounded patch precedes final site preview. |
+| P4 | Reaction timeout gave unavailable instead of grounded deterministic fallback. | Provider | Fixed 35c2225 / a884cdd; cancellation/staleness still prevent attachment. |
+| P5 | Composition stale/cancel/claims/reaction/grammar-fallback coverage incomplete. | Provider | Expanded in 35c2225 / a884cdd; current provider checkpoint has 35 passing focused tests. |
+| P6 | Loaded-tokenizer reflection verified only with mocks. | Provider | Actual SRI-pinned WebLLM 0.2.87 source audited; real getInputData parity tested with a synthetic tokenizer. Actual override is 4096 tokens. No live inference claimed. |
+| P7 | Draft/revision context omitted full condition vocabulary and scoped trusted routes. | Provider | Fixed 35c2225 / a884cdd: closed conditions/routes/exposure facts and explicit unmodeled reuse boundary. |
+| P8 / R11 | Capacity/density/sharing errors collapsed to one category without precise safe rule. | Provider | Fixed 35c2225 / a884cdd: closed ruleId/fieldId and persistence codes; arbitrary raw text excluded. Final export retest pending. |
+| P9 / R9 | Revision context omits relevant built project history and actual commitment provenance. | Provider | Fixed 75510fa / ca975b9: up to three relevant records cross-checked with accepted pending/built snapshots, conditions, revision, site and decision; no historical authority. Final independent retest pending. |
+| P10 / R9 legacy follow-up | A delivered legacy bridge record is excluded from relevant same-site later negotiation context. | Provider / Engine helper | Confirmed by independent B probe. Extend the same bounded snapshot/provenance checks to legacy plan settings, using the engine's existing revision helper. No historical authority or new effects. |
+
+Independent A evidence: actual two-page T1–T8 all pass (real engine, storage and
+Web Locks; controlled account callback). First withheld twelve-case evaluation
+recorded 1 pass / 11 fail at unchanged source/catalog; most stopped before
+inference at plot selection. Preserve original artifacts and retest same cases
+after general control/feedback fixes. Three typed browser lifecycles are owned
+by Socrates. Sustained first-term,
+real election and later opportunity browser coverage is owned by Pasteur.
+
+External gates remain explicit: no configured Qwen q4f16 inference without
+`shader-f16`; no physical Duo; actual Claude account/artifact publication needs
+the real host. Preservation retains assets outside active allocations; adaptive
+reuse inside an existing building is an unmodeled boundary requiring honest
+scope handling, not silent demolition.

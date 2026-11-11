@@ -1,0 +1,134 @@
+{
+  "contractVersion": "mp.proposals/1",
+  "actionId": "mpa1.Zml4dHVyZTptcC12MToyMzAx.1",
+  "base": {
+    "gameId": "fixture:mp-v1:2301",
+    "scenarioId": "millbrooke",
+    "turn": 1,
+    "stateRevision": 0,
+    "activationId": "fixture:activation:1"
+  },
+  "actionSeq": 1,
+  "expectedStorage": {
+    "channel": "dev",
+    "saveSlotId": "primary",
+    "storageGeneration": 1,
+    "gameId": "fixture:mp-v1:2301",
+    "stateRevision": 0
+  },
+  "semanticBinding": {
+    "schema": "mp.action-semantic/1",
+    "type": "post-draft",
+    "actorId": "mayor",
+    "memberId": null,
+    "controllingAuthorizerId": "mayor",
+    "target": null,
+    "acceptedPlan": {
+      "kind": "initiative",
+      "fields": {
+        "homes": 20,
+        "affordable": false,
+        "shops": 4,
+        "stories": 2,
+        "parking": 20,
+        "green": 2,
+        "plaza": false,
+        "civic": "farmers_market",
+        "safety": "none",
+        "stormwater": true,
+        "policy": "none",
+        "quality": 2
+      }
+    },
+    "geometry": {
+      "plots": [
+        [
+          16,
+          13
+        ],
+        [
+          18,
+          13
+        ],
+        [
+          16,
+          14
+        ],
+        [
+          18,
+          14
+        ],
+        [
+          16,
+          15
+        ],
+        [
+          18,
+          15
+        ]
+      ],
+      "cellRoles": [
+        {
+          "plot": [
+            16,
+            13
+          ],
+          "role": "civic"
+        },
+        {
+          "plot": [
+            18,
+            13
+          ],
+          "role": "mixed"
+        },
+        {
+          "plot": [
+            16,
+            14
+          ],
+          "role": "homes"
+        },
+        {
+          "plot": [
+            18,
+            14
+          ],
+          "role": "parking"
+        },
+        {
+          "plot": [
+            16,
+            15
+          ],
+          "role": "pond"
+        },
+        {
+          "plot": [
+            18,
+            15
+          ],
+          "role": "green"
+        }
+      ],
+      "illustrativeInterior": true
+    },
+    "operatingChanges": [],
+    "profileRevision": null,
+    "authorization": {
+      "scopeId": "mayor.initiative",
+      "revision": 1
+    },
+    "acknowledgedScope": {
+      "scopeKey": null,
+      "omissionIds": []
+    },
+    "satisfiedGates": [],
+    "createdCommitments": [],
+    "intentDigest": "sha256:743c707e83cb40f842ba9c6ad91bb8ffc8be86dc07ab3919e0408ee861e1ea48"
+  },
+  "type": "post-draft",
+  "candidateKey": "candidate:fixture:market:1",
+  "scopeKey": null,
+  "controllingAuthorizerId": "mayor"
+}

@@ -1,0 +1,343 @@
+{
+  "sha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d",
+  "candidate": "D",
+  "contract": "C2.1",
+  "rows": [
+    {
+      "criterion": "G1.1",
+      "status": "PASS_CODE",
+      "evidence": [
+        "corpus"
+      ],
+      "scope": "Typed private input on exact ordered plots; no public initiative use before explicit post.",
+      "sourceSha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d"
+    },
+    {
+      "criterion": "G1.2",
+      "status": "PASS_CODE",
+      "evidence": [
+        "corpus"
+      ],
+      "scope": "Eight supported cases cover all seven promised families using distinct functional components.",
+      "sourceSha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d"
+    },
+    {
+      "criterion": "G1.3",
+      "status": "PASS_CODE",
+      "evidence": [
+        "corpus",
+        "typedLifecycles"
+      ],
+      "scope": "Drawing/forecast/SVG revision identity plus accepted-to-built layout equality; representative screenshots reviewed.",
+      "sourceSha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d"
+    },
+    {
+      "criterion": "G1.4",
+      "status": "PARTIAL_QA",
+      "evidence": [
+        "corpus"
+      ],
+      "scope": "One-plot capacity refusal and shared allocations checked; full occupied acquisition/demolition accounting belongs to engine/reviewer coverage.",
+      "sourceSha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d"
+    },
+    {
+      "criterion": "G1.5",
+      "status": "PASS_CODE",
+      "evidence": [
+        "corpus",
+        "scopeAcknowledgment"
+      ],
+      "scope": "Specific ambiguity/unsupported feedback; supported subset stays unpostable until native explicit acknowledgment; new revision clears acknowledgment.",
+      "sourceSha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d"
+    },
+    {
+      "criterion": "G1.6",
+      "status": "REVIEWER_OWNED",
+      "evidence": [],
+      "scope": "Trusted program extension and complete authored-definition probe belong to Reviewer; no independent duplication.",
+      "sourceSha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d"
+    },
+    {
+      "criterion": "G1.7",
+      "status": "PASS_CODE",
+      "evidence": [
+        "corpus",
+        "typedLifecycles"
+      ],
+      "scope": "Frozen corpus/catalog; all eight identities absent; three normal typed full lifecycles.",
+      "sourceSha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d"
+    },
+    {
+      "criterion": "G2.1",
+      "status": "PASS_CODE",
+      "evidence": [
+        "corpus",
+        "typedLifecycles"
+      ],
+      "scope": "Addition, reduction and meaningful operating change retain unrelated activities/site.",
+      "sourceSha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d"
+    },
+    {
+      "criterion": "G2.2",
+      "status": "PASS_CODE",
+      "evidence": [
+        "typedLifecycles"
+      ],
+      "scope": "Two material private alternatives and baseline/latest versions revisited before any post.",
+      "sourceSha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d"
+    },
+    {
+      "criterion": "G2.3",
+      "status": "PASS_CODE",
+      "evidence": [
+        "personasCouncil",
+        "footerTouchStages"
+      ],
+      "scope": "Requested candidate shown before stance; counter distinct; explicit concession confirmation changes operative program.",
+      "sourceSha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d"
+    },
+    {
+      "criterion": "G2.4",
+      "status": "PASS_CODE",
+      "evidence": [
+        "failureOfflineDiagnostics",
+        "pendingRecovery",
+        "nativeRaces",
+        "accountFormatFences"
+      ],
+      "scope": "Failure/cancel/reload/write/conflict/capacity keep input and public state; pending controls/site remain separate from accepted preview.",
+      "sourceSha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d"
+    },
+    {
+      "criterion": "G2.5",
+      "status": "PASS_CODE",
+      "evidence": [
+        "corpus",
+        "typedLifecycles",
+        "failureOfflineDiagnostics"
+      ],
+      "scope": "Same-revision money/physical/support deltas observed; restored alternatives; stale candidate forecast/geometry retained exactly.",
+      "sourceSha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d"
+    },
+    {
+      "criterion": "G2.6",
+      "status": "PASS_CODE",
+      "evidence": [
+        "accountFormatFences"
+      ],
+      "scope": "Four drafts \u00d7 eight versions and 128 KiB UTF-8 boundaries; no eviction, expiry, or public write.",
+      "sourceSha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d"
+    },
+    {
+      "criterion": "G3.1",
+      "status": "PASS_CODE",
+      "evidence": [
+        "personasCouncil"
+      ],
+      "scope": "Farm agree/counter/refuse and campus operator versus exposed college stakeholder.",
+      "sourceSha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d"
+    },
+    {
+      "criterion": "G3.2",
+      "status": "PARTIAL_QA",
+      "evidence": [
+        "personasCouncil"
+      ],
+      "scope": "Contrasting council priorities and actor exposure checked; equivalent replacement actor probe belongs to Reviewer.",
+      "sourceSha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d"
+    },
+    {
+      "criterion": "G3.3",
+      "status": "PASS_CODE",
+      "evidence": [
+        "personasCouncil"
+      ],
+      "scope": "Counter concession retains access/preserved margin, reevaluates to agree, and is explicitly confirmed.",
+      "sourceSha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d"
+    },
+    {
+      "criterion": "G3.4",
+      "status": "REVIEWER_OWNED",
+      "evidence": [
+        "personasCouncil"
+      ],
+      "scope": "Controller versus stakeholder observed; exhaustive prerequisite/forged-commit negatives belong to Reviewer.",
+      "sourceSha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d"
+    },
+    {
+      "criterion": "G3.5",
+      "status": "PASS_CODE",
+      "evidence": [
+        "personasCouncil",
+        "councilNegativeBoundaries"
+      ],
+      "scope": "Mixed true/false, absent feature, repeated/irrelevant truth, hostile language, actual credit/support and safe response.",
+      "sourceSha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d"
+    },
+    {
+      "criterion": "G3.6",
+      "status": "PASS_CODE",
+      "evidence": [
+        "personasCouncil",
+        "prunedOldCredit"
+      ],
+      "scope": "Wrong member/type/fingerprint/missing/pruned receipt rejects; historical result unchanged; delayed reaction writes nothing; authentic A pruned credit stays zero.",
+      "sourceSha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d"
+    },
+    {
+      "criterion": "G3.7",
+      "status": "PASS_CODE",
+      "evidence": [
+        "personasCouncil",
+        "councilNegativeBoundaries",
+        "typedLifecycles"
+      ],
+      "scope": "Two-pitch cap, explicit favor/earmark and funding/vote remain separate; narrative promises spend no resources.",
+      "sourceSha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d"
+    },
+    {
+      "criterion": "G4.1",
+      "status": "PASS_CODE",
+      "evidence": [
+        "nativeRaces",
+        "typedLifecycles",
+        "failureOfflineDiagnostics"
+      ],
+      "scope": "One durable post consumes one initiative; failure/private alternatives consume none.",
+      "sourceSha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d"
+    },
+    {
+      "criterion": "G4.2",
+      "status": "PASS_CODE",
+      "evidence": [
+        "nativeRaces",
+        "typedLifecycles",
+        "accountFormatFences"
+      ],
+      "scope": "Actual current votes/funding plus duplicate/delayed/account generation protection.",
+      "sourceSha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d"
+    },
+    {
+      "criterion": "G4.3",
+      "status": "PASS_CODE",
+      "evidence": [
+        "corpus",
+        "typedLifecycles",
+        "oldShellStable"
+      ],
+      "scope": "Program/layout/conditions/revision preserved through normal formal decision, delivery and reload; old-shell migration bytes retained.",
+      "sourceSha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d"
+    },
+    {
+      "criterion": "G4.4",
+      "status": "PASS_CODE",
+      "evidence": [
+        "typedLifecycles"
+      ],
+      "scope": "Accepted/built layout and program equality, actual annual delivery report and monetary reconciliation; bounded screenshots.",
+      "sourceSha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d"
+    },
+    {
+      "criterion": "G4.5",
+      "status": "PARTIAL_QA",
+      "evidence": [
+        "typedLifecycles",
+        "personasCouncil"
+      ],
+      "scope": "Persistent decision/delivery records checked; later legacy-history negotiation context is Reviewer/Planner-owned.",
+      "sourceSha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d"
+    },
+    {
+      "criterion": "G4.6",
+      "status": "PLANNER_OWNED",
+      "evidence": [],
+      "scope": "Three divergent normal-rule twelve-year strategies: refer to Planner report at its recorded SHA; no relabeling.",
+      "sourceSha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d"
+    },
+    {
+      "criterion": "G4.7",
+      "status": "PLANNER_OWNED",
+      "evidence": [],
+      "scope": "Normal first-term win/later opportunity and three twelve-year paths belong to sustained QA; historical A first-term carry-forward stays A.",
+      "sourceSha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d"
+    },
+    {
+      "criterion": "X1",
+      "status": "BLOCKED",
+      "evidence": [
+        "actualLoader",
+        "softwareLoader"
+      ],
+      "scope": "Both configured q4f16 models stop at missing shader-f16; zero live generations. No model/runtime download before capability rejection.",
+      "sourceSha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d"
+    },
+    {
+      "criterion": "X2",
+      "status": "PARTIAL_EXTERNAL",
+      "evidence": [
+        "failureOfflineDiagnostics"
+      ],
+      "scope": "Actual cached shell/SW/font and offline ordinary flow with synthetic runtime/model marker; physical Duo and actual cached model inference unavailable.",
+      "sourceSha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d"
+    },
+    {
+      "criterion": "X3",
+      "status": "PASS_BROWSER",
+      "evidence": [
+        "footerTouchStages",
+        "typedLifecycles"
+      ],
+      "scope": "400\u00d7951 and 669\u00d7951 touch emulation; 18 stage checks require actual body scroll plus stable primary bounds/44px; two rapid plot checks. Real device/soft-keyboard ergonomics not measured.",
+      "sourceSha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d"
+    },
+    {
+      "criterion": "X4",
+      "status": "PASS_CODE",
+      "evidence": [
+        "nativeRaces",
+        "accountFormatFences",
+        "loadRenderAccountValidation",
+        "gridLoadRenderAccountValidation",
+        "oldShellStable"
+      ],
+      "scope": "Native races, malformed/protected bytes, both flags/channels, baseline shell isolation and account UI with controlled callbacks; real account host remains external.",
+      "sourceSha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d"
+    },
+    {
+      "criterion": "X5",
+      "status": "FAIL",
+      "evidence": [
+        "failureOfflineDiagnostics",
+        "diagnosticBounds",
+        "historyDiagnosticReason"
+      ],
+      "scope": "168h/privacy/local-date export plus actual runner reason regression; R11 remains open if its exact reason is dropped.",
+      "sourceSha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d"
+    },
+    {
+      "criterion": "X6",
+      "status": "REVIEWER_OWNED",
+      "evidence": [
+        "corpus",
+        "typedLifecycles"
+      ],
+      "scope": "Common engine validation/pricing/geometry/support/votes exercised; final authority and numerical-rule source audit belongs to Reviewer.",
+      "sourceSha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d"
+    },
+    {
+      "criterion": "X7",
+      "status": "PARTIAL_EXTERNAL",
+      "evidence": [],
+      "scope": "Exact frozen shared target and evidence types recorded. PR CI/merge/deployment/artifact publication remain coordinator-owned; no deployed revision claimed.",
+      "sourceSha": "d4bf9fdf9d73ed0b48ac44ef0374b446fa20688d"
+    }
+  ],
+  "rowCount": 34,
+  "disposition": "needs revision: R11 exact diagnostic reason remains missing from export",
+  "externalGates": [
+    "Real downloaded Qwen inference: blocked by missing shader-f16",
+    "Physical Duo airplane-mode verification: unavailable",
+    "Real artifact/account host: controlled callbacks only"
+  ],
+  "ownerBoundaries": "This is independent QA scope, not a replacement for Reviewer or Planner dispositions."
+}

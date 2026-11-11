@@ -1,0 +1,105 @@
+{
+  "candidate": "6da5d9adc51751afb27236bfc27b769848a18d94",
+  "evidenceType": "real engine, authored detached data fixture, no browser or live provider",
+  "rows": [
+    {
+      "case": "agree",
+      "matching": true,
+      "originalController": "bowers_operator",
+      "equivalentController": "cooperative_operator",
+      "material": {
+        "stance": "agree",
+        "reasons": [
+          "The requested revision respects the proposer’s recorded interests and operating authority."
+        ],
+        "prerequisites": [
+          {
+            "fact": "bowersLeaseValid",
+            "satisfied": true
+          }
+        ],
+        "counter": null
+      }
+    },
+    {
+      "case": "counter",
+      "matching": true,
+      "originalController": "bowers_operator",
+      "equivalentController": "cooperative_operator",
+      "material": {
+        "stance": "counter",
+        "reasons": [
+          "farm_access: keep equipment and feed access open."
+        ],
+        "prerequisites": [
+          {
+            "fact": "bowersLeaseValid",
+            "satisfied": true
+          }
+        ],
+        "counter": {
+          "version": 2,
+          "title": "Bowers farm access and stand",
+          "intent": "Keep a leased working farm productive while adding a small stand and equipment access.",
+          "components": [
+            {
+              "id": "fields",
+              "capability": "agriculture",
+              "label": "fields",
+              "quantity": 4,
+              "area": 4,
+              "sharedWith": null
+            },
+            {
+              "id": "stand",
+              "capability": "shop",
+              "label": "stand",
+              "quantity": 1,
+              "area": 0.25,
+              "sharedWith": null
+            },
+            {
+              "id": "lane",
+              "capability": "access",
+              "label": "lane",
+              "quantity": 100,
+              "area": 0.25,
+              "sharedWith": null
+            }
+          ],
+          "conditions": {
+            "hours": 10,
+            "deliveries": "daytime",
+            "access": true,
+            "buffer": 0,
+            "preserve": 4,
+            "affordable": false
+          },
+          "assumptions": [
+            "Fictional operating facts are authored for this new campaign."
+          ],
+          "omissions": []
+        }
+      }
+    },
+    {
+      "case": "refuse",
+      "matching": true,
+      "originalController": "bowers_operator",
+      "equivalentController": "cooperative_operator",
+      "material": {
+        "stance": "refuse",
+        "reasons": [
+          "working_fields_removed: the proposal must keep productive fields in operation."
+        ],
+        "prerequisites": [
+          {
+            "fact": "bowersLeaseValid",
+            "satisfied": true
+          }
+        ],
+        "counter": null
+      }
+    }
+  ]
+}
