@@ -52,3 +52,23 @@ legacy bytes with either flag, account scope epoch across completion, private
 entry validation, and replay-identity failure precedence. Eleven focused tests
 pass; independent re-review pending. UI writes resumed. Engine composition
 schemas/layout/preview now implemented in worktree; integration still pending.
+
+Integrated milestone e8e2904: engine checkpoint 5aafe88 cherry-picked as 9cf6978;
+UI checkpoint 8cfbc77 as aed2350. Dev composition flag enabled, Stable false;
+legacy browser fixtures explicitly keep the prior pipeline to preserve their
+assertions. Store remaining malformed legacy structure case fixed in 235dd5f.
+Normal-rule WIP strategy exploration /tmp/mp-normal-strategies.mjs achieved
+3×12 annual resolutions with real votes, explicit earned political favors,
+finances and won elections (no resource/relationship gifts); rerun final SHA.
+
+Provider Mencius now owns /workspace/mp-provider, feature/composition-provider,
+base e8e2904: composition-requests.js, offline-ai.js, qwen-diagnostics.js and
+new provider tests. Engine owner continues queued fixes in mp-engine. UI owner
+is source-paused, doing read-only browser exploration; private baseline/delta
+follow-up queued. Two source writers remain Engine + Provider. Coordinator
+runs integrated checks and owns remote/build/flag integration windows.
+
+Intermediate preview http://127.0.0.1:4173/ (/tmp/mp-preview, persistent server).
+Provider is absent in this intermediate build; typed flow not ready. Independent
+QA may run actual T1–T8 now, but final withheld corpus/review await one common
+final runnable SHA. Full npm test running, log /tmp/mp-integrated-tests.log.
