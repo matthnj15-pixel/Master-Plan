@@ -7,7 +7,8 @@ function fixture(){
   const data=new Map();let fail=false;
   const storage={getItem:k=>data.get(k)??null,setItem(k,v){if(fail)throw new Error('quota');data.set(k,v);}};
   const tails=new Map();const locks={request(name,_options,fn){const p=(tails.get(name)||Promise.resolve()).then(fn);tails.set(name,p.catch(()=>{}));return p;}};
-  const E={newGame:()=>({v:3,seed:2301,scenarioId:'test',cash:900}),migrate:copy,isSupportedSave:s=>[1,2,3,4].includes(s?.v),fingerprint:s=>JSON.stringify(s),
+  const initial=()=>({v:3,seed:2301,scenarioId:'test',cash:900,grid:[],proposals:[],pending:[],built:[],bonds:[],reports:[],history:[],scenario:{},calendar:{},presenters:{},council:{},meters:{},flags:{},decided:{},chats:{}});
+  const E={newGame:initial,migrate:s=>({...initial(),...copy(s)}),isSupportedSave:s=>[1,2,3,4].includes(s?.v),fingerprint:s=>JSON.stringify(s),
     applyCommand(input,command){const s=copy(input),old=s.receipts.find(r=>r.id===command.id);
       if(old)return old.fingerprint===JSON.stringify(command)?{ok:true,state:s,receipt:old,applied:false}:{ok:false,code:'command_mismatch',state:s};
       if(command.gameId!==s.gameId||command.expectedRevision!==s.revision)return{ok:false,code:'stale',state:s};
@@ -88,4 +89,40 @@ test('MP-061 MP-080 newest durable replica and account scope fence never upload 
   assert.equal(uploads[0].state.cash,initial.state.cash);assert.equal(uploads[1].state.cash,777);
   const skipped=a.replicate(async()=>assert.fail('wrong account upload'),{scope:'old-account'});assert.equal((await skipped).ok,false);
   const stable=f.make({key:'masterplan.stable.save.v4',legacyKey:'millbrook.v1',channel:'stable'});await stable.load();assert.equal(stable.state.cash,900);assert.equal(a.state.cash,777);
+});
+
+test('MP-080 delayed replacement must carry its original generation and invalid outgoing formats preserve bytes',async()=>{
+  const f=fixture(),a=f.make(),initial=await a.load(),captured=copy(initial.state);
+  await a.commit(command(a,initial.state));const raw=f.data.get(a.key);
+  assert.equal((await a.replace(captured)).ok,false);assert.equal(f.data.get(a.key),raw);
+  assert.equal((await a.replace(captured,initial.generation)).ok,false);
+  for(const corrupt of [{...a.state,v:999},{...a.state,grid:{}},{...a.state,cash:Infinity}]){
+    const result=await a.save(corrupt,a.generation);assert.equal(result.ok,false);assert.equal(result.applied,false);assert.equal(f.data.get(a.key),raw);
+  }
+  assert.equal((await a.load()).ok,true);
+});
+
+test('MP-061 MP-080 channel-derived defaults and inconsistent explicit keys cannot cross save locks',async()=>{
+  const f=fixture(),dev=f.make(),d=await dev.load(),stable=f.make({channel:'stable'});await stable.load();
+  assert.equal(stable.key,'masterplan.stable.save.v4');assert.notEqual(stable.slot,dev.slot);
+  await stable.save({...stable.state,cash:7},stable.generation);assert.equal(JSON.parse(f.data.get(dev.key)).state.cash,d.state.cash);
+  assert.throws(()=>f.make({channel:'stable',key:dev.key}),/channel/);
+  assert.throws(()=>f.make({channel:'dev',legacyKey:'millbrook.v1'}),/channel/);
+});
+
+test('MP-080 malformed and newer legacy bytes stay protected with either gameplay flag',async()=>{
+  for(const enabled of [true,false])for(const raw of ['','null',JSON.stringify({v:999})]){
+    const f=fixture();f.data.set('masterplan.dev.save',raw);const a=f.make({enabled});
+    assert.equal((await a.load()).ok,false);assert.equal(f.data.get(a.legacyKey),raw);assert.equal(f.data.has(a.key),false);
+  }
+});
+
+test('MP-077 MP-080 corrupt private recovery and obsolete account acknowledgments never report success',async()=>{
+  const f=fixture(),a=f.make();await a.load();
+  const key='masterplan.dev.draft-workspace.v1';
+  const raw=JSON.stringify({version:1,games:{[a.state.gameId+':test']:{revision:1,drafts:{broken:true}}}});f.data.set(key,raw);
+  assert.equal((await a.readDrafts(a.state.gameId)).ok,false);assert.equal((await a.writeDrafts(a.state.gameId,[],1)).ok,false);assert.equal(f.data.get(key),raw);
+  let release;const hold=new Promise(r=>release=r);a.setAccount('a');const job=a.replicate(async()=>hold);
+  await new Promise(r=>setTimeout(r,0));a.setAccount('b');a.setAccount('a');release();
+  assert.equal((await job).code,'replica_stale','A-B-A still revokes old completion');
 });
