@@ -120,3 +120,13 @@ Engine route fix aeaae2c integrated 88a0900, 24 composition +33 legacy engine
 +4 scenario tests passed; engine source paused. Provider resumed follow-ups;
 Frontend remains other source writer. Planner now independent sustained browser
 QA under /workspace/qa-sustained, same immutable Candidate A.
+
+Provider follow-up 35c2225 integrated a884cdd. P2–P8/R11 fixed, full 209/209
+plus trace in provider tree with pinned source probe. Actual SRI-verified WebLLM
+source confirms model overrides use 4096 tokens (upstream model JSON 32768);
+loaded admission matches the real runtime input-formatting path. This is source
+and synthetic-tokenizer evidence, not live Qwen. Durable audit JSON saved.
+Provider SOURCE PAUSED; R9 scoped built history still pending. Engine RESUMED
+R1–R4/R8 malformed JSON/identities/save entries/repeated claim/policy duplicate
+fixes. Frontend is the other source writer U1–U11/S5/S7. Reviewer full A report
+and initial corpus/race artifacts preserved docs/evidence/autonomous-run/candidate-a.
