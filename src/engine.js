@@ -911,6 +911,12 @@ function programDemolition(s,layout){
   d.retained=layout.cells.filter(c=>!c.usedArea).map(c=>({plot:c.plot.slice(),building:copy(cellAt(s,...c.plot).b||null),terrain:cellAt(s,...c.plot).t}));
   d.changedPlots=changed;return d;
 }
+function trustedLoadingRoute(s,id){
+  const routes=scenarioOf(s).composition?.routes;
+  if(!boundedText(id,1,80)||!record(routes)||!Object.hasOwn(routes,id))return null;
+  const route=routes[id];
+  return record(route)&&Object.hasOwn(route,'id')&&route.id===id?route:null;
+}
 function programBaseEffects(p,s){
   const program=p.program,c=program.conditions,e={cost:0,upkeep:0,jobs:0,units:0,housing:0,walk:0,live:0,conf:0,prop:0,approval:0,farm:0,parking:0,safety:0,afford:0,storm:0,downtown:0,creek:0,activity:0,noise:0,freight:0,notes:[]};
   for(const part of program.components){const d=CAPABILITY_BY_ID[part.capability],price=d.pricing,operates=!['housing','green','stormwater','policy','agriculture','access','parking'].includes(part.capability),factor=operates?c.hours/10:1;
@@ -932,7 +938,7 @@ function programBaseEffects(p,s){
   if(nearHomes){const disturbance=e.noise*Math.max(0,c.hours-8)/8/(1+c.buffer);e.live-=disturbance;e.approval-=disturbance*.5;}
   if(traits.includes('creek'))e.creek+=Math.max(0,(p.layout?.usedArea||0)-c.buffer)*.1;
   if(traits.includes('edge')&&physical)e.walk-=.5;
-  for(const op of c.operations||[]){const route=scenarioOf(s).composition?.routes?.[op.loadingRoute];if(route){e.cost+=route.costK||0;e.upkeep+=route.upkeepK||0;if(route.crossingConflict&&e.freight){e.safety-=.8;e.live-=.4;}}
+  for(const op of c.operations||[]){const route=trustedLoadingRoute(s,op.loadingRoute);if(route){e.cost+=route.costK||0;e.upkeep+=route.upkeepK||0;if(route.crossingConflict&&e.freight){e.safety-=.8;e.live-=.4;}}
     if(op.publicSales){e.activity+=5;e.walk+=.1;}}
   for(const k of Object.keys(e))if(typeof e[k]==='number')e[k]=precise(e[k]);return e;
 }
@@ -972,7 +978,7 @@ function previewProgram(s,input){
   const used=program.components.reduce((n,c)=>n+(c.sharedWith===null?c.area:0),0)+program.conditions.buffer;
   if(program.components.some(c=>c.capability==='policy')&&[...(s.built||[]),...(s.pending||[])].some(p=>p.id!==id&&!p.closed&&p.program?.components.some(c=>c.capability==='policy')))reasons.push('policy_program_already_active');
   if(used+program.conditions.preserve>plots.length+1e-8)reasons.push('site_capacity_exceeded');
-  for(const op of program.conditions.operations||[]){if(op.loadingRoute!==null){const route=scenarioOf(s).composition?.routes?.[op.loadingRoute];if(!route||route.plots&&!plots.some(p=>route.plots.some(q=>canonical(p)===canonical(q))))reasons.push('loading_route_unavailable');}}
+  for(const op of program.conditions.operations||[]){if(op.loadingRoute!==null){const route=trustedLoadingRoute(s,op.loadingRoute);if(!route||route.plots&&!plots.some(p=>route.plots.some(q=>canonical(p)===canonical(q))))reasons.push('loading_route_unavailable');}}
   if(reasons.length)return {ok:false,reasons};
   const layout=programLayout(program,plots),demo=programDemolition(s,layout),changed=new Set(demo.changedPlots.map(p=>p.join(',')));
   for(const cell of layout.cells){if(cell.usedArea>1e-8&&cell.preservedArea>1e-8&&cellAt(s,...cell.plot).b)reasons.push('retained_building_cannot_be_split');}
@@ -1073,7 +1079,7 @@ function residentMetric(s,p,field){
   if(type==='effect')return effectsOf(p,s)[name];
   if(type==='operation'){
     const ops=p.program?.conditions.operations||[];
-    if(name==='crossingConflict')return ops.some(op=>scenarioOf(s).composition?.routes?.[op.loadingRoute]?.crossingConflict===true);
+    if(name==='crossingConflict')return ops.some(op=>trustedLoadingRoute(s,op.loadingRoute)?.crossingConflict===true);
     return ops.some(op=>op[name]===true);
   }
   return undefined;

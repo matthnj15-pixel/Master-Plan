@@ -273,3 +273,24 @@ test('MP-076 forecast replacement capacity equals the actual economic change at 
   s=commit(s,'decision',{proposalId:target.id,action:'vote',funding:'cash',route:E.approvalRoute(s,target).id});s=commit(s,'resolveYear',{});
   assert.equal(E.econ(s).jobs-before.jobs,r.forecast.effects.jobs);assert.equal(E.econ(s).units-before.units,r.forecast.effects.units);
 });
+
+test('MP-076 MP-078 trusted route lookups reject inherited names and malformed identities without effects or authority',()=>{
+  const s=fresh(),campus=s.proposals.find(p=>p.id==='campus-loading'),routes=s.scenario.composition.routes;
+  Object.setPrototypeOf(routes,{'inherited-route':{id:'inherited-route',plots:clone(campus.plots),crossingConflict:true,costK:999,upkeepK:999}});
+  routes['wrong-id']={...clone(routes['service-lane']),id:'different-route'};
+  routes['not-a-record']='service-lane';
+  const inheritedId=Object.create({id:'inherited-id'});Object.assign(inheritedId,{crossingConflict:true,costK:999});routes['inherited-id']=inheritedId;
+  const before=E.canonical(s),baseline=clone(E.effectsOf(campus,s)),authority=clone(E.evaluateResident(s,campus,campus));
+  const requested=id=>{const p=clone(campus);p.program.conditions.operations[0].loadingRoute=id;return p;};
+  const unknownEffects=clone(E.effectsOf(requested('unknown-route'),s));
+  for(const id of ['__proto__','constructor','toString','hasOwnProperty','unknown-route','inherited-route','wrong-id','not-a-record','inherited-id']){
+    const candidate=requested(id),revision=E.reviseProgram(s,campus,{conditions:{operations:candidate.program.conditions.operations}});
+    assert.equal(revision.ok,false,id);assert.ok(revision.reasons.includes('loading_route_unavailable'),id);
+    assert.equal(E.evaluateResident(s,campus,candidate).stance,'refuse',id);
+    const result=E.applyCommand(s,command(s,'reviseProposal',{proposalId:campus.id,program:candidate.program,confirmed:true}));
+    assert.equal(result.ok,false,id);assert.equal(result.state,s);assert.equal(result.receipt,null);
+    assert.deepEqual(clone(E.effectsOf(candidate,s)),unknownEffects,id+' cannot contribute inherited route pricing or conflict effects');
+    assert.equal(E.canonical(s),before);assert.deepEqual(clone(E.effectsOf(campus,s)),baseline);assert.deepEqual(clone(E.evaluateResident(s,campus,campus)),authority);
+  }
+  for(const id of ['service-lane','campus-entrance'])assert.equal(E.reviseProgram(s,campus,{conditions:{operations:requested(id).program.conditions.operations}}).ok,true,id);
+});
