@@ -100,3 +100,14 @@ QA and Reviewer assigned SAME SHA 6da5d9adc51751afb27236bfc27b769848a18d94,
 builds /tmp/mp-candidate-a and /tmp/mp-candidate-a-stable. QA freezes source/
 catalog before withheld initial corpus. This is candidate evidence, not final
 acceptance; UI baseline/delta/account-import follow-up remains in its worktree.
+
+Provider source paused at f37b6e7, 64 focused compatibility tests pass in its
+worktree. Known follow-up: clarify terminal diagnostic outcome, definition patch
+before site fit, reaction timeout fallback, broader stale/cancel/claim/reaction/
+grammar-admission coverage. These remain authorized fix/retest work.
+
+Confirmed Candidate A bug: inherited loading route names `__proto__` and
+`constructor` pass preview as though trusted routes; unknown ordinary route
+correctly rejects. Engine owner RESUMED for bounded trusted-route lookup fix and
+regression, UI remains other writer. Provider waits next source slot. Independent
+review has reproduction; QA frozen Candidate A remains unchanged.
