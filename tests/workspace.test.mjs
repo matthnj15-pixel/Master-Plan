@@ -111,7 +111,7 @@ test('MP-061 MP-080 channel-derived defaults and inconsistent explicit keys cann
 });
 
 test('MP-080 malformed and newer legacy bytes stay protected with either gameplay flag',async()=>{
-  for(const enabled of [true,false])for(const raw of ['','null',JSON.stringify({v:999})]){
+  for(const enabled of [true,false])for(const raw of ['','null',JSON.stringify({v:999}),JSON.stringify({v:3,grid:{}})]){
     const f=fixture();f.data.set('masterplan.dev.save',raw);const a=f.make({enabled});
     assert.equal((await a.load()).ok,false);assert.equal(f.data.get(a.legacyKey),raw);assert.equal(f.data.has(a.key),false);
   }

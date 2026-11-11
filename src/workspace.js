@@ -16,14 +16,17 @@ const MP_WORKSPACE = (() => {
     const failure = (code, message, state=current) => ({ok:false, code, reasons:[message], reason:message,
       state:state?clone(state):null, generation, mode});
     const protect = (code,message) => {mode='read-only';reason=message;return failure(code,message);};
+    function validStructure(state){
+      return object(state)&&typeof state.scenarioId==='string'&&!!state.scenarioId&&typeof state.cash==='number'&&Number.isFinite(state.cash)&&
+        ['grid','proposals','pending','built','bonds','reports','history'].every(k=>Array.isArray(state[k]))&&
+        ['scenario','calendar','presenters','council','meters','flags','decided','chats'].every(k=>object(state[k]));
+    }
     function validState(state){
       return object(state)&&state.v===4&&E.isSupportedSave(state)&&typeof state.gameId==='string'&&!!state.gameId&&
         typeof state.scenarioId==='string'&&!!state.scenarioId&&Number.isSafeInteger(state.revision)&&state.revision>=0&&
         Number.isSafeInteger(state.actionHighWater)&&state.actionHighWater>=0&&Array.isArray(state.receipts)&&state.receipts.length<=64&&
         state.receipts.every(r=>object(r)&&Number.isSafeInteger(r.id)&&r.id>0&&r.id<=state.actionHighWater&&typeof r.fingerprint==='string')&&
-        typeof state.cash==='number'&&Number.isFinite(state.cash)&&
-        ['grid','proposals','pending','built','bonds','reports','history'].every(k=>Array.isArray(state[k]))&&
-        ['scenario','calendar','presenters','council','meters','flags','decided','chats'].every(k=>object(state[k]));
+        validStructure(state);
     }
     function decode(raw) {
       let env;
@@ -91,6 +94,7 @@ const MP_WORKSPACE = (() => {
           const source=legacyRaw===null?null:JSON.parse(legacyRaw);
           if(legacyRaw!==null&&(!object(source)||![1,2,3].includes(source.v)||!E.isSupportedSave(source)))return protect('unsupported_storage_format','The legacy save is unsupported. Its bytes were preserved.');
           current=source===null?null:E.migrate(source);
+          if(current!==null&&!validStructure(current))return protect('unsupported_storage_format','The legacy town structure is malformed. Its bytes were preserved.');
         }catch{return protect('unsupported_storage_format','The legacy save is malformed. Its bytes were preserved.');}
         return {ok:true,state:current?clone(current):null,generation,mode};
       }
