@@ -1,0 +1,299 @@
+{
+  "candidate": "6da5d9adc51751afb27236bfc27b769848a18d94",
+  "disposition": "needs revision",
+  "source_snapshot": "/tmp/mp-review-candidate-a-source",
+  "builds": [
+    "/tmp/mp-candidate-a",
+    "/tmp/mp-candidate-a-stable"
+  ],
+  "checks": {
+    "focused_tests": {
+      "pass": 44,
+      "fail": 0,
+      "log": "/tmp/mp-review-candidate-a-focused.log"
+    },
+    "trace": "pass; 62 requirements, 55 accepted, 48 test-verified, 7 play-test",
+    "browser": "Chromium/Playwright 1.63; loopback 127.0.0.1:8767; isolated contexts; immutable Candidate A bundles",
+    "full_suite": "Coordinator-reported prior 184-test full pass plus host compatibility test; not independently rerun as a Candidate A full-suite verdict"
+  },
+  "limitations": [
+    "Live Qwen and physical Duo remain unverified.",
+    "No withheld corpus was opened or changed.",
+    "G2.5 and explicit account import are already assigned for Candidate B.",
+    "Automatic approval review blocked the browser Put on agenda action because it would mutate durable public game state under READ ONLY. No workaround attempted; browser commit/delivery and full T1-T8 remain unverified in this review.",
+    "No repository source/configuration edits. Scratch source archive/evidence only."
+  ],
+  "findings": [
+    {
+      "id": "R1",
+      "severity": "P1",
+      "title": "Malformed capability JSON throws",
+      "location": "src/engine.js:865",
+      "reproduction": "Replace a valid component capability with {\"toString\":null,\"valueOf\":null}. validateProgram throws Cannot convert object to primitive value.",
+      "fix": "Check string type before trusted-key lookup or coercion.",
+      "state": "Open; prior preflight"
+    },
+    {
+      "id": "R2",
+      "severity": "P1",
+      "title": "Inherited identity names pass checks",
+      "location": "src/engine.js:971;1274",
+      "reproduction": "previewProgram presenter toString returns ok with nonfinite high cost/delivery odds. An offer for bridge/member toString throws in lobbying.",
+      "fix": "Use typed, own-property identity checks and actual council membership.",
+      "state": "Open; prior preflight"
+    },
+    {
+      "id": "R3",
+      "severity": "P1",
+      "title": "Malformed saved entries are accepted then throw",
+      "location": "src/engine.js:749;1251",
+      "reproduction": "A fresh v4 save changed to proposals:[null] passes isSupportedSave. A grant command throws reading q.id.",
+      "fix": "Validate saved collection entries and reject malformed state before dispatch/migration.",
+      "state": "Open; prior preflight"
+    },
+    {
+      "id": "R4",
+      "severity": "P1",
+      "title": "Cosmetic revision renews factual credit",
+      "location": "src/engine.js:1149",
+      "reproduction": "Pitch This plan adds 0.8 walkability to Okafor, rename only the title, repeat the same pitch. Both earn strong credit: 1.7 then 2.5 points.",
+      "fix": "Keep freshness revision binding, but deduplicate factual credit by stable factual content.",
+      "state": "Open; prior preflight"
+    },
+    {
+      "id": "R5",
+      "severity": "P1",
+      "title": "Inherited loading routes grant false trusted behavior",
+      "location": "src/engine.js:975;935;1076",
+      "reproduction": "For campus-loading, __proto__, constructor and toString are not own routes but preview, provider interpretation and revision commit accept them. College counter clears and upkeep drops from service-lane 10.2 to 8.2. Ordinary missing-route rejects.",
+      "fix": "Use the trustedRoute helper consistently across preview, effects and resident evaluation.",
+      "state": "Fails Candidate A; coordinator reports fixed in aeaae2c / 88a0900 for Candidate B retest"
+    },
+    {
+      "id": "R6",
+      "severity": "P1",
+      "title": "Protected flag-off save displays a replacement town",
+      "location": "src/workspace.js:25;src/ui.js:1731",
+      "reproduction": "Real flag-off engine rejects v4 during decode. load returns state:null; startup uses E.newGame. Browser A retains four saved proposals but displays a fresh two-proposal legacy agenda with End 2027. Save bytes remain unchanged. Earlier progressed fixture reproduced saved 2033/revision42 versus displayed 2027.",
+      "fix": "Show a protected-save landing/validated metadata summary. Do not run composed state through the off simulation or fall back to a fresh town.",
+      "state": "Open; prior protected-display review"
+    },
+    {
+      "id": "R7",
+      "severity": "P1",
+      "title": "Campus stakeholder objections are not shown",
+      "location": "src/ui.js:894",
+      "reproduction": "Normal typed revision using a labeled mock provider selects the real campus-entrance route. Engine stakeholder college_liaison is counter/delivery_conflict. UI shows only freight_operator agree and enables confirmation. College reasons never appear.",
+      "fix": "Render named stakeholder evaluations and concessions separately from the single controlling authorizer.",
+      "state": "New browser finding; screenshot campus-response.png"
+    },
+    {
+      "id": "R8",
+      "severity": "P1",
+      "title": "Duplicate policy components stack the generic benefit",
+      "location": "src/engine.js:852;973;docs/composition-balance.md:51",
+      "reproduction": "Two components a,b, both policy quantity1 area0, are accepted on plots[]. Effects double from walk1/safety1/afford0.5 to walk2/safety2/afford1. Documented rule is one generic operating program.",
+      "fix": "Validate program-wide sum of policy quantities <=1, preserving the cross-project active-policy guard.",
+      "state": "Confirmed E5 follow-up; writer slot pending"
+    },
+    {
+      "id": "R9",
+      "severity": "P1",
+      "title": "Revision context omits relevant recorded project history",
+      "location": "src/composition-requests.js:165",
+      "reproduction": "Approve and build History witness garden with access:true, table/reopen farm-access on the same site next year, ask to retain the prior recorded access commitment. Runner returns ready; prompt has no project record, commitment provenance or scoped history. The built record exists and overlaps the target.",
+      "fix": "Pass bounded engine-verified relevant project/commitment records and source references into revision context and ground any historical assertions.",
+      "state": "New provider/history finding; G4.5"
+    },
+    {
+      "id": "R10",
+      "severity": "P2",
+      "title": "UI recovery assumes a stronger private schema than the store",
+      "location": "src/workspace.js:180;src/ui.js:851;847;932",
+      "reproduction": "writeDrafts and readDrafts accept {id:broken,versions:[{}]}. In an isolated A browser, opening Private workspace throws Cannot read properties of undefined (reading length); no workspace renders. Public/private bytes remain unchanged.",
+      "fix": "Validate the UI recovery envelope and version fields defensively. Show recovery-unavailable and preserve bytes, pending text and invalid plots; do not silently discard/normalize.",
+      "state": "Confirmed for Goodall"
+    },
+    {
+      "id": "R11",
+      "severity": "P2",
+      "title": "Diagnostics lose the exact engine rejection rule",
+      "location": "src/composition-requests.js:76;src/qwen-diagnostics.js:11",
+      "reproduction": "Eight workplace units in area0.1 fail density; area2 on a one-plot site fails total site capacity. Both return/log only site_infeasible at validation, with no fieldId or validator-rule identifier.",
+      "fix": "Add an allowlisted validator-rule field retaining area_capacity versus site_capacity_exceeded through diagnostics and export, without private values.",
+      "state": "New diagnostics finding; X5"
+    }
+  ],
+  "criteria": [
+    {
+      "id": "G1.1",
+      "status": "PASS",
+      "evidence": "Unit typed/mock preview plus normal manual private browser preview; public revision remained 0 and initiative unused. Live interpretation is X1."
+    },
+    {
+      "id": "G1.2",
+      "status": "PASS",
+      "evidence": "13 capabilities/seven families and generic components/conditions verified in exact-target engine tests. Trust defects remain R1/R5/R8."
+    },
+    {
+      "id": "G1.3",
+      "status": "PASS",
+      "evidence": "Private SVG and map carried identical revision and 13 layout segments; renderer projection tests passed."
+    },
+    {
+      "id": "G1.4",
+      "status": "PASS",
+      "evidence": "Exact ordered plots, cumulative shared capacity, retention and occupied-site accounting tests passed."
+    },
+    {
+      "id": "G1.5",
+      "status": "FAIL",
+      "evidence": "Malformed JSON boundary throws instead of controlled rejection (R1); generalization corpus remains pending."
+    },
+    {
+      "id": "G1.6",
+      "status": "UNVERIFIED",
+      "evidence": "Trusted-program extension passes at engine layer; full provider/UI extension lifecycle awaits QA."
+    },
+    {
+      "id": "G1.7",
+      "status": "UNVERIFIED",
+      "evidence": "Withheld corpus was not opened or altered by reviewer; first-pass QA/live-provider result pending."
+    },
+    {
+      "id": "G2.1",
+      "status": "UNVERIFIED",
+      "evidence": "Three-edit engine tests pass; complete normal typed browser sequence awaits QA."
+    },
+    {
+      "id": "G2.2",
+      "status": "UNVERIFIED",
+      "evidence": "Alternatives implementation inspected; complete two-alternative round-trip awaits QA."
+    },
+    {
+      "id": "G2.3",
+      "status": "PASS",
+      "evidence": "Requested preview visibly precedes resident evaluation/confirm control; counter and authorization unit tests pass. Stakeholder omission is R7."
+    },
+    {
+      "id": "G2.4",
+      "status": "FAIL",
+      "evidence": "Malformed private recovery crashes instead of recovery-unavailable (R10). Other cancellation/stale unit cases pass."
+    },
+    {
+      "id": "G2.5",
+      "status": "FAIL",
+      "evidence": "Known assigned private-baseline/delta work remains absent from Candidate A; Goodall Candidate B work."
+    },
+    {
+      "id": "G2.6",
+      "status": "FAIL",
+      "evidence": "4/8/128KiB limits pass storage fixtures, but structurally invalid UI recovery entries remain accepted (R10)."
+    },
+    {
+      "id": "G3.1",
+      "status": "FAIL",
+      "evidence": "Campus stakeholder evaluation is computed but not available in the normal response UI (R7)."
+    },
+    {
+      "id": "G3.2",
+      "status": "FAIL",
+      "evidence": "Engine computes contrasting operator/college evaluations; UI hides the college result (R7)."
+    },
+    {
+      "id": "G3.3",
+      "status": "FAIL",
+      "evidence": "A campus routing concession changes engine costs/stance, but stakeholder re-evaluation is not displayed (R7)."
+    },
+    {
+      "id": "G3.4",
+      "status": "FAIL",
+      "evidence": "Inherited routes pass as trusted route evidence (R5); other gate/controller unit cases pass."
+    },
+    {
+      "id": "G3.5",
+      "status": "FAIL",
+      "evidence": "Cosmetic revision renews repeated factual credit (R4). Numeric-negation/string-value corrections pass."
+    },
+    {
+      "id": "G3.6",
+      "status": "PASS",
+      "evidence": "Receipt/member/type/fingerprint/pruning and no-rescore checks pass in engine/provider mock tests. Live response remains X1."
+    },
+    {
+      "id": "G3.7",
+      "status": "PASS",
+      "evidence": "Caps/quota and separate offers/grants/votes pass deterministic tests; repeat protection defect is R4."
+    },
+    {
+      "id": "G4.1",
+      "status": "PASS",
+      "evidence": "Real engine plus store/in-memory storage commit consumes once; exact replay returns applied:false and no write."
+    },
+    {
+      "id": "G4.2",
+      "status": "UNVERIFIED",
+      "evidence": "Deterministic concurrency/replay tests pass; real browser T1-T8 evidence is pending independent QA."
+    },
+    {
+      "id": "G4.3",
+      "status": "PASS",
+      "evidence": "Engine accepted/pending/built program/layout/conditions preservation and migration tests pass; real-engine/store replay also checked."
+    },
+    {
+      "id": "G4.4",
+      "status": "UNVERIFIED",
+      "evidence": "Renderer delivery projection tests pass; normal browser approval-through-delivery observation not performed in this read-only review."
+    },
+    {
+      "id": "G4.5",
+      "status": "FAIL",
+      "evidence": "Built project record exists, but relevant history/commitment provenance is absent from revision context (R9)."
+    },
+    {
+      "id": "G4.6",
+      "status": "PASS",
+      "evidence": "Exact-target deterministic three-strategy 12-year test passes with real votes/finances/election wins and semantic opportunities."
+    },
+    {
+      "id": "G4.7",
+      "status": "UNVERIFIED",
+      "evidence": "Engine 3x12-year coverage passes; normal first-term and later-year browser sequence awaits QA."
+    },
+    {
+      "id": "X1",
+      "status": "UNVERIFIED",
+      "evidence": "Live Qwen blocked on measured shader-f16/runtime capability; no AI-ready verdict."
+    },
+    {
+      "id": "X2",
+      "status": "UNVERIFIED",
+      "evidence": "Cached model/offline lifecycle and physical Duo airplane-mode acceptance remain unverified; device absent."
+    },
+    {
+      "id": "X3",
+      "status": "UNVERIFIED",
+      "evidence": "Preview screens inspected at 669x951 and 400x951: no horizontal overflow or undersized visible primary buttons. Complete keyboard/state coverage awaits QA."
+    },
+    {
+      "id": "X4",
+      "status": "FAIL",
+      "evidence": "Protected display R6, malformed saved entries R3 and private recovery R10 remain. Explicit account import is known assigned Candidate B work."
+    },
+    {
+      "id": "X5",
+      "status": "FAIL",
+      "evidence": "Exact validator reason is lost for distinct engine errors (R11); seven-day/date/safe-export baseline remains supporting evidence."
+    },
+    {
+      "id": "X6",
+      "status": "FAIL",
+      "evidence": "Trusted-boundary defects R1/R2/R3/R5 plus policy duplication R8 remain despite engine-owned numerical rules."
+    },
+    {
+      "id": "X7",
+      "status": "UNVERIFIED",
+      "evidence": "Review and bundle target pinned exactly to Candidate A. Final QA/CI/deployment and external evidence gates remain pending."
+    }
+  ]
+}
