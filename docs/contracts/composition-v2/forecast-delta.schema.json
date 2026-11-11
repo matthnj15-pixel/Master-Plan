@@ -27,6 +27,7 @@
     "students": {"type": "number"},
     "activity": {"type": "number"},
     "noise": {"type": "number"},
-    "access": {"type": "number"}
+    "access": {"type": "number"},
+    "freight": {"type": "number"}
   }
 }

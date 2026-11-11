@@ -44,3 +44,11 @@ and full browser checks use the approved outside-sandbox command path.
 UI writes resumed after this source integration window. Provider Mencius is
 read-only preparing until next writer slot. Published Qwen config says 32768
 context tokens; this is upstream config, NOT actual loaded runtime evidence.
+
+Storage independent review (964a344) reproduced seven issues. Fixed in c62580f:
+explicit pre-read replacement generation, channel-derived/rejected inconsistent
+keys, outgoing v4 structure validation, protected malformed/null/empty/newer
+legacy bytes with either flag, account scope epoch across completion, private
+entry validation, and replay-identity failure precedence. Eleven focused tests
+pass; independent re-review pending. UI writes resumed. Engine composition
+schemas/layout/preview now implemented in worktree; integration still pending.
