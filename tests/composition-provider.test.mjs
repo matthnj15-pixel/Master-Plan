@@ -367,6 +367,33 @@ test('MP-078 MP-081 mixed true and false claims preserve original Unicode spans 
   const doc=(await diagnostics.snapshot()).prepared.document;
   assert.ok(doc.events.some(e=>e.metadata.resultCode==='claim_false'));assert.ok(!JSON.stringify(doc).includes(intent));
 });
+test('MP-075 MP-078 MP-081 authentic A conservative claim history retains its exact reason in the sanitized runner export',async()=>{
+  const fixture=JSON.parse(readFileSync(new URL('./fixtures/composition-v2-pruned-credit.json',import.meta.url),'utf8'));
+  assert.equal(createHash('sha256').update(JSON.stringify(fixture.state)).digest('hex'),fixture.provenance.stateSHA256);
+  assert.equal(fixture.provenance.originalCredit,'strong');
+  const lost=copy(fixture.state);lost.projectRecords=[];
+  const state=E.migrate(lost),proposal=state.proposals.at(-1),before=E.canonical(state),diagnostics=logger();
+  assert.equal(state.persuasionHistory[0].legacyCreditPolicy,'conservative');
+  const result=await create({engine:E,diagnostics}).run({mode:'claims',state,proposal,memberId:'okafor',
+    intent:fixture.input.argument,provider:provider({claims:copy(fixture.input.claims)})});
+  assert.equal(result.status,'ready',result.blocker);assert.equal(result.evaluation.credit,'none');
+  assert.equal(result.evaluation.claims[0].valid,true);assert.equal(result.evaluation.claims[0].code,'claim_history_unresolved');
+  assert.equal(result.evaluation.claims[0].creditEligible,false);assert.equal(E.canonical(state),before);
+  const rejectedIds=[];
+  for(const resultCode of ['claim_history_unresolved:PRIVATE_HISTORY','PRIVATE_ARBITRARY_CODE']){
+    const requestId=diagnostics.id();rejectedIds.push(requestId);
+    await diagnostics.record('composition.validation','invalid',{requestId,task:'claims',stage:'validation',resultCode,reason:fixture.input.argument});
+  }
+  const doc=(await diagnostics.snapshot()).prepared.document;
+  const finding=doc.events.find(e=>e.metadata.requestId===result.requestId&&e.metadata.resultCode==='claim_history_unresolved');
+  assert.ok(finding,'actual engine reason must survive the actual runner and diagnostic export');
+  assert.equal(finding.name,'composition.validation');assert.equal(finding.outcome,'valid');assert.equal(finding.metadata.claimCount,1);
+  for(const requestId of rejectedIds){
+    const event=doc.events.find(e=>e.metadata.requestId===requestId);assert.ok(event);assert.equal(Object.hasOwn(event.metadata,'resultCode'),false);
+  }
+  assert.doesNotMatch(JSON.stringify(doc),/PRIVATE_HISTORY|PRIVATE_ARBITRARY_CODE/);
+  assert.equal(JSON.stringify(doc).includes(fixture.input.argument),false);
+});
 test('MP-078 MP-081 forged claim quote repairs once and cannot substitute the argument or execute an offer',async()=>{
   const state=posted(),proposal=state.proposals.at(-1),intent='This plan provides 8 jobs.',claim={id:'jobs',type:'effect',field:'jobs',operator:'eq',value:8,evidence:{start:0,end:intent.length,quote:intent}};
   const wrong=copy(claim);wrong.evidence.quote='Invented evidence';

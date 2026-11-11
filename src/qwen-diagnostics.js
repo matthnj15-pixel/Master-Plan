@@ -15,7 +15,7 @@ const ruleIds=new Set(('unsupported_capability program_version site_capacity_exc
 ruleIds.add('policy_capacity_exceeded');
 // Exact store codes only: no caller-provided reason, message or regex escape.
 for(const code of ['persistence_failed','read_only','unsupported_storage_format','workspace_unavailable','workspace_capacity','replica_unavailable','replica_stale','replica_failed'])resultCodes.add(code);
-for(const code of ['claim_evidence_ambiguous','claim_polarity_not_in_argument','save_version_unsupported','save_state_invalid','save_object_invalid','save_numbers_invalid','save_scenario_invalid','save_calendar_invalid','save_grid_invalid','save_grid_entry_invalid','save_council_invalid','save_presenter_invalid','save_collection_invalid','save_collection_entry_invalid','save_command_state_invalid'])resultCodes.add(code);
+for(const code of ['claim_evidence_ambiguous','claim_polarity_not_in_argument','claim_history_unresolved','save_version_unsupported','save_state_invalid','save_object_invalid','save_numbers_invalid','save_scenario_invalid','save_calendar_invalid','save_grid_invalid','save_grid_entry_invalid','save_council_invalid','save_presenter_invalid','save_collection_invalid','save_collection_entry_invalid','save_command_state_invalid'])resultCodes.add(code);
 for(const rule of ruleIds)resultCodes.add(rule);
 const models=new Set(['Qwen2.5-1.5B-Instruct-q4f16_1-MLC','Qwen2.5-3B-Instruct-q4f16_1-MLC']);
 const errorTypes={
