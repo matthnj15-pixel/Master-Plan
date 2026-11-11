@@ -802,8 +802,17 @@ const savedNumber=v=>typeof v==='number'&&Number.isFinite(v);
 const savedStrings=v=>Array.isArray(v)&&v.every(x=>typeof x==='string');
 const savedFact=v=>typeof v==='boolean'||savedNumber(v)||typeof v==='string'||savedStrings(v);
 const savedFacts=v=>record(v)&&Object.values(v).every(savedFact);
+const savedTexts=(v,keys,nullable=[])=>keys.every(k=>v[k]===undefined||typeof v[k]==='string'||v[k]===null&&nullable.includes(k));
+function savedProjectText(p,allowRevisions=true){
+  if(!record(p)||!savedTexts(p,['title','intent','blurb','desc','presenter','site','kind','programRevision','from','to','controller','outOfScope'],['outOfScope']))return false;
+  for(const key of ['year','postedYear','deliveryYear','demolishedYear'])if(p[key]!==undefined&&p[key]!==null&&!savedNumber(p[key]))return false;
+  for(const key of ['program','originalProgram'])if(p[key]!==undefined&&p[key]!==null&&!validateProgram(p[key]).ok)return false;
+  for(const key of ['plan','originalPlan'])if(p[key]!==undefined&&!savedFacts(p[key]))return false;
+  if(p.decision!==undefined&&p.decision!==null&&(!record(p.decision)||!savedTexts(p.decision,['action','funding','route'],['funding'])||p.decision.year!==undefined&&!savedNumber(p.decision.year)))return false;
+  return p.revisions===undefined||allowRevisions&&Array.isArray(p.revisions)&&p.revisions.every(r=>savedProjectText(r,false));
+}
 function savedProfile(profile,point){
-  if(!record(profile))return false;
+  if(!record(profile)||!savedTexts(profile,['name','role','authority','voice']))return false;
   for(const key of ['interests','prerequisites','hard','preferences','affectedPlots'])if(profile[key]!==undefined&&!Array.isArray(profile[key]))return false;
   if(profile.interests&&!savedStrings(profile.interests)||profile.affectedPlots&&!profile.affectedPlots.every(point))return false;
   if(profile.prerequisites?.some(g=>!record(g)||!boundedText(g.fact,1,120)||!savedFact(g.value)||g.reason!==undefined&&typeof g.reason!=='string'))return false;
@@ -820,7 +829,7 @@ function validateScenario(d){
   const fail=field=>({ok:false,reasons:['save_scenario_invalid:'+field]}),positive=n=>Number.isSafeInteger(n)&&n>0;
   if(!record(d))return fail('root');
   for(const key of ['metadata','calendar','map','people','initial','proposals','events','economy','labels','ownership'])if(!record(d[key]))return fail(key);
-  if(!boundedText(d.id,1,120)||!boundedText(d.metadata.town,1,120)||!boundedText(d.metadata.displayName,1,240))return fail('identity');
+  if(!boundedText(d.id,1,120)||!boundedText(d.metadata.town,1,120)||!boundedText(d.metadata.displayName,1,240)||!savedTexts(d.metadata,['region']))return fail('identity');
   if(!savedNumber(d.calendar.startYear)||!positive(d.calendar.yearsPerTurn)||!positive(d.calendar.electionEvery)||!positive(d.calendar.maxTurns))return fail('calendar');
   if(!['jobs','upkeep','roadCap'].every(k=>savedNumber(d.economy[k]))||!['bridge','boutique','flood'].every(k=>typeof d.events[k]==='boolean'))return fail('economy_or_events');
   if(!savedNumber(d.initial.cash)||!savedNumber(d.initial.pop)||d.initial.flags!==undefined&&!record(d.initial.flags)||d.initial.meters!==undefined&&(!record(d.initial.meters)||!Object.values(d.initial.meters).every(savedNumber))||d.initial.facts!==undefined&&!savedFacts(d.initial.facts))return fail('initial');
@@ -829,19 +838,19 @@ function validateScenario(d){
   const point=p=>Array.isArray(p)&&p.length===2&&Number.isInteger(p[0])&&Number.isInteger(p[1])&&p[0]>=0&&p[0]<map.width&&p[1]>=0&&p[1]<map.height;
   const points=v=>Array.isArray(v)&&v.every(point),bounds=b=>record(b)&&['minX','maxX','minY','maxY'].every(k=>savedNumber(b[k]));
   const growth=map.growth;if(!Array.isArray(growth.center)||growth.center.length!==2||!growth.center.every(savedNumber)||!bounds(growth.bounds)||!bounds(growth.main)||growth.traitsMain!==undefined&&!bounds(growth.traitsMain)||growth.enabled!==undefined&&typeof growth.enabled!=='boolean')return fail('growth');
-  if(!Object.values(map.sites).every(points)||Object.values(map.parcels).some(p=>!record(p)||!savedStrings(p.traits)||p.tiles!==undefined&&!points(p.tiles)))return fail('sites_or_parcels');
+  if(!Object.values(map.sites).every(points)||Object.values(map.parcels).some(p=>!record(p)||!savedTexts(p,['name','blurb'])||!savedStrings(p.traits)||p.tiles!==undefined&&!points(p.tiles)))return fail('sites_or_parcels');
   for(const p of Object.values(map.places)){
     if(!record(p)||typeof p.name!=='string'||!savedStrings(p.kw))return fail('places');
     if(p.query!==undefined){const q=p.query;if(!record(q)||!savedStrings(q.buildings)||q.rows!==undefined&&(!Array.isArray(q.rows)||!q.rows.every(Number.isInteger))||q.bounds!==undefined&&!bounds(q.bounds))return fail('place_query');}
   }
   if(!record(d.people.presenters)||!Array.isArray(d.people.council))return fail('people');
   for(const [id,p] of Object.entries(d.people.presenters))if(!boundedText(id,1,120)||!record(p)||typeof p.name!=='string'||!['rel','comp','detail'].every(k=>finite(p[k],0,100))||['role','persona','flex'].some(k=>p[k]!==undefined&&typeof p[k]!=='string')||p.profile!==undefined&&!savedProfile(p.profile,point))return fail('presenters');
-  for(const m of d.people.council)if(!record(m)||!boundedText(m.id,1,120)||typeof m.name!=='string'||m.seat!==undefined&&typeof m.seat!=='string'||!finite(m.rel,0,100)||!record(m.w)||!Object.values(m.w).every(savedNumber)||!record(m.pri)||!Object.values(m.pri).every(v=>typeof v==='string'))return fail('council');
+  for(const m of d.people.council)if(!record(m)||!boundedText(m.id,1,120)||typeof m.name!=='string'||!savedTexts(m,['seat','blurb'])||!finite(m.rel,0,100)||!record(m.w)||!Object.values(m.w).every(savedNumber)||!record(m.pri)||!Object.values(m.pri).every(v=>typeof v==='string'))return fail('council');
   const route=d.decisionRoute;if(!record(route)||!boundedText(route.id,1,120)||!boundedText(route.executiveId,1,120)||typeof route.name!=='string'||typeof route.executiveName!=='string'||!savedNumber(route.executiveLimit)||!positive(route.votesRequired)||route.requireAuthority!==undefined&&typeof route.requireAuthority!=='boolean')return fail('decision_route');
   if(!record(d.proposals.definitions)||!record(d.proposals.schedule))return fail('proposals');
   const definitions=d.proposals.definitions;
   for(const [id,p] of Object.entries(definitions)){
-    if(!boundedText(id,1,120)||!record(p)||typeof p.kind!=='string'||!Object.hasOwn(KINDS,p.kind)||!ownRecord(d.people.presenters,p.presenter)||typeof p.title!=='string'||p.council!==undefined&&typeof p.council!=='boolean'||p.group!==undefined&&p.group!==null&&!boundedText(p.group,1,120))return fail('proposal_definition');
+    if(!boundedText(id,1,120)||!record(p)||!savedProjectText(p)||typeof p.kind!=='string'||!Object.hasOwn(KINDS,p.kind)||!ownRecord(d.people.presenters,p.presenter)||typeof p.title!=='string'||p.council!==undefined&&typeof p.council!=='boolean'||p.group!==undefined&&p.group!==null&&!boundedText(p.group,1,120))return fail('proposal_definition');
     if(p.site!==undefined&&(!boundedText(p.site,1,120)||!['custom','none'].includes(p.site)&&!Object.hasOwn(map.sites,p.site))||p.plots!==undefined&&!points(p.plots))return fail('proposal_site');
     if(p.program!==undefined){if(!validateProgram(p.program).ok)return fail('proposal_program');}
     else if(p.site===undefined||p.plan!==undefined&&(!record(p.plan)||!strictLegacyPlan(p.kind,{...defaultPlan(p.kind),...p.plan})))return fail('proposal_plan');
@@ -864,7 +873,7 @@ function validateSave(s){
   const fail=reason=>({ok:false,reasons:[reason]});
   if(!record(s)||!(FLAGS.compositionPlans?[1,2,3,4]:[1,2,3]).includes(s.v))return fail('save_version_unsupported');
   const positive=n=>Number.isSafeInteger(n)&&n>0,nonnegative=n=>Number.isSafeInteger(n)&&n>=0,number=n=>typeof n==='number'&&Number.isFinite(n);
-  if(!positive(s.year)||!positive(s.maxYears)||!number(s.cash)||!number(s.pop)||!number(s.propIdx)||!number(s.capital)||!boundedText(s.phase,1,40))return fail('save_state_invalid');
+  if(!positive(s.year)||!positive(s.maxYears)||!number(s.cash)||!number(s.pop)||!number(s.propIdx)||!number(s.capital)||!boundedText(s.phase,1,40)||!savedTexts(s,['town']))return fail('save_state_invalid');
   for(const key of ['meters','flags','presenters','council','decided','chats','lobby'])if(!record(s[key]))return fail('save_object_invalid:'+key);
   if(s.v>=2&&!record(s.policies))return fail('save_object_invalid:policies');
   if(Object.values(s.meters).some(v=>!number(v))||!number(s.flags.students)||!number(s.flags.bridgeRisk))return fail('save_numbers_invalid');
@@ -886,7 +895,7 @@ function validateSave(s){
   if(!Object.values(s.chats).every(v=>Array.isArray(v)&&v.every(c=>record(c)&&typeof c.who==='string'&&typeof c.text==='string')))return fail('save_chat_entry_invalid');
   if(typeof s.flags.bridgeClosed!=='boolean'||!nonnegative(s.flags.deficitYears)||s.flags.collegeLost!==undefined&&!savedNumber(s.flags.collegeLost)||s.flags.boutique!==null&&s.flags.boutique!==undefined&&(!record(s.flags.boutique)||!positive(s.flags.boutique.opened)||!strictLegacyPlan('boutique',s.flags.boutique.plan)))return fail('save_runtime_flags_invalid');
   const project=p=>{
-    if(!record(p)||!boundedText(p.id,1,120)||typeof p.kind!=='string'||!Object.hasOwn(KINDS,p.kind)||!ownRecord(definitions,p.presenter)||!ownRecord(s.presenters,p.presenter)||!record(p.plan)||!boundedText(p.site,1,120))return false;
+    if(!record(p)||!savedProjectText(p)||!boundedText(p.id,1,120)||typeof p.kind!=='string'||!Object.hasOwn(KINDS,p.kind)||!ownRecord(definitions,p.presenter)||!ownRecord(s.presenters,p.presenter)||!record(p.plan)||!boundedText(p.site,1,120))return false;
     if(p.group!==undefined&&p.group!==null&&!boundedText(p.group,1,120)||p.council!==undefined&&typeof p.council!=='boolean')return false;
     if(p.plots!==undefined&&(!Array.isArray(p.plots)||p.plots.some(t=>!point(t))))return false;
     if(p.traits!==undefined&&!savedStrings(p.traits)||p.completionFacts!==undefined&&!savedFacts(p.completionFacts))return false;
@@ -900,11 +909,12 @@ function validateSave(s){
   for(const key of ['proposals','pending','built'])for(const p of s[key])if(!project(p)||key==='proposals'&&!boundedText(p.status,1,40)||key!=='proposals'&&(!number(p.cost)||!number(p.costHigh)||!number(p.odds)||!positive(p.year)))return fail('save_collection_entry_invalid:'+key);
   if(s.bonds.some(b=>!record(b)||!boundedText(b.name,1,120)||!number(b.annual)||!nonnegative(b.left)))return fail('save_collection_entry_invalid:bonds');
   if(s.reports.some(r=>!record(r)||(r.type==='event'?!boundedText(r.text,1,4000):!positive(r.year)||!record(r.before)||!record(r.after)||!Array.isArray(r.causes)||r.causes.some(c=>!record(c)||!number(c.v)||!boundedText(c.r,1,4000)))))return fail('save_collection_entry_invalid:reports');
+  if(s.reports.some(r=>r.projects!==undefined&&(!Array.isArray(r.projects)||!r.projects.every(p=>savedProjectText(p)))))return fail('save_project_report_invalid');
   if(s.history.some(h=>!record(h)||!positive(h.year)||!['pop','cash','jobs','walk','live','conf','approval'].every(k=>number(h[k]))))return fail('save_collection_entry_invalid:history');
   for(const key of ['shocks','extraNext','receipts','projectRecords','persuasionHistory'])if(s[key]!==undefined&&(!Array.isArray(s[key])||s[key].some(v=>!record(v))))return fail('save_collection_entry_invalid:'+key);
   if(s.shocks?.some(v=>!number(v.v)||!boundedText(v.r,1,4000)))return fail('save_collection_entry_invalid:shocks');
   if(s.extraNext?.some(p=>!project(p)))return fail('save_collection_entry_invalid:extraNext');
-  if(s.projectRecords?.some(r=>!boundedText(r.proposalId,1,120)||!boundedText(r.stage,1,40)||!Array.isArray(r.revisions)||r.revisions.some(v=>!record(v))))return fail('save_collection_entry_invalid:projectRecords');
+  if(s.projectRecords?.some(r=>!savedProjectText(r)||!boundedText(r.proposalId,1,120)||!boundedText(r.stage,1,40)||!Array.isArray(r.revisions)||r.revisions.some(v=>!record(v))))return fail('save_collection_entry_invalid:projectRecords');
   if(s.persuasionHistory?.some(h=>!memberIds.has(h.memberId)||!boundedText(h.proposalId,1,120)||!boundedText(h.claimKey,1,120)||!positive(h.year)))return fail('save_collection_entry_invalid:persuasionHistory');
   if(s.v===4){
     if(!(s.gameId===null||boundedText(s.gameId,1,120))||!nonnegative(s.revision)||!nonnegative(s.actionHighWater)||!Array.isArray(s.receipts)||s.receipts.length>COMPOSITION_RECEIPTS||!Array.isArray(s.projectRecords)||!Array.isArray(s.persuasionHistory))return fail('save_command_state_invalid');

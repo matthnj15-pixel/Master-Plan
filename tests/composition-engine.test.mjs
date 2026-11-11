@@ -398,6 +398,13 @@ test('MP-060 MP-079 consumed nested scenario and runtime collections reject befo
     s=>s.scenario.map.parcels.oldmill.traits=null,s=>s.scenario.map.places.oldmill.kw=[null],s=>s.scenario.map.places.downtown.query.buildings=null,s=>s.scenario.map.places.downtown.query.rows=[null],
     s=>s.scenario.people.council[0].w.jobs=null,s=>s.scenario.people.presenters.engineer.comp='high',s=>s.scenario.labels=null,s=>s.scenario.initial=null,s=>s.scenario.ownership=null,
     s=>s.scenario.labels.bridgeShort={toString:null,valueOf:null},s=>s.scenario.proposals.definitions.park.group={},s=>s.scenario.proposals.definitions.park.profileId='constructor',s=>s.proposals[0].group={},
+    ...['authority','voice'].map(key=>s=>s.scenario.composition.profiles.college_liaison[key]={toString:null,valueOf:null}),
+    ...['name','blurb'].map(key=>s=>s.scenario.map.parcels.oldmill[key]={toString:null,valueOf:null}),
+    s=>s.scenario.metadata.region={toString:null,valueOf:null},s=>s.scenario.people.council[0].blurb={toString:null,valueOf:null},
+    ...['title','blurb','desc'].map(key=>s=>s.proposals[0][key]={toString:null,valueOf:null}),
+    ...['title','intent','blurb','desc'].map(key=>s=>{s.projectRecords=[{proposalId:'bridge',stage:'agenda',revisions:[],[key]:{toString:null,valueOf:null}}];}),
+    ...['title','intent','from','to'].map(key=>s=>{s.projectRecords=[{proposalId:'bridge',stage:'agenda',revisions:[{[key]:{toString:null,valueOf:null}}]}];}),
+    s=>{let revision={title:'Flat leaf'};for(let depth=0;depth<256;depth++)revision={revisions:[revision]};s.projectRecords=[{proposalId:'bridge',stage:'agenda',revisions:[revision]}];},
     s=>s.scenario.composition.profiles.bowers_operator.hard=[null],s=>s.scenario.composition.profiles.bowers_operator.hard[0].field=null,
     s=>s.scenario.composition.profiles.bowers_operator.prerequisites=[null],s=>s.scenario.composition.routes['service-lane'].plots=[null],
     s=>s.scenario.composition.authoredFacts.bowersLeaseValid=null,s=>s.lobby.okafor=null,s=>s.lobbyCount={okafor:null},
@@ -424,4 +431,13 @@ test('MP-060 MP-074 MP-079 valid custom scenario scheduling, profiles and altern
   s=commit(s,'resolveYear',{});assert.equal(s.facts.waterReady,true);assert.equal(E.isSupportedSave(s),true);assert.equal(s.proposals.find(p=>p.id==='housing').status,'open');
   const record=s.projectRecords.find(r=>r.proposalId===repair.id);assert.equal(record.programRevision,revision);assert.equal(E.legacyRevision(s.built.find(p=>p.id===repair.id),s),revision);
   s=commit(s,'decision',{proposalId:'housing',action:'approve',funding:'cash',route:'recovery-authority'});s=commit(s,'resolveYear',{});assert.equal(E.isSupportedSave(s),true);assert.equal(s.built.length,2);
+});
+
+test('MP-060 optional consumed display text remains optional in profiles, parcels, projects and history',()=>{
+  const s=fresh();delete s.scenario.metadata.region;delete s.scenario.people.council[0].blurb;
+  for(const key of ['authority','voice'])delete s.scenario.composition.profiles.college_liaison[key];
+  for(const key of ['name','blurb'])delete s.scenario.map.parcels.oldmill[key];
+  for(const key of ['title','blurb','desc'])delete s.proposals[0][key];
+  s.projectRecords=[{proposalId:'bridge',stage:'agenda',revisions:[{year:1,from:'old',to:'new'}]}];
+  assert.equal(E.isSupportedSave(s),true);assert.equal(E.isSupportedSave(E.migrate(clone(s))),true);
 });
