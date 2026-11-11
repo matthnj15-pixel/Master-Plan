@@ -85,3 +85,7 @@ Schema v3 adds `scenarioId`, a serializable scenario configuration, `calendar` a
 The parity fixture names the exact base and seed. The coordinator independently reproduced both stored SHA-256 hashes from the original base source. Both compare complete first-term state after omitting only schema/scenario metadata and normalizing the approved town spelling. The older-save fixture is genuine v2 state captured before implementation, with built and pending projects, a pending grant, finances and edited parcels.
 
 Automated Chromium is separate from physical iPhone Duo, Claude artifact and on-device Qwen verification. Final integrated checks, independent review, CI and Pages evidence are recorded in the PR.
+
+### Dev composition extension
+
+The Dev-only `compositionPlans` extension uses [C2.1](contracts/composition-v2/contract.md): engine-owned components, conditions, exact layout, atomic commands and v4 saves. Its namespaced storage preserves the original legacy bytes and format fences; the flag-off foundation above retains v3 behavior. Use the C2 preview/commit interfaces for composed plans rather than calling the legacy `makeInitiative` mutator during private drafting. Current acceptance evidence and external provider/device gates are recorded in [the autonomous ledger](autonomous-evidence.md).
