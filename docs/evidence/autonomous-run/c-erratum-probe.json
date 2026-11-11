@@ -1,0 +1,10 @@
+{
+  "schema": "composition-v2/forecast-delta",
+  "cases": {
+    "bridgeRisk": true,
+    "students": true,
+    "nonnumericRejected": true,
+    "unknownRejected": true
+  },
+  "evidenceType": "contract-schema-probe"
+}
