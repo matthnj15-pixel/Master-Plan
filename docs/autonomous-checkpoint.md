@@ -34,3 +34,13 @@ Next: integrate engine/frontend in dependency order; implement transactional
 workspace under freed writer slot, then provider runner. Freeze runnable SHA
 for independent QA/review. Run complete tests + both builds, fix findings, open
 Dev PR, monitor CI/merge/deploy per policy. Preserve all unmet G/X evidence.
+
+Storage milestone 964a344: slot-locked local envelopes, generation fences,
+legacy backup, feature-independent protected-format probe, private recovery
+limits/conflicts and serialized freshest-durable account replication. Seven
+focused workspace tests pass (`node tests/workspace.test.mjs`). Dev/Stable
+builds pass; sandboxed child processes cannot execute /bin/sh, so final builds
+and full browser checks use the approved outside-sandbox command path.
+UI writes resumed after this source integration window. Provider Mencius is
+read-only preparing until next writer slot. Published Qwen config says 32768
+context tokens; this is upstream config, NOT actual loaded runtime evidence.

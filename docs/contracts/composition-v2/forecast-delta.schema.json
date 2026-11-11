@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "masterplan:composition-v2:forecast-delta",
+  "title": "C2 forecast effects delta, including frozen C erratum",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "cost": {"type": "number"},
+    "costHigh": {"type": "number"},
+    "upkeep": {"type": "number"},
+    "jobs": {"type": "number"},
+    "units": {"type": "number"},
+    "housing": {"type": "number"},
+    "walk": {"type": "number"},
+    "live": {"type": "number"},
+    "conf": {"type": "number"},
+    "prop": {"type": "number"},
+    "approval": {"type": "number"},
+    "farm": {"type": "number"},
+    "parking": {"type": "number"},
+    "safety": {"type": "number"},
+    "afford": {"type": "number"},
+    "storm": {"type": "number"},
+    "creek": {"type": "number"},
+    "downtown": {"type": "number"},
+    "bridgeRisk": {"type": "number"},
+    "students": {"type": "number"},
+    "activity": {"type": "number"},
+    "noise": {"type": "number"},
+    "access": {"type": "number"}
+  }
+}
