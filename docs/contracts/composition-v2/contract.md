@@ -116,3 +116,54 @@ evidence only; Reviewer is source read-only. Both receive exact integrated SHA.
 Fictional balance coefficients and schematic layouts must be documented as
 assumptions. Browser/mock evidence, real Qwen, deployed and physical device
 evidence are distinct. Stable release remains Nate's decision.
+
+## Internal review amendments · C2.1
+
+The independent contract review identified ambiguities before implementation.
+These rules take precedence over abbreviated signatures above; frozen C's
+authorization, evidence and replay protections continue unless explicitly
+replaced here.
+
+1. Command IDs are positive safe integers, monotonically allocated per
+   `gameId`; include `gameId`, `expectedRevision`, `expectedGeneration`.
+   SHA-256 of complete canonical command binds all semantic fields. Retain 64
+   receipts and high-water; exact retained replay is checked BEFORE freshness
+   and returns historical receipt plus current state and `applied:false`.
+   Changed-body reuse and pruned IDs at/below high-water reject. Failed commands
+   do not advance any counter or consume resources.
+2. Store rereads the envelope in its slot-stable lock. Commands and
+   `replace(state, expectedGeneration)` bind current slot generation and game.
+   Replacement gets a new game ID and increases generation; stale snapshots,
+   account reads and replication cannot rewind it. `save` also increments state
+   revision for legacy mutations and rejects obsolete snapshots. Unavailable
+   locks or inaccessible/corrupt/newer storage are explicit read-only modes.
+3. Resident evaluation binds actor/profile, controlling authorizer, candidate
+   fingerprint and prerequisites. Revision commits independently re-evaluate
+   trusted state. `confirmed:true` means player confirmation, never actor
+   consent. A counter authorizes only that previewed candidate. Missing facts
+   cannot be treated as a grant of authority. Conditions are recorded commitments
+   distinct from prerequisites that must exist before confirmation.
+4. Conditions distinguish hours (0–24 hours/day), delivery period
+   (`none|daytime|anytime`), maintained farm/service access, public operation and
+   buffering. Effects follow component activities/exposure, not actor names.
+   Any added scoped conditions must carry component/asset IDs and activation
+   stage. All conditions persist through pending/built/project records.
+5. Claim evaluation receives original `argument`, `source:'typed'|'quick'`,
+   target revision, evidence spans/quotes and typed fact claims. Engine verifies
+   a span against actual input and each claim against accepted forecast;
+   per-claim reasons identify false/unsupported/irrelevant/repeated claims.
+   Engine derives tone, addressed priorities and bounded credit. Mixed arguments
+   retain true and false findings; quotas are enforced at commit.
+6. Reaction requests add `receipt:{id,fingerprint,memberId}`. Resolve only an
+   actual retained persuasion receipt with matching type, fingerprint and member;
+   wrong/missing/pruned receipts reject. Reaction generation never rescores.
+7. Decision payload adds `action:'vote'|'approve'|'reject'|'table'` and explicit
+   funding for approval/voting. Validate the actual winning option and funding
+   under engine vote/resource rules. No implicit bond fallback. Separate command
+   types `offer` and `grant` bind explicit player offers/applications.
+8. Layout records must be frozen by engine owner before renderer dependence,
+   with plot coordinate, component ID, schematic footprint and shared-space
+   reference. Enforce cumulative shared capacity and quantity-to-area limits.
+   Retained assets retain identities. Legacy revisions use a compatibility
+   adapter that preserves accepted fields; pending/built snapshots copy the
+   accepted program, layout and conditions rather than reconstructing them.
