@@ -95,3 +95,15 @@ test('MP-075 MP-081 composition diagnostics complete previews without claiming a
   assert.ok(doc.events.some(e=>e.metadata.resultCode==='unknown_field'));
   assert.doesNotMatch(JSON.stringify(doc),/SECRET_INPUT|SECRET_FIELD|SECRET_VALUE/);
 });
+test('MP-064 MP-081 hosted json-only transport preserves typed play with unverified limits and safe server rejection',async()=>{
+  const state=fresh(),optionsSeen=[];
+  const hosted={async json(prompt,options){optionsSeen.push(options);return {program:program('A hosted workshop')};}};
+  const runner=create({engine:E}),result=await runner.run({mode:'draft',state,plots:land(state),intent:'A hosted workshop',provider:hosted});
+  assert.equal(result.status,'ready',result.blocker);assert.deepEqual(result.admission,{status:'unverified'});
+  assert.equal(Object.hasOwn(optionsSeen[0],'requireAdmission'),false);
+  hosted.json=async()=>{throw Object.assign(new Error('PRIVATE HOST ERROR'),{code:'context_length_exceeded'});};
+  const failed=await runner.run({mode:'draft',state,plots:land(state),intent:'Complete input retained',provider:hosted});
+  assert.equal(failed.code,'context_limit');assert.equal(failed.attempts,1);assert.equal(failed.intent,'Complete input retained');assert.doesNotMatch(failed.blocker,/PRIVATE/);
+  const unavailable=await runner.run({mode:'draft',state,plots:land(state),intent:'Offline requires real metadata',provider:{offline:true,json:hosted.json}});
+  assert.equal(unavailable.code,'runtime_metadata_unavailable');
+});

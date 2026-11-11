@@ -92,6 +92,7 @@ function sanitizeMetadata(input){
  if(actions.has(input.action))out.action=input.action;
  if(tasks.has(input.task))out.task=input.task;
  if(input.contractVersion==='C2.1')out.contractVersion=input.contractVersion;
+ if(['verified','unverified'].includes(input.admissionStatus))out.admissionStatus=input.admissionStatus;
  if(resultCodes.has(input.resultCode))out.resultCode=input.resultCode;
  if(fieldIds.has(input.fieldId))out.fieldId=input.fieldId;
  if(stages.has(input.stage))out.stage=input.stage;

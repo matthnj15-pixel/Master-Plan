@@ -105,7 +105,7 @@ function create({engine:E,diagnostics,timeoutMs=90000}={}){
   function finish(r,status,extra={}){
     const code=codes.has(extra.code)?extra.code:'none';
     log(r,'composition.final',status,{resultCode:code,durationMs:clock()-r.started});
-    return freeze({status,code,requestId:r.requestId,mode:r.mode,intent:r.intent,attempts:r.attempts,...extra});
+    return freeze({status,code,requestId:r.requestId,mode:r.mode,intent:r.intent,attempts:r.attempts,...(r.admission?{admission:r.admission}:{}),...extra});
   }
   function fail(r,error){
     const code=codes.has(error?.code)?error.code:'runtime_unavailable';
@@ -309,15 +309,22 @@ function create({engine:E,diagnostics,timeoutMs=90000}={}){
           const payload=await bounded(r,async()=>{
             current(r);r.stage='admission';
             if(typeof r.provider?.json!=='function')throw fault('runtime_unavailable');
-            if(typeof r.provider.admit!=='function')throw fault('runtime_metadata_unavailable');
-            const prompt=promptFor(r,repair),admission=await r.provider.admit(prompt,{signal:r.signal,requestId:r.requestId,action:r.mode,attempt,isCurrent:()=>{try{current(r);return true;}catch{return false;}}});
-            current(r);
-            log(r,'composition.admission',admission?.ok?'passed':'failed',{resultCode:admission?.code,promptTokens:admission?.promptTokens,contextWindowTokens:admission?.contextWindowTokens,maxOutputTokens:640});
-            if(!admission?.ok)throw fault(admission?.code==='context_limit'?'context_limit':'runtime_metadata_unavailable');
-            if(!Number.isSafeInteger(admission.promptTokens)||admission.promptTokens<0||!Number.isSafeInteger(admission.contextWindowTokens)||admission.contextWindowTokens<=0||admission.maxOutputTokens!==640)throw fault('runtime_metadata_unavailable');
-            if(admission.promptTokens+640>admission.contextWindowTokens)throw fault('context_limit');
+            const prompt=promptFor(r,repair);
+            if(typeof r.provider.admit==='function'){
+              const admission=await r.provider.admit(prompt,{signal:r.signal,requestId:r.requestId,action:r.mode,attempt,isCurrent:()=>{try{current(r);return true;}catch{return false;}}});
+              current(r);
+              if(admission?.ok){
+                if(!Number.isSafeInteger(admission.promptTokens)||admission.promptTokens<0||!Number.isSafeInteger(admission.contextWindowTokens)||admission.contextWindowTokens<=0||admission.maxOutputTokens!==640)throw fault('runtime_metadata_unavailable');
+                if(admission.promptTokens+640>admission.contextWindowTokens)throw fault('context_limit');
+                r.admission={status:'verified',promptTokens:admission.promptTokens,contextWindowTokens:admission.contextWindowTokens,maxOutputTokens:640};
+              }else if(!r.provider.offline&&admission?.code==='runtime_metadata_unavailable')r.admission={status:'unverified'};
+              else throw fault(admission?.code==='context_limit'?'context_limit':'runtime_metadata_unavailable');
+            }else if(r.provider.offline)throw fault('runtime_metadata_unavailable');
+            else r.admission={status:'unverified'};
+            log(r,'composition.admission',r.admission.status==='verified'?'passed':'observed',{admissionStatus:r.admission.status,resultCode:'none',promptTokens:r.admission.promptTokens,contextWindowTokens:r.admission.contextWindowTokens,maxOutputTokens:r.admission.maxOutputTokens});
             r.stage='generation';
-            const value=await r.provider.json(prompt,{signal:r.signal,requestId:r.requestId,action:r.mode,attempt,requireAdmission:true,isCurrent:()=>{try{current(r);return true;}catch{return false;}}});
+            const value=await r.provider.json(prompt,{signal:r.signal,requestId:r.requestId,action:r.mode,attempt,modelTier:'default',cache:false,
+              ...(r.provider.offline?{requireAdmission:true}:{}),isCurrent:()=>{try{current(r);return true;}catch{return false;}}});
             current(r);return typeof value==='string'?JSON.parse(value):value;
           });
           current(r);r.stage='validation';const parsed=parse(r,payload);
@@ -325,7 +332,9 @@ function create({engine:E,diagnostics,timeoutMs=90000}={}){
           return finish(r,parsed.status||'ready',parsed);
         }catch(error){
           // An invalid interpretation gets one repair. Runtime/state/site failures do not.
-          const safe=error instanceof SyntaxError?fault('malformed_json'):error;
+          const contextCodes=['context_length_exceeded','context_window_exceeded','prompt_too_long','context_limit'];
+          const safe=error instanceof SyntaxError?fault('malformed_json'):
+            contextCodes.includes(error?.code)||contextCodes.includes(error?.error?.code)||error?.name==='ContextWindowSizeExceededError'?fault('context_limit'):error;
           current(r);
           if(r.mode==='reaction'){
             const context=E.readReactionContext(r.state,options.receipt);if(!context.ok)throw engineFailure(context.reasons);
