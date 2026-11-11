@@ -1,3 +1,4 @@
+import {legacyPlanningFixture} from './fixtures/legacy-build.mjs';
 // Real Pages shell/worker and provider adapter; Qwen replies are controlled fixtures.
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
@@ -10,6 +11,7 @@ import {chromium} from 'playwright';
 const root=new URL('..',import.meta.url).pathname;
 const out=mkdtempSync(join(tmpdir(),'mp-plan-offline-'));
 execFileSync('node',['scripts/build.mjs','--channel','dev','--out',out],{cwd:root,stdio:'pipe'});
+legacyPlanningFixture(out);
 const runtimeURL='https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.87/lib/index.js';
 const runtime=`
 export async function hasModelInCache(){return true;}
@@ -35,8 +37,6 @@ before(async()=>{
 after(async()=>{await browser?.close();await new Promise(r=>server.close(r));rmSync(out,{recursive:true,force:true});});
 async function open(width=400){
  const ctx=await browser.newContext({viewport:{width,height:951},hasTouch:true,isMobile:true});
- // Keep this legacy regression fixture on its original planning pipeline.
- await ctx.addInitScript(()=>{const flags=JSON.parse(localStorage.getItem('mp.flagOverrides')||'{}');flags.compositionPlans=false;localStorage.setItem('mp.flagOverrides',JSON.stringify(flags));});
  await ctx.addInitScript(()=>Object.defineProperty(navigator,'gpu',{value:{async requestAdapter(){return{features:new Set(['shader-f16'])};}}}));
  let page=await ctx.newPage();await page.goto(url);
  await page.evaluate(async({url,source})=>{await(await caches.open('master-plan-offline-ai-runtime')).put(url,new Response(source));},{url:runtimeURL,source:runtime});

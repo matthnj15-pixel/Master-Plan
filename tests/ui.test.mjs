@@ -1,3 +1,4 @@
+import {legacyPlanningFixture} from './fixtures/legacy-build.mjs';
 // Touch UI tests in headless Chromium at the iPhone Duo inner display size (portrait).
 // Test names start with the requirement IDs they verify (see docs/requirements.md).
 import { test, before, after } from 'node:test';
@@ -12,9 +13,11 @@ const DUO = { width: 669, height: 951 };
 const root = new URL('..', import.meta.url).pathname;
 const out = mkdtempSync(join(tmpdir(), 'mp-ui-'));
 execFileSync('node', ['scripts/build.mjs', '--channel', 'stable', '--out', out], { cwd: root, stdio: 'pipe' });
+legacyPlanningFixture(out);
 const url = 'file://' + join(out, 'index.html');
 const devOut = mkdtempSync(join(tmpdir(), 'mp-ui-dev-'));
 execFileSync('node', ['scripts/build.mjs', '--channel', 'dev', '--out', devOut], { cwd: root, stdio: 'pipe' });
+legacyPlanningFixture(devOut);
 const devUrl = 'file://' + join(devOut, 'index.html');
 
 let browser;
@@ -23,8 +26,6 @@ after(async () => { await browser?.close(); });
 
 async function open(viewport = DUO, contextOptions = {}, entry = url, initScript) {
   const ctx = await browser.newContext({ viewport, hasTouch: true, isMobile: true, deviceScaleFactor: 3, ...contextOptions });
-  // Keep this legacy regression fixture on its original planning pipeline.
-  await ctx.addInitScript(()=>{const flags=JSON.parse(localStorage.getItem('mp.flagOverrides')||'{}');flags.compositionPlans=false;localStorage.setItem('mp.flagOverrides',JSON.stringify(flags));});
   if (initScript) await ctx.addInitScript(initScript);
   const page = await ctx.newPage();
   const errors = [];

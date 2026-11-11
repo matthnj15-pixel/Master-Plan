@@ -1,3 +1,4 @@
+import {legacyPlanningFixture} from './fixtures/legacy-build.mjs';
 // Browser fixtures exercise the normal Dev app and offline shell, not real Qwen/device quality.
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
@@ -10,6 +11,7 @@ import {chromium} from 'playwright';
 const root=new URL('..',import.meta.url).pathname;
 const out=mkdtempSync(join(tmpdir(),'mp-diagnostics-ui-'));
 execFileSync('node',['scripts/build.mjs','--channel','dev','--out',out],{cwd:root,stdio:'pipe'});
+legacyPlanningFixture(out);
 const runtimeURL='https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.87/lib/index.js';
 const runtime=`export async function hasModelInCache(){return true;}
 export async function CreateMLCEngine(_model,{initProgressCallback}){
@@ -33,8 +35,6 @@ before(async()=>{
 after(async()=>{await browser?.close();if(server?.listening)await new Promise(r=>server.close(r));rmSync(out,{recursive:true,force:true});});
 async function open(width=400,setup,{time,timezoneId='UTC'}={}){
  const ctx=await browser.newContext({viewport:{width,height:951},hasTouch:true,isMobile:true,acceptDownloads:true,timezoneId});
- // Keep this legacy regression fixture on its original planning pipeline.
- await ctx.addInitScript(()=>{const flags=JSON.parse(localStorage.getItem('mp.flagOverrides')||'{}');flags.compositionPlans=false;localStorage.setItem('mp.flagOverrides',JSON.stringify(flags));});
  await ctx.addInitScript(()=>Object.defineProperty(navigator,'gpu',{value:{async requestAdapter(){return {features:new Set(['shader-f16'])};}}}));
  if(setup)await ctx.addInitScript(setup);
  const page=await ctx.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e)));

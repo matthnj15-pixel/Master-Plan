@@ -1,3 +1,4 @@
+import {legacyPlanningFixture} from './fixtures/legacy-build.mjs';
 // Normal-entry dev presentation checks, separate from real Qwen/Duo evidence.
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
@@ -9,13 +10,12 @@ import { chromium } from 'playwright';
 const root=new URL('..',import.meta.url).pathname;
 const out=mkdtempSync(join(tmpdir(),'mp-plan-ui-'));
 execFileSync('node',['scripts/build.mjs','--channel','dev','--out',out],{cwd:root,stdio:'pipe'});
+legacyPlanningFixture(out);
 let browser;
 before(async()=>{browser=await chromium.launch();});
 after(async()=>{await browser?.close();rmSync(out,{recursive:true,force:true});});
 async function open(width,flagOff=false){
   const ctx=await browser.newContext({viewport:{width,height:951},hasTouch:true,isMobile:true});
-  // Keep this legacy regression fixture on its original planning pipeline.
-  await ctx.addInitScript(()=>{const flags=JSON.parse(localStorage.getItem('mp.flagOverrides')||'{}');flags.compositionPlans=false;localStorage.setItem('mp.flagOverrides',JSON.stringify(flags));});
   const page=await ctx.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e)));
   await page.goto('file://'+join(out,'index.html'));
   await page.evaluate(off=>{
@@ -68,8 +68,6 @@ test('MP-026 MP-062 MP-064 dev flags off retain the quick asks and existing plan
 
 test('MP-026 MP-064 dev artifact keeps the existing Claude runtime path with plan flags on (mock capability)',async()=>{
  const ctx=await browser.newContext({viewport:{width:400,height:951},hasTouch:true,isMobile:true});
- // Keep this legacy regression fixture on its original planning pipeline.
- await ctx.addInitScript(()=>{const flags=JSON.parse(localStorage.getItem('mp.flagOverrides')||'{}');flags.compositionPlans=false;localStorage.setItem('mp.flagOverrides',JSON.stringify(flags));});
  await ctx.addInitScript(()=>{
   globalThis.__claudePrompts=[];
   window.claude={use:async capability=>capability==='sample'?{json:async prompt=>{globalThis.__claudePrompts.push(prompt);return{reply:'I can patch the deck.',changes:{scope:'patch'},mood:'neutral'};}}:null};
