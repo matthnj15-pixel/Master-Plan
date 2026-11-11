@@ -1,0 +1,3 @@
+{"args":[],"gpu":true,"adapter":false,"shaderF16":false,"info":null}
+{"args":["--enable-unsafe-webgpu","--use-angle=vulkan","--use-vulkan=swiftshader","--enable-features=Vulkan"],"gpu":true,"adapter":true,"shaderF16":false,"info":{}}
+{"args":["--enable-unsafe-webgpu","--use-angle=swiftshader","--enable-dawn-features=allow_unsafe_apis"],"gpu":true,"adapter":true,"shaderF16":false,"info":{}}

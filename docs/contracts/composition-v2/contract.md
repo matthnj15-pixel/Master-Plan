@@ -84,7 +84,7 @@ New global/CommonJS `MP_WORKSPACE.create({engine,storage,locks,key,legacyKey})`:
 `load()` -> `{state, mode, reason?}`; `commit(command)` async -> engine result;
 `save(state, expectedGeneration)` async -> result; `replace(state)` async ->
 result. `generation` getter. Lock name is derived only from slot key and never
-changes on replacement. Dev v4 key is `masterplan.dev.v4.save`; preserve legacy
+changes on replacement. Dev v4 key is `masterplan.dev.save.v4`; preserve legacy
 bytes and a protected backup on migration. Unknown/newer/corrupt saves are
 read-only. Write failure leaves authoritative state unchanged. No stale retry.
 
@@ -167,3 +167,11 @@ replaced here.
    Retained assets retain identities. Legacy revisions use a compatibility
    adapter that preserves accepted fields; pending/built snapshots copy the
    accepted program, layout and conditions rather than reconstructing them.
+
+C2.1 storage clarification: preserve frozen C names `masterplan.dev.save.v4`,
+`masterplan.stable.save.v4`, account `save-dev-v4`/`save-v4`, lock
+`masterplan.save-slot.<channel>.primary`, replica lock
+`masterplan.save-replica.<channel>.primary`. Private namespace remains
+`masterplan.<channel>.draft-workspace.v1`, partitioned by game and scenario.
+`create` also accepts `channel` and `enabled`; `load` is asynchronous. Feature-off
+builds still probe protected v4 storage and enter read-only mode if it exists.
