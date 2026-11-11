@@ -33,6 +33,8 @@ before(async()=>{
 after(async()=>{await browser?.close();if(server?.listening)await new Promise(r=>server.close(r));rmSync(out,{recursive:true,force:true});});
 async function open(width=400,setup,{time,timezoneId='UTC'}={}){
  const ctx=await browser.newContext({viewport:{width,height:951},hasTouch:true,isMobile:true,acceptDownloads:true,timezoneId});
+ // Keep this legacy regression fixture on its original planning pipeline.
+ await ctx.addInitScript(()=>{const flags=JSON.parse(localStorage.getItem('mp.flagOverrides')||'{}');flags.compositionPlans=false;localStorage.setItem('mp.flagOverrides',JSON.stringify(flags));});
  await ctx.addInitScript(()=>Object.defineProperty(navigator,'gpu',{value:{async requestAdapter(){return {features:new Set(['shader-f16'])};}}}));
  if(setup)await ctx.addInitScript(setup);
  const page=await ctx.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e)));

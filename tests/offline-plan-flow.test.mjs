@@ -35,6 +35,8 @@ before(async()=>{
 after(async()=>{await browser?.close();await new Promise(r=>server.close(r));rmSync(out,{recursive:true,force:true});});
 async function open(width=400){
  const ctx=await browser.newContext({viewport:{width,height:951},hasTouch:true,isMobile:true});
+ // Keep this legacy regression fixture on its original planning pipeline.
+ await ctx.addInitScript(()=>{const flags=JSON.parse(localStorage.getItem('mp.flagOverrides')||'{}');flags.compositionPlans=false;localStorage.setItem('mp.flagOverrides',JSON.stringify(flags));});
  await ctx.addInitScript(()=>Object.defineProperty(navigator,'gpu',{value:{async requestAdapter(){return{features:new Set(['shader-f16'])};}}}));
  let page=await ctx.newPage();await page.goto(url);
  await page.evaluate(async({url,source})=>{await(await caches.open('master-plan-offline-ai-runtime')).put(url,new Response(source));},{url:runtimeURL,source:runtime});

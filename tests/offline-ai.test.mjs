@@ -67,6 +67,8 @@ test('MP-065 opted-in dev Pages reopens offline and uses the saved model for fre
     const url = `http://127.0.0.1:${server.address().port}/dev/`;
     browser = await chromium.launch();
     const context = await browser.newContext({ viewport: { width: 669, height: 951 }, hasTouch: true, isMobile: true });
+    // Keep this legacy regression fixture on its original planning pipeline.
+    await context.addInitScript(()=>{const flags=JSON.parse(localStorage.getItem('mp.flagOverrides')||'{}');flags.compositionPlans=false;localStorage.setItem('mp.flagOverrides',JSON.stringify(flags));});
     await context.route(/fonts\.(googleapis|gstatic)\.com/, route => route.abort());
     await context.addInitScript(() => {
       Object.defineProperty(navigator, 'gpu', {

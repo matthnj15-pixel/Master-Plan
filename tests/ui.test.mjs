@@ -23,6 +23,8 @@ after(async () => { await browser?.close(); });
 
 async function open(viewport = DUO, contextOptions = {}, entry = url, initScript) {
   const ctx = await browser.newContext({ viewport, hasTouch: true, isMobile: true, deviceScaleFactor: 3, ...contextOptions });
+  // Keep this legacy regression fixture on its original planning pipeline.
+  await ctx.addInitScript(()=>{const flags=JSON.parse(localStorage.getItem('mp.flagOverrides')||'{}');flags.compositionPlans=false;localStorage.setItem('mp.flagOverrides',JSON.stringify(flags));});
   if (initScript) await ctx.addInitScript(initScript);
   const page = await ctx.newPage();
   const errors = [];
