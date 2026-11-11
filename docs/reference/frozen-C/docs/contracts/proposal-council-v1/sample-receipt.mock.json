@@ -1,0 +1,192 @@
+{
+  "classification": "mock shape only; not a measured engine result",
+  "value": {
+    "actionId": "mpa1.Zml4dHVyZTptcC12MToyMzAx.1",
+    "actionSeq": 1,
+    "type": "post-draft",
+    "commandFingerprint": "sha256:7dfc7c5d175af6e36a021cf0482b83ac39d581d927c9a3a6e6fd288c09f0b888",
+    "actorId": "mayor",
+    "memberId": null,
+    "controllingAuthorizerId": "mayor",
+    "before": {
+      "gameId": "fixture:mp-v1:2301",
+      "scenarioId": "millbrooke",
+      "turn": 1,
+      "stateRevision": 0
+    },
+    "after": {
+      "gameId": "fixture:mp-v1:2301",
+      "scenarioId": "millbrooke",
+      "turn": 1,
+      "stateRevision": 1
+    },
+    "target": {
+      "proposalId": "init1",
+      "proposalRevision": 1,
+      "competitionId": null,
+      "competitionRevision": null
+    },
+    "code": "applied",
+    "appliedChanges": [
+      {
+        "type": "plan-field",
+        "field": "homes",
+        "value": 20
+      },
+      {
+        "type": "plan-field",
+        "field": "affordable",
+        "value": false
+      },
+      {
+        "type": "plan-field",
+        "field": "shops",
+        "value": 4
+      },
+      {
+        "type": "plan-field",
+        "field": "stories",
+        "value": 2
+      },
+      {
+        "type": "plan-field",
+        "field": "parking",
+        "value": 20
+      },
+      {
+        "type": "plan-field",
+        "field": "green",
+        "value": 2
+      },
+      {
+        "type": "plan-field",
+        "field": "plaza",
+        "value": false
+      },
+      {
+        "type": "plan-field",
+        "field": "civic",
+        "value": "farmers_market"
+      },
+      {
+        "type": "plan-field",
+        "field": "safety",
+        "value": "none"
+      },
+      {
+        "type": "plan-field",
+        "field": "stormwater",
+        "value": true
+      },
+      {
+        "type": "plan-field",
+        "field": "policy",
+        "value": "none"
+      },
+      {
+        "type": "plan-field",
+        "field": "quality",
+        "value": 2
+      }
+    ],
+    "resourceDelta": {
+      "cashK": 0,
+      "capital": 0,
+      "initiativeUsed": true,
+      "pitchQuotaDelta": 0,
+      "pendingProjectDelta": 0,
+      "yearDelta": 0
+    },
+    "claimResults": [],
+    "supportBefore": null,
+    "supportAfter": null,
+    "reasonCodes": [
+      "initiative_posted"
+    ],
+    "originalResult": {
+      "code": "applied",
+      "target": {
+        "proposalId": "init1",
+        "proposalRevision": 1,
+        "competitionId": null,
+        "competitionRevision": null
+      },
+      "appliedChanges": [
+        {
+          "type": "plan-field",
+          "field": "homes",
+          "value": 20
+        },
+        {
+          "type": "plan-field",
+          "field": "affordable",
+          "value": false
+        },
+        {
+          "type": "plan-field",
+          "field": "shops",
+          "value": 4
+        },
+        {
+          "type": "plan-field",
+          "field": "stories",
+          "value": 2
+        },
+        {
+          "type": "plan-field",
+          "field": "parking",
+          "value": 20
+        },
+        {
+          "type": "plan-field",
+          "field": "green",
+          "value": 2
+        },
+        {
+          "type": "plan-field",
+          "field": "plaza",
+          "value": false
+        },
+        {
+          "type": "plan-field",
+          "field": "civic",
+          "value": "farmers_market"
+        },
+        {
+          "type": "plan-field",
+          "field": "safety",
+          "value": "none"
+        },
+        {
+          "type": "plan-field",
+          "field": "stormwater",
+          "value": true
+        },
+        {
+          "type": "plan-field",
+          "field": "policy",
+          "value": "none"
+        },
+        {
+          "type": "plan-field",
+          "field": "quality",
+          "value": 2
+        }
+      ],
+      "resourceDelta": {
+        "cashK": 0,
+        "capital": 0,
+        "initiativeUsed": true,
+        "pitchQuotaDelta": 0,
+        "pendingProjectDelta": 0,
+        "yearDelta": 0
+      },
+      "claimResults": [],
+      "supportBefore": null,
+      "supportAfter": null,
+      "reasonCodes": [
+        "initiative_posted"
+      ]
+    }
+  }
+}

@@ -1,0 +1,2743 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:master-plan:proposal-council:mock-shapes:1",
+  "classification": "STATIC_MOCK_SHAPES_NOT_EXECUTABLE_NOT_MEASURED",
+  "contractVersion": "mp.proposals/1",
+  "sourceContract": "approved R1.1",
+  "authoritativeCommandSchema": {
+    "$id": "urn:master-plan:proposal-council:commands:1",
+    "repoPath": "docs/contracts/proposal-council-v1/commands.schema.json",
+    "commandRef": "urn:master-plan:proposal-council:commands:1#/$defs/command",
+    "semanticRef": "urn:master-plan:proposal-council:commands:1#/$defs/actionSemantic",
+    "receiptRef": "urn:master-plan:proposal-council:commands:1#/$defs/receipt"
+  },
+  "usage": "Validate shape, not gameplay. D creates real executable fixtures/assertions after freeze. Command/semantic/receipt definitions are references only. Samples never replace engine forecasts/authorization/credit.",
+  "newImplementationEvidence": "UNVERIFIED",
+  "onlyPinnedObservedReferences": [
+    "B0",
+    "B1"
+  ],
+  "$defs": {
+    "fact": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "source": {
+          "enum": [
+            "simulated",
+            "scenario-authored"
+          ]
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "kind": {
+          "enum": [
+            "observed",
+            "authored_fact",
+            "authored_rule"
+          ]
+        },
+        "units": {
+          "type": "string"
+        },
+        "affectedIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        }
+      },
+      "required": [
+        "id",
+        "value",
+        "source",
+        "revision",
+        "kind",
+        "affectedIds"
+      ],
+      "additionalProperties": false
+    },
+    "actorProfile": {
+      "type": "object",
+      "required": [
+        "actorId"
+      ],
+      "properties": {
+        "actorId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        }
+      },
+      "additionalProperties": true
+    },
+    "scopeAck": {
+      "type": "object",
+      "properties": {
+        "scopeKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "base": {
+          "$ref": "urn:master-plan:proposal-council:commands:1#/$defs/stateRef"
+        },
+        "subsetPreviewKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "omissionIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "maxItems": 8
+        }
+      },
+      "required": [
+        "scopeKey",
+        "base",
+        "subsetPreviewKey",
+        "omissionIds"
+      ],
+      "additionalProperties": false
+    },
+    "omission": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "requestedPart": {
+          "type": "string"
+        },
+        "code": {
+          "enum": [
+            "unsupported_operation",
+            "intent_unclear",
+            "unpriced_effect"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "requestedPart",
+        "code"
+      ],
+      "additionalProperties": false
+    },
+    "planGeometryConditions": {
+      "type": "object",
+      "properties": {
+        "plan": {
+          "anyOf": [
+            {
+              "$ref": "urn:master-plan:proposal-council:commands:1#/$defs/completePlan"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "geometry": {
+          "$ref": "urn:master-plan:proposal-council:commands:1#/$defs/geometry"
+        },
+        "conditions": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "plan",
+        "geometry",
+        "conditions"
+      ],
+      "additionalProperties": false
+    },
+    "engineForecast": {
+      "type": "object",
+      "properties": {
+        "money": {
+          "type": "object",
+          "properties": {
+            "costK": {
+              "type": "number"
+            },
+            "costHighK": {
+              "type": "number"
+            },
+            "annualUpkeepK": {
+              "type": "number"
+            },
+            "reserveAfterCashK": {
+              "type": "number"
+            },
+            "bondAnnualK": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "costK",
+            "costHighK",
+            "annualUpkeepK",
+            "reserveAfterCashK",
+            "bondAnnualK"
+          ],
+          "additionalProperties": false
+        },
+        "effects": {
+          "type": "object",
+          "properties": {
+            "jobs": {
+              "type": "number"
+            },
+            "units": {
+              "type": "number"
+            },
+            "housing": {
+              "type": "number"
+            },
+            "walk": {
+              "type": "number"
+            },
+            "live": {
+              "type": "number"
+            },
+            "conf": {
+              "type": "number"
+            },
+            "prop": {
+              "type": "number"
+            },
+            "approval": {
+              "type": "number"
+            },
+            "farm": {
+              "type": "number"
+            },
+            "parking": {
+              "type": "number"
+            },
+            "safety": {
+              "type": "number"
+            },
+            "afford": {
+              "type": "number"
+            },
+            "storm": {
+              "type": "number"
+            },
+            "downtown": {
+              "type": "number"
+            },
+            "creek": {
+              "type": "number"
+            },
+            "bridgeRisk": {
+              "type": "number"
+            },
+            "students": {
+              "type": "number"
+            },
+            "notes": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "jobs",
+            "units",
+            "housing",
+            "walk",
+            "live",
+            "conf",
+            "prop",
+            "approval",
+            "farm",
+            "parking",
+            "safety",
+            "afford",
+            "storm",
+            "downtown",
+            "creek",
+            "notes"
+          ],
+          "additionalProperties": false
+        },
+        "demolition": {
+          "type": "object",
+          "properties": {
+            "costK": {
+              "type": "number"
+            },
+            "displacedResidents": {
+              "type": "number"
+            },
+            "lostStorefronts": {
+              "type": "number"
+            },
+            "acquisitionWarning": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "costK",
+            "displacedResidents",
+            "lostStorefronts",
+            "acquisitionWarning"
+          ],
+          "additionalProperties": false
+        },
+        "support": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "memberId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "lean": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "preferredOptionId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              }
+            },
+            "required": [
+              "memberId",
+              "lean",
+              "preferredOptionId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "tally": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "predictedWinnerId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "funding": {
+          "type": "object",
+          "properties": {
+            "cashEligible": {
+              "type": "boolean"
+            },
+            "bondEligible": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "cashEligible",
+            "bondEligible"
+          ],
+          "additionalProperties": false
+        },
+        "deliveryOdds": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "constructionStage": {
+          "enum": [
+            "proposed",
+            "pending",
+            "built"
+          ]
+        }
+      },
+      "required": [
+        "money",
+        "effects",
+        "demolition",
+        "support",
+        "tally",
+        "predictedWinnerId",
+        "funding",
+        "deliveryOdds",
+        "constructionStage"
+      ],
+      "additionalProperties": false
+    },
+    "engineForecastDelta": {
+      "type": "object",
+      "properties": {
+        "money": {
+          "type": "object",
+          "properties": {
+            "costK": {
+              "type": "number"
+            },
+            "costHighK": {
+              "type": "number"
+            },
+            "annualUpkeepK": {
+              "type": "number"
+            },
+            "reserveAfterCashK": {
+              "type": "number"
+            },
+            "bondAnnualK": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "costK",
+            "costHighK",
+            "annualUpkeepK",
+            "reserveAfterCashK",
+            "bondAnnualK"
+          ],
+          "additionalProperties": false
+        },
+        "effects": {
+          "type": "object",
+          "properties": {
+            "jobs": {
+              "type": "number"
+            },
+            "units": {
+              "type": "number"
+            },
+            "housing": {
+              "type": "number"
+            },
+            "walk": {
+              "type": "number"
+            },
+            "live": {
+              "type": "number"
+            },
+            "conf": {
+              "type": "number"
+            },
+            "prop": {
+              "type": "number"
+            },
+            "approval": {
+              "type": "number"
+            },
+            "farm": {
+              "type": "number"
+            },
+            "parking": {
+              "type": "number"
+            },
+            "safety": {
+              "type": "number"
+            },
+            "afford": {
+              "type": "number"
+            },
+            "storm": {
+              "type": "number"
+            },
+            "downtown": {
+              "type": "number"
+            },
+            "creek": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "jobs",
+            "units",
+            "housing",
+            "walk",
+            "live",
+            "conf",
+            "prop",
+            "approval",
+            "farm",
+            "parking",
+            "safety",
+            "afford",
+            "storm",
+            "downtown",
+            "creek"
+          ],
+          "additionalProperties": false
+        },
+        "memberLean": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "memberId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "delta": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "memberId",
+              "delta"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "money",
+        "effects",
+        "memberLean"
+      ],
+      "additionalProperties": false
+    },
+    "context": {
+      "type": "object",
+      "properties": {
+        "contractVersion": {
+          "const": "mp.proposals/1"
+        },
+        "ref": {
+          "$ref": "urn:master-plan:proposal-council:commands:1#/$defs/stateRef"
+        },
+        "target": {
+          "anyOf": [
+            {
+              "$ref": "urn:master-plan:proposal-council:commands:1#/$defs/proposalRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "storageRef": {
+          "$ref": "urn:master-plan:proposal-council:commands:1#/$defs/storageRef"
+        },
+        "nextAction": {
+          "type": "object",
+          "properties": {
+            "actionSeq": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "actionId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            }
+          },
+          "required": [
+            "actionSeq",
+            "actionId"
+          ],
+          "additionalProperties": false
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        },
+        "editableFields": {
+          "type": "object"
+        },
+        "editableOperations": {
+          "type": "object"
+        },
+        "facts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/fact"
+          },
+          "maxItems": 32
+        },
+        "profiles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/actorProfile"
+          }
+        },
+        "relevantHistory": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          },
+          "maxItems": 3
+        },
+        "geometry": {
+          "$ref": "urn:master-plan:proposal-council:commands:1#/$defs/geometry"
+        },
+        "canDraft": {
+          "type": "boolean"
+        },
+        "canPost": {
+          "type": "boolean"
+        },
+        "postBlockCode": {
+          "$ref": "urn:master-plan:proposal-council:commands:1#/$defs/resultCode"
+        }
+      },
+      "required": [
+        "contractVersion",
+        "ref",
+        "target",
+        "storageRef",
+        "nextAction",
+        "capabilities",
+        "editableFields",
+        "editableOperations",
+        "facts",
+        "profiles",
+        "relevantHistory",
+        "geometry",
+        "canDraft",
+        "canPost",
+        "postBlockCode"
+      ],
+      "additionalProperties": false
+    },
+    "candidate": {
+      "type": "object",
+      "properties": {
+        "contractVersion": {
+          "const": "mp.proposals/1"
+        },
+        "candidateId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "requestId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "base": {
+          "$ref": "urn:master-plan:proposal-council:commands:1#/$defs/stateRef"
+        },
+        "target": {
+          "anyOf": [
+            {
+              "$ref": "urn:master-plan:proposal-council:commands:1#/$defs/proposalRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "purpose": {
+          "enum": [
+            "draft",
+            "resident-revision"
+          ]
+        },
+        "previewKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "requestedChanges": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:master-plan:proposal-council:commands:1#/$defs/change"
+          }
+        },
+        "acceptedChanges": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:master-plan:proposal-council:commands:1#/$defs/change"
+          }
+        },
+        "omissions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/omission"
+          },
+          "maxItems": 8
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "scopeAck": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/scopeAck"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "before": {
+          "$ref": "#/$defs/planGeometryConditions"
+        },
+        "after": {
+          "$ref": "#/$defs/planGeometryConditions"
+        },
+        "constraints": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "$ref": "urn:master-plan:proposal-council:commands:1#/$defs/resultCode"
+              },
+              "fields": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 240
+                }
+              }
+            },
+            "required": [
+              "code",
+              "fields"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "forecast": {
+          "type": "object",
+          "properties": {
+            "before": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/engineForecast"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "after": {
+              "$ref": "#/$defs/engineForecast"
+            },
+            "delta": {
+              "$ref": "#/$defs/engineForecastDelta"
+            },
+            "unmodeledEffects": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "before",
+            "after",
+            "delta",
+            "unmodeledEffects"
+          ],
+          "additionalProperties": false
+        },
+        "controllingAuthorizerId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "blockingGates": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:master-plan:proposal-council:commands:1#/$defs/confirmationGate"
+          }
+        },
+        "createdCommitments": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:master-plan:proposal-council:commands:1#/$defs/createdCommitment"
+          }
+        },
+        "confirmable": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "contractVersion",
+        "candidateId",
+        "requestId",
+        "base",
+        "target",
+        "purpose",
+        "previewKey",
+        "requestedChanges",
+        "acceptedChanges",
+        "omissions",
+        "assumptions",
+        "scopeAck",
+        "before",
+        "after",
+        "constraints",
+        "forecast",
+        "controllingAuthorizerId",
+        "blockingGates",
+        "createdCommitments",
+        "confirmable"
+      ],
+      "additionalProperties": false
+    },
+    "stance": {
+      "type": "object",
+      "properties": {
+        "stanceKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "base": {
+          "$ref": "urn:master-plan:proposal-council:commands:1#/$defs/stateRef"
+        },
+        "requestedPreviewKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "actorId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "profileVersion": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "stance": {
+          "enum": [
+            "agree",
+            "counter",
+            "refuse",
+            "clarify"
+          ]
+        },
+        "reasonCodes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        },
+        "factRefs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        },
+        "authority": {
+          "enum": [
+            "own-proposal",
+            "own-operation",
+            "stakeholder-statement"
+          ]
+        },
+        "controllingAuthorizerId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "authorizedPreviewKeys": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        },
+        "counterCandidates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/candidate"
+          }
+        },
+        "suggestedPreviewKeys": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        },
+        "blockingGates": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:master-plan:proposal-council:commands:1#/$defs/confirmationGate"
+          }
+        },
+        "createdCommitments": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:master-plan:proposal-council:commands:1#/$defs/createdCommitment"
+          }
+        }
+      },
+      "required": [
+        "stanceKey",
+        "base",
+        "requestedPreviewKey",
+        "actorId",
+        "profileVersion",
+        "stance",
+        "reasonCodes",
+        "factRefs",
+        "authority",
+        "controllingAuthorizerId",
+        "authorizedPreviewKeys",
+        "counterCandidates",
+        "suggestedPreviewKeys",
+        "blockingGates",
+        "createdCommitments"
+      ],
+      "additionalProperties": false
+    },
+    "pitch": {
+      "type": "object",
+      "properties": {
+        "pitchKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "base": {
+          "$ref": "urn:master-plan:proposal-council:commands:1#/$defs/stateRef"
+        },
+        "target": {
+          "$ref": "urn:master-plan:proposal-council:commands:1#/$defs/proposalRef"
+        },
+        "memberId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "claimResults": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "claimId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "factRef": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "valid": {
+                "type": "boolean"
+              },
+              "code": {
+                "$ref": "urn:master-plan:proposal-council:commands:1#/$defs/resultCode"
+              },
+              "creditEligible": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "claimId",
+              "factRef",
+              "valid",
+              "code",
+              "creditEligible"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 8
+        },
+        "addressedPriorities": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        },
+        "specificity": {
+          "enum": [
+            "strong",
+            "weak",
+            "quick",
+            "none"
+          ]
+        },
+        "tone": {
+          "enum": [
+            "respectful",
+            "pushy",
+            "hostile"
+          ]
+        },
+        "caps": {
+          "type": "object",
+          "properties": {
+            "argumentLean": {
+              "type": "number"
+            },
+            "favorLean": {
+              "const": 15
+            },
+            "earmarkLean": {
+              "const": 8
+            }
+          },
+          "required": [
+            "argumentLean",
+            "favorLean",
+            "earmarkLean"
+          ],
+          "additionalProperties": false
+        },
+        "remainingConcerns": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        }
+      },
+      "required": [
+        "pitchKey",
+        "base",
+        "target",
+        "memberId",
+        "claimResults",
+        "addressedPriorities",
+        "specificity",
+        "tone",
+        "caps",
+        "remainingConcerns"
+      ],
+      "additionalProperties": false
+    },
+    "readOutcome": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "status": {
+              "const": "ready"
+            },
+            "code": {
+              "const": "none"
+            },
+            "value": {
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/candidate"
+                },
+                {
+                  "$ref": "#/$defs/stance"
+                },
+                {
+                  "$ref": "#/$defs/pitch"
+                },
+                {
+                  "$ref": "#/$defs/scopeAck"
+                }
+              ]
+            }
+          },
+          "required": [
+            "status",
+            "code",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "status": {
+              "const": "scope_review"
+            },
+            "code": {
+              "const": "scope_ack_required"
+            },
+            "value": {
+              "$ref": "#/$defs/candidate"
+            }
+          },
+          "required": [
+            "status",
+            "code",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "status": {
+              "enum": [
+                "clarify",
+                "unsupported",
+                "infeasible",
+                "stale",
+                "invalid"
+              ]
+            },
+            "code": {
+              "$ref": "urn:master-plan:proposal-council:commands:1#/$defs/resultCode"
+            },
+            "value": {
+              "type": "null"
+            },
+            "fieldIds": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              }
+            }
+          },
+          "required": [
+            "status",
+            "code",
+            "value",
+            "fieldIds"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "storageEnvelope": {
+      "type": "object",
+      "properties": {
+        "envelopeSchema": {
+          "const": "mp.save-envelope/4"
+        },
+        "formatFloor": {
+          "const": 4
+        },
+        "writerProtocol": {
+          "const": "mp.save-writer/1"
+        },
+        "channel": {
+          "enum": [
+            "dev",
+            "stable"
+          ]
+        },
+        "saveSlotId": {
+          "const": "primary"
+        },
+        "storageGeneration": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "game": {
+          "type": "object",
+          "required": [
+            "v",
+            "gameId",
+            "stateRevision",
+            "actionHighWater",
+            "receipts"
+          ],
+          "properties": {
+            "v": {
+              "const": 4
+            },
+            "gameId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            "stateRevision": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "actionHighWater": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "receipts": {
+              "type": "array",
+              "items": {
+                "$ref": "urn:master-plan:proposal-council:commands:1#/$defs/receipt"
+              },
+              "maxItems": 256
+            }
+          },
+          "additionalProperties": true
+        },
+        "legacyImportBackup": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "sourceNamespace": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 240
+                },
+                "sourceSha256": {
+                  "$ref": "urn:master-plan:proposal-council:commands:1#/$defs/sha256"
+                },
+                "originalJson": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "sourceNamespace",
+                "sourceSha256",
+                "originalJson"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "envelopeSchema",
+        "formatFloor",
+        "writerProtocol",
+        "channel",
+        "saveSlotId",
+        "storageGeneration",
+        "game",
+        "legacyImportBackup"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "samples": {
+    "context": {
+      "schemaRef": "#/$defs/context",
+      "classification": "MOCK_SHAPE",
+      "value": {
+        "contractVersion": "mp.proposals/1",
+        "ref": {
+          "gameId": "fixture:mp-v1:2301",
+          "scenarioId": "millbrooke",
+          "turn": 1,
+          "stateRevision": 0,
+          "activationId": "fixture:activation:1"
+        },
+        "target": null,
+        "storageRef": {
+          "channel": "dev",
+          "saveSlotId": "primary",
+          "storageGeneration": 1,
+          "gameId": "fixture:mp-v1:2301",
+          "stateRevision": 0
+        },
+        "nextAction": {
+          "actionSeq": 1,
+          "actionId": "mpa1.Zml4dHVyZTptcC12MToyMzAx.1"
+        },
+        "capabilities": [
+          "plan.initiative.v1"
+        ],
+        "editableFields": {
+          "initiative": {
+            "homes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 200,
+              "multipleOf": 10
+            },
+            "affordable": {
+              "type": "boolean"
+            },
+            "shops": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 12,
+              "multipleOf": 1
+            },
+            "stories": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5,
+              "multipleOf": 1
+            },
+            "parking": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 300,
+              "multipleOf": 20
+            },
+            "green": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 3,
+              "multipleOf": 1
+            },
+            "plaza": {
+              "type": "boolean"
+            },
+            "civic": {
+              "enum": [
+                "none",
+                "library",
+                "community_center",
+                "farmers_market",
+                "school_annex"
+              ]
+            },
+            "safety": {
+              "enum": [
+                "none",
+                "police_substation",
+                "fire_station",
+                "streetlights"
+              ]
+            },
+            "stormwater": {
+              "type": "boolean"
+            },
+            "policy": {
+              "enum": [
+                "none",
+                "parking_reform",
+                "downtown_apartments",
+                "community_policing",
+                "traffic_calming",
+                "rental_inspections",
+                "impact_fees"
+              ]
+            },
+            "quality": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 3,
+              "multipleOf": 1
+            }
+          }
+        },
+        "editableOperations": {},
+        "facts": [
+          {
+            "id": "town.cashK",
+            "value": 900,
+            "source": "simulated",
+            "kind": "observed",
+            "revision": 0,
+            "units": "K USD",
+            "affectedIds": [
+              "town"
+            ]
+          },
+          {
+            "id": "selection.plotCount",
+            "value": 6,
+            "source": "simulated",
+            "kind": "observed",
+            "revision": 0,
+            "units": "plots",
+            "affectedIds": [
+              "selection:P6"
+            ]
+          }
+        ],
+        "profiles": [],
+        "relevantHistory": [],
+        "geometry": {
+          "plots": [
+            [
+              16,
+              13
+            ],
+            [
+              18,
+              13
+            ],
+            [
+              16,
+              14
+            ],
+            [
+              18,
+              14
+            ],
+            [
+              16,
+              15
+            ],
+            [
+              18,
+              15
+            ]
+          ],
+          "cellRoles": [],
+          "illustrativeInterior": true
+        },
+        "canDraft": true,
+        "canPost": true,
+        "postBlockCode": "none"
+      }
+    },
+    "candidate": {
+      "schemaRef": "#/$defs/candidate",
+      "classification": "MOCK_SHAPE; numeric samples not new validator golden outputs",
+      "value": {
+        "contractVersion": "mp.proposals/1",
+        "candidateId": "fixture-candidate-market-1",
+        "requestId": "fixture-request-market-1",
+        "base": {
+          "gameId": "fixture:mp-v1:2301",
+          "scenarioId": "millbrooke",
+          "turn": 1,
+          "stateRevision": 0,
+          "activationId": "fixture:activation:1"
+        },
+        "target": null,
+        "purpose": "draft",
+        "previewKey": "candidate:fixture:market:1",
+        "requestedChanges": [
+          {
+            "type": "plan-field",
+            "field": "homes",
+            "value": 20
+          },
+          {
+            "type": "plan-field",
+            "field": "affordable",
+            "value": false
+          },
+          {
+            "type": "plan-field",
+            "field": "shops",
+            "value": 4
+          },
+          {
+            "type": "plan-field",
+            "field": "stories",
+            "value": 2
+          },
+          {
+            "type": "plan-field",
+            "field": "parking",
+            "value": 20
+          },
+          {
+            "type": "plan-field",
+            "field": "green",
+            "value": 2
+          },
+          {
+            "type": "plan-field",
+            "field": "plaza",
+            "value": false
+          },
+          {
+            "type": "plan-field",
+            "field": "civic",
+            "value": "farmers_market"
+          },
+          {
+            "type": "plan-field",
+            "field": "safety",
+            "value": "none"
+          },
+          {
+            "type": "plan-field",
+            "field": "stormwater",
+            "value": true
+          },
+          {
+            "type": "plan-field",
+            "field": "policy",
+            "value": "none"
+          },
+          {
+            "type": "plan-field",
+            "field": "quality",
+            "value": 2
+          }
+        ],
+        "acceptedChanges": [
+          {
+            "type": "plan-field",
+            "field": "homes",
+            "value": 20
+          },
+          {
+            "type": "plan-field",
+            "field": "affordable",
+            "value": false
+          },
+          {
+            "type": "plan-field",
+            "field": "shops",
+            "value": 4
+          },
+          {
+            "type": "plan-field",
+            "field": "stories",
+            "value": 2
+          },
+          {
+            "type": "plan-field",
+            "field": "parking",
+            "value": 20
+          },
+          {
+            "type": "plan-field",
+            "field": "green",
+            "value": 2
+          },
+          {
+            "type": "plan-field",
+            "field": "plaza",
+            "value": false
+          },
+          {
+            "type": "plan-field",
+            "field": "civic",
+            "value": "farmers_market"
+          },
+          {
+            "type": "plan-field",
+            "field": "safety",
+            "value": "none"
+          },
+          {
+            "type": "plan-field",
+            "field": "stormwater",
+            "value": true
+          },
+          {
+            "type": "plan-field",
+            "field": "policy",
+            "value": "none"
+          },
+          {
+            "type": "plan-field",
+            "field": "quality",
+            "value": 2
+          }
+        ],
+        "omissions": [],
+        "assumptions": [
+          "Current supported plan fields only; interior placement is illustrative."
+        ],
+        "scopeAck": null,
+        "before": {
+          "plan": null,
+          "geometry": {
+            "plots": [
+              [
+                16,
+                13
+              ],
+              [
+                18,
+                13
+              ],
+              [
+                16,
+                14
+              ],
+              [
+                18,
+                14
+              ],
+              [
+                16,
+                15
+              ],
+              [
+                18,
+                15
+              ]
+            ],
+            "cellRoles": [],
+            "illustrativeInterior": true
+          },
+          "conditions": {}
+        },
+        "after": {
+          "plan": {
+            "kind": "initiative",
+            "fields": {
+              "homes": 20,
+              "affordable": false,
+              "shops": 4,
+              "stories": 2,
+              "parking": 20,
+              "green": 2,
+              "plaza": false,
+              "civic": "farmers_market",
+              "safety": "none",
+              "stormwater": true,
+              "policy": "none",
+              "quality": 2
+            }
+          },
+          "geometry": {
+            "plots": [
+              [
+                16,
+                13
+              ],
+              [
+                18,
+                13
+              ],
+              [
+                16,
+                14
+              ],
+              [
+                18,
+                14
+              ],
+              [
+                16,
+                15
+              ],
+              [
+                18,
+                15
+              ]
+            ],
+            "cellRoles": [
+              {
+                "plot": [
+                  16,
+                  13
+                ],
+                "role": "civic"
+              },
+              {
+                "plot": [
+                  18,
+                  13
+                ],
+                "role": "mixed"
+              },
+              {
+                "plot": [
+                  16,
+                  14
+                ],
+                "role": "homes"
+              },
+              {
+                "plot": [
+                  18,
+                  14
+                ],
+                "role": "parking"
+              },
+              {
+                "plot": [
+                  16,
+                  15
+                ],
+                "role": "pond"
+              },
+              {
+                "plot": [
+                  18,
+                  15
+                ],
+                "role": "green"
+              }
+            ],
+            "illustrativeInterior": true
+          },
+          "conditions": {}
+        },
+        "constraints": [],
+        "forecast": {
+          "before": null,
+          "after": {
+            "money": {
+              "costK": 940,
+              "costHighK": 1008,
+              "annualUpkeepK": 38,
+              "reserveAfterCashK": -40,
+              "bondAnnualK": 118
+            },
+            "effects": {
+              "jobs": 49,
+              "units": 6,
+              "housing": 48,
+              "walk": 5.5,
+              "live": 5.5,
+              "conf": 4,
+              "prop": 0.0075,
+              "approval": 1,
+              "farm": 0,
+              "parking": 20,
+              "safety": 1,
+              "afford": 0.5,
+              "storm": 1,
+              "downtown": 0,
+              "creek": 0,
+              "notes": [
+                "Your proposal, drafted by the borough planner"
+              ]
+            },
+            "demolition": {
+              "costK": 0,
+              "displacedResidents": 0,
+              "lostStorefronts": 0,
+              "acquisitionWarning": null
+            },
+            "support": [
+              {
+                "memberId": "marsh",
+                "lean": 69,
+                "preferredOptionId": "init1"
+              },
+              {
+                "memberId": "pryor",
+                "lean": 22,
+                "preferredOptionId": "no"
+              },
+              {
+                "memberId": "okafor",
+                "lean": 99,
+                "preferredOptionId": "init1"
+              },
+              {
+                "memberId": "brandt",
+                "lean": 95,
+                "preferredOptionId": "init1"
+              },
+              {
+                "memberId": "weaver",
+                "lean": 58,
+                "preferredOptionId": "init1"
+              }
+            ],
+            "tally": {
+              "init1": 4,
+              "no": 1
+            },
+            "predictedWinnerId": "init1",
+            "funding": {
+              "cashEligible": false,
+              "bondEligible": true
+            },
+            "deliveryOdds": 0.94,
+            "constructionStage": "proposed"
+          },
+          "delta": {
+            "money": {
+              "costK": 0,
+              "costHighK": 0,
+              "annualUpkeepK": 0,
+              "reserveAfterCashK": 0,
+              "bondAnnualK": 0
+            },
+            "effects": {
+              "jobs": 0,
+              "units": 0,
+              "housing": 0,
+              "walk": 0,
+              "live": 0,
+              "conf": 0,
+              "prop": 0,
+              "approval": 0,
+              "farm": 0,
+              "parking": 0,
+              "safety": 0,
+              "afford": 0,
+              "storm": 0,
+              "downtown": 0,
+              "creek": 0
+            },
+            "memberLean": []
+          },
+          "unmodeledEffects": []
+        },
+        "controllingAuthorizerId": "mayor",
+        "blockingGates": [],
+        "createdCommitments": [],
+        "confirmable": true
+      },
+      "nonGoldenNumericPaths": [
+        "forecast.after.deliveryOdds",
+        "forecast.after.demolition",
+        "forecast.delta"
+      ],
+      "baselineReusedValues": "B1 selected plan/geometry/effects/support only"
+    },
+    "stance": {
+      "schemaRef": "#/$defs/stance",
+      "classification": "MOCK_SHAPE for F3-AGREE; no live stance observation",
+      "value": {
+        "stanceKey": "fixture-stance-route22-sidewalk",
+        "base": {
+          "gameId": "fixture:mp-v1:2301",
+          "scenarioId": "millbrooke",
+          "turn": 1,
+          "stateRevision": 0,
+          "activationId": "fixture:activation:1"
+        },
+        "requestedPreviewKey": "fixture-preview-route22-sidewalk",
+        "actorId": "keystone",
+        "profileVersion": 1,
+        "stance": "agree",
+        "reasonCodes": [
+          "walking_effect"
+        ],
+        "factRefs": [
+          "stripmall.sidewalk"
+        ],
+        "authority": "own-proposal",
+        "controllingAuthorizerId": "keystone",
+        "authorizedPreviewKeys": [
+          "fixture-preview-route22-sidewalk"
+        ],
+        "counterCandidates": [],
+        "suggestedPreviewKeys": [],
+        "blockingGates": [],
+        "createdCommitments": []
+      }
+    },
+    "pitch": {
+      "schemaRef": "#/$defs/pitch",
+      "classification": "MOCK_SHAPE; credit must be measured from real engine after D",
+      "value": {
+        "pitchKey": "fixture-pitch-pryor-1",
+        "base": {
+          "gameId": "fixture:mp-v1:2301",
+          "scenarioId": "millbrooke",
+          "turn": 1,
+          "stateRevision": 0,
+          "activationId": "fixture:activation:1"
+        },
+        "target": {
+          "proposalId": "init1",
+          "proposalRevision": 1,
+          "competitionId": null,
+          "competitionRevision": null
+        },
+        "memberId": "pryor",
+        "claimResults": [
+          {
+            "claimId": "claim-cost",
+            "factRef": "proposal.costK",
+            "valid": true,
+            "code": "none",
+            "creditEligible": true
+          }
+        ],
+        "addressedPriorities": [
+          "cost"
+        ],
+        "specificity": "strong",
+        "tone": "respectful",
+        "caps": {
+          "argumentLean": 10,
+          "favorLean": 15,
+          "earmarkLean": 8
+        },
+        "remainingConcerns": [
+          "borough_cost"
+        ]
+      }
+    },
+    "receipt": {
+      "schemaRef": "urn:master-plan:proposal-council:commands:1#/$defs/receipt",
+      "classification": "MOCK_SHAPE copied from authoritative root receipt example",
+      "value": {
+        "actionId": "mpa1.Zml4dHVyZTptcC12MToyMzAx.1",
+        "actionSeq": 1,
+        "type": "post-draft",
+        "commandFingerprint": "sha256:7dfc7c5d175af6e36a021cf0482b83ac39d581d927c9a3a6e6fd288c09f0b888",
+        "actorId": "mayor",
+        "memberId": null,
+        "controllingAuthorizerId": "mayor",
+        "before": {
+          "gameId": "fixture:mp-v1:2301",
+          "scenarioId": "millbrooke",
+          "turn": 1,
+          "stateRevision": 0
+        },
+        "after": {
+          "gameId": "fixture:mp-v1:2301",
+          "scenarioId": "millbrooke",
+          "turn": 1,
+          "stateRevision": 1
+        },
+        "target": {
+          "proposalId": "init1",
+          "proposalRevision": 1,
+          "competitionId": null,
+          "competitionRevision": null
+        },
+        "code": "applied",
+        "appliedChanges": [
+          {
+            "type": "plan-field",
+            "field": "homes",
+            "value": 20
+          },
+          {
+            "type": "plan-field",
+            "field": "affordable",
+            "value": false
+          },
+          {
+            "type": "plan-field",
+            "field": "shops",
+            "value": 4
+          },
+          {
+            "type": "plan-field",
+            "field": "stories",
+            "value": 2
+          },
+          {
+            "type": "plan-field",
+            "field": "parking",
+            "value": 20
+          },
+          {
+            "type": "plan-field",
+            "field": "green",
+            "value": 2
+          },
+          {
+            "type": "plan-field",
+            "field": "plaza",
+            "value": false
+          },
+          {
+            "type": "plan-field",
+            "field": "civic",
+            "value": "farmers_market"
+          },
+          {
+            "type": "plan-field",
+            "field": "safety",
+            "value": "none"
+          },
+          {
+            "type": "plan-field",
+            "field": "stormwater",
+            "value": true
+          },
+          {
+            "type": "plan-field",
+            "field": "policy",
+            "value": "none"
+          },
+          {
+            "type": "plan-field",
+            "field": "quality",
+            "value": 2
+          }
+        ],
+        "resourceDelta": {
+          "cashK": 0,
+          "capital": 0,
+          "initiativeUsed": true,
+          "pitchQuotaDelta": 0,
+          "pendingProjectDelta": 0,
+          "yearDelta": 0
+        },
+        "claimResults": [],
+        "supportBefore": null,
+        "supportAfter": null,
+        "reasonCodes": [
+          "initiative_posted"
+        ],
+        "originalResult": {
+          "code": "applied",
+          "target": {
+            "proposalId": "init1",
+            "proposalRevision": 1,
+            "competitionId": null,
+            "competitionRevision": null
+          },
+          "appliedChanges": [
+            {
+              "type": "plan-field",
+              "field": "homes",
+              "value": 20
+            },
+            {
+              "type": "plan-field",
+              "field": "affordable",
+              "value": false
+            },
+            {
+              "type": "plan-field",
+              "field": "shops",
+              "value": 4
+            },
+            {
+              "type": "plan-field",
+              "field": "stories",
+              "value": 2
+            },
+            {
+              "type": "plan-field",
+              "field": "parking",
+              "value": 20
+            },
+            {
+              "type": "plan-field",
+              "field": "green",
+              "value": 2
+            },
+            {
+              "type": "plan-field",
+              "field": "plaza",
+              "value": false
+            },
+            {
+              "type": "plan-field",
+              "field": "civic",
+              "value": "farmers_market"
+            },
+            {
+              "type": "plan-field",
+              "field": "safety",
+              "value": "none"
+            },
+            {
+              "type": "plan-field",
+              "field": "stormwater",
+              "value": true
+            },
+            {
+              "type": "plan-field",
+              "field": "policy",
+              "value": "none"
+            },
+            {
+              "type": "plan-field",
+              "field": "quality",
+              "value": 2
+            }
+          ],
+          "resourceDelta": {
+            "cashK": 0,
+            "capital": 0,
+            "initiativeUsed": true,
+            "pitchQuotaDelta": 0,
+            "pendingProjectDelta": 0,
+            "yearDelta": 0
+          },
+          "claimResults": [],
+          "supportBefore": null,
+          "supportAfter": null,
+          "reasonCodes": [
+            "initiative_posted"
+          ]
+        }
+      }
+    },
+    "readReady": {
+      "schemaRef": "#/$defs/readOutcome",
+      "classification": "MOCK_SHAPE",
+      "value": {
+        "status": "ready",
+        "code": "none",
+        "value": {
+          "contractVersion": "mp.proposals/1",
+          "candidateId": "fixture-candidate-market-1",
+          "requestId": "fixture-request-market-1",
+          "base": {
+            "gameId": "fixture:mp-v1:2301",
+            "scenarioId": "millbrooke",
+            "turn": 1,
+            "stateRevision": 0,
+            "activationId": "fixture:activation:1"
+          },
+          "target": null,
+          "purpose": "draft",
+          "previewKey": "candidate:fixture:market:1",
+          "requestedChanges": [
+            {
+              "type": "plan-field",
+              "field": "homes",
+              "value": 20
+            },
+            {
+              "type": "plan-field",
+              "field": "affordable",
+              "value": false
+            },
+            {
+              "type": "plan-field",
+              "field": "shops",
+              "value": 4
+            },
+            {
+              "type": "plan-field",
+              "field": "stories",
+              "value": 2
+            },
+            {
+              "type": "plan-field",
+              "field": "parking",
+              "value": 20
+            },
+            {
+              "type": "plan-field",
+              "field": "green",
+              "value": 2
+            },
+            {
+              "type": "plan-field",
+              "field": "plaza",
+              "value": false
+            },
+            {
+              "type": "plan-field",
+              "field": "civic",
+              "value": "farmers_market"
+            },
+            {
+              "type": "plan-field",
+              "field": "safety",
+              "value": "none"
+            },
+            {
+              "type": "plan-field",
+              "field": "stormwater",
+              "value": true
+            },
+            {
+              "type": "plan-field",
+              "field": "policy",
+              "value": "none"
+            },
+            {
+              "type": "plan-field",
+              "field": "quality",
+              "value": 2
+            }
+          ],
+          "acceptedChanges": [
+            {
+              "type": "plan-field",
+              "field": "homes",
+              "value": 20
+            },
+            {
+              "type": "plan-field",
+              "field": "affordable",
+              "value": false
+            },
+            {
+              "type": "plan-field",
+              "field": "shops",
+              "value": 4
+            },
+            {
+              "type": "plan-field",
+              "field": "stories",
+              "value": 2
+            },
+            {
+              "type": "plan-field",
+              "field": "parking",
+              "value": 20
+            },
+            {
+              "type": "plan-field",
+              "field": "green",
+              "value": 2
+            },
+            {
+              "type": "plan-field",
+              "field": "plaza",
+              "value": false
+            },
+            {
+              "type": "plan-field",
+              "field": "civic",
+              "value": "farmers_market"
+            },
+            {
+              "type": "plan-field",
+              "field": "safety",
+              "value": "none"
+            },
+            {
+              "type": "plan-field",
+              "field": "stormwater",
+              "value": true
+            },
+            {
+              "type": "plan-field",
+              "field": "policy",
+              "value": "none"
+            },
+            {
+              "type": "plan-field",
+              "field": "quality",
+              "value": 2
+            }
+          ],
+          "omissions": [],
+          "assumptions": [
+            "Current supported plan fields only; interior placement is illustrative."
+          ],
+          "scopeAck": null,
+          "before": {
+            "plan": null,
+            "geometry": {
+              "plots": [
+                [
+                  16,
+                  13
+                ],
+                [
+                  18,
+                  13
+                ],
+                [
+                  16,
+                  14
+                ],
+                [
+                  18,
+                  14
+                ],
+                [
+                  16,
+                  15
+                ],
+                [
+                  18,
+                  15
+                ]
+              ],
+              "cellRoles": [],
+              "illustrativeInterior": true
+            },
+            "conditions": {}
+          },
+          "after": {
+            "plan": {
+              "kind": "initiative",
+              "fields": {
+                "homes": 20,
+                "affordable": false,
+                "shops": 4,
+                "stories": 2,
+                "parking": 20,
+                "green": 2,
+                "plaza": false,
+                "civic": "farmers_market",
+                "safety": "none",
+                "stormwater": true,
+                "policy": "none",
+                "quality": 2
+              }
+            },
+            "geometry": {
+              "plots": [
+                [
+                  16,
+                  13
+                ],
+                [
+                  18,
+                  13
+                ],
+                [
+                  16,
+                  14
+                ],
+                [
+                  18,
+                  14
+                ],
+                [
+                  16,
+                  15
+                ],
+                [
+                  18,
+                  15
+                ]
+              ],
+              "cellRoles": [
+                {
+                  "plot": [
+                    16,
+                    13
+                  ],
+                  "role": "civic"
+                },
+                {
+                  "plot": [
+                    18,
+                    13
+                  ],
+                  "role": "mixed"
+                },
+                {
+                  "plot": [
+                    16,
+                    14
+                  ],
+                  "role": "homes"
+                },
+                {
+                  "plot": [
+                    18,
+                    14
+                  ],
+                  "role": "parking"
+                },
+                {
+                  "plot": [
+                    16,
+                    15
+                  ],
+                  "role": "pond"
+                },
+                {
+                  "plot": [
+                    18,
+                    15
+                  ],
+                  "role": "green"
+                }
+              ],
+              "illustrativeInterior": true
+            },
+            "conditions": {}
+          },
+          "constraints": [],
+          "forecast": {
+            "before": null,
+            "after": {
+              "money": {
+                "costK": 940,
+                "costHighK": 1008,
+                "annualUpkeepK": 38,
+                "reserveAfterCashK": -40,
+                "bondAnnualK": 118
+              },
+              "effects": {
+                "jobs": 49,
+                "units": 6,
+                "housing": 48,
+                "walk": 5.5,
+                "live": 5.5,
+                "conf": 4,
+                "prop": 0.0075,
+                "approval": 1,
+                "farm": 0,
+                "parking": 20,
+                "safety": 1,
+                "afford": 0.5,
+                "storm": 1,
+                "downtown": 0,
+                "creek": 0,
+                "notes": [
+                  "Your proposal, drafted by the borough planner"
+                ]
+              },
+              "demolition": {
+                "costK": 0,
+                "displacedResidents": 0,
+                "lostStorefronts": 0,
+                "acquisitionWarning": null
+              },
+              "support": [
+                {
+                  "memberId": "marsh",
+                  "lean": 69,
+                  "preferredOptionId": "init1"
+                },
+                {
+                  "memberId": "pryor",
+                  "lean": 22,
+                  "preferredOptionId": "no"
+                },
+                {
+                  "memberId": "okafor",
+                  "lean": 99,
+                  "preferredOptionId": "init1"
+                },
+                {
+                  "memberId": "brandt",
+                  "lean": 95,
+                  "preferredOptionId": "init1"
+                },
+                {
+                  "memberId": "weaver",
+                  "lean": 58,
+                  "preferredOptionId": "init1"
+                }
+              ],
+              "tally": {
+                "init1": 4,
+                "no": 1
+              },
+              "predictedWinnerId": "init1",
+              "funding": {
+                "cashEligible": false,
+                "bondEligible": true
+              },
+              "deliveryOdds": 0.94,
+              "constructionStage": "proposed"
+            },
+            "delta": {
+              "money": {
+                "costK": 0,
+                "costHighK": 0,
+                "annualUpkeepK": 0,
+                "reserveAfterCashK": 0,
+                "bondAnnualK": 0
+              },
+              "effects": {
+                "jobs": 0,
+                "units": 0,
+                "housing": 0,
+                "walk": 0,
+                "live": 0,
+                "conf": 0,
+                "prop": 0,
+                "approval": 0,
+                "farm": 0,
+                "parking": 0,
+                "safety": 0,
+                "afford": 0,
+                "storm": 0,
+                "downtown": 0,
+                "creek": 0
+              },
+              "memberLean": []
+            },
+            "unmodeledEffects": []
+          },
+          "controllingAuthorizerId": "mayor",
+          "blockingGates": [],
+          "createdCommitments": [],
+          "confirmable": true
+        }
+      }
+    },
+    "readBlocked": {
+      "schemaRef": "#/$defs/readOutcome",
+      "classification": "MOCK_SHAPE",
+      "value": {
+        "status": "invalid",
+        "code": "authority_mismatch",
+        "value": null,
+        "fieldIds": []
+      }
+    },
+    "commandReference": {
+      "schemaRef": "urn:master-plan:proposal-council:commands:1#/$defs/command",
+      "classification": "MOCK_SHAPE; canonical fingerprint vector is root-owned reference",
+      "sampleFile": "docs/contracts/proposal-council-v1/sample-command.json",
+      "vectorFile": "docs/contracts/proposal-council-v1/sample-command-vector.json"
+    },
+    "storageEnvelope": {
+      "schemaRef": "#/$defs/storageEnvelope",
+      "classification": "MOCK_SHAPE projection; missing full game is intentional, not a loadable town",
+      "value": {
+        "envelopeSchema": "mp.save-envelope/4",
+        "formatFloor": 4,
+        "writerProtocol": "mp.save-writer/1",
+        "channel": "dev",
+        "saveSlotId": "primary",
+        "storageGeneration": 2,
+        "game": {
+          "v": 4,
+          "gameId": "fixture:mp-v1:2301",
+          "stateRevision": 1,
+          "actionHighWater": 1,
+          "receipts": [
+            {
+              "actionId": "mpa1.Zml4dHVyZTptcC12MToyMzAx.1",
+              "actionSeq": 1,
+              "type": "post-draft",
+              "commandFingerprint": "sha256:7dfc7c5d175af6e36a021cf0482b83ac39d581d927c9a3a6e6fd288c09f0b888",
+              "actorId": "mayor",
+              "memberId": null,
+              "controllingAuthorizerId": "mayor",
+              "before": {
+                "gameId": "fixture:mp-v1:2301",
+                "scenarioId": "millbrooke",
+                "turn": 1,
+                "stateRevision": 0
+              },
+              "after": {
+                "gameId": "fixture:mp-v1:2301",
+                "scenarioId": "millbrooke",
+                "turn": 1,
+                "stateRevision": 1
+              },
+              "target": {
+                "proposalId": "init1",
+                "proposalRevision": 1,
+                "competitionId": null,
+                "competitionRevision": null
+              },
+              "code": "applied",
+              "appliedChanges": [
+                {
+                  "type": "plan-field",
+                  "field": "homes",
+                  "value": 20
+                },
+                {
+                  "type": "plan-field",
+                  "field": "affordable",
+                  "value": false
+                },
+                {
+                  "type": "plan-field",
+                  "field": "shops",
+                  "value": 4
+                },
+                {
+                  "type": "plan-field",
+                  "field": "stories",
+                  "value": 2
+                },
+                {
+                  "type": "plan-field",
+                  "field": "parking",
+                  "value": 20
+                },
+                {
+                  "type": "plan-field",
+                  "field": "green",
+                  "value": 2
+                },
+                {
+                  "type": "plan-field",
+                  "field": "plaza",
+                  "value": false
+                },
+                {
+                  "type": "plan-field",
+                  "field": "civic",
+                  "value": "farmers_market"
+                },
+                {
+                  "type": "plan-field",
+                  "field": "safety",
+                  "value": "none"
+                },
+                {
+                  "type": "plan-field",
+                  "field": "stormwater",
+                  "value": true
+                },
+                {
+                  "type": "plan-field",
+                  "field": "policy",
+                  "value": "none"
+                },
+                {
+                  "type": "plan-field",
+                  "field": "quality",
+                  "value": 2
+                }
+              ],
+              "resourceDelta": {
+                "cashK": 0,
+                "capital": 0,
+                "initiativeUsed": true,
+                "pitchQuotaDelta": 0,
+                "pendingProjectDelta": 0,
+                "yearDelta": 0
+              },
+              "claimResults": [],
+              "supportBefore": null,
+              "supportAfter": null,
+              "reasonCodes": [
+                "initiative_posted"
+              ],
+              "originalResult": {
+                "code": "applied",
+                "target": {
+                  "proposalId": "init1",
+                  "proposalRevision": 1,
+                  "competitionId": null,
+                  "competitionRevision": null
+                },
+                "appliedChanges": [
+                  {
+                    "type": "plan-field",
+                    "field": "homes",
+                    "value": 20
+                  },
+                  {
+                    "type": "plan-field",
+                    "field": "affordable",
+                    "value": false
+                  },
+                  {
+                    "type": "plan-field",
+                    "field": "shops",
+                    "value": 4
+                  },
+                  {
+                    "type": "plan-field",
+                    "field": "stories",
+                    "value": 2
+                  },
+                  {
+                    "type": "plan-field",
+                    "field": "parking",
+                    "value": 20
+                  },
+                  {
+                    "type": "plan-field",
+                    "field": "green",
+                    "value": 2
+                  },
+                  {
+                    "type": "plan-field",
+                    "field": "plaza",
+                    "value": false
+                  },
+                  {
+                    "type": "plan-field",
+                    "field": "civic",
+                    "value": "farmers_market"
+                  },
+                  {
+                    "type": "plan-field",
+                    "field": "safety",
+                    "value": "none"
+                  },
+                  {
+                    "type": "plan-field",
+                    "field": "stormwater",
+                    "value": true
+                  },
+                  {
+                    "type": "plan-field",
+                    "field": "policy",
+                    "value": "none"
+                  },
+                  {
+                    "type": "plan-field",
+                    "field": "quality",
+                    "value": 2
+                  }
+                ],
+                "resourceDelta": {
+                  "cashK": 0,
+                  "capital": 0,
+                  "initiativeUsed": true,
+                  "pitchQuotaDelta": 0,
+                  "pendingProjectDelta": 0,
+                  "yearDelta": 0
+                },
+                "claimResults": [],
+                "supportBefore": null,
+                "supportAfter": null,
+                "reasonCodes": [
+                  "initiative_posted"
+                ]
+              }
+            }
+          ]
+        },
+        "legacyImportBackup": null
+      }
+    }
+  },
+  "sessionConfiguration": {
+    "entryPoint": "ENGINE.createProposalSession",
+    "parameters": {
+      "engine": "ENGINE pure dependency supplied by host; no DOM",
+      "activationId": "fixture:activation:1",
+      "storageRef": {
+        "channel": "dev",
+        "saveSlotId": "primary",
+        "storageGeneration": 1,
+        "gameId": "fixture:mp-v1:2301",
+        "stateRevision": 0
+      }
+    },
+    "classification": "STATIC_CONFIGURATION_NOT_EXECUTABLE",
+    "refreshAfter": "each published snapshot/load; old session keys revoked"
+  }
+}

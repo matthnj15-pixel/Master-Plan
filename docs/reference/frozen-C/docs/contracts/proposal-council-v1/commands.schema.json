@@ -1,0 +1,4482 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:master-plan:proposal-council:commands:1",
+  "title": "Frozen R1.1 per-action command and binding schemas",
+  "$comment": "Structural validation only. Engine must enforce subject equality, action ID/base64 sequence, matching target/base/geometry, authorized live bindings, gates, resources, and current-state truth. Fixtures are declarative, not executable code.",
+  "$ref": "#/$defs/command",
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "durableStateRef": {
+      "type": "object",
+      "properties": {
+        "gameId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "scenarioId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "turn": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "stateRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "gameId",
+        "scenarioId",
+        "turn",
+        "stateRevision"
+      ],
+      "additionalProperties": false
+    },
+    "stateRef": {
+      "type": "object",
+      "properties": {
+        "gameId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "scenarioId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "turn": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "stateRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "activationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        }
+      },
+      "required": [
+        "gameId",
+        "scenarioId",
+        "turn",
+        "stateRevision",
+        "activationId"
+      ],
+      "additionalProperties": false
+    },
+    "storageRef": {
+      "type": "object",
+      "properties": {
+        "channel": {
+          "enum": [
+            "dev",
+            "stable"
+          ]
+        },
+        "saveSlotId": {
+          "const": "primary"
+        },
+        "storageGeneration": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "gameId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "stateRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "channel",
+        "saveSlotId",
+        "storageGeneration",
+        "gameId",
+        "stateRevision"
+      ],
+      "additionalProperties": false
+    },
+    "proposalRef": {
+      "type": "object",
+      "properties": {
+        "proposalId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "proposalRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "competitionId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "competitionRevision": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "proposalId",
+        "proposalRevision",
+        "competitionId",
+        "competitionRevision"
+      ],
+      "additionalProperties": false
+    },
+    "plot": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      },
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "geometry": {
+      "type": "object",
+      "properties": {
+        "plots": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/plot"
+          },
+          "maxItems": 576,
+          "uniqueItems": true
+        },
+        "cellRoles": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "plot": {
+                "$ref": "#/$defs/plot"
+              },
+              "role": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              }
+            },
+            "required": [
+              "plot",
+              "role"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 576
+        },
+        "illustrativeInterior": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "plots",
+        "cellRoles",
+        "illustrativeInterior"
+      ],
+      "additionalProperties": false
+    },
+    "plan_bridge": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "bridge"
+        },
+        "fields": {
+          "type": "object",
+          "properties": {
+            "scope": {
+              "enum": [
+                "patch",
+                "full"
+              ]
+            }
+          },
+          "required": [
+            "scope"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "kind",
+        "fields"
+      ],
+      "additionalProperties": false
+    },
+    "plan_stripmall": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "stripmall"
+        },
+        "fields": {
+          "type": "object",
+          "properties": {
+            "stores": {
+              "type": "integer",
+              "minimum": 4,
+              "maximum": 10,
+              "multipleOf": 1
+            },
+            "parking": {
+              "type": "integer",
+              "minimum": 60,
+              "maximum": 200,
+              "multipleOf": 20
+            },
+            "landscaping": {
+              "type": "boolean"
+            },
+            "sidewalk": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "stores",
+            "parking",
+            "landscaping",
+            "sidewalk"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "kind",
+        "fields"
+      ],
+      "additionalProperties": false
+    },
+    "plan_park": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "park"
+        },
+        "fields": {
+          "type": "object",
+          "properties": {
+            "memorial": {
+              "type": "boolean"
+            },
+            "trees": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 3,
+              "multipleOf": 1
+            },
+            "playground": {
+              "type": "boolean"
+            },
+            "amphitheater": {
+              "type": "boolean"
+            },
+            "fountain": {
+              "type": "boolean"
+            },
+            "paths": {
+              "type": "boolean"
+            },
+            "parking": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 40,
+              "multipleOf": 10
+            }
+          },
+          "required": [
+            "memorial",
+            "trees",
+            "playground",
+            "amphitheater",
+            "fountain",
+            "paths",
+            "parking"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "kind",
+        "fields"
+      ],
+      "additionalProperties": false
+    },
+    "plan_commerce": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "commerce"
+        },
+        "fields": {
+          "type": "object",
+          "properties": {
+            "stores": {
+              "type": "integer",
+              "minimum": 6,
+              "maximum": 14,
+              "multipleOf": 1
+            },
+            "stories": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 3,
+              "multipleOf": 1
+            },
+            "parking": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 160,
+              "multipleOf": 20
+            },
+            "anchor": {
+              "enum": [
+                "none",
+                "grocery",
+                "cinema"
+              ]
+            },
+            "plaza": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "stores",
+            "stories",
+            "parking",
+            "anchor",
+            "plaza"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "kind",
+        "fields"
+      ],
+      "additionalProperties": false
+    },
+    "plan_boutique": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "boutique"
+        },
+        "fields": {
+          "type": "object",
+          "properties": {
+            "incentive": {
+              "type": "integer",
+              "minimum": 50,
+              "maximum": 250,
+              "multipleOf": 25
+            },
+            "lease": {
+              "type": "integer",
+              "minimum": 3,
+              "maximum": 10,
+              "multipleOf": 1
+            },
+            "clawback": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "incentive",
+            "lease",
+            "clawback"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "kind",
+        "fields"
+      ],
+      "additionalProperties": false
+    },
+    "plan_studenthousing": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "studenthousing"
+        },
+        "fields": {
+          "type": "object",
+          "properties": {
+            "beds": {
+              "type": "integer",
+              "minimum": 200,
+              "maximum": 800,
+              "multipleOf": 100
+            },
+            "stories": {
+              "type": "integer",
+              "minimum": 3,
+              "maximum": 6,
+              "multipleOf": 1
+            },
+            "parking": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 300,
+              "multipleOf": 50
+            },
+            "retail": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "beds",
+            "stories",
+            "parking",
+            "retail"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "kind",
+        "fields"
+      ],
+      "additionalProperties": false
+    },
+    "plan_initiative": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "initiative"
+        },
+        "fields": {
+          "type": "object",
+          "properties": {
+            "homes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 200,
+              "multipleOf": 10
+            },
+            "affordable": {
+              "type": "boolean"
+            },
+            "shops": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 12,
+              "multipleOf": 1
+            },
+            "stories": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5,
+              "multipleOf": 1
+            },
+            "parking": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 300,
+              "multipleOf": 20
+            },
+            "green": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 3,
+              "multipleOf": 1
+            },
+            "plaza": {
+              "type": "boolean"
+            },
+            "civic": {
+              "enum": [
+                "none",
+                "library",
+                "community_center",
+                "farmers_market",
+                "school_annex"
+              ]
+            },
+            "safety": {
+              "enum": [
+                "none",
+                "police_substation",
+                "fire_station",
+                "streetlights"
+              ]
+            },
+            "stormwater": {
+              "type": "boolean"
+            },
+            "policy": {
+              "enum": [
+                "none",
+                "parking_reform",
+                "downtown_apartments",
+                "community_policing",
+                "traffic_calming",
+                "rental_inspections",
+                "impact_fees"
+              ]
+            },
+            "quality": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 3,
+              "multipleOf": 1
+            }
+          },
+          "required": [
+            "homes",
+            "affordable",
+            "shops",
+            "stories",
+            "parking",
+            "green",
+            "plaza",
+            "civic",
+            "safety",
+            "stormwater",
+            "policy",
+            "quality"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "kind",
+        "fields"
+      ],
+      "additionalProperties": false
+    },
+    "plan_subdivision": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "subdivision"
+        },
+        "fields": {
+          "type": "object",
+          "properties": {
+            "homes": {
+              "type": "integer",
+              "minimum": 20,
+              "maximum": 80,
+              "multipleOf": 10
+            },
+            "lotSize": {
+              "enum": [
+                "large",
+                "small"
+              ]
+            },
+            "preserve": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "homes",
+            "lotSize",
+            "preserve"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "kind",
+        "fields"
+      ],
+      "additionalProperties": false
+    },
+    "completePlan": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/plan_bridge"
+        },
+        {
+          "$ref": "#/$defs/plan_stripmall"
+        },
+        {
+          "$ref": "#/$defs/plan_park"
+        },
+        {
+          "$ref": "#/$defs/plan_commerce"
+        },
+        {
+          "$ref": "#/$defs/plan_boutique"
+        },
+        {
+          "$ref": "#/$defs/plan_studenthousing"
+        },
+        {
+          "$ref": "#/$defs/plan_initiative"
+        },
+        {
+          "$ref": "#/$defs/plan_subdivision"
+        }
+      ]
+    },
+    "operatingChange": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "operating-condition"
+            },
+            "entityId": {
+              "const": "bowers_farm"
+            },
+            "field": {
+              "const": "layoutId"
+            },
+            "value": {
+              "enum": [
+                "pad_stand",
+                "lane_blocking_stand",
+                "working_site_conversion"
+              ]
+            },
+            "capabilityId": {
+              "const": "fixture.farm-layout.v1"
+            }
+          },
+          "required": [
+            "type",
+            "entityId",
+            "field",
+            "value",
+            "capabilityId"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "operating-condition"
+            },
+            "entityId": {
+              "const": "campus_distributor"
+            },
+            "field": {
+              "const": "routeId"
+            },
+            "value": {
+              "enum": [
+                "campus_crossing",
+                "south_service_route"
+              ]
+            },
+            "capabilityId": {
+              "const": "fixture.distributor-operations.v1"
+            }
+          },
+          "required": [
+            "type",
+            "entityId",
+            "field",
+            "value",
+            "capabilityId"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "operating-condition"
+            },
+            "entityId": {
+              "const": "campus_distributor"
+            },
+            "field": {
+              "const": "publicSales"
+            },
+            "value": {
+              "type": "boolean"
+            },
+            "capabilityId": {
+              "const": "fixture.distributor-operations.v1"
+            }
+          },
+          "required": [
+            "type",
+            "entityId",
+            "field",
+            "value",
+            "capabilityId"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "operating-condition"
+            },
+            "entityId": {
+              "const": "campus_distributor"
+            },
+            "field": {
+              "const": "loadingHours"
+            },
+            "value": {
+              "enum": [
+                "daytime",
+                "overnight"
+              ]
+            },
+            "capabilityId": {
+              "const": "fixture.distributor-operations.v1"
+            }
+          },
+          "required": [
+            "type",
+            "entityId",
+            "field",
+            "value",
+            "capabilityId"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "operating-condition"
+            },
+            "entityId": {
+              "const": "campus_distributor"
+            },
+            "field": {
+              "const": "screenedLoading"
+            },
+            "value": {
+              "type": "boolean"
+            },
+            "capabilityId": {
+              "const": "fixture.distributor-operations.v1"
+            }
+          },
+          "required": [
+            "type",
+            "entityId",
+            "field",
+            "value",
+            "capabilityId"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "planFieldChange": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "const": "plan-field"
+        },
+        "field": {
+          "enum": [
+            "affordable",
+            "amphitheater",
+            "anchor",
+            "beds",
+            "civic",
+            "clawback",
+            "fountain",
+            "green",
+            "homes",
+            "incentive",
+            "landscaping",
+            "lease",
+            "lotSize",
+            "memorial",
+            "parking",
+            "paths",
+            "playground",
+            "plaza",
+            "policy",
+            "preserve",
+            "quality",
+            "retail",
+            "safety",
+            "scope",
+            "shops",
+            "sidewalk",
+            "stores",
+            "stories",
+            "stormwater",
+            "trees"
+          ]
+        },
+        "value": {
+          "type": [
+            "boolean",
+            "number",
+            "string"
+          ]
+        }
+      },
+      "required": [
+        "type",
+        "field",
+        "value"
+      ],
+      "additionalProperties": false
+    },
+    "change": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/planFieldChange"
+        },
+        {
+          "$ref": "#/$defs/operatingChange"
+        }
+      ]
+    },
+    "gateEvidence": {
+      "type": "object",
+      "properties": {
+        "recordedActionId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "factRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "recordedActionId",
+        "factRevision"
+      ],
+      "additionalProperties": false
+    },
+    "confirmationGate": {
+      "type": "object",
+      "properties": {
+        "gateId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "kind": {
+          "enum": [
+            "required-consent",
+            "existing-condition"
+          ]
+        },
+        "status": {
+          "enum": [
+            "satisfied",
+            "unresolved",
+            "unsupported"
+          ]
+        },
+        "factRefs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        },
+        "satisfiedBy": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/gateEvidence"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "recognizedResolutionAction": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "gateId",
+        "kind",
+        "status",
+        "factRefs",
+        "satisfiedBy",
+        "recognizedResolutionAction"
+      ],
+      "additionalProperties": false
+    },
+    "satisfiedGate": {
+      "type": "object",
+      "properties": {
+        "gateId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "kind": {
+          "enum": [
+            "required-consent",
+            "existing-condition"
+          ]
+        },
+        "status": {
+          "const": "satisfied"
+        },
+        "factRefs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        },
+        "satisfiedBy": {
+          "$ref": "#/$defs/gateEvidence"
+        },
+        "recognizedResolutionAction": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "gateId",
+        "kind",
+        "status",
+        "factRefs",
+        "satisfiedBy",
+        "recognizedResolutionAction"
+      ],
+      "additionalProperties": false
+    },
+    "createdCommitment": {
+      "type": "object",
+      "properties": {
+        "operationRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "value": {
+          "type": [
+            "boolean",
+            "number",
+            "string"
+          ]
+        },
+        "createdStage": {
+          "const": "committed"
+        },
+        "inEffectWhen": {
+          "enum": [
+            "decision-approved",
+            "project-completed",
+            "existing-operation"
+          ]
+        }
+      },
+      "required": [
+        "operationRef",
+        "value",
+        "createdStage",
+        "inEffectWhen"
+      ],
+      "additionalProperties": false
+    },
+    "scopeAck": {
+      "type": "object",
+      "properties": {
+        "scopeKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "base": {
+          "$ref": "#/$defs/stateRef"
+        },
+        "subsetPreviewKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "omissionIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        }
+      },
+      "required": [
+        "scopeKey",
+        "base",
+        "subsetPreviewKey",
+        "omissionIds"
+      ],
+      "additionalProperties": false
+    },
+    "acknowledgedScope": {
+      "type": "object",
+      "properties": {
+        "scopeKey": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "omissionIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        }
+      },
+      "required": [
+        "scopeKey",
+        "omissionIds"
+      ],
+      "additionalProperties": false
+    },
+    "authorization": {
+      "type": "object",
+      "properties": {
+        "scopeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "scopeId",
+        "revision"
+      ],
+      "additionalProperties": false
+    },
+    "evidenceSpan": {
+      "type": "object",
+      "properties": {
+        "start": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "end": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "start",
+        "end"
+      ],
+      "additionalProperties": false
+    },
+    "resultCode": {
+      "enum": [
+        "none",
+        "applied",
+        "already_applied",
+        "runtime_unavailable",
+        "generation_timeout",
+        "request_canceled",
+        "malformed_json",
+        "schema_version",
+        "unknown_field",
+        "wrong_type",
+        "value_out_of_range",
+        "input_limit",
+        "context_limit",
+        "intent_unclear",
+        "unsupported_operation",
+        "scope_ack_required",
+        "scope_changed",
+        "site_required",
+        "plot_invalid",
+        "site_infeasible",
+        "site_conflict",
+        "stale_revision",
+        "target_closed",
+        "authority_mismatch",
+        "stance_refused",
+        "facts_missing",
+        "initiative_used",
+        "duplicate_action",
+        "command_mismatch",
+        "receipt_not_found",
+        "reaction_member_mismatch",
+        "required_consent_unresolved",
+        "condition_unresolved",
+        "save_conflict",
+        "save_lock_unavailable",
+        "unsupported_storage_format",
+        "workspace_conflict",
+        "quota_used",
+        "funding_invalid",
+        "claim_false",
+        "claim_absent_feature",
+        "claim_evidence_mismatch",
+        "claim_irrelevant",
+        "storage_unavailable"
+      ]
+    },
+    "claimResult": {
+      "type": "object",
+      "properties": {
+        "claimId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "factRef": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "factRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "assertion": {
+          "type": [
+            "boolean",
+            "number",
+            "string"
+          ]
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidenceSpan"
+        },
+        "valid": {
+          "type": "boolean"
+        },
+        "code": {
+          "$ref": "#/$defs/resultCode"
+        },
+        "creditEligible": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "claimId",
+        "factRef",
+        "factRevision",
+        "assertion",
+        "evidence",
+        "valid",
+        "code",
+        "creditEligible"
+      ],
+      "additionalProperties": false
+    },
+    "cappedApplication": {
+      "type": "object",
+      "properties": {
+        "argumentPoints": {
+          "type": "number"
+        },
+        "relationshipDelta": {
+          "type": "number"
+        },
+        "leanBefore": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "leanAfter": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "quotaBefore": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "quotaAfter": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "capitalDelta": {
+          "type": "integer"
+        },
+        "cashDeltaK": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "argumentPoints",
+        "relationshipDelta",
+        "leanBefore",
+        "leanAfter",
+        "quotaBefore",
+        "quotaAfter",
+        "capitalDelta",
+        "cashDeltaK"
+      ],
+      "additionalProperties": false
+    },
+    "resourceEligibility": {
+      "type": "object",
+      "properties": {
+        "cashBeforeK": {
+          "type": "number"
+        },
+        "capitalBefore": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "eligible": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "cashBeforeK",
+        "capitalBefore",
+        "eligible"
+      ],
+      "additionalProperties": false
+    },
+    "fundingMethod": {
+      "type": "object",
+      "properties": {
+        "proposalId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "method": {
+          "enum": [
+            "cash",
+            "bond"
+          ]
+        }
+      },
+      "required": [
+        "proposalId",
+        "method"
+      ],
+      "additionalProperties": false
+    },
+    "resourceDelta": {
+      "type": "object",
+      "properties": {
+        "cashK": {
+          "type": "number"
+        },
+        "capital": {
+          "type": "integer"
+        },
+        "initiativeUsed": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "pitchQuotaDelta": {
+          "type": "integer"
+        },
+        "pendingProjectDelta": {
+          "type": "integer"
+        },
+        "yearDelta": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "cashK",
+        "capital",
+        "initiativeUsed",
+        "pitchQuotaDelta",
+        "pendingProjectDelta",
+        "yearDelta"
+      ],
+      "additionalProperties": false
+    },
+    "supportSnapshot": {
+      "type": "object",
+      "properties": {
+        "target": {
+          "$ref": "#/$defs/proposalRef"
+        },
+        "members": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "memberId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              },
+              "lean": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100
+              },
+              "preferredOptionId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 240
+              }
+            },
+            "required": [
+              "memberId",
+              "lean",
+              "preferredOptionId"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "tally": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "predictedWinnerId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "target",
+        "members",
+        "tally",
+        "predictedWinnerId"
+      ],
+      "additionalProperties": false
+    },
+    "actionResult": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "const": "applied"
+        },
+        "target": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/proposalRef"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "appliedChanges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/change"
+          }
+        },
+        "resourceDelta": {
+          "$ref": "#/$defs/resourceDelta"
+        },
+        "claimResults": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/claimResult"
+          }
+        },
+        "supportBefore": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/supportSnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "supportAfter": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/supportSnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reasonCodes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        }
+      },
+      "required": [
+        "code",
+        "target",
+        "appliedChanges",
+        "resourceDelta",
+        "claimResults",
+        "supportBefore",
+        "supportAfter",
+        "reasonCodes"
+      ],
+      "additionalProperties": false
+    },
+    "semantic_post_draft": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "mp.action-semantic/1"
+        },
+        "type": {
+          "const": "post-draft"
+        },
+        "actorId": {
+          "const": "mayor"
+        },
+        "memberId": {
+          "const": null
+        },
+        "controllingAuthorizerId": {
+          "const": "mayor"
+        },
+        "target": {
+          "const": null
+        },
+        "acceptedPlan": {
+          "$ref": "#/$defs/plan_initiative"
+        },
+        "geometry": {
+          "$ref": "#/$defs/geometry"
+        },
+        "operatingChanges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/operatingChange"
+          }
+        },
+        "profileRevision": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "authorization": {
+          "$ref": "#/$defs/authorization"
+        },
+        "acknowledgedScope": {
+          "$ref": "#/$defs/acknowledgedScope"
+        },
+        "satisfiedGates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/satisfiedGate"
+          }
+        },
+        "createdCommitments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/createdCommitment"
+          }
+        },
+        "intentDigest": {
+          "$ref": "#/$defs/sha256"
+        }
+      },
+      "required": [
+        "schema",
+        "type",
+        "actorId",
+        "memberId",
+        "controllingAuthorizerId",
+        "target",
+        "acceptedPlan",
+        "geometry",
+        "operatingChanges",
+        "profileRevision",
+        "authorization",
+        "acknowledgedScope",
+        "satisfiedGates",
+        "createdCommitments",
+        "intentDigest"
+      ],
+      "additionalProperties": false
+    },
+    "command_post_draft": {
+      "type": "object",
+      "properties": {
+        "contractVersion": {
+          "const": "mp.proposals/1"
+        },
+        "actionId": {
+          "type": "string",
+          "pattern": "^mpa1\\.[A-Za-z0-9_-]+\\.[1-9][0-9]*$"
+        },
+        "base": {
+          "$ref": "#/$defs/stateRef"
+        },
+        "actionSeq": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "expectedStorage": {
+          "$ref": "#/$defs/storageRef"
+        },
+        "semanticBinding": {
+          "$ref": "#/$defs/semantic_post_draft"
+        },
+        "type": {
+          "const": "post-draft"
+        },
+        "candidateKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "scopeKey": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "controllingAuthorizerId": {
+          "const": "mayor"
+        }
+      },
+      "required": [
+        "contractVersion",
+        "actionId",
+        "base",
+        "actionSeq",
+        "expectedStorage",
+        "semanticBinding",
+        "type",
+        "candidateKey",
+        "scopeKey",
+        "controllingAuthorizerId"
+      ],
+      "additionalProperties": false
+    },
+    "receipt_post_draft": {
+      "type": "object",
+      "properties": {
+        "actionId": {
+          "type": "string",
+          "pattern": "^mpa1\\.[A-Za-z0-9_-]+\\.[1-9][0-9]*$"
+        },
+        "actionSeq": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "type": {
+          "const": "post-draft"
+        },
+        "commandFingerprint": {
+          "$ref": "#/$defs/sha256"
+        },
+        "actorId": {
+          "const": "mayor"
+        },
+        "memberId": {
+          "const": null
+        },
+        "controllingAuthorizerId": {
+          "const": "mayor"
+        },
+        "before": {
+          "$ref": "#/$defs/durableStateRef"
+        },
+        "after": {
+          "$ref": "#/$defs/durableStateRef"
+        },
+        "target": {
+          "$ref": "#/$defs/proposalRef"
+        },
+        "code": {
+          "const": "applied"
+        },
+        "appliedChanges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/change"
+          }
+        },
+        "resourceDelta": {
+          "$ref": "#/$defs/resourceDelta"
+        },
+        "claimResults": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/claimResult"
+          }
+        },
+        "supportBefore": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/supportSnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "supportAfter": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/supportSnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reasonCodes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        },
+        "originalResult": {
+          "$ref": "#/$defs/actionResult"
+        }
+      },
+      "required": [
+        "actionId",
+        "actionSeq",
+        "type",
+        "commandFingerprint",
+        "actorId",
+        "memberId",
+        "controllingAuthorizerId",
+        "before",
+        "after",
+        "target",
+        "code",
+        "appliedChanges",
+        "resourceDelta",
+        "claimResults",
+        "supportBefore",
+        "supportAfter",
+        "reasonCodes",
+        "originalResult"
+      ],
+      "additionalProperties": false
+    },
+    "semantic_confirm_revision": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "mp.action-semantic/1"
+        },
+        "type": {
+          "const": "confirm-revision"
+        },
+        "actorId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "memberId": {
+          "const": null
+        },
+        "controllingAuthorizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "target": {
+          "$ref": "#/$defs/proposalRef"
+        },
+        "acceptedPlan": {
+          "$ref": "#/$defs/completePlan"
+        },
+        "geometry": {
+          "$ref": "#/$defs/geometry"
+        },
+        "operatingChanges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/operatingChange"
+          }
+        },
+        "profileRevision": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "authorization": {
+          "$ref": "#/$defs/authorization"
+        },
+        "acknowledgedScope": {
+          "$ref": "#/$defs/acknowledgedScope"
+        },
+        "satisfiedGates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/satisfiedGate"
+          }
+        },
+        "createdCommitments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/createdCommitment"
+          }
+        },
+        "intentDigest": {
+          "$ref": "#/$defs/sha256"
+        }
+      },
+      "required": [
+        "schema",
+        "type",
+        "actorId",
+        "memberId",
+        "controllingAuthorizerId",
+        "target",
+        "acceptedPlan",
+        "geometry",
+        "operatingChanges",
+        "profileRevision",
+        "authorization",
+        "acknowledgedScope",
+        "satisfiedGates",
+        "createdCommitments",
+        "intentDigest"
+      ],
+      "additionalProperties": false
+    },
+    "command_confirm_revision": {
+      "type": "object",
+      "properties": {
+        "contractVersion": {
+          "const": "mp.proposals/1"
+        },
+        "actionId": {
+          "type": "string",
+          "pattern": "^mpa1\\.[A-Za-z0-9_-]+\\.[1-9][0-9]*$"
+        },
+        "base": {
+          "$ref": "#/$defs/stateRef"
+        },
+        "actionSeq": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "expectedStorage": {
+          "$ref": "#/$defs/storageRef"
+        },
+        "semanticBinding": {
+          "$ref": "#/$defs/semantic_confirm_revision"
+        },
+        "type": {
+          "const": "confirm-revision"
+        },
+        "target": {
+          "$ref": "#/$defs/proposalRef"
+        },
+        "candidateKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "stanceKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "controllingAuthorizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "scopeKey": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "contractVersion",
+        "actionId",
+        "base",
+        "actionSeq",
+        "expectedStorage",
+        "semanticBinding",
+        "type",
+        "target",
+        "candidateKey",
+        "stanceKey",
+        "controllingAuthorizerId",
+        "scopeKey"
+      ],
+      "additionalProperties": false
+    },
+    "receipt_confirm_revision": {
+      "type": "object",
+      "properties": {
+        "actionId": {
+          "type": "string",
+          "pattern": "^mpa1\\.[A-Za-z0-9_-]+\\.[1-9][0-9]*$"
+        },
+        "actionSeq": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "type": {
+          "const": "confirm-revision"
+        },
+        "commandFingerprint": {
+          "$ref": "#/$defs/sha256"
+        },
+        "actorId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "memberId": {
+          "const": null
+        },
+        "controllingAuthorizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "before": {
+          "$ref": "#/$defs/durableStateRef"
+        },
+        "after": {
+          "$ref": "#/$defs/durableStateRef"
+        },
+        "target": {
+          "$ref": "#/$defs/proposalRef"
+        },
+        "code": {
+          "const": "applied"
+        },
+        "appliedChanges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/change"
+          }
+        },
+        "resourceDelta": {
+          "$ref": "#/$defs/resourceDelta"
+        },
+        "claimResults": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/claimResult"
+          }
+        },
+        "supportBefore": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/supportSnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "supportAfter": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/supportSnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reasonCodes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        },
+        "originalResult": {
+          "$ref": "#/$defs/actionResult"
+        }
+      },
+      "required": [
+        "actionId",
+        "actionSeq",
+        "type",
+        "commandFingerprint",
+        "actorId",
+        "memberId",
+        "controllingAuthorizerId",
+        "before",
+        "after",
+        "target",
+        "code",
+        "appliedChanges",
+        "resourceDelta",
+        "claimResults",
+        "supportBefore",
+        "supportAfter",
+        "reasonCodes",
+        "originalResult"
+      ],
+      "additionalProperties": false
+    },
+    "semantic_confirm_operating_condition": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "mp.action-semantic/1"
+        },
+        "type": {
+          "const": "confirm-operating-condition"
+        },
+        "actorId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "memberId": {
+          "const": null
+        },
+        "controllingAuthorizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "target": {
+          "$ref": "#/$defs/proposalRef"
+        },
+        "acceptedPlan": {
+          "$ref": "#/$defs/completePlan"
+        },
+        "geometry": {
+          "$ref": "#/$defs/geometry"
+        },
+        "operatingChanges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/operatingChange"
+          }
+        },
+        "profileRevision": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "authorization": {
+          "$ref": "#/$defs/authorization"
+        },
+        "acknowledgedScope": {
+          "$ref": "#/$defs/acknowledgedScope"
+        },
+        "satisfiedGates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/satisfiedGate"
+          }
+        },
+        "createdCommitments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/createdCommitment"
+          }
+        },
+        "intentDigest": {
+          "$ref": "#/$defs/sha256"
+        }
+      },
+      "required": [
+        "schema",
+        "type",
+        "actorId",
+        "memberId",
+        "controllingAuthorizerId",
+        "target",
+        "acceptedPlan",
+        "geometry",
+        "operatingChanges",
+        "profileRevision",
+        "authorization",
+        "acknowledgedScope",
+        "satisfiedGates",
+        "createdCommitments",
+        "intentDigest"
+      ],
+      "additionalProperties": false
+    },
+    "command_confirm_operating_condition": {
+      "type": "object",
+      "properties": {
+        "contractVersion": {
+          "const": "mp.proposals/1"
+        },
+        "actionId": {
+          "type": "string",
+          "pattern": "^mpa1\\.[A-Za-z0-9_-]+\\.[1-9][0-9]*$"
+        },
+        "base": {
+          "$ref": "#/$defs/stateRef"
+        },
+        "actionSeq": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "expectedStorage": {
+          "$ref": "#/$defs/storageRef"
+        },
+        "semanticBinding": {
+          "$ref": "#/$defs/semantic_confirm_operating_condition"
+        },
+        "type": {
+          "const": "confirm-operating-condition"
+        },
+        "target": {
+          "$ref": "#/$defs/proposalRef"
+        },
+        "candidateKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "stanceKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "controllingAuthorizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        }
+      },
+      "required": [
+        "contractVersion",
+        "actionId",
+        "base",
+        "actionSeq",
+        "expectedStorage",
+        "semanticBinding",
+        "type",
+        "target",
+        "candidateKey",
+        "stanceKey",
+        "controllingAuthorizerId"
+      ],
+      "additionalProperties": false
+    },
+    "receipt_confirm_operating_condition": {
+      "type": "object",
+      "properties": {
+        "actionId": {
+          "type": "string",
+          "pattern": "^mpa1\\.[A-Za-z0-9_-]+\\.[1-9][0-9]*$"
+        },
+        "actionSeq": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "type": {
+          "const": "confirm-operating-condition"
+        },
+        "commandFingerprint": {
+          "$ref": "#/$defs/sha256"
+        },
+        "actorId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "memberId": {
+          "const": null
+        },
+        "controllingAuthorizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "before": {
+          "$ref": "#/$defs/durableStateRef"
+        },
+        "after": {
+          "$ref": "#/$defs/durableStateRef"
+        },
+        "target": {
+          "$ref": "#/$defs/proposalRef"
+        },
+        "code": {
+          "const": "applied"
+        },
+        "appliedChanges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/change"
+          }
+        },
+        "resourceDelta": {
+          "$ref": "#/$defs/resourceDelta"
+        },
+        "claimResults": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/claimResult"
+          }
+        },
+        "supportBefore": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/supportSnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "supportAfter": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/supportSnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reasonCodes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        },
+        "originalResult": {
+          "$ref": "#/$defs/actionResult"
+        }
+      },
+      "required": [
+        "actionId",
+        "actionSeq",
+        "type",
+        "commandFingerprint",
+        "actorId",
+        "memberId",
+        "controllingAuthorizerId",
+        "before",
+        "after",
+        "target",
+        "code",
+        "appliedChanges",
+        "resourceDelta",
+        "claimResults",
+        "supportBefore",
+        "supportAfter",
+        "reasonCodes",
+        "originalResult"
+      ],
+      "additionalProperties": false
+    },
+    "semantic_commit_pitch": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "mp.action-semantic/1"
+        },
+        "type": {
+          "const": "commit-pitch"
+        },
+        "actorId": {
+          "const": "mayor"
+        },
+        "memberId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "controllingAuthorizerId": {
+          "const": null
+        },
+        "target": {
+          "$ref": "#/$defs/proposalRef"
+        },
+        "source": {
+          "enum": [
+            "typed",
+            "quick"
+          ]
+        },
+        "argumentDigest": {
+          "$ref": "#/$defs/sha256"
+        },
+        "claimResults": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/claimResult"
+          },
+          "maxItems": 8
+        },
+        "specificity": {
+          "enum": [
+            "strong",
+            "weak",
+            "quick",
+            "none"
+          ]
+        },
+        "tone": {
+          "enum": [
+            "respectful",
+            "pushy",
+            "hostile"
+          ]
+        },
+        "addressedPriorities": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        },
+        "cappedApplication": {
+          "$ref": "#/$defs/cappedApplication"
+        }
+      },
+      "required": [
+        "schema",
+        "type",
+        "actorId",
+        "memberId",
+        "controllingAuthorizerId",
+        "target",
+        "source",
+        "argumentDigest",
+        "claimResults",
+        "specificity",
+        "tone",
+        "addressedPriorities",
+        "cappedApplication"
+      ],
+      "additionalProperties": false
+    },
+    "command_commit_pitch": {
+      "type": "object",
+      "properties": {
+        "contractVersion": {
+          "const": "mp.proposals/1"
+        },
+        "actionId": {
+          "type": "string",
+          "pattern": "^mpa1\\.[A-Za-z0-9_-]+\\.[1-9][0-9]*$"
+        },
+        "base": {
+          "$ref": "#/$defs/stateRef"
+        },
+        "actionSeq": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "expectedStorage": {
+          "$ref": "#/$defs/storageRef"
+        },
+        "semanticBinding": {
+          "$ref": "#/$defs/semantic_commit_pitch"
+        },
+        "type": {
+          "const": "commit-pitch"
+        },
+        "target": {
+          "$ref": "#/$defs/proposalRef"
+        },
+        "memberId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "pitchKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        }
+      },
+      "required": [
+        "contractVersion",
+        "actionId",
+        "base",
+        "actionSeq",
+        "expectedStorage",
+        "semanticBinding",
+        "type",
+        "target",
+        "memberId",
+        "pitchKey"
+      ],
+      "additionalProperties": false
+    },
+    "receipt_commit_pitch": {
+      "type": "object",
+      "properties": {
+        "actionId": {
+          "type": "string",
+          "pattern": "^mpa1\\.[A-Za-z0-9_-]+\\.[1-9][0-9]*$"
+        },
+        "actionSeq": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "type": {
+          "const": "commit-pitch"
+        },
+        "commandFingerprint": {
+          "$ref": "#/$defs/sha256"
+        },
+        "actorId": {
+          "const": "mayor"
+        },
+        "memberId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "controllingAuthorizerId": {
+          "const": null
+        },
+        "before": {
+          "$ref": "#/$defs/durableStateRef"
+        },
+        "after": {
+          "$ref": "#/$defs/durableStateRef"
+        },
+        "target": {
+          "$ref": "#/$defs/proposalRef"
+        },
+        "code": {
+          "const": "applied"
+        },
+        "appliedChanges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/change"
+          }
+        },
+        "resourceDelta": {
+          "$ref": "#/$defs/resourceDelta"
+        },
+        "claimResults": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/claimResult"
+          }
+        },
+        "supportBefore": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/supportSnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "supportAfter": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/supportSnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reasonCodes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        },
+        "originalResult": {
+          "$ref": "#/$defs/actionResult"
+        }
+      },
+      "required": [
+        "actionId",
+        "actionSeq",
+        "type",
+        "commandFingerprint",
+        "actorId",
+        "memberId",
+        "controllingAuthorizerId",
+        "before",
+        "after",
+        "target",
+        "code",
+        "appliedChanges",
+        "resourceDelta",
+        "claimResults",
+        "supportBefore",
+        "supportAfter",
+        "reasonCodes",
+        "originalResult"
+      ],
+      "additionalProperties": false
+    },
+    "semantic_spend_favor": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "mp.action-semantic/1"
+        },
+        "type": {
+          "const": "spend-favor"
+        },
+        "actorId": {
+          "const": "mayor"
+        },
+        "memberId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "controllingAuthorizerId": {
+          "const": null
+        },
+        "target": {
+          "$ref": "#/$defs/proposalRef"
+        },
+        "offer": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "favor"
+            },
+            "amountK": {
+              "const": 0
+            }
+          },
+          "required": [
+            "type",
+            "amountK"
+          ],
+          "additionalProperties": false
+        },
+        "resourceEligibility": {
+          "$ref": "#/$defs/resourceEligibility"
+        }
+      },
+      "required": [
+        "schema",
+        "type",
+        "actorId",
+        "memberId",
+        "controllingAuthorizerId",
+        "target",
+        "offer",
+        "resourceEligibility"
+      ],
+      "additionalProperties": false
+    },
+    "command_spend_favor": {
+      "type": "object",
+      "properties": {
+        "contractVersion": {
+          "const": "mp.proposals/1"
+        },
+        "actionId": {
+          "type": "string",
+          "pattern": "^mpa1\\.[A-Za-z0-9_-]+\\.[1-9][0-9]*$"
+        },
+        "base": {
+          "$ref": "#/$defs/stateRef"
+        },
+        "actionSeq": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "expectedStorage": {
+          "$ref": "#/$defs/storageRef"
+        },
+        "semanticBinding": {
+          "$ref": "#/$defs/semantic_spend_favor"
+        },
+        "type": {
+          "const": "spend-favor"
+        },
+        "target": {
+          "$ref": "#/$defs/proposalRef"
+        },
+        "memberId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        }
+      },
+      "required": [
+        "contractVersion",
+        "actionId",
+        "base",
+        "actionSeq",
+        "expectedStorage",
+        "semanticBinding",
+        "type",
+        "target",
+        "memberId"
+      ],
+      "additionalProperties": false
+    },
+    "receipt_spend_favor": {
+      "type": "object",
+      "properties": {
+        "actionId": {
+          "type": "string",
+          "pattern": "^mpa1\\.[A-Za-z0-9_-]+\\.[1-9][0-9]*$"
+        },
+        "actionSeq": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "type": {
+          "const": "spend-favor"
+        },
+        "commandFingerprint": {
+          "$ref": "#/$defs/sha256"
+        },
+        "actorId": {
+          "const": "mayor"
+        },
+        "memberId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "controllingAuthorizerId": {
+          "const": null
+        },
+        "before": {
+          "$ref": "#/$defs/durableStateRef"
+        },
+        "after": {
+          "$ref": "#/$defs/durableStateRef"
+        },
+        "target": {
+          "$ref": "#/$defs/proposalRef"
+        },
+        "code": {
+          "const": "applied"
+        },
+        "appliedChanges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/change"
+          }
+        },
+        "resourceDelta": {
+          "$ref": "#/$defs/resourceDelta"
+        },
+        "claimResults": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/claimResult"
+          }
+        },
+        "supportBefore": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/supportSnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "supportAfter": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/supportSnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reasonCodes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        },
+        "originalResult": {
+          "$ref": "#/$defs/actionResult"
+        }
+      },
+      "required": [
+        "actionId",
+        "actionSeq",
+        "type",
+        "commandFingerprint",
+        "actorId",
+        "memberId",
+        "controllingAuthorizerId",
+        "before",
+        "after",
+        "target",
+        "code",
+        "appliedChanges",
+        "resourceDelta",
+        "claimResults",
+        "supportBefore",
+        "supportAfter",
+        "reasonCodes",
+        "originalResult"
+      ],
+      "additionalProperties": false
+    },
+    "semantic_spend_earmark": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "mp.action-semantic/1"
+        },
+        "type": {
+          "const": "spend-earmark"
+        },
+        "actorId": {
+          "const": "mayor"
+        },
+        "memberId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "controllingAuthorizerId": {
+          "const": null
+        },
+        "target": {
+          "$ref": "#/$defs/proposalRef"
+        },
+        "offer": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "earmark"
+            },
+            "amountK": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 150
+            }
+          },
+          "required": [
+            "type",
+            "amountK"
+          ],
+          "additionalProperties": false
+        },
+        "resourceEligibility": {
+          "$ref": "#/$defs/resourceEligibility"
+        }
+      },
+      "required": [
+        "schema",
+        "type",
+        "actorId",
+        "memberId",
+        "controllingAuthorizerId",
+        "target",
+        "offer",
+        "resourceEligibility"
+      ],
+      "additionalProperties": false
+    },
+    "command_spend_earmark": {
+      "type": "object",
+      "properties": {
+        "contractVersion": {
+          "const": "mp.proposals/1"
+        },
+        "actionId": {
+          "type": "string",
+          "pattern": "^mpa1\\.[A-Za-z0-9_-]+\\.[1-9][0-9]*$"
+        },
+        "base": {
+          "$ref": "#/$defs/stateRef"
+        },
+        "actionSeq": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "expectedStorage": {
+          "$ref": "#/$defs/storageRef"
+        },
+        "semanticBinding": {
+          "$ref": "#/$defs/semantic_spend_earmark"
+        },
+        "type": {
+          "const": "spend-earmark"
+        },
+        "target": {
+          "$ref": "#/$defs/proposalRef"
+        },
+        "memberId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "amountK": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 150
+        }
+      },
+      "required": [
+        "contractVersion",
+        "actionId",
+        "base",
+        "actionSeq",
+        "expectedStorage",
+        "semanticBinding",
+        "type",
+        "target",
+        "memberId",
+        "amountK"
+      ],
+      "additionalProperties": false
+    },
+    "receipt_spend_earmark": {
+      "type": "object",
+      "properties": {
+        "actionId": {
+          "type": "string",
+          "pattern": "^mpa1\\.[A-Za-z0-9_-]+\\.[1-9][0-9]*$"
+        },
+        "actionSeq": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "type": {
+          "const": "spend-earmark"
+        },
+        "commandFingerprint": {
+          "$ref": "#/$defs/sha256"
+        },
+        "actorId": {
+          "const": "mayor"
+        },
+        "memberId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "controllingAuthorizerId": {
+          "const": null
+        },
+        "before": {
+          "$ref": "#/$defs/durableStateRef"
+        },
+        "after": {
+          "$ref": "#/$defs/durableStateRef"
+        },
+        "target": {
+          "$ref": "#/$defs/proposalRef"
+        },
+        "code": {
+          "const": "applied"
+        },
+        "appliedChanges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/change"
+          }
+        },
+        "resourceDelta": {
+          "$ref": "#/$defs/resourceDelta"
+        },
+        "claimResults": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/claimResult"
+          }
+        },
+        "supportBefore": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/supportSnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "supportAfter": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/supportSnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reasonCodes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        },
+        "originalResult": {
+          "$ref": "#/$defs/actionResult"
+        }
+      },
+      "required": [
+        "actionId",
+        "actionSeq",
+        "type",
+        "commandFingerprint",
+        "actorId",
+        "memberId",
+        "controllingAuthorizerId",
+        "before",
+        "after",
+        "target",
+        "code",
+        "appliedChanges",
+        "resourceDelta",
+        "claimResults",
+        "supportBefore",
+        "supportAfter",
+        "reasonCodes",
+        "originalResult"
+      ],
+      "additionalProperties": false
+    },
+    "semantic_call_vote": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "mp.action-semantic/1"
+        },
+        "type": {
+          "const": "call-vote"
+        },
+        "actorId": {
+          "const": "mayor"
+        },
+        "memberId": {
+          "const": null
+        },
+        "controllingAuthorizerId": {
+          "const": null
+        },
+        "target": {
+          "$ref": "#/$defs/proposalRef"
+        },
+        "decisionRouteId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "fundingOptions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/fundingMethod"
+          }
+        },
+        "predictedWinnerId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "schema",
+        "type",
+        "actorId",
+        "memberId",
+        "controllingAuthorizerId",
+        "target",
+        "decisionRouteId",
+        "fundingOptions",
+        "predictedWinnerId"
+      ],
+      "additionalProperties": false
+    },
+    "command_call_vote": {
+      "type": "object",
+      "properties": {
+        "contractVersion": {
+          "const": "mp.proposals/1"
+        },
+        "actionId": {
+          "type": "string",
+          "pattern": "^mpa1\\.[A-Za-z0-9_-]+\\.[1-9][0-9]*$"
+        },
+        "base": {
+          "$ref": "#/$defs/stateRef"
+        },
+        "actionSeq": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "expectedStorage": {
+          "$ref": "#/$defs/storageRef"
+        },
+        "semanticBinding": {
+          "$ref": "#/$defs/semantic_call_vote"
+        },
+        "type": {
+          "const": "call-vote"
+        },
+        "target": {
+          "$ref": "#/$defs/proposalRef"
+        },
+        "fundingChoiceKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        }
+      },
+      "required": [
+        "contractVersion",
+        "actionId",
+        "base",
+        "actionSeq",
+        "expectedStorage",
+        "semanticBinding",
+        "type",
+        "target",
+        "fundingChoiceKey"
+      ],
+      "additionalProperties": false
+    },
+    "receipt_call_vote": {
+      "type": "object",
+      "properties": {
+        "actionId": {
+          "type": "string",
+          "pattern": "^mpa1\\.[A-Za-z0-9_-]+\\.[1-9][0-9]*$"
+        },
+        "actionSeq": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "type": {
+          "const": "call-vote"
+        },
+        "commandFingerprint": {
+          "$ref": "#/$defs/sha256"
+        },
+        "actorId": {
+          "const": "mayor"
+        },
+        "memberId": {
+          "const": null
+        },
+        "controllingAuthorizerId": {
+          "const": null
+        },
+        "before": {
+          "$ref": "#/$defs/durableStateRef"
+        },
+        "after": {
+          "$ref": "#/$defs/durableStateRef"
+        },
+        "target": {
+          "$ref": "#/$defs/proposalRef"
+        },
+        "code": {
+          "const": "applied"
+        },
+        "appliedChanges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/change"
+          }
+        },
+        "resourceDelta": {
+          "$ref": "#/$defs/resourceDelta"
+        },
+        "claimResults": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/claimResult"
+          }
+        },
+        "supportBefore": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/supportSnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "supportAfter": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/supportSnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reasonCodes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        },
+        "originalResult": {
+          "$ref": "#/$defs/actionResult"
+        }
+      },
+      "required": [
+        "actionId",
+        "actionSeq",
+        "type",
+        "commandFingerprint",
+        "actorId",
+        "memberId",
+        "controllingAuthorizerId",
+        "before",
+        "after",
+        "target",
+        "code",
+        "appliedChanges",
+        "resourceDelta",
+        "claimResults",
+        "supportBefore",
+        "supportAfter",
+        "reasonCodes",
+        "originalResult"
+      ],
+      "additionalProperties": false
+    },
+    "semantic_approve_mayoral": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "mp.action-semantic/1"
+        },
+        "type": {
+          "const": "approve-mayoral"
+        },
+        "actorId": {
+          "const": "mayor"
+        },
+        "memberId": {
+          "const": null
+        },
+        "controllingAuthorizerId": {
+          "const": null
+        },
+        "target": {
+          "$ref": "#/$defs/proposalRef"
+        },
+        "decisionRouteId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "fundingOptions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/fundingMethod"
+          }
+        },
+        "predictedWinnerId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "schema",
+        "type",
+        "actorId",
+        "memberId",
+        "controllingAuthorizerId",
+        "target",
+        "decisionRouteId",
+        "fundingOptions",
+        "predictedWinnerId"
+      ],
+      "additionalProperties": false
+    },
+    "command_approve_mayoral": {
+      "type": "object",
+      "properties": {
+        "contractVersion": {
+          "const": "mp.proposals/1"
+        },
+        "actionId": {
+          "type": "string",
+          "pattern": "^mpa1\\.[A-Za-z0-9_-]+\\.[1-9][0-9]*$"
+        },
+        "base": {
+          "$ref": "#/$defs/stateRef"
+        },
+        "actionSeq": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "expectedStorage": {
+          "$ref": "#/$defs/storageRef"
+        },
+        "semanticBinding": {
+          "$ref": "#/$defs/semantic_approve_mayoral"
+        },
+        "type": {
+          "const": "approve-mayoral"
+        },
+        "target": {
+          "$ref": "#/$defs/proposalRef"
+        },
+        "fundingChoiceKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        }
+      },
+      "required": [
+        "contractVersion",
+        "actionId",
+        "base",
+        "actionSeq",
+        "expectedStorage",
+        "semanticBinding",
+        "type",
+        "target",
+        "fundingChoiceKey"
+      ],
+      "additionalProperties": false
+    },
+    "receipt_approve_mayoral": {
+      "type": "object",
+      "properties": {
+        "actionId": {
+          "type": "string",
+          "pattern": "^mpa1\\.[A-Za-z0-9_-]+\\.[1-9][0-9]*$"
+        },
+        "actionSeq": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "type": {
+          "const": "approve-mayoral"
+        },
+        "commandFingerprint": {
+          "$ref": "#/$defs/sha256"
+        },
+        "actorId": {
+          "const": "mayor"
+        },
+        "memberId": {
+          "const": null
+        },
+        "controllingAuthorizerId": {
+          "const": null
+        },
+        "before": {
+          "$ref": "#/$defs/durableStateRef"
+        },
+        "after": {
+          "$ref": "#/$defs/durableStateRef"
+        },
+        "target": {
+          "$ref": "#/$defs/proposalRef"
+        },
+        "code": {
+          "const": "applied"
+        },
+        "appliedChanges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/change"
+          }
+        },
+        "resourceDelta": {
+          "$ref": "#/$defs/resourceDelta"
+        },
+        "claimResults": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/claimResult"
+          }
+        },
+        "supportBefore": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/supportSnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "supportAfter": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/supportSnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reasonCodes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        },
+        "originalResult": {
+          "$ref": "#/$defs/actionResult"
+        }
+      },
+      "required": [
+        "actionId",
+        "actionSeq",
+        "type",
+        "commandFingerprint",
+        "actorId",
+        "memberId",
+        "controllingAuthorizerId",
+        "before",
+        "after",
+        "target",
+        "code",
+        "appliedChanges",
+        "resourceDelta",
+        "claimResults",
+        "supportBefore",
+        "supportAfter",
+        "reasonCodes",
+        "originalResult"
+      ],
+      "additionalProperties": false
+    },
+    "semantic_apply_grant": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "mp.action-semantic/1"
+        },
+        "type": {
+          "const": "apply-grant"
+        },
+        "actorId": {
+          "const": "mayor"
+        },
+        "memberId": {
+          "const": null
+        },
+        "controllingAuthorizerId": {
+          "const": null
+        },
+        "target": {
+          "$ref": "#/$defs/proposalRef"
+        }
+      },
+      "required": [
+        "schema",
+        "type",
+        "actorId",
+        "memberId",
+        "controllingAuthorizerId",
+        "target"
+      ],
+      "additionalProperties": false
+    },
+    "command_apply_grant": {
+      "type": "object",
+      "properties": {
+        "contractVersion": {
+          "const": "mp.proposals/1"
+        },
+        "actionId": {
+          "type": "string",
+          "pattern": "^mpa1\\.[A-Za-z0-9_-]+\\.[1-9][0-9]*$"
+        },
+        "base": {
+          "$ref": "#/$defs/stateRef"
+        },
+        "actionSeq": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "expectedStorage": {
+          "$ref": "#/$defs/storageRef"
+        },
+        "semanticBinding": {
+          "$ref": "#/$defs/semantic_apply_grant"
+        },
+        "type": {
+          "const": "apply-grant"
+        },
+        "target": {
+          "$ref": "#/$defs/proposalRef"
+        }
+      },
+      "required": [
+        "contractVersion",
+        "actionId",
+        "base",
+        "actionSeq",
+        "expectedStorage",
+        "semanticBinding",
+        "type",
+        "target"
+      ],
+      "additionalProperties": false
+    },
+    "receipt_apply_grant": {
+      "type": "object",
+      "properties": {
+        "actionId": {
+          "type": "string",
+          "pattern": "^mpa1\\.[A-Za-z0-9_-]+\\.[1-9][0-9]*$"
+        },
+        "actionSeq": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "type": {
+          "const": "apply-grant"
+        },
+        "commandFingerprint": {
+          "$ref": "#/$defs/sha256"
+        },
+        "actorId": {
+          "const": "mayor"
+        },
+        "memberId": {
+          "const": null
+        },
+        "controllingAuthorizerId": {
+          "const": null
+        },
+        "before": {
+          "$ref": "#/$defs/durableStateRef"
+        },
+        "after": {
+          "$ref": "#/$defs/durableStateRef"
+        },
+        "target": {
+          "$ref": "#/$defs/proposalRef"
+        },
+        "code": {
+          "const": "applied"
+        },
+        "appliedChanges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/change"
+          }
+        },
+        "resourceDelta": {
+          "$ref": "#/$defs/resourceDelta"
+        },
+        "claimResults": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/claimResult"
+          }
+        },
+        "supportBefore": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/supportSnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "supportAfter": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/supportSnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reasonCodes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        },
+        "originalResult": {
+          "$ref": "#/$defs/actionResult"
+        }
+      },
+      "required": [
+        "actionId",
+        "actionSeq",
+        "type",
+        "commandFingerprint",
+        "actorId",
+        "memberId",
+        "controllingAuthorizerId",
+        "before",
+        "after",
+        "target",
+        "code",
+        "appliedChanges",
+        "resourceDelta",
+        "claimResults",
+        "supportBefore",
+        "supportAfter",
+        "reasonCodes",
+        "originalResult"
+      ],
+      "additionalProperties": false
+    },
+    "semantic_table_proposal": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "mp.action-semantic/1"
+        },
+        "type": {
+          "const": "table-proposal"
+        },
+        "actorId": {
+          "const": "mayor"
+        },
+        "memberId": {
+          "const": null
+        },
+        "controllingAuthorizerId": {
+          "const": null
+        },
+        "target": {
+          "$ref": "#/$defs/proposalRef"
+        }
+      },
+      "required": [
+        "schema",
+        "type",
+        "actorId",
+        "memberId",
+        "controllingAuthorizerId",
+        "target"
+      ],
+      "additionalProperties": false
+    },
+    "command_table_proposal": {
+      "type": "object",
+      "properties": {
+        "contractVersion": {
+          "const": "mp.proposals/1"
+        },
+        "actionId": {
+          "type": "string",
+          "pattern": "^mpa1\\.[A-Za-z0-9_-]+\\.[1-9][0-9]*$"
+        },
+        "base": {
+          "$ref": "#/$defs/stateRef"
+        },
+        "actionSeq": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "expectedStorage": {
+          "$ref": "#/$defs/storageRef"
+        },
+        "semanticBinding": {
+          "$ref": "#/$defs/semantic_table_proposal"
+        },
+        "type": {
+          "const": "table-proposal"
+        },
+        "target": {
+          "$ref": "#/$defs/proposalRef"
+        }
+      },
+      "required": [
+        "contractVersion",
+        "actionId",
+        "base",
+        "actionSeq",
+        "expectedStorage",
+        "semanticBinding",
+        "type",
+        "target"
+      ],
+      "additionalProperties": false
+    },
+    "receipt_table_proposal": {
+      "type": "object",
+      "properties": {
+        "actionId": {
+          "type": "string",
+          "pattern": "^mpa1\\.[A-Za-z0-9_-]+\\.[1-9][0-9]*$"
+        },
+        "actionSeq": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "type": {
+          "const": "table-proposal"
+        },
+        "commandFingerprint": {
+          "$ref": "#/$defs/sha256"
+        },
+        "actorId": {
+          "const": "mayor"
+        },
+        "memberId": {
+          "const": null
+        },
+        "controllingAuthorizerId": {
+          "const": null
+        },
+        "before": {
+          "$ref": "#/$defs/durableStateRef"
+        },
+        "after": {
+          "$ref": "#/$defs/durableStateRef"
+        },
+        "target": {
+          "$ref": "#/$defs/proposalRef"
+        },
+        "code": {
+          "const": "applied"
+        },
+        "appliedChanges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/change"
+          }
+        },
+        "resourceDelta": {
+          "$ref": "#/$defs/resourceDelta"
+        },
+        "claimResults": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/claimResult"
+          }
+        },
+        "supportBefore": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/supportSnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "supportAfter": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/supportSnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reasonCodes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        },
+        "originalResult": {
+          "$ref": "#/$defs/actionResult"
+        }
+      },
+      "required": [
+        "actionId",
+        "actionSeq",
+        "type",
+        "commandFingerprint",
+        "actorId",
+        "memberId",
+        "controllingAuthorizerId",
+        "before",
+        "after",
+        "target",
+        "code",
+        "appliedChanges",
+        "resourceDelta",
+        "claimResults",
+        "supportBefore",
+        "supportAfter",
+        "reasonCodes",
+        "originalResult"
+      ],
+      "additionalProperties": false
+    },
+    "semantic_reject_proposal": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "mp.action-semantic/1"
+        },
+        "type": {
+          "const": "reject-proposal"
+        },
+        "actorId": {
+          "const": "mayor"
+        },
+        "memberId": {
+          "const": null
+        },
+        "controllingAuthorizerId": {
+          "const": null
+        },
+        "target": {
+          "$ref": "#/$defs/proposalRef"
+        }
+      },
+      "required": [
+        "schema",
+        "type",
+        "actorId",
+        "memberId",
+        "controllingAuthorizerId",
+        "target"
+      ],
+      "additionalProperties": false
+    },
+    "command_reject_proposal": {
+      "type": "object",
+      "properties": {
+        "contractVersion": {
+          "const": "mp.proposals/1"
+        },
+        "actionId": {
+          "type": "string",
+          "pattern": "^mpa1\\.[A-Za-z0-9_-]+\\.[1-9][0-9]*$"
+        },
+        "base": {
+          "$ref": "#/$defs/stateRef"
+        },
+        "actionSeq": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "expectedStorage": {
+          "$ref": "#/$defs/storageRef"
+        },
+        "semanticBinding": {
+          "$ref": "#/$defs/semantic_reject_proposal"
+        },
+        "type": {
+          "const": "reject-proposal"
+        },
+        "target": {
+          "$ref": "#/$defs/proposalRef"
+        }
+      },
+      "required": [
+        "contractVersion",
+        "actionId",
+        "base",
+        "actionSeq",
+        "expectedStorage",
+        "semanticBinding",
+        "type",
+        "target"
+      ],
+      "additionalProperties": false
+    },
+    "receipt_reject_proposal": {
+      "type": "object",
+      "properties": {
+        "actionId": {
+          "type": "string",
+          "pattern": "^mpa1\\.[A-Za-z0-9_-]+\\.[1-9][0-9]*$"
+        },
+        "actionSeq": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "type": {
+          "const": "reject-proposal"
+        },
+        "commandFingerprint": {
+          "$ref": "#/$defs/sha256"
+        },
+        "actorId": {
+          "const": "mayor"
+        },
+        "memberId": {
+          "const": null
+        },
+        "controllingAuthorizerId": {
+          "const": null
+        },
+        "before": {
+          "$ref": "#/$defs/durableStateRef"
+        },
+        "after": {
+          "$ref": "#/$defs/durableStateRef"
+        },
+        "target": {
+          "$ref": "#/$defs/proposalRef"
+        },
+        "code": {
+          "const": "applied"
+        },
+        "appliedChanges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/change"
+          }
+        },
+        "resourceDelta": {
+          "$ref": "#/$defs/resourceDelta"
+        },
+        "claimResults": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/claimResult"
+          }
+        },
+        "supportBefore": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/supportSnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "supportAfter": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/supportSnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reasonCodes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        },
+        "originalResult": {
+          "$ref": "#/$defs/actionResult"
+        }
+      },
+      "required": [
+        "actionId",
+        "actionSeq",
+        "type",
+        "commandFingerprint",
+        "actorId",
+        "memberId",
+        "controllingAuthorizerId",
+        "before",
+        "after",
+        "target",
+        "code",
+        "appliedChanges",
+        "resourceDelta",
+        "claimResults",
+        "supportBefore",
+        "supportAfter",
+        "reasonCodes",
+        "originalResult"
+      ],
+      "additionalProperties": false
+    },
+    "semantic_set_tax_rate": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "mp.action-semantic/1"
+        },
+        "type": {
+          "const": "set-tax-rate"
+        },
+        "actorId": {
+          "const": "mayor"
+        },
+        "memberId": {
+          "const": null
+        },
+        "controllingAuthorizerId": {
+          "const": null
+        },
+        "target": {
+          "const": null
+        },
+        "taxRate": {
+          "enum": [
+            "lower",
+            "hold",
+            "raise"
+          ]
+        },
+        "durableBase": {
+          "$ref": "#/$defs/durableStateRef"
+        }
+      },
+      "required": [
+        "schema",
+        "type",
+        "actorId",
+        "memberId",
+        "controllingAuthorizerId",
+        "target",
+        "taxRate",
+        "durableBase"
+      ],
+      "additionalProperties": false
+    },
+    "command_set_tax_rate": {
+      "type": "object",
+      "properties": {
+        "contractVersion": {
+          "const": "mp.proposals/1"
+        },
+        "actionId": {
+          "type": "string",
+          "pattern": "^mpa1\\.[A-Za-z0-9_-]+\\.[1-9][0-9]*$"
+        },
+        "base": {
+          "$ref": "#/$defs/stateRef"
+        },
+        "actionSeq": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "expectedStorage": {
+          "$ref": "#/$defs/storageRef"
+        },
+        "semanticBinding": {
+          "$ref": "#/$defs/semantic_set_tax_rate"
+        },
+        "type": {
+          "const": "set-tax-rate"
+        },
+        "taxRate": {
+          "enum": [
+            "lower",
+            "hold",
+            "raise"
+          ]
+        }
+      },
+      "required": [
+        "contractVersion",
+        "actionId",
+        "base",
+        "actionSeq",
+        "expectedStorage",
+        "semanticBinding",
+        "type",
+        "taxRate"
+      ],
+      "additionalProperties": false
+    },
+    "receipt_set_tax_rate": {
+      "type": "object",
+      "properties": {
+        "actionId": {
+          "type": "string",
+          "pattern": "^mpa1\\.[A-Za-z0-9_-]+\\.[1-9][0-9]*$"
+        },
+        "actionSeq": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "type": {
+          "const": "set-tax-rate"
+        },
+        "commandFingerprint": {
+          "$ref": "#/$defs/sha256"
+        },
+        "actorId": {
+          "const": "mayor"
+        },
+        "memberId": {
+          "const": null
+        },
+        "controllingAuthorizerId": {
+          "const": null
+        },
+        "before": {
+          "$ref": "#/$defs/durableStateRef"
+        },
+        "after": {
+          "$ref": "#/$defs/durableStateRef"
+        },
+        "target": {
+          "const": null
+        },
+        "code": {
+          "const": "applied"
+        },
+        "appliedChanges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/change"
+          }
+        },
+        "resourceDelta": {
+          "$ref": "#/$defs/resourceDelta"
+        },
+        "claimResults": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/claimResult"
+          }
+        },
+        "supportBefore": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/supportSnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "supportAfter": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/supportSnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reasonCodes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        },
+        "originalResult": {
+          "$ref": "#/$defs/actionResult"
+        }
+      },
+      "required": [
+        "actionId",
+        "actionSeq",
+        "type",
+        "commandFingerprint",
+        "actorId",
+        "memberId",
+        "controllingAuthorizerId",
+        "before",
+        "after",
+        "target",
+        "code",
+        "appliedChanges",
+        "resourceDelta",
+        "claimResults",
+        "supportBefore",
+        "supportAfter",
+        "reasonCodes",
+        "originalResult"
+      ],
+      "additionalProperties": false
+    },
+    "semantic_advance_year": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "mp.action-semantic/1"
+        },
+        "type": {
+          "const": "advance-year"
+        },
+        "actorId": {
+          "const": "mayor"
+        },
+        "memberId": {
+          "const": null
+        },
+        "controllingAuthorizerId": {
+          "const": null
+        },
+        "target": {
+          "const": null
+        },
+        "advanceTurn": {
+          "const": true
+        },
+        "durableBase": {
+          "$ref": "#/$defs/durableStateRef"
+        }
+      },
+      "required": [
+        "schema",
+        "type",
+        "actorId",
+        "memberId",
+        "controllingAuthorizerId",
+        "target",
+        "advanceTurn",
+        "durableBase"
+      ],
+      "additionalProperties": false
+    },
+    "command_advance_year": {
+      "type": "object",
+      "properties": {
+        "contractVersion": {
+          "const": "mp.proposals/1"
+        },
+        "actionId": {
+          "type": "string",
+          "pattern": "^mpa1\\.[A-Za-z0-9_-]+\\.[1-9][0-9]*$"
+        },
+        "base": {
+          "$ref": "#/$defs/stateRef"
+        },
+        "actionSeq": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "expectedStorage": {
+          "$ref": "#/$defs/storageRef"
+        },
+        "semanticBinding": {
+          "$ref": "#/$defs/semantic_advance_year"
+        },
+        "type": {
+          "const": "advance-year"
+        }
+      },
+      "required": [
+        "contractVersion",
+        "actionId",
+        "base",
+        "actionSeq",
+        "expectedStorage",
+        "semanticBinding",
+        "type"
+      ],
+      "additionalProperties": false
+    },
+    "receipt_advance_year": {
+      "type": "object",
+      "properties": {
+        "actionId": {
+          "type": "string",
+          "pattern": "^mpa1\\.[A-Za-z0-9_-]+\\.[1-9][0-9]*$"
+        },
+        "actionSeq": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "type": {
+          "const": "advance-year"
+        },
+        "commandFingerprint": {
+          "$ref": "#/$defs/sha256"
+        },
+        "actorId": {
+          "const": "mayor"
+        },
+        "memberId": {
+          "const": null
+        },
+        "controllingAuthorizerId": {
+          "const": null
+        },
+        "before": {
+          "$ref": "#/$defs/durableStateRef"
+        },
+        "after": {
+          "$ref": "#/$defs/durableStateRef"
+        },
+        "target": {
+          "const": null
+        },
+        "code": {
+          "const": "applied"
+        },
+        "appliedChanges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/change"
+          }
+        },
+        "resourceDelta": {
+          "$ref": "#/$defs/resourceDelta"
+        },
+        "claimResults": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/claimResult"
+          }
+        },
+        "supportBefore": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/supportSnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "supportAfter": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/supportSnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reasonCodes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          }
+        },
+        "originalResult": {
+          "$ref": "#/$defs/actionResult"
+        }
+      },
+      "required": [
+        "actionId",
+        "actionSeq",
+        "type",
+        "commandFingerprint",
+        "actorId",
+        "memberId",
+        "controllingAuthorizerId",
+        "before",
+        "after",
+        "target",
+        "code",
+        "appliedChanges",
+        "resourceDelta",
+        "claimResults",
+        "supportBefore",
+        "supportAfter",
+        "reasonCodes",
+        "originalResult"
+      ],
+      "additionalProperties": false
+    },
+    "command": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/command_post_draft"
+        },
+        {
+          "$ref": "#/$defs/command_confirm_revision"
+        },
+        {
+          "$ref": "#/$defs/command_confirm_operating_condition"
+        },
+        {
+          "$ref": "#/$defs/command_commit_pitch"
+        },
+        {
+          "$ref": "#/$defs/command_spend_favor"
+        },
+        {
+          "$ref": "#/$defs/command_spend_earmark"
+        },
+        {
+          "$ref": "#/$defs/command_call_vote"
+        },
+        {
+          "$ref": "#/$defs/command_approve_mayoral"
+        },
+        {
+          "$ref": "#/$defs/command_apply_grant"
+        },
+        {
+          "$ref": "#/$defs/command_table_proposal"
+        },
+        {
+          "$ref": "#/$defs/command_reject_proposal"
+        },
+        {
+          "$ref": "#/$defs/command_set_tax_rate"
+        },
+        {
+          "$ref": "#/$defs/command_advance_year"
+        }
+      ]
+    },
+    "actionSemantic": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/semantic_post_draft"
+        },
+        {
+          "$ref": "#/$defs/semantic_confirm_revision"
+        },
+        {
+          "$ref": "#/$defs/semantic_confirm_operating_condition"
+        },
+        {
+          "$ref": "#/$defs/semantic_commit_pitch"
+        },
+        {
+          "$ref": "#/$defs/semantic_spend_favor"
+        },
+        {
+          "$ref": "#/$defs/semantic_spend_earmark"
+        },
+        {
+          "$ref": "#/$defs/semantic_call_vote"
+        },
+        {
+          "$ref": "#/$defs/semantic_approve_mayoral"
+        },
+        {
+          "$ref": "#/$defs/semantic_apply_grant"
+        },
+        {
+          "$ref": "#/$defs/semantic_table_proposal"
+        },
+        {
+          "$ref": "#/$defs/semantic_reject_proposal"
+        },
+        {
+          "$ref": "#/$defs/semantic_set_tax_rate"
+        },
+        {
+          "$ref": "#/$defs/semantic_advance_year"
+        }
+      ]
+    },
+    "receipt": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/receipt_post_draft"
+        },
+        {
+          "$ref": "#/$defs/receipt_confirm_revision"
+        },
+        {
+          "$ref": "#/$defs/receipt_confirm_operating_condition"
+        },
+        {
+          "$ref": "#/$defs/receipt_commit_pitch"
+        },
+        {
+          "$ref": "#/$defs/receipt_spend_favor"
+        },
+        {
+          "$ref": "#/$defs/receipt_spend_earmark"
+        },
+        {
+          "$ref": "#/$defs/receipt_call_vote"
+        },
+        {
+          "$ref": "#/$defs/receipt_approve_mayoral"
+        },
+        {
+          "$ref": "#/$defs/receipt_apply_grant"
+        },
+        {
+          "$ref": "#/$defs/receipt_table_proposal"
+        },
+        {
+          "$ref": "#/$defs/receipt_reject_proposal"
+        },
+        {
+          "$ref": "#/$defs/receipt_set_tax_rate"
+        },
+        {
+          "$ref": "#/$defs/receipt_advance_year"
+        }
+      ]
+    }
+  }
+}

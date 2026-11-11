@@ -1,0 +1,140 @@
+# Requirements
+
+What Nate asks for becomes a requirement here. Each requirement has an ID, acceptance criteria, how it's verified, and a status.
+
+- **Verify:** `Test` means an automated test must reference the ID and pass. `Play-test` means Nate or Claude checks it by playing, recorded in the release checklist.
+- **Status:** `Proposed` (drafted, waiting for Nate), `Accepted` (agreed; must be verified), `Planned` (agreed, not built yet), `Retired`.
+- `npm test` fails if any `Accepted` requirement verified by `Test` has no passing test, or if a test names an ID that isn't listed.
+- IDs never change or get reused. Changed requirements keep their ID; retired ones stay in the table.
+
+## Game structure
+| ID | Requirement | Acceptance criteria | Verify | Status |
+|---|---|---|---|---|
+| MP-001 | Each turn is one year, and a career lasts 32 turns. | A new game starts in year 1 (2027) with 32 years available. Ending a turn advances exactly one year. | Test | Accepted |
+| MP-002 | Elections happen every four years. | After year 4 resolves, the game enters the election phase. Vote share stays between 20% and 80%, and 50% or more wins. | Test | Accepted |
+| MP-003 | Mayors serve at most two terms, then the player continues as a groomed successor. | Successor inherits approval, the rival, and unfinished projects. | Test | Planned |
+| MP-004 | Two straight years with a negative reserve ends the career. | A borough below zero at the end of two consecutive years enters the bankrupt phase. | Test | Accepted |
+| MP-005 | Losing an election offers opposition mode or a restart. | After a loss the player can start a new town. Opposition mode: one council seat, blocking and bargaining, and a rematch four years later. | Play-test | Planned |
+| MP-006 | The town starts as a small Pennsylvania borough modeled on State College and Lancaster growth patterns. | Starting population 3,200 with a college, a historic downtown, a creek, and farmland. | Test | Accepted |
+
+## Simulation and causality
+| ID | Requirement | Acceptance criteria | Verify | Status |
+|---|---|---|---|---|
+| MP-010 | Every consequence has a visible cause. | For each year resolved, every meter that changed has at least one cause entry in the year-end report. | Test | Accepted |
+| MP-011 | The same seed plays out the same way. | Two games with the same seed and choices produce identical histories. | Test | Accepted |
+| MP-012 | Consequences follow real-world logic. | A strip mall lowers walkability and adds jobs and storefronts. A park raises livability and property values. | Test | Accepted |
+| MP-013 | A luxury store is a bad bet in a small town. | When subsidized in a town under 5,000 people, it usually closes within two years, lowering business confidence and approval. | Test | Accepted |
+| MP-014 | Routine housing grows on its own where demand exists. | When demand exceeds housing, new homes appear on the map without player action. | Test | Accepted |
+| MP-015 | The AI talks; the simulation decides. | AI output can only change plan fields within allowed values. All outcomes come from the engine. | Test | Accepted |
+
+## Proposals, presenters, and council
+| ID | Requirement | Acceptance criteria | Verify | Status |
+|---|---|---|---|---|
+| MP-020 | Presenter relationship, competency, and plan detail affect success. | Delivery odds rise with relationship. A high-competency presenter's odds beat a low-competency one's. | Test | Accepted |
+| MP-021 | Thin plans carry hidden cost risk. | A plan from a low-detail presenter shows a cost range wider than a high-detail presenter's. | Test | Accepted |
+| MP-022 | Competing plans for one site are exclusive. | Approving one plan for a site rejects the competing plan. | Test | Accepted |
+| MP-023 | Big items need 3 of 5 council votes. | A motion with no option at 3 votes fails. | Test | Accepted |
+| MP-024 | The Old Mill fight is contested by default. | With no lobbying, the park-versus-commercial vote has no majority. Good arguments plus a favor can swing it. | Test | Accepted |
+| MP-025 | A pitch earns what it actually says. (Changed 2026-10-27: pitches were worth too much.) | The engine scores every pitch. Quick-tap pitches and vague pitches move a member's lean by 3 points or less. A specific pitch moves it by 10 points or less. A favor moves it by 15 or less. Favors spend political capital. Hostile pitches lower relationship and lean. The character's reply reflects the credit given. | Test | Accepted |
+| MP-026 | You negotiate plans by talking, and the plan drawing updates. | Agreed changes update the plan, its drawing, and its forecast. | Play-test | Accepted |
+| MP-028 | Each council member has a public statement on each plan. | In a hearing, every member shows what they support, what they oppose, and what would change their vote on that specific plan, built from their priorities and the plan's numbers. The statement updates when the plan changes. | Test | Accepted |
+| MP-027 | A named rival opposes you. | Greg Marsh leans against plans the mayor backs and runs against the mayor. | Test | Accepted |
+
+## Your own initiatives
+| ID | Requirement | Acceptance criteria | Verify | Status |
+|---|---|---|---|---|
+| MP-030 | One mayor's initiative per year. | A second initiative in the same year is refused. A new year allows one again. | Test | Accepted |
+| MP-031 | Initiatives are freeform but priced by the engine. | Any description becomes a plan made of fixed fields with an engine-computed cost and forecast, and it goes to council. | Test | Accepted |
+| MP-032 | Programs and ordinances need no site. | A policy-only initiative has no site and still has effects. | Test | Accepted |
+| MP-033 | Propose on any plots you choose, or let your description decide. | Tap plots anywhere on the map to add or remove them, built or empty; they don't need to touch. Only roads and the creek are off limits. A Clear all control empties the selection. The planner drafts for exactly the plots chosen and never moves them. Or choose "Let my description decide" and the plots follow what you wrote ("on the old mill lot"), occupied or not. Each plot holds a limited amount (a suburb needs many plots); plans that don't fit are scaled down with a note, and more plots raise capacity and cost. | Test | Accepted |
+| MP-034 | Redevelopment has consequences. | Building on occupied plots means demolition: it costs money, displaces residents and jobs, removes what was there, and moves approval and council votes, all shown in the forecast before you commit. | Test | Accepted |
+| MP-035 | Impossible ideas can be proposed and are answered realistically. | Proposing to demolish something the borough doesn't own (the college, the school) shows the acquisition cost and backlash, the planner warns, and the council opposes it on the record. It fails unless you somehow win the votes, and then the consequences are real. | Test | Accepted |
+
+## Meters and systems
+| ID | Requirement | Acceptance criteria | Verify | Status |
+|---|---|---|---|---|
+| MP-040 | The town has exactly nine meters. | Population, reserve, jobs, walkability, livability, business, safety, affordability, approval. | Test | Accepted |
+| MP-041 | Safety matters to voters and growth. | With everything else equal, higher safety produces higher approval after a year. | Test | Accepted |
+| MP-042 | Kish Creek can flood, and planning changes the odds. | More parking raises flood risk. Stormwater work lowers it. | Test | Accepted |
+| MP-043 | State grants reward planning ahead. | Applying tables the item for a year. The grant then either covers 50% to 80% of the cost or is denied. | Test | Accepted |
+| MP-044 | Housing affordability responds to supply. | A housing shortage lowers affordability; new homes raise it. | Test | Accepted |
+
+## Map and presentation
+| ID | Requirement | Acceptance criteria | Verify | Status |
+|---|---|---|---|---|
+| MP-050 | Plan view and a street view that rotates in 90° steps. | Both views draw the same town. Rotation cycles four directions. | Play-test | Accepted |
+| MP-051 | Pinch to zoom and drag to pan the map. (Changed 2026-10-27: replaces "2x close-up, no free zoom.") | Pinching the map zooms only the map, from 1x to 3x, around the point between your fingers. Dragging pans. A gesture on the map never zooms the page. | Test | Accepted |
+| MP-052 | The map shows how the town is doing. | Traffic, pedestrians, streetlights, and vacancies on the map follow the meters. | Play-test | Accepted |
+| MP-053 | Works on a phone. | No sideways scrolling at 400px wide. All actions reachable by tap. | Test | Accepted |
+| MP-054 | Touch first everywhere. | Every button and control is at least 44 × 44 points. Nothing depends on hover. Text is at least 12 points. | Test | Accepted |
+| MP-055 | Built for the iPhone Duo inner display in portrait, as one stacked page. (Changed 2026-10-27: no pinned map.) | No sideways scrolling at 669 × 951. Meters fit in two rows or fewer. The page scrolls as one stack: the map scrolls with everything else, and no content scrolls underneath another section. At 1x a swipe on the map scrolls the page; zoomed in, a drag pans the map. | Test | Accepted |
+| MP-056 | Map touch controls. | Double-tap zooms in on that spot. On-map buttons zoom in, zoom out, recenter on downtown, and rotate. A two-finger twist rotates the street view, snapping to the nearest 90°. Tapping a building or site shows its info. | Test | Accepted |
+| MP-057 | Main actions within thumb reach. | "End year" sits at the bottom of the screen. In every sheet, the main action buttons stay pinned to the bottom while the sheet scrolls. | Test | Accepted |
+| MP-058 | Light paper UI with restrained cards and spacing. | The map page, proposal, council, budget, initiative, menu and year-end sheets use the approved light paper/near-white palette, dark readable text, green primary actions, Host Grotesk and the existing Courier identity. Cards use subtle outlines, 8–10px corners and comfortable padding; headings and sections have more room than related labels and values. Callouts and council statements have no decorative side highlight bars. The same light presentation is used with dark OS preferences, and the UI font is available offline in both builds. Preserve map gestures, nine meters, 44px controls and bottom sheet actions at 669 × 951 and 400px wide. | Play-test | Accepted |
+| MP-059 | Council desk (B) leads with the year's work and explains decisions and outcomes. | At 669 × 951 and 400px wide, agenda proposals and the available initiative precede the nine meters and town map in one scrolling page; map and plot-selection actions bring the map into view. A persistent review action opens the next unresolved proposal while End year remains reachable. Open proposals show the actual preferred-option council tally, cost range, remaining cash after payment, annual upkeep and bond alternative before optional plan details, with clear insufficient-cash feedback; these update with negotiation and lobbying. Year-end starts with the Courier and before/after results, reconciles recorded opening reserve, changes before resolution, annual budget and other year-end changes with closing reserve, retains every engine cause including zero-valued map/decision events, and exposes all nine measures. Derive the presentation from existing engine/save data; preserve voting, grants, forecasts, simulation outcomes, providers and save format. | Test | Accepted |
+
+## Saves, channels, and security
+| ID | Requirement | Acceptance criteria | Verify | Status |
+|---|---|---|---|---|
+| MP-060 | Saves survive updates. | A save from an older version loads and keeps playing. | Test | Accepted |
+| MP-061 | Dev and stable never share a save. | Dev and stable builds use different save keys and database documents. | Test | Accepted |
+| MP-062 | Feature flags control what's on in each channel. | Flags come from the build. With no build info, every flag is off. | Test | Accepted |
+| MP-063 | No API keys ever ship in the page. | Built pages contain no API key or direct-API access header. | Test | Accepted |
+| MP-064 | The Claude artifact uses its AI runtime and Pages offers quick options when AI is off. | The artifact uses Claude for AI and account saves. Pages falls back to quick options with no errors when its local model is off or unavailable. | Play-test | Accepted |
+| MP-065 | The dev Pages game can use a downloaded AI model in airplane mode. | Choose a model in the game menu. After a successful download, reopen the installed game offline and use freeform AI actions with the existing engine validation and browser save. Stable Pages leaves the feature off. | Test | Accepted |
+| MP-066 | Offline AI is responsive and preserves the mayor's intent on the iPhone Duo. | On the Duo, force-quit the Home Screen app and relaunch in airplane mode. Draft a freeform Old Mill initiative and negotiate a revision. Check the location, plan changes, response time, and whether Safari reloads. Compare 1.5B and 3B if both load. | Play-test | Accepted |
+
+## Plan design and history
+| ID | Requirement | Acceptance criteria | Verify | Status |
+|---|---|---|---|---|
+| MP-070 | Detailed plan drawings. | Each proposal shows a detailed site plan (footprints, rooflines, materials, trees, paths, benches, planters, lighting) and a street-level view. | Play-test | Planned |
+| MP-071 | Design by conversation. | Talking to the planner sets style, materials, colors, landscaping, and furnishings. The engine still prices the plan; higher design quality costs more and adds livability and property value. | Test | Planned |
+| MP-072 | Built results match the design. | What gets built on the map uses the approved plan's design. | Play-test | Planned |
+| MP-073 | One Plans tab holds the town's history. | Replaces "Built so far" and the past year-end reports. Each year lists every proposal with its final drawing, revisions, vote, and outcome. | Test | Planned |
+
+## Scenario engine
+| ID | Requirement | Acceptance criteria | Verify | Status |
+|---|---|---|---|---|
+| MP-074 | Campaigns load through a scenario boundary. | Normal new game loads Scenario 01 · Millbrooke, a fictional Pennsylvania borough, with a stable internal ID and a 2027 start. Scenario input owns display metadata, starting state and map, calendar defaults, opening proposal definitions and the decision route. Preserve the existing annual calendar, horizon, seeded first-term outcomes, approvals and reports except approved names. The same engine loads a tiny deterministic reconstruction fixture with another date, map and approving authority: housing stays blocked until an approved utility repair completes through common validation and project resolution. Persist scenario identity and distinguish calendar year from turn ordinal; migrate supported older saves without losing progress, parcels, projects, finances or pending decisions. Supply Epic B a read-only scenario/turn, legal-site geometry, town-facts and editable-fields contract; validation and forecasts remain engine-owned. | Test | Accepted |
+
+MP-074 acceptance source: Nate’s Epic A · New game engine assignment (Scenario 01 · Millbrooke, November 9, 2026), applied November 10, 2026. The foundation above is authorized; pacing prototypes and later feasibility/agenda changes require their own proposed requirements.
+
+## Epic B acceptance scope (Nate's November 9, 2026 launch brief)
+
+This accepted dev slice refines the requirements above without changing their overall status. `planRequests` and `planDrawings` are reversible dev-only flags. The existing engine remains authoritative through a UI compatibility adapter; save shape and time advancement belong to Epic A.
+
+| IDs | Accepted slice | Verification |
+|---|---|---|
+| MP-015, MP-026, MP-031, MP-033, MP-065 | Offline Qwen draft/revision requests capture bounded town/turn/target/site/provider/intent, serialize inference, strictly validate fields and allow one repair. Selected plots or one recognized named site take precedence. Unknown locations require clarification; unsupported ideas never become an automatic park. Preserve intent on failure. Check identity again before one-time acceptance; stale/duplicate results cannot mutate saves, initiatives or relationships. Confirm actual post-fit fields and engine forecasts rather than model claims. | Runner/provider tests; actual dev Pages service-worker flow with valid, malformed and delayed mocked Qwen replies, including bridge and different mayoral plans. |
+| MP-022, MP-026, MP-053–055; partial MP-070 | Old Mill Existing conditions / Memorial Park / Commons use one viewport, scale and orientation. Reviewed and preview plans are explicit; previews do not mutate decisions or saves. NPC and authored supported plans share an offline deterministic renderer of actual selected coordinates, context and accepted fields. Approximate placement is labeled illustrative. Policy-only items have no construction site; unsupported drawing kinds keep the old renderer. | Renderer fixtures shared with runner/cost checks; normal-entry browser checks at 400 × 951 and 669 × 951; accepted revision updates drawing, quantities, cost and forecast together. |
+| MP-060–065 | Preserve current save format, dev/stable isolation, Claude path, quick controls, and flag-off game. Reuse the pinned WebLLM install/runtime/model cache and service worker. | `npm test`, traceability, dev and stable builds, offline shell integration fixture and flag-off checks. |
+| MP-010–011, MP-015 | AI may explain an engine-supplied eligible opportunity read-only. It cannot advance time, approve, spend or build; deterministic turn completion does not await it. | Engine-event fixture until Epic A publishes an opportunity contract; distinguish fixture evidence from combined-engine gameplay. |
+| MP-066 | Actual Duo/Safari model quality, memory and latency need separate evidence. | Record exact model/runtime, successful offline cold launch, draft/revision latency and Safari reloads. Compare 1.5B/3B only if both run. |
+
+MP-070–073 remain **Planned** overall: this slice does not deliver street-level design, materials/furnishings authorship, persistent built-design fidelity, or the Plans archive. The renderer depicts engine-supported features; it does not introduce new mechanics. The compatibility adapter requires selected plots or a recognized named place for physical drafts; omitted/unknown locations prompt clarification with editable intent and a choose-plots action. This is a recoverable placement limitation, not complete arbitrary-description location coverage.
+
+## Offline initiative play-test (Nate's November 10, 2026 feedback)
+
+- **MP-015, MP-031, MP-033, MP-065, MP-066.** After an offline cold launch with the downloaded Qwen model, use freeform text to propose a new combination of supported uses on chosen plots. Verify the initial drawing and exact plot locations. Revise it twice using text, including adding a feature, without using a quick ask. A provider failure preserves the text, plots and current plan and offers a Qwen retry with a bounded diagnostic when available.
+- **MP-023, MP-026, MP-059, MP-060.** Each accepted change updates the drawing and shows the engine's before-and-after cost, projected support and affected effects. If the council tally stays the same, verify changed member support when applicable. Call the council vote and verify that the approved revision is saved and marks the chosen plots for construction. Proposal forecasts preview effects. Actual town results come from the normal decision and year simulation.
+- **Verification.** Browser fixtures verify the normal draft, revision, drawing, funding and vote flow independently of model quality. Record actual Qwen generation separately from fixtures, and record device model, iOS version, inference latency, and any reloads for the MP-066 airplane-mode play-test.
+
+## Local Qwen diagnostics
+| ID | Requirement | Acceptance criteria | Verify | Status |
+|---|---|---|---|---|
+| MP-075 | Dev Offline AI diagnostics can be exported locally by incident date. | Game menu → Offline AI → Diagnostics remains available with Qwen off, loading, or failing. Retain sanitized, correlated launch/startup/provider/validation/application events in separate channel-scoped IndexedDB for the previous 168 hours, bounded by 1,000 events or 1 MiB of UTF-8 event data, oldest first. Inclusive device-local From/Through dates preview the count and export chronological UTF-8 JSON using local system file share or download, including schema, build/model/runtime, timing, timezone/UTC boundaries, retention/cap trimming and incomplete attempts with unknown cause. Missing/reversed/empty ranges have clear feedback. Logging/storage failures cannot block play, startup, or saves. Exclude prompts, replies, coordinates, titles, saves, accounts, raw stacks and credentials through allowlisted metadata/errors. Preserve provider queue, fallback, validation, commit and save behavior; keep Stable and Claude artifacts unchanged. Supports MP-065 offline operation and MP-066 Duo verification. | Test | Proposed |
+
+MP-075 acceptance source: Nate's Local Qwen diagnostics assignment (November 10, 2026). The requested status remains **Proposed** while this authorized diagnostics-only implementation is verified. The automated Test verification is supplemented by the separate MP-066 Home Screen play-test described in [the diagnostics checklist](qwen-diagnostics.md). Chromium/runtime fixtures and real iPhone Home Screen evidence are recorded separately; device acceptance does not follow from automated fixtures. No plan interpretation, simulation, or save schema change is included.
+
+## Accepted proposal/council R1.1 contract slice
+
+Acceptance source: Nate's R1.1 approval and instruction to freeze commit C and start D/F, November 10, 2026. The [frozen contract](contracts/proposal-council-v1/README.md), [C01–C24 acceptance matrix](contracts/proposal-council-v1/acceptance.md), and [manifest](contracts/proposal-council-v1/freeze-manifest.json) govern this slice. The containing commit is C; it contains declarative definitions and old-engine reference evidence only. All new implementation criteria are **Unverified** until builders and integrated QA supply evidence. Existing permanent requirement IDs/statuses remain unchanged, including MP-075 Proposed and MP-070–073 Planned overall.
+
+| IDs | Accepted slice detail | Verification and owner |
+|---|---|---|
+| MP-015, MP-026, MP-030–035, MP-059 | Private drafts/comparisons/edits/cancel spend nothing; successful explicit posting atomically writes one agenda item and uses the initiative once. Show feasible requested resident edit before agree/counter/refuse; confirm only the exact authorized candidate with one controlling authorizer and all required gates satisfied. Preserve ordered selected plots/roles and label omitted scope before separate scope acknowledgment. | C01–C10, C14/C24; D engine fixtures/assertions after C, E normal-entry/touch evidence, G approved content. |
+| MP-015, MP-025, MP-028 | Extract claims, validate/score in engine, commit once, then express actual results. False absent-feature claims earn no claim credit. Existing caps, votes and year rules remain. Persist canonical command fingerprint, subjects and original result; exact retained replay after reload has no second effect, changed body under the same ID is rejected, and reaction context is bound to its actual member. | C02/C11–C15/C18; D command/claim/replay assertions, F provider/diagnostics tests, E browser wiring. |
+| MP-060–062, MP-064–066, MP-074 | v4 snapshots use isolated browser/account namespaces and a format fence independent of the feature flag. Same-save writers use the stable save-slot lock and fresh generation check; old tabs or stale autosaves cannot overwrite newer state. Preserve legacy data; feature-off protects v4 read-only; rollback remains a separate legacy branch. Keep approved local 4-draft/8-version/128 KiB/no-expiry recovery without silent eviction. | C15–C17/C20–C21; D save/writer boundary fixtures, E two-page same-context tests, coordinator both builds and flag/rollback gates. |
+| MP-015, MP-065, MP-066, MP-075 Proposed | Freeze exact inputs, expected rules and mock shapes at C; D adds executable fixtures/assertions afterward. Reuse the pinned serialized Qwen runtime/cache, bounded repair and privacy-safe rule codes. Keep mock/unit/browser/live-provider/Duo evidence separate. Farm/distributor operations remain authored fixture cases, not a new campaign simulation. | C08–C09/C18–C24; D/F owned slice evidence, independent QA/review at exact I, separate live/device verification. |
+
+This approved slice supersedes earlier UI compatibility-adapter-only/save-format limitations only for the new experimental contract path. Legacy flag-off simulation, Stable/Dev separation, acquisition/backlash, persuasion caps, formal decision rules and seeded annual resolution remain protected. No source implementation, new executable fixture, test pass, deployment or Stable release is claimed by contract freeze.

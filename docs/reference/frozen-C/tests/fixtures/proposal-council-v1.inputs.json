@@ -1,0 +1,5047 @@
+{
+  "contractVersion": "mp.proposals/1",
+  "freezeSource": "approved R1.1",
+  "baselineA": "18dded6207f7217021d84b42aad6cc8e00b68f43",
+  "classification": "STATIC_DECLARATIVE_NOT_EXECUTED",
+  "commandSchemaRef": "urn:master-plan:proposal-council:commands:1#/$defs/command",
+  "implementationEvidence": "UNVERIFIED until D/E after C and dispatch",
+  "baselineReferences": {
+    "B0": {
+      "file": "docs/contracts/proposal-council-v1/references/seed2301-reference.json",
+      "classification": "OBSERVED_BASELINE_A_ONLY"
+    },
+    "B1": {
+      "file": "docs/contracts/proposal-council-v1/references/seed2301-market-reference.json",
+      "classification": "OBSERVED_BASELINE_A_ONLY"
+    }
+  },
+  "sourceTaxonomy": {
+    "simulated/observed": "baseline geometry/person data; only B0/B1 measured output files",
+    "scenario-authored/authored_fact": "trusted explicit fixture fact absent current campaign",
+    "scenario-authored/authored_rule": "finite trusted condition/authority rule",
+    "character-belief": "not a verified game fact",
+    "flavor": "voice, no authority/numbers",
+    "MOCK": "representative new-shape or expected-rule data, never measured implementation"
+  },
+  "identity": {
+    "gameId": "fixture:mp-v1:2301",
+    "activationId": "fixture:activation:1",
+    "channel": "dev",
+    "saveSlotId": "primary",
+    "initialStateRevision": 0,
+    "initialActionHighWater": 0,
+    "initialStorageGeneration": 1
+  },
+  "baseFixtures": {
+    "town-year1": {
+      "scenarioId": "millbrooke",
+      "seed": 2301,
+      "turn": 1,
+      "baselineA": "18dded6207f7217021d84b42aad6cc8e00b68f43",
+      "v4FixturePreparation": "After C, create pinned baseline-A v3 newGame(2301) snapshot, then migrate with fixed identity; existing proposal revisions start0. Newly posted public proposals start1."
+    },
+    "town-year2": {
+      "parent": "town-year1",
+      "setup": [
+        "one-normal-resolveYear-before-actions"
+      ]
+    },
+    "farm-authored": {
+      "parent": "town-year1",
+      "fixtureCapabilities": [
+        "fixture.farm-layout.v1"
+      ],
+      "factsRef": "farm"
+    },
+    "campus-authored": {
+      "parent": "town-year1",
+      "fixtureCapabilities": [
+        "fixture.distributor-operations.v1"
+      ],
+      "factsRef": "campus"
+    },
+    "reconstruction-prerequisite": {
+      "existingFile": "tests/fixtures/reconstruction.mjs",
+      "noNewConsentMechanic": true
+    },
+    "subdivision-detached": {
+      "scenarioId": "millbrooke",
+      "seed": 2027,
+      "detached": true
+    }
+  },
+  "orderedGeometry": {
+    "P6": [
+      [
+        16,
+        13
+      ],
+      [
+        18,
+        13
+      ],
+      [
+        16,
+        14
+      ],
+      [
+        18,
+        14
+      ],
+      [
+        16,
+        15
+      ],
+      [
+        18,
+        15
+      ]
+    ],
+    "ridge": [
+      [
+        20,
+        13
+      ],
+      [
+        21,
+        13
+      ],
+      [
+        22,
+        13
+      ],
+      [
+        20,
+        14
+      ],
+      [
+        21,
+        14
+      ],
+      [
+        22,
+        14
+      ],
+      [
+        20,
+        15
+      ],
+      [
+        21,
+        15
+      ],
+      [
+        22,
+        15
+      ],
+      [
+        20,
+        16
+      ],
+      [
+        21,
+        16
+      ],
+      [
+        22,
+        16
+      ]
+    ],
+    "campus_s": [
+      [
+        15,
+        9
+      ],
+      [
+        16,
+        9
+      ],
+      [
+        17,
+        9
+      ],
+      [
+        15,
+        10
+      ],
+      [
+        16,
+        10
+      ],
+      [
+        17,
+        10
+      ]
+    ],
+    "oldmill": [
+      [
+        6,
+        12
+      ],
+      [
+        7,
+        12
+      ],
+      [
+        6,
+        13
+      ],
+      [
+        7,
+        13
+      ]
+    ],
+    "route22": [
+      [
+        13,
+        21
+      ],
+      [
+        14,
+        21
+      ],
+      [
+        15,
+        21
+      ],
+      [
+        13,
+        22
+      ],
+      [
+        14,
+        22
+      ],
+      [
+        15,
+        22
+      ]
+    ]
+  },
+  "plans": {
+    "initiativeDefault": {
+      "kind": "initiative",
+      "fields": {
+        "homes": 0,
+        "affordable": false,
+        "shops": 0,
+        "stories": 1,
+        "parking": 0,
+        "green": 0,
+        "plaza": false,
+        "civic": "none",
+        "safety": "none",
+        "stormwater": false,
+        "policy": "none",
+        "quality": 2
+      }
+    },
+    "baselineGenericMixedUse": {
+      "kind": "initiative",
+      "fields": {
+        "homes": 20,
+        "affordable": false,
+        "shops": 4,
+        "stories": 2,
+        "parking": 20,
+        "green": 2,
+        "plaza": false,
+        "civic": "none",
+        "safety": "none",
+        "stormwater": true,
+        "policy": "none",
+        "quality": 2
+      }
+    },
+    "marketHousing": {
+      "kind": "initiative",
+      "fields": {
+        "homes": 20,
+        "affordable": false,
+        "shops": 4,
+        "stories": 2,
+        "parking": 20,
+        "green": 2,
+        "plaza": false,
+        "civic": "farmers_market",
+        "safety": "none",
+        "stormwater": true,
+        "policy": "none",
+        "quality": 2
+      }
+    },
+    "marketHousingAlternative": {
+      "kind": "initiative",
+      "fields": {
+        "homes": 30,
+        "affordable": false,
+        "shops": 4,
+        "stories": 2,
+        "parking": 20,
+        "green": 2,
+        "plaza": false,
+        "civic": "farmers_market",
+        "safety": "none",
+        "stormwater": true,
+        "policy": "none",
+        "quality": 2
+      }
+    },
+    "farmStand": {
+      "kind": "initiative",
+      "fields": {
+        "homes": 0,
+        "affordable": false,
+        "shops": 0,
+        "stories": 1,
+        "parking": 0,
+        "green": 0,
+        "plaza": false,
+        "civic": "farmers_market",
+        "safety": "none",
+        "stormwater": false,
+        "policy": "none",
+        "quality": 2
+      }
+    },
+    "distributorShell": {
+      "kind": "initiative",
+      "fields": {
+        "homes": 0,
+        "affordable": false,
+        "shops": 2,
+        "stories": 1,
+        "parking": 20,
+        "green": 0,
+        "plaza": false,
+        "civic": "none",
+        "safety": "none",
+        "stormwater": false,
+        "policy": "none",
+        "quality": 2
+      }
+    },
+    "stripmall": {
+      "kind": "stripmall",
+      "fields": {
+        "stores": 8,
+        "parking": 160,
+        "landscaping": false,
+        "sidewalk": false
+      }
+    },
+    "park": {
+      "kind": "park",
+      "fields": {
+        "memorial": true,
+        "trees": 2,
+        "playground": true,
+        "amphitheater": false,
+        "fountain": false,
+        "paths": true,
+        "parking": 10
+      }
+    },
+    "commerce": {
+      "kind": "commerce",
+      "fields": {
+        "stores": 10,
+        "stories": 2,
+        "parking": 80,
+        "anchor": "grocery",
+        "plaza": false
+      }
+    },
+    "policyOnly": {
+      "kind": "initiative",
+      "fields": {
+        "homes": 0,
+        "affordable": false,
+        "shops": 0,
+        "stories": 1,
+        "parking": 0,
+        "green": 0,
+        "plaza": false,
+        "civic": "none",
+        "safety": "none",
+        "stormwater": false,
+        "policy": "parking_reform",
+        "quality": 2
+      }
+    }
+  },
+  "actors": {
+    "mayor": {
+      "actorId": "mayor",
+      "role": "canonical-player-role",
+      "authority": [
+        "post-own-draft",
+        "existing-player-actions"
+      ],
+      "source": "scenario-authored",
+      "kind": "authored_rule"
+    },
+    "keystone": {
+      "actorId": "keystone",
+      "profileVersion": 1,
+      "name": "Brent Hollis",
+      "role": "Keystone Ridge Development",
+      "rel": 35,
+      "comp": 88,
+      "detail": 80,
+      "flex": "low",
+      "source": "scenario-authored",
+      "kind": "authored_rule",
+      "authority": [
+        "own-proposal",
+        "fixture-delegated-own-operation-only"
+      ],
+      "interests": [
+        "leasable-space",
+        "parking",
+        "deliverable-project"
+      ],
+      "hardConstraints": [
+        "no-unowned-authority",
+        "no-license-promises"
+      ],
+      "negotiable": [
+        "store-count",
+        "parking",
+        "sidewalk"
+      ],
+      "evidence": [
+        "proposal.plan",
+        "engine.forecast",
+        "exact-site"
+      ],
+      "historyPolicy": "latest3 relevant recognized actions; no new score bonus",
+      "beliefs": [
+        "Reduced parking may make leasing harder; no lender approval modeled."
+      ],
+      "voice": "Professional, concrete, protects margins.",
+      "compositeProfile": true,
+      "baselineObservedFields": [
+        "actorId",
+        "name",
+        "rel",
+        "comp",
+        "detail",
+        "flex"
+      ],
+      "fieldProvenance": {
+        "actorId": "simulated/observed baseline-A projection",
+        "profileVersion": "scenario-authored/authored_rule fixture profile metadata",
+        "name": "simulated/observed baseline-A projection",
+        "role": "scenario-authored/authored_rule fixture profile metadata",
+        "rel": "simulated/observed baseline-A projection",
+        "comp": "simulated/observed baseline-A projection",
+        "detail": "simulated/observed baseline-A projection",
+        "flex": "simulated/observed baseline-A projection",
+        "authority": "scenario-authored/authored_rule fixture profile metadata",
+        "interests": "scenario-authored/authored_rule fixture profile metadata",
+        "hardConstraints": "scenario-authored/authored_rule fixture profile metadata",
+        "negotiable": "scenario-authored/authored_rule fixture profile metadata",
+        "evidence": "scenario-authored/authored_rule fixture profile metadata",
+        "historyPolicy": "scenario-authored/authored_rule fixture profile metadata",
+        "beliefs": "character-belief",
+        "voice": "flavor",
+        "compositeProfile": "scenario-authored/authored_rule fixture profile metadata",
+        "baselineObservedFields": "scenario-authored/authored_rule fixture profile metadata"
+      },
+      "baselineSource": "src/engine.js at 18dded6207f7217021d84b42aad6cc8e00b68f43",
+      "authorityIsAuthoredContractDataNotObservedEngineCapability": true
+    },
+    "bowers_operator": {
+      "actorId": "bowers_operator",
+      "profileVersion": 1,
+      "name": "Ruth Bowers",
+      "role": "owner_operator",
+      "source": "scenario-authored",
+      "kind": "authored_fact",
+      "fixtureOnly": true,
+      "rel": 65,
+      "comp": 78,
+      "detail": 82,
+      "numericAttributesAre": "explicit planner-copy test defaults, not research measurements",
+      "authority": [
+        "own-proposal",
+        "own-operation"
+      ],
+      "interests": [
+        "working-farm-continuity",
+        "equipment-access",
+        "next-generation-viability"
+      ],
+      "hardConstraints": [
+        "working-site-consumed"
+      ],
+      "negotiable": [
+        "pad-stand-layout"
+      ],
+      "affected": [
+        "bowers_farm",
+        "ridge"
+      ],
+      "evidence": [
+        "farm.active",
+        "farm.tenure",
+        "farm.accessLane",
+        "farm.workingFields",
+        "farm.layoutId"
+      ],
+      "historyPolicy": "recognized commitments/stages only, no prose consent",
+      "beliefs": [
+        "A viable operation matters more than a decorative buffer."
+      ],
+      "voice": "Explain daily farm access; no generic anti-development slogan."
+    },
+    "college_liaison": {
+      "actorId": "college_liaison",
+      "profileVersion": 1,
+      "name": "Dr. Leena Shah",
+      "role": "college-community-liaison",
+      "source": "scenario-authored",
+      "kind": "authored_fact",
+      "fixtureOnly": true,
+      "authority": [
+        "stakeholder-statement"
+      ],
+      "interests": [
+        "pedestrian-access",
+        "delivery-conflicts",
+        "relevant-public-sales-exposure"
+      ],
+      "hardConstraints": [
+        "no-neighboring-edit-authority",
+        "no-license-veto",
+        "no-council-vote"
+      ],
+      "negotiable": [
+        "safe-route",
+        "daytime-loading",
+        "screening",
+        "freight-only-option"
+      ],
+      "affected": [
+        "campus_s",
+        "campus_distributor"
+      ],
+      "evidence": [
+        "route.crossingConflict",
+        "distributor.publicSales",
+        "distributor.loadingHours",
+        "distributor.screenedLoading"
+      ],
+      "historyPolicy": "recognized operating commitments with actual stage",
+      "beliefs": [
+        "Public sales may create campus pressures, not a measured harm."
+      ],
+      "voice": "Concise operational questions; no condescension."
+    },
+    "pryor": {
+      "actorId": "pryor",
+      "profileVersion": 1,
+      "name": "Ellen Pryor",
+      "role": "Ward 2 council member",
+      "source": "scenario-authored",
+      "kind": "authored_rule",
+      "rel": 42,
+      "authority": [
+        "one-council-vote"
+      ],
+      "weights": {
+        "cost": -1.5,
+        "prop": 0.5,
+        "live": 0.2
+      },
+      "priorities": {
+        "cost": "lower cost to the borough",
+        "prop": "long-term property values and tax base",
+        "live": "quality of life"
+      },
+      "hardConstraints": [
+        "no-other-actor-edit-authority"
+      ],
+      "negotiable": [
+        "engine-priced-reduction",
+        "funding-tradeoff"
+      ],
+      "historyPolicy": "current relationship/latest3 relevant records; unchanged weights",
+      "beliefs": [
+        "A beneficial project can cost too much."
+      ],
+      "voice": "One clear budget question; bonds are not free money.",
+      "compositeProfile": true,
+      "baselineObservedFields": [
+        "actorId",
+        "name",
+        "rel",
+        "weights",
+        "priorities"
+      ],
+      "fieldProvenance": {
+        "actorId": "simulated/observed baseline-A projection",
+        "profileVersion": "scenario-authored/authored_rule fixture profile metadata",
+        "name": "simulated/observed baseline-A projection",
+        "role": "scenario-authored/authored_rule fixture profile metadata",
+        "rel": "simulated/observed baseline-A projection",
+        "authority": "scenario-authored/authored_rule fixture profile metadata",
+        "weights": "simulated/observed baseline-A projection",
+        "priorities": "simulated/observed baseline-A projection",
+        "hardConstraints": "scenario-authored/authored_rule fixture profile metadata",
+        "negotiable": "scenario-authored/authored_rule fixture profile metadata",
+        "historyPolicy": "scenario-authored/authored_rule fixture profile metadata",
+        "beliefs": "character-belief",
+        "voice": "flavor",
+        "compositeProfile": "scenario-authored/authored_rule fixture profile metadata",
+        "baselineObservedFields": "scenario-authored/authored_rule fixture profile metadata"
+      },
+      "baselineSource": "src/engine.js at 18dded6207f7217021d84b42aad6cc8e00b68f43",
+      "authorityIsAuthoredContractDataNotObservedEngineCapability": true
+    },
+    "okafor": {
+      "actorId": "okafor",
+      "profileVersion": 1,
+      "name": "Rev. James Okafor",
+      "role": "Ward 3 council member",
+      "source": "scenario-authored",
+      "kind": "authored_rule",
+      "rel": 55,
+      "authority": [
+        "one-council-vote"
+      ],
+      "weights": {
+        "live": 1.3,
+        "walk": 0.8,
+        "approval": 0.5,
+        "stores": 0.5,
+        "safety": 0.7,
+        "afford": 0.6
+      },
+      "priorities": {
+        "live": "quality of life",
+        "walk": "walkability and safe streets",
+        "approval": "what residents want",
+        "stores": "places for families to shop",
+        "safety": "safe neighborhoods",
+        "afford": "housing families can afford"
+      },
+      "hardConstraints": [
+        "no-other-actor-edit-authority"
+      ],
+      "negotiable": [
+        "supported-neighborhood-benefits"
+      ],
+      "historyPolicy": "current relationship/latest3 relevant records; unchanged weights",
+      "beliefs": [
+        "Growth should help existing families."
+      ],
+      "voice": "Practical daily routines, not generic inspiration.",
+      "compositeProfile": true,
+      "baselineObservedFields": [
+        "actorId",
+        "name",
+        "rel",
+        "weights",
+        "priorities"
+      ],
+      "fieldProvenance": {
+        "actorId": "simulated/observed baseline-A projection",
+        "profileVersion": "scenario-authored/authored_rule fixture profile metadata",
+        "name": "simulated/observed baseline-A projection",
+        "role": "scenario-authored/authored_rule fixture profile metadata",
+        "rel": "simulated/observed baseline-A projection",
+        "authority": "scenario-authored/authored_rule fixture profile metadata",
+        "weights": "simulated/observed baseline-A projection",
+        "priorities": "simulated/observed baseline-A projection",
+        "hardConstraints": "scenario-authored/authored_rule fixture profile metadata",
+        "negotiable": "scenario-authored/authored_rule fixture profile metadata",
+        "historyPolicy": "scenario-authored/authored_rule fixture profile metadata",
+        "beliefs": "character-belief",
+        "voice": "flavor",
+        "compositeProfile": "scenario-authored/authored_rule fixture profile metadata",
+        "baselineObservedFields": "scenario-authored/authored_rule fixture profile metadata"
+      },
+      "baselineSource": "src/engine.js at 18dded6207f7217021d84b42aad6cc8e00b68f43",
+      "authorityIsAuthoredContractDataNotObservedEngineCapability": true
+    },
+    "weaver": {
+      "actorId": "weaver",
+      "name": "Hal Weaver",
+      "role": "Ward 4 east council member/dairy farmer",
+      "source": "scenario-authored",
+      "kind": "authored_rule",
+      "rel": 50,
+      "weights": {
+        "farm": -1.5,
+        "cost": -0.7,
+        "live": 0.4,
+        "flood": -0.8
+      },
+      "priorities": {
+        "farm": "protecting farmland",
+        "cost": "not wasting money",
+        "live": "quality of life",
+        "flood": "flood risk along the creek"
+      },
+      "noAssumedBowersOwnership": true,
+      "compositeProfile": true,
+      "baselineObservedFields": [
+        "actorId",
+        "name",
+        "rel",
+        "weights",
+        "priorities"
+      ],
+      "fieldProvenance": {
+        "actorId": "simulated/observed baseline-A projection",
+        "name": "simulated/observed baseline-A projection",
+        "role": "scenario-authored/authored_rule fixture profile metadata",
+        "rel": "simulated/observed baseline-A projection",
+        "weights": "simulated/observed baseline-A projection",
+        "priorities": "simulated/observed baseline-A projection",
+        "noAssumedBowersOwnership": "scenario-authored/authored_rule fixture profile metadata",
+        "compositeProfile": "scenario-authored/authored_rule fixture profile metadata",
+        "baselineObservedFields": "scenario-authored/authored_rule fixture profile metadata"
+      },
+      "baselineSource": "src/engine.js at 18dded6207f7217021d84b42aad6cc8e00b68f43",
+      "authorityIsAuthoredContractDataNotObservedEngineCapability": true
+    },
+    "marsh": {
+      "actorId": "marsh",
+      "name": "Greg Marsh",
+      "source": "scenario-authored",
+      "kind": "authored_rule",
+      "rel": 25,
+      "rival": true,
+      "weights": {
+        "jobs": 1.2,
+        "conf": 1,
+        "stores": 0.6,
+        "cost": -0.4,
+        "live": 0.3,
+        "walk": 0.1,
+        "housing": 0.5,
+        "safety": 0.3
+      },
+      "priorities": {
+        "jobs": "new jobs",
+        "conf": "business growth",
+        "stores": "more stores",
+        "cost": "keeping costs reasonable"
+      },
+      "compositeProfile": true,
+      "baselineObservedFields": [
+        "actorId",
+        "name",
+        "rel",
+        "weights",
+        "priorities",
+        "rival"
+      ],
+      "fieldProvenance": {
+        "actorId": "simulated/observed baseline-A projection",
+        "name": "simulated/observed baseline-A projection",
+        "rel": "simulated/observed baseline-A projection",
+        "rival": "simulated/observed baseline-A projection",
+        "weights": "simulated/observed baseline-A projection",
+        "priorities": "simulated/observed baseline-A projection",
+        "compositeProfile": "scenario-authored/authored_rule fixture profile metadata",
+        "baselineObservedFields": "scenario-authored/authored_rule fixture profile metadata"
+      },
+      "baselineSource": "src/engine.js at 18dded6207f7217021d84b42aad6cc8e00b68f43",
+      "authorityIsAuthoredContractDataNotObservedEngineCapability": true
+    },
+    "brandt": {
+      "actorId": "brandt",
+      "name": "Tina Brandt",
+      "source": "scenario-authored",
+      "kind": "authored_rule",
+      "rel": 45,
+      "weights": {
+        "conf": 1,
+        "walk": 0.6,
+        "stores": 0.8,
+        "downtown": 1,
+        "safety": 0.5
+      },
+      "priorities": {
+        "conf": "business confidence",
+        "walk": "foot traffic downtown",
+        "stores": "more stores",
+        "downtown": "protecting downtown businesses",
+        "safety": "safe streets downtown"
+      },
+      "compositeProfile": true,
+      "baselineObservedFields": [
+        "actorId",
+        "name",
+        "rel",
+        "weights",
+        "priorities"
+      ],
+      "fieldProvenance": {
+        "actorId": "simulated/observed baseline-A projection",
+        "name": "simulated/observed baseline-A projection",
+        "rel": "simulated/observed baseline-A projection",
+        "weights": "simulated/observed baseline-A projection",
+        "priorities": "simulated/observed baseline-A projection",
+        "compositeProfile": "scenario-authored/authored_rule fixture profile metadata",
+        "baselineObservedFields": "scenario-authored/authored_rule fixture profile metadata"
+      },
+      "baselineSource": "src/engine.js at 18dded6207f7217021d84b42aad6cc8e00b68f43",
+      "authorityIsAuthoredContractDataNotObservedEngineCapability": true
+    }
+  },
+  "authoredFacts": {
+    "farm": {
+      "source": "scenario-authored",
+      "kind": "authored_fact",
+      "fixtureOnly": true,
+      "entityId": "bowers_farm",
+      "active": true,
+      "tenure": "owner_operator",
+      "ownerActorId": "bowers_operator",
+      "operatorActorId": "bowers_operator",
+      "nextGenerationPriority": true,
+      "selectedBoundary": "ridge",
+      "disturbedPad": [
+        [
+          22,
+          16
+        ]
+      ],
+      "accessLane": [
+        [
+          20,
+          13
+        ],
+        [
+          20,
+          14
+        ],
+        [
+          20,
+          15
+        ],
+        [
+          20,
+          16
+        ],
+        [
+          21,
+          16
+        ]
+      ],
+      "roadConnection": [
+        19,
+        13
+      ],
+      "workingFields": [
+        [
+          21,
+          13
+        ],
+        [
+          22,
+          13
+        ],
+        [
+          21,
+          14
+        ],
+        [
+          22,
+          14
+        ],
+        [
+          21,
+          15
+        ],
+        [
+          22,
+          15
+        ]
+      ],
+      "initialLayoutId": "lane_blocking_stand",
+      "layoutOverlayIsNotConstructionPlacement": true,
+      "layoutFootprints": {
+        "pad_stand": [
+          [
+            22,
+            16
+          ]
+        ],
+        "lane_blocking_stand": [
+          [
+            20,
+            14
+          ]
+        ],
+        "working_site_conversion": [
+          [
+            21,
+            13
+          ],
+          [
+            22,
+            13
+          ],
+          [
+            21,
+            14
+          ],
+          [
+            22,
+            14
+          ],
+          [
+            21,
+            15
+          ],
+          [
+            22,
+            15
+          ]
+        ]
+      },
+      "capabilityId": "fixture.farm-layout.v1",
+      "fieldSchema": {
+        "layoutId": {
+          "enum": [
+            "pad_stand",
+            "lane_blocking_stand",
+            "working_site_conversion"
+          ]
+        }
+      },
+      "noQuantitativeViabilityModel": true
+    },
+    "campus": {
+      "source": "scenario-authored",
+      "kind": "authored_fact",
+      "fixtureOnly": true,
+      "entityId": "campus_distributor",
+      "selectedBoundary": "campus_s",
+      "operatorControllerId": "keystone",
+      "collegeRole": "stakeholder-only",
+      "collegeConsentLegallyRequired": false,
+      "pedestrianCrossing": [
+        14,
+        8
+      ],
+      "routes": {
+        "campus_crossing": {
+          "roadCells": [
+            [
+              14,
+              9
+            ],
+            [
+              14,
+              8
+            ],
+            [
+              14,
+              7
+            ],
+            [
+              14,
+              6
+            ]
+          ],
+          "crossingConflict": true,
+          "availabilityAuthored": true
+        },
+        "south_service_route": {
+          "roadCells": [
+            [
+              15,
+              11
+            ],
+            [
+              16,
+              11
+            ],
+            [
+              17,
+              11
+            ],
+            [
+              18,
+              11
+            ],
+            [
+              19,
+              11
+            ]
+          ],
+          "crossingConflict": false,
+          "availabilityAuthored": true
+        }
+      },
+      "initialConditions": {
+        "routeId": "south_service_route",
+        "publicSales": false,
+        "loadingHours": "daytime",
+        "screenedLoading": true
+      },
+      "capabilityId": "fixture.distributor-operations.v1",
+      "fieldSchema": {
+        "routeId": {
+          "enum": [
+            "campus_crossing",
+            "south_service_route"
+          ]
+        },
+        "publicSales": {
+          "type": "boolean"
+        },
+        "loadingHours": {
+          "enum": [
+            "daytime",
+            "overnight"
+          ]
+        },
+        "screenedLoading": {
+          "type": "boolean"
+        }
+      },
+      "unsupportedFields": [
+        "onSiteConsumption",
+        "licenseGrant",
+        "truckOperatingCost"
+      ],
+      "noQuantitativeFreightOrAlcoholEconomics": true
+    }
+  },
+  "cases": [
+    {
+      "id": "F1",
+      "family": "F1",
+      "fixture": "town-year1",
+      "given": {
+        "orderedPlotsRef": "P6",
+        "planRef": "marketHousing",
+        "intent": "Twenty homes above four shops, a farmers market, green space and rain gardens on these selected plots.",
+        "expectedVisibleAssumptions": [
+          "Two stories to put homes above the shops.",
+          "Twenty parking spaces is a suggested quantity, subject to player review.",
+          "Green-space level 2 is a suggested quantity, subject to player review."
+        ]
+      },
+      "steps": [
+        "private-preview-marketHousing",
+        "private-compare-marketHousingAlternative",
+        "private-edit-parking0",
+        "cancel-private-edit",
+        "restore-private-marketHousing",
+        "player-put-on-agenda",
+        "reload-and-exact-replay",
+        "F3-AGREE",
+        "F8-TRUE-PRYOR",
+        "F8-TRUE-OKAFOR",
+        "player-select-bond",
+        "call-vote",
+        "turn-model-off",
+        "advance-year",
+        "reload"
+      ],
+      "criteria": [
+        "C01",
+        "C02",
+        "C03",
+        "C14",
+        "C20",
+        "C23"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F1-USED",
+      "family": "F1",
+      "fixture": "town-year1",
+      "given": {
+        "stopF1After": "player-put-on-agenda",
+        "newOptionRef": "marketHousingAlternative"
+      },
+      "steps": [
+        "preview-another-private-option",
+        "attempt-new-post"
+      ],
+      "criteria": [
+        "C01",
+        "C02"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F2",
+      "family": "F2",
+      "fixture": "town-year2",
+      "given": {
+        "proposalIds": [
+          "park",
+          "commerce"
+        ],
+        "plotsRef": "oldmill",
+        "competitionId": "oldmill",
+        "champion": "park",
+        "funding": "bond",
+        "preparation": [
+          {
+            "action": "typed-pitch",
+            "memberId": "pryor",
+            "argument": "This park provides walking paths and raises nearby property values."
+          },
+          {
+            "action": "spend-favor",
+            "memberId": "pryor"
+          },
+          {
+            "action": "spend-favor",
+            "memberId": "weaver"
+          }
+        ]
+      },
+      "steps": [
+        "compare-existing-park-commerce",
+        "restore-champion",
+        "apply-exact-preparation",
+        "read-real-vote",
+        "call-vote",
+        "replay-vote"
+      ],
+      "criteria": [
+        "C03",
+        "C14"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F2-PENDING",
+      "family": "F2",
+      "fixture": "town-year2",
+      "given": {
+        "plotsRef": "oldmill",
+        "testOnlyCommitmentChange": "pending-project",
+        "freshDeliberateRedevelopment": false
+      },
+      "steps": [
+        "capture-old-preview",
+        "change-commitment",
+        "confirm-old-preview",
+        "fresh-preview-if-redevelopment"
+      ],
+      "criteria": [
+        "C03",
+        "C14",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F2-GRANT",
+      "family": "F2",
+      "fixture": "town-year2",
+      "given": {
+        "plotsRef": "oldmill",
+        "testOnlyCommitmentChange": "grant-tabled-item",
+        "freshDeliberateRedevelopment": false
+      },
+      "steps": [
+        "capture-old-preview",
+        "change-commitment",
+        "confirm-old-preview",
+        "fresh-preview-if-redevelopment"
+      ],
+      "criteria": [
+        "C03",
+        "C14",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F2-OVERLAP",
+      "family": "F2",
+      "fixture": "town-year2",
+      "given": {
+        "plotsRef": "oldmill",
+        "testOnlyCommitmentChange": "approved-non-group-project",
+        "freshDeliberateRedevelopment": false
+      },
+      "steps": [
+        "capture-old-preview",
+        "change-commitment",
+        "confirm-old-preview",
+        "fresh-preview-if-redevelopment"
+      ],
+      "criteria": [
+        "C03",
+        "C14",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F2-REDEVELOP",
+      "family": "F2",
+      "fixture": "town-year2",
+      "given": {
+        "plotsRef": "oldmill",
+        "testOnlyCommitmentChange": "already-built-project",
+        "freshDeliberateRedevelopment": true
+      },
+      "steps": [
+        "capture-old-preview",
+        "change-commitment",
+        "confirm-old-preview",
+        "fresh-preview-if-redevelopment"
+      ],
+      "criteria": [
+        "C03",
+        "C14",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F3-AGREE",
+      "family": "F3",
+      "fixture": "town-year1",
+      "given": {
+        "proposalId": "stripmall",
+        "profileId": "keystone",
+        "planRef": "stripmall",
+        "plotsRef": "route22",
+        "requestedPatch": {
+          "sidewalk": true
+        },
+        "controllingAuthorizerId": "keystone"
+      },
+      "steps": [
+        "show-feasible-requested-preview",
+        "evaluate-stance",
+        "show-separate-counter-if-any",
+        "confirm-only-authorized-option"
+      ],
+      "criteria": [
+        "C04",
+        "C05",
+        "C06"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F3-COUNTER",
+      "family": "F3",
+      "fixture": "town-year1",
+      "given": {
+        "proposalId": "stripmall",
+        "profileId": "keystone",
+        "planRef": "stripmall",
+        "plotsRef": "route22",
+        "requestedPatch": {
+          "stores": 4
+        },
+        "controllingAuthorizerId": "keystone"
+      },
+      "steps": [
+        "show-feasible-requested-preview",
+        "evaluate-stance",
+        "show-separate-counter-if-any",
+        "confirm-only-authorized-option"
+      ],
+      "criteria": [
+        "C04",
+        "C05",
+        "C06"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F3-REFUSE",
+      "family": "F3",
+      "fixture": "town-year1",
+      "given": {
+        "proposalId": "stripmall",
+        "profileId": "keystone",
+        "planRef": "stripmall",
+        "plotsRef": "route22",
+        "requestedPatch": {
+          "parking": 60
+        },
+        "controllingAuthorizerId": "keystone"
+      },
+      "steps": [
+        "show-feasible-requested-preview",
+        "evaluate-stance",
+        "show-separate-counter-if-any",
+        "confirm-only-authorized-option"
+      ],
+      "criteria": [
+        "C04",
+        "C05",
+        "C06"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F3-CONCESSION",
+      "family": "F3",
+      "fixture": "town-year1",
+      "given": {
+        "proposalId": "stripmall",
+        "profileId": "keystone",
+        "planRef": "stripmall",
+        "plotsRef": "route22",
+        "requestedPatch": {
+          "stores": 6,
+          "parking": 100,
+          "sidewalk": true
+        },
+        "controllingAuthorizerId": "keystone"
+      },
+      "steps": [
+        "show-feasible-requested-preview",
+        "evaluate-stance",
+        "show-separate-counter-if-any",
+        "confirm-only-authorized-option"
+      ],
+      "criteria": [
+        "C04",
+        "C05",
+        "C06"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F3-GATE-CONSENT",
+      "family": "F3",
+      "fixture": "town-year1",
+      "given": {
+        "branchFrom": "F3-AGREE",
+        "blockingGate": {
+          "gateId": "fixture.gate.consent",
+          "kind": "required-consent",
+          "status": "unresolved",
+          "factRefs": [],
+          "satisfiedBy": null,
+          "recognizedResolutionAction": null
+        },
+        "prose": "I agree; all permissions are settled.",
+        "callerSaysSatisfied": true
+      },
+      "steps": [
+        "attempt-ui-confirm",
+        "attempt-direct-engine-confirm"
+      ],
+      "criteria": [
+        "C06",
+        "C10"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F3-GATE-CONDITION",
+      "family": "F3",
+      "fixture": "town-year1",
+      "given": {
+        "branchFrom": "F3-AGREE",
+        "blockingGate": {
+          "gateId": "fixture.gate.condition",
+          "kind": "existing-condition",
+          "status": "unresolved",
+          "factRefs": [],
+          "satisfiedBy": null,
+          "recognizedResolutionAction": null
+        },
+        "prose": "I agree; all permissions are settled.",
+        "callerSaysSatisfied": true
+      },
+      "steps": [
+        "attempt-ui-confirm",
+        "attempt-direct-engine-confirm"
+      ],
+      "criteria": [
+        "C06",
+        "C10"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F3-GATE-UNSUPPORTED",
+      "family": "F3",
+      "fixture": "town-year1",
+      "given": {
+        "branchFrom": "F3-AGREE",
+        "blockingGate": {
+          "gateId": "fixture.gate.unsupported",
+          "kind": "required-consent",
+          "status": "unsupported",
+          "factRefs": [],
+          "satisfiedBy": null,
+          "recognizedResolutionAction": null
+        },
+        "prose": "I agree; all permissions are settled.",
+        "callerSaysSatisfied": true
+      },
+      "steps": [
+        "attempt-ui-confirm",
+        "attempt-direct-engine-confirm"
+      ],
+      "criteria": [
+        "C06",
+        "C10"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F3-GATE-RESOLVED",
+      "family": "F3",
+      "fixture": "reconstruction-prerequisite",
+      "given": {
+        "existingFixture": "tests/fixtures/reconstruction.mjs",
+        "initialFact": {
+          "waterReady": false
+        },
+        "requiredFact": {
+          "waterReady": true
+        },
+        "repairProposalId": "repair",
+        "housingProposalId": "housing",
+        "authorityId": "recovery-authority",
+        "funding": "cash"
+      },
+      "steps": [
+        "attempt-blocked-housing",
+        "approve-existing-repair",
+        "normal-year-resolution",
+        "fresh-preview-housing"
+      ],
+      "criteria": [
+        "C10",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F4-AGREE",
+      "family": "F4",
+      "fixture": "farm-authored",
+      "given": {
+        "planRef": "farmStand",
+        "plotsRef": "ridge",
+        "profileId": "bowers_operator",
+        "entityId": "bowers_farm",
+        "layoutId": "pad_stand",
+        "controllingAuthorizerId": "bowers_operator"
+      },
+      "steps": [
+        "requested-feasible-preview",
+        "canonical-stance",
+        "confirm-only-authorized-option"
+      ],
+      "criteria": [
+        "C04",
+        "C05",
+        "C06",
+        "C08",
+        "C10",
+        "C24"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F4-COUNTER",
+      "family": "F4",
+      "fixture": "farm-authored",
+      "given": {
+        "planRef": "farmStand",
+        "plotsRef": "ridge",
+        "profileId": "bowers_operator",
+        "entityId": "bowers_farm",
+        "layoutId": "lane_blocking_stand",
+        "controllingAuthorizerId": "bowers_operator"
+      },
+      "steps": [
+        "requested-feasible-preview",
+        "canonical-stance",
+        "confirm-only-authorized-option"
+      ],
+      "criteria": [
+        "C04",
+        "C05",
+        "C06",
+        "C08",
+        "C10",
+        "C24"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F4-REFUSE",
+      "family": "F4",
+      "fixture": "farm-authored",
+      "given": {
+        "planRef": "farmStand",
+        "plotsRef": "ridge",
+        "profileId": "bowers_operator",
+        "entityId": "bowers_farm",
+        "layoutId": "working_site_conversion",
+        "controllingAuthorizerId": "bowers_operator"
+      },
+      "steps": [
+        "requested-feasible-preview",
+        "canonical-stance",
+        "confirm-only-authorized-option"
+      ],
+      "criteria": [
+        "C04",
+        "C05",
+        "C06",
+        "C08",
+        "C10",
+        "C24"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F4-MISSING",
+      "family": "F4",
+      "fixture": "farm-authored",
+      "given": {
+        "removeFactIds": [
+          "farm.active",
+          "farm.tenure",
+          "farm.accessLane"
+        ]
+      },
+      "steps": [
+        "evaluate"
+      ],
+      "criteria": [
+        "C08",
+        "C10"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F4-TENANT-TITLE",
+      "family": "F4",
+      "fixture": "farm-authored",
+      "given": {
+        "tenure": "tenant_operator",
+        "ownOperationDelegation": true,
+        "landDispositionAuthority": false,
+        "requestedAuthorityScope": "land-disposition"
+      },
+      "steps": [
+        "check-title-authority"
+      ],
+      "criteria": [
+        "C08",
+        "C10"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F4-NONCIRCULAR",
+      "family": "F4",
+      "fixture": "farm-authored",
+      "given": {
+        "beforeLayoutId": "lane_blocking_stand",
+        "candidateLayoutId": "pad_stand",
+        "blockingGates": [],
+        "createdCommitment": {
+          "operationRef": "bowers_farm.layoutId",
+          "value": "pad_stand",
+          "createdStage": "committed",
+          "inEffectWhen": "decision-approved"
+        }
+      },
+      "steps": [
+        "evaluate-counter",
+        "confirm-own-operation",
+        "inspect-stages"
+      ],
+      "criteria": [
+        "C06",
+        "C10"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F5-FREIGHT",
+      "family": "F5",
+      "fixture": "campus-authored",
+      "given": {
+        "planRef": "distributorShell",
+        "plotsRef": "campus_s",
+        "conditions": {
+          "routeId": "south_service_route",
+          "publicSales": false,
+          "loadingHours": "daytime",
+          "screenedLoading": true
+        },
+        "stakeholderId": "college_liaison",
+        "controllingAuthorizerId": "keystone"
+      },
+      "steps": [
+        "preview",
+        "evaluate-college-statement",
+        "evaluate-proposer-own-scope",
+        "confirm-only-proposer-authorized-option"
+      ],
+      "criteria": [
+        "C05",
+        "C06",
+        "C09",
+        "C10",
+        "C24"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F5-CROSSING",
+      "family": "F5",
+      "fixture": "campus-authored",
+      "given": {
+        "planRef": "distributorShell",
+        "plotsRef": "campus_s",
+        "conditions": {
+          "routeId": "campus_crossing",
+          "publicSales": false,
+          "loadingHours": "daytime",
+          "screenedLoading": true
+        },
+        "stakeholderId": "college_liaison",
+        "controllingAuthorizerId": "keystone"
+      },
+      "steps": [
+        "preview",
+        "evaluate-college-statement",
+        "evaluate-proposer-own-scope",
+        "confirm-only-proposer-authorized-option"
+      ],
+      "criteria": [
+        "C05",
+        "C06",
+        "C09",
+        "C10",
+        "C24"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F5-ROUTE-CORRECTED",
+      "family": "F5",
+      "fixture": "campus-authored",
+      "given": {
+        "planRef": "distributorShell",
+        "plotsRef": "campus_s",
+        "conditions": {
+          "routeId": "south_service_route",
+          "publicSales": false,
+          "loadingHours": "daytime",
+          "screenedLoading": true
+        },
+        "stakeholderId": "college_liaison",
+        "controllingAuthorizerId": "keystone"
+      },
+      "steps": [
+        "preview",
+        "evaluate-college-statement",
+        "evaluate-proposer-own-scope",
+        "confirm-only-proposer-authorized-option"
+      ],
+      "criteria": [
+        "C05",
+        "C06",
+        "C09",
+        "C10",
+        "C24"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F5-PUBLIC-SALES",
+      "family": "F5",
+      "fixture": "campus-authored",
+      "given": {
+        "planRef": "distributorShell",
+        "plotsRef": "campus_s",
+        "conditions": {
+          "routeId": "south_service_route",
+          "publicSales": true,
+          "loadingHours": "daytime",
+          "screenedLoading": true
+        },
+        "stakeholderId": "college_liaison",
+        "controllingAuthorizerId": "keystone"
+      },
+      "steps": [
+        "preview",
+        "evaluate-college-statement",
+        "evaluate-proposer-own-scope",
+        "confirm-only-proposer-authorized-option"
+      ],
+      "criteria": [
+        "C05",
+        "C06",
+        "C09",
+        "C10",
+        "C24"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F5-OVERNIGHT",
+      "family": "F5",
+      "fixture": "campus-authored",
+      "given": {
+        "planRef": "distributorShell",
+        "plotsRef": "campus_s",
+        "conditions": {
+          "routeId": "south_service_route",
+          "publicSales": false,
+          "loadingHours": "overnight",
+          "screenedLoading": true
+        },
+        "stakeholderId": "college_liaison",
+        "controllingAuthorizerId": "keystone"
+      },
+      "steps": [
+        "preview",
+        "evaluate-college-statement",
+        "evaluate-proposer-own-scope",
+        "confirm-only-proposer-authorized-option"
+      ],
+      "criteria": [
+        "C05",
+        "C06",
+        "C09",
+        "C10",
+        "C24"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F5-UNSCREENED",
+      "family": "F5",
+      "fixture": "campus-authored",
+      "given": {
+        "planRef": "distributorShell",
+        "plotsRef": "campus_s",
+        "conditions": {
+          "routeId": "south_service_route",
+          "publicSales": false,
+          "loadingHours": "daytime",
+          "screenedLoading": false
+        },
+        "stakeholderId": "college_liaison",
+        "controllingAuthorizerId": "keystone"
+      },
+      "steps": [
+        "preview",
+        "evaluate-college-statement",
+        "evaluate-proposer-own-scope",
+        "confirm-only-proposer-authorized-option"
+      ],
+      "criteria": [
+        "C05",
+        "C06",
+        "C09",
+        "C10",
+        "C24"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F5-CONSUMPTION",
+      "family": "F5",
+      "fixture": "campus-authored",
+      "given": {
+        "requestedField": "onSiteConsumption",
+        "value": true,
+        "capabilityPresent": false
+      },
+      "steps": [
+        "capability-check"
+      ],
+      "criteria": [
+        "C07",
+        "C09"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F5-MISSING",
+      "family": "F5",
+      "fixture": "campus-authored",
+      "given": {
+        "removeFactIds": [
+          "distributor.routeId",
+          "distributor.publicSales",
+          "keystone.delegation"
+        ]
+      },
+      "steps": [
+        "evaluate"
+      ],
+      "criteria": [
+        "C09",
+        "C10"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F5-WRONG-AUTHORIZER",
+      "family": "F5",
+      "fixture": "campus-authored",
+      "given": {
+        "candidateConditions": {
+          "routeId": "south_service_route",
+          "publicSales": false,
+          "loadingHours": "daytime",
+          "screenedLoading": true
+        },
+        "submittedController": "college_liaison",
+        "actualController": "keystone"
+      },
+      "steps": [
+        "direct-engine-confirm"
+      ],
+      "criteria": [
+        "C06",
+        "C09",
+        "C10"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-STALE-PLAN",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "testOnlySetupMutationNotModelOperation": {
+          "path": "proposal.plan.parking",
+          "value": 0
+        }
+      },
+      "steps": [
+        "capture",
+        "apply-setup-change",
+        "attempt-original-action"
+      ],
+      "criteria": [
+        "C02",
+        "C06",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-STALE-PRESENTER-REL",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "testOnlySetupMutationNotModelOperation": {
+          "path": "presenters.planner.rel",
+          "value": 64
+        }
+      },
+      "steps": [
+        "capture",
+        "apply-setup-change",
+        "attempt-original-action"
+      ],
+      "criteria": [
+        "C02",
+        "C06",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-STALE-COUNCIL-REL",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "testOnlySetupMutationNotModelOperation": {
+          "path": "council.pryor.rel",
+          "value": 43
+        }
+      },
+      "steps": [
+        "capture",
+        "apply-setup-change",
+        "attempt-original-action"
+      ],
+      "criteria": [
+        "C02",
+        "C06",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-STALE-LOBBY",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "testOnlySetupMutationNotModelOperation": {
+          "path": "lobby.pryor.init1",
+          "value": 1
+        }
+      },
+      "steps": [
+        "capture",
+        "apply-setup-change",
+        "attempt-original-action"
+      ],
+      "criteria": [
+        "C02",
+        "C06",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-STALE-QUOTA",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "testOnlySetupMutationNotModelOperation": {
+          "path": "lobbyCount.pryor",
+          "value": 1
+        }
+      },
+      "steps": [
+        "capture",
+        "apply-setup-change",
+        "attempt-original-action"
+      ],
+      "criteria": [
+        "C02",
+        "C06",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-STALE-CASH",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "testOnlySetupMutationNotModelOperation": {
+          "path": "cash",
+          "value": 901
+        }
+      },
+      "steps": [
+        "capture",
+        "apply-setup-change",
+        "attempt-original-action"
+      ],
+      "criteria": [
+        "C02",
+        "C06",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-STALE-CAPITAL",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "testOnlySetupMutationNotModelOperation": {
+          "path": "capital",
+          "value": 2
+        }
+      },
+      "steps": [
+        "capture",
+        "apply-setup-change",
+        "attempt-original-action"
+      ],
+      "criteria": [
+        "C02",
+        "C06",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-STALE-GRANT",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "testOnlySetupMutationNotModelOperation": {
+          "path": "proposal.grantPending",
+          "value": {
+            "year": 1,
+            "agency": "fixture",
+            "share": 0.5,
+            "odds": 0.5
+          }
+        }
+      },
+      "steps": [
+        "capture",
+        "apply-setup-change",
+        "attempt-original-action"
+      ],
+      "criteria": [
+        "C02",
+        "C06",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-STALE-OCCUPANCY",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "testOnlySetupMutationNotModelOperation": {
+          "path": "grid.plot:16,13.b",
+          "value": {
+            "type": "construction",
+            "for": "initiative"
+          }
+        }
+      },
+      "steps": [
+        "capture",
+        "apply-setup-change",
+        "attempt-original-action"
+      ],
+      "criteria": [
+        "C02",
+        "C06",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-STALE-BUILT",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "testOnlySetupMutationNotModelOperation": {
+          "path": "built",
+          "append": {
+            "id": "fixture-built",
+            "plots": [
+              [
+                16,
+                13
+              ],
+              [
+                18,
+                13
+              ],
+              [
+                16,
+                14
+              ],
+              [
+                18,
+                14
+              ],
+              [
+                16,
+                15
+              ],
+              [
+                18,
+                15
+              ]
+            ]
+          }
+        }
+      },
+      "steps": [
+        "capture",
+        "apply-setup-change",
+        "attempt-original-action"
+      ],
+      "criteria": [
+        "C02",
+        "C06",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-STALE-FACT",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "testOnlySetupMutationNotModelOperation": {
+          "path": "facts.fixtureChanged",
+          "value": true
+        }
+      },
+      "steps": [
+        "capture",
+        "apply-setup-change",
+        "attempt-original-action"
+      ],
+      "criteria": [
+        "C02",
+        "C06",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-STALE-PROFILE",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "testOnlySetupMutationNotModelOperation": {
+          "path": "profile.version",
+          "value": 2
+        }
+      },
+      "steps": [
+        "capture",
+        "apply-setup-change",
+        "attempt-original-action"
+      ],
+      "criteria": [
+        "C02",
+        "C06",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-STALE-CLOSED",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "testOnlySetupMutationNotModelOperation": {
+          "path": "proposal.status",
+          "value": "approved"
+        }
+      },
+      "steps": [
+        "capture",
+        "apply-setup-change",
+        "attempt-original-action"
+      ],
+      "criteria": [
+        "C02",
+        "C06",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-STALE-TAX",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "testOnlySetupMutationNotModelOperation": {
+          "path": "taxRate",
+          "value": "raise"
+        }
+      },
+      "steps": [
+        "capture",
+        "apply-setup-change",
+        "attempt-original-action"
+      ],
+      "criteria": [
+        "C02",
+        "C06",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-STALE-TURN",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "testOnlySetupMutationNotModelOperation": {
+          "path": "year",
+          "value": 2
+        }
+      },
+      "steps": [
+        "capture",
+        "apply-setup-change",
+        "attempt-original-action"
+      ],
+      "criteria": [
+        "C02",
+        "C06",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-STALE-CONDITION",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "testOnlySetupMutationNotModelOperation": {
+          "path": "proposal.conditions.routeId",
+          "value": "campus_crossing"
+        }
+      },
+      "steps": [
+        "capture",
+        "apply-setup-change",
+        "attempt-original-action"
+      ],
+      "criteria": [
+        "C02",
+        "C06",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-STALE-COMPETITOR",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "testOnlySetupMutationNotModelOperation": {
+          "path": "competition.status",
+          "value": "approved"
+        }
+      },
+      "steps": [
+        "capture",
+        "apply-setup-change",
+        "attempt-original-action"
+      ],
+      "criteria": [
+        "C02",
+        "C06",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-REQUEST-LOAD-EQUAL",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "loadSamePersistedTuple": true
+      },
+      "steps": [
+        "start-delayed-generation",
+        "apply-event",
+        "deliver-old-reply"
+      ],
+      "criteria": [
+        "C15",
+        "C19"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-REQUEST-LOAD-OLDER",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "loadOlderSameGame": true
+      },
+      "steps": [
+        "start-delayed-generation",
+        "apply-event",
+        "deliver-old-reply"
+      ],
+      "criteria": [
+        "C15",
+        "C19"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-REQUEST-PROVIDER",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "change": "provider"
+      },
+      "steps": [
+        "start-delayed-generation",
+        "apply-event",
+        "deliver-old-reply"
+      ],
+      "criteria": [
+        "C15",
+        "C19"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-REQUEST-TEXT",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "change": "intent"
+      },
+      "steps": [
+        "start-delayed-generation",
+        "apply-event",
+        "deliver-old-reply"
+      ],
+      "criteria": [
+        "C15",
+        "C19"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-REQUEST-PLOTS",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "change": "plots"
+      },
+      "steps": [
+        "start-delayed-generation",
+        "apply-event",
+        "deliver-old-reply"
+      ],
+      "criteria": [
+        "C15",
+        "C19"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-REQUEST-SHEET",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "change": "sheet-or-target"
+      },
+      "steps": [
+        "start-delayed-generation",
+        "apply-event",
+        "deliver-old-reply"
+      ],
+      "criteria": [
+        "C15",
+        "C19"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-REQUEST-CANCEL",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "change": "cancel"
+      },
+      "steps": [
+        "start-delayed-generation",
+        "apply-event",
+        "deliver-old-reply"
+      ],
+      "criteria": [
+        "C15",
+        "C19"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-SITE-ROAD",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "plots": [
+          [
+            14,
+            8
+          ]
+        ],
+        "code": "plot_invalid"
+      },
+      "steps": [
+        "strict-preview"
+      ],
+      "criteria": [
+        "C03",
+        "C07",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-SITE-OOB",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "plots": [
+          [
+            24,
+            24
+          ]
+        ],
+        "code": "plot_invalid"
+      },
+      "steps": [
+        "strict-preview"
+      ],
+      "criteria": [
+        "C03",
+        "C07",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-SITE-FRACTIONAL",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "plots": [
+          [
+            16.5,
+            13
+          ]
+        ],
+        "code": "plot_invalid"
+      },
+      "steps": [
+        "strict-preview"
+      ],
+      "criteria": [
+        "C03",
+        "C07",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-SITE-DUPLICATE",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "plots": [
+          [
+            16,
+            13
+          ],
+          [
+            16,
+            13
+          ]
+        ],
+        "code": "plot_invalid"
+      },
+      "steps": [
+        "strict-preview"
+      ],
+      "criteria": [
+        "C03",
+        "C07",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-SITE-CONSTRUCTION",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "plots": [
+          [
+            16,
+            13
+          ],
+          [
+            18,
+            13
+          ],
+          [
+            16,
+            14
+          ],
+          [
+            18,
+            14
+          ],
+          [
+            16,
+            15
+          ],
+          [
+            18,
+            15
+          ]
+        ],
+        "testOnlyConstructionAt": [
+          16,
+          13
+        ],
+        "code": "plot_invalid"
+      },
+      "steps": [
+        "strict-preview"
+      ],
+      "criteria": [
+        "C03",
+        "C07",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-SITE-COLLEGE",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "plots": [
+          [
+            15,
+            2
+          ]
+        ],
+        "foreignOwner": "Penns Valley College",
+        "outcome": "priced-acquisition-backlash-not-automatic-owner-veto"
+      },
+      "steps": [
+        "strict-preview"
+      ],
+      "criteria": [
+        "C03",
+        "C07",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-SITE-CAPACITY",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "plots": [
+          [
+            16,
+            13
+          ]
+        ],
+        "planRef": "marketHousing",
+        "outcome": "explicit-fitting-and-scope-not-silent-relocation"
+      },
+      "steps": [
+        "strict-preview"
+      ],
+      "criteria": [
+        "C03",
+        "C07",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-SITE-POLICY",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "plots": [],
+        "planRef": "policyOnly",
+        "outcome": "valid-no-site"
+      },
+      "steps": [
+        "strict-preview"
+      ],
+      "criteria": [
+        "C03",
+        "C07",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-SITE-PHYSICAL-TO-POLICY",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "existingPlots": [
+          [
+            16,
+            13
+          ],
+          [
+            18,
+            13
+          ],
+          [
+            16,
+            14
+          ],
+          [
+            18,
+            14
+          ],
+          [
+            16,
+            15
+          ],
+          [
+            18,
+            15
+          ]
+        ],
+        "candidatePlanRef": "policyOnly",
+        "outcome": "unsupported-site-mode-crossing"
+      },
+      "steps": [
+        "strict-preview"
+      ],
+      "criteria": [
+        "C03",
+        "C07",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-SITE-POLICY-TO-PHYSICAL",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "existingPlots": [],
+        "candidatePlanRef": "marketHousing",
+        "outcome": "site-required-no-hidden-relocation"
+      },
+      "steps": [
+        "strict-preview"
+      ],
+      "criteria": [
+        "C03",
+        "C07",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-SITE-OCCUPIED-HOUSING",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "resolveFirstOccupiedHouseFromPinnedGrid": true,
+        "selectionOrder": "row-major-first-house",
+        "outcome": "real-demolition-displacement-forecast"
+      },
+      "steps": [
+        "strict-preview"
+      ],
+      "criteria": [
+        "C03",
+        "C07",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-REPLAY-EXACT",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "commandSchemaRef": "urn:master-plan:proposal-council:commands:1#/$defs/command",
+        "commandMutation": null,
+        "keepOriginalWireValues": true,
+        "registryAfterReload": "empty",
+        "sourceActionType": "post-draft",
+        "mutatedCommandMustRemainSchemaValidForFingerprintMismatchCase": true,
+        "synchronizeRedundantSubjectAndTargetFields": true
+      },
+      "steps": [
+        "commit",
+        "reload",
+        "later-unrelated-action",
+        "replay-original-or-mutated-command"
+      ],
+      "criteria": [
+        "C02",
+        "C11",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-REPLAY-OBJECT-ORDER",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "commandSchemaRef": "urn:master-plan:proposal-council:commands:1#/$defs/command",
+        "commandMutation": {
+          "objectMembersOnly": "reordered"
+        },
+        "keepOriginalWireValues": true,
+        "registryAfterReload": "empty",
+        "sourceActionType": "post-draft",
+        "mutatedCommandMustRemainSchemaValidForFingerprintMismatchCase": true,
+        "synchronizeRedundantSubjectAndTargetFields": true
+      },
+      "steps": [
+        "commit",
+        "reload",
+        "later-unrelated-action",
+        "replay-original-or-mutated-command"
+      ],
+      "criteria": [
+        "C02",
+        "C11",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-REPLAY-TYPE",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "commandSchemaRef": "urn:master-plan:proposal-council:commands:1#/$defs/command",
+        "commandMutation": {
+          "replaceWithDifferentFullyWellFormedActionType": "advance-year",
+          "preserveSameActionIdAndOriginalBase": true
+        },
+        "keepOriginalWireValues": true,
+        "registryAfterReload": "empty",
+        "sourceActionType": "post-draft",
+        "mutatedCommandMustRemainSchemaValidForFingerprintMismatchCase": true,
+        "synchronizeRedundantSubjectAndTargetFields": true
+      },
+      "steps": [
+        "commit",
+        "reload",
+        "later-unrelated-action",
+        "replay-original-or-mutated-command"
+      ],
+      "criteria": [
+        "C02",
+        "C11",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-REPLAY-MEMBER",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "commandSchemaRef": "urn:master-plan:proposal-council:commands:1#/$defs/command",
+        "commandMutation": {
+          "field": "memberId",
+          "value": "okafor"
+        },
+        "keepOriginalWireValues": true,
+        "registryAfterReload": "empty",
+        "sourceActionType": "commit-pitch",
+        "mutatedCommandMustRemainSchemaValidForFingerprintMismatchCase": true,
+        "synchronizeRedundantSubjectAndTargetFields": true
+      },
+      "steps": [
+        "commit",
+        "reload",
+        "later-unrelated-action",
+        "replay-original-or-mutated-command"
+      ],
+      "criteria": [
+        "C02",
+        "C11",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-REPLAY-ACTOR",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "commandSchemaRef": "urn:master-plan:proposal-council:commands:1#/$defs/command",
+        "commandMutation": {
+          "field": "semanticBinding.actorId",
+          "value": "keystone"
+        },
+        "keepOriginalWireValues": true,
+        "registryAfterReload": "empty",
+        "sourceActionType": "confirm-revision",
+        "mutatedCommandMustRemainSchemaValidForFingerprintMismatchCase": true,
+        "synchronizeRedundantSubjectAndTargetFields": true
+      },
+      "steps": [
+        "commit",
+        "reload",
+        "later-unrelated-action",
+        "replay-original-or-mutated-command"
+      ],
+      "criteria": [
+        "C02",
+        "C11",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-REPLAY-AUTHORIZER",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "commandSchemaRef": "urn:master-plan:proposal-council:commands:1#/$defs/command",
+        "commandMutation": {
+          "field": "controllingAuthorizerId",
+          "value": "college_liaison"
+        },
+        "keepOriginalWireValues": true,
+        "registryAfterReload": "empty",
+        "sourceActionType": "confirm-revision",
+        "mutatedCommandMustRemainSchemaValidForFingerprintMismatchCase": true,
+        "synchronizeRedundantSubjectAndTargetFields": true
+      },
+      "steps": [
+        "commit",
+        "reload",
+        "later-unrelated-action",
+        "replay-original-or-mutated-command"
+      ],
+      "criteria": [
+        "C02",
+        "C11",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-REPLAY-TARGET",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "commandSchemaRef": "urn:master-plan:proposal-council:commands:1#/$defs/command",
+        "commandMutation": {
+          "field": "target.proposalRevision",
+          "value": 2
+        },
+        "keepOriginalWireValues": true,
+        "registryAfterReload": "empty",
+        "sourceActionType": "post-draft",
+        "mutatedCommandMustRemainSchemaValidForFingerprintMismatchCase": true,
+        "synchronizeRedundantSubjectAndTargetFields": true
+      },
+      "steps": [
+        "commit",
+        "reload",
+        "later-unrelated-action",
+        "replay-original-or-mutated-command"
+      ],
+      "criteria": [
+        "C02",
+        "C11",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-REPLAY-PLAN",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "commandSchemaRef": "urn:master-plan:proposal-council:commands:1#/$defs/command",
+        "commandMutation": {
+          "field": "semanticBinding.acceptedPlan.fields.plaza",
+          "value": true
+        },
+        "keepOriginalWireValues": true,
+        "registryAfterReload": "empty",
+        "sourceActionType": "post-draft",
+        "mutatedCommandMustRemainSchemaValidForFingerprintMismatchCase": true,
+        "synchronizeRedundantSubjectAndTargetFields": true
+      },
+      "steps": [
+        "commit",
+        "reload",
+        "later-unrelated-action",
+        "replay-original-or-mutated-command"
+      ],
+      "criteria": [
+        "C02",
+        "C11",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-REPLAY-PLOT-ORDER",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "commandSchemaRef": "urn:master-plan:proposal-council:commands:1#/$defs/command",
+        "commandMutation": {
+          "field": "semanticBinding.geometry.plots",
+          "swap": [
+            0,
+            1
+          ]
+        },
+        "keepOriginalWireValues": true,
+        "registryAfterReload": "empty",
+        "sourceActionType": "post-draft",
+        "mutatedCommandMustRemainSchemaValidForFingerprintMismatchCase": true,
+        "synchronizeRedundantSubjectAndTargetFields": true
+      },
+      "steps": [
+        "commit",
+        "reload",
+        "later-unrelated-action",
+        "replay-original-or-mutated-command"
+      ],
+      "criteria": [
+        "C02",
+        "C11",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-REPLAY-ROLE",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "commandSchemaRef": "urn:master-plan:proposal-council:commands:1#/$defs/command",
+        "commandMutation": {
+          "field": "semanticBinding.geometry.cellRoles.0.role",
+          "value": "green"
+        },
+        "keepOriginalWireValues": true,
+        "registryAfterReload": "empty",
+        "sourceActionType": "post-draft",
+        "mutatedCommandMustRemainSchemaValidForFingerprintMismatchCase": true,
+        "synchronizeRedundantSubjectAndTargetFields": true
+      },
+      "steps": [
+        "commit",
+        "reload",
+        "later-unrelated-action",
+        "replay-original-or-mutated-command"
+      ],
+      "criteria": [
+        "C02",
+        "C11",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-REPLAY-OPERATING",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "commandSchemaRef": "urn:master-plan:proposal-council:commands:1#/$defs/command",
+        "commandMutation": {
+          "field": "semanticBinding.operatingChanges.0.value",
+          "value": "campus_crossing"
+        },
+        "keepOriginalWireValues": true,
+        "registryAfterReload": "empty",
+        "sourceActionType": "confirm-operating-condition",
+        "mutatedCommandMustRemainSchemaValidForFingerprintMismatchCase": true,
+        "synchronizeRedundantSubjectAndTargetFields": true
+      },
+      "steps": [
+        "commit",
+        "reload",
+        "later-unrelated-action",
+        "replay-original-or-mutated-command"
+      ],
+      "criteria": [
+        "C02",
+        "C11",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-REPLAY-SCOPE",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "commandSchemaRef": "urn:master-plan:proposal-council:commands:1#/$defs/command",
+        "commandMutation": {
+          "field": "semanticBinding.acknowledgedScope.omissionIds",
+          "value": [
+            "different-scope"
+          ]
+        },
+        "keepOriginalWireValues": true,
+        "registryAfterReload": "empty",
+        "sourceActionType": "post-draft",
+        "mutatedCommandMustRemainSchemaValidForFingerprintMismatchCase": true,
+        "synchronizeRedundantSubjectAndTargetFields": true
+      },
+      "steps": [
+        "commit",
+        "reload",
+        "later-unrelated-action",
+        "replay-original-or-mutated-command"
+      ],
+      "criteria": [
+        "C02",
+        "C11",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-REPLAY-FUNDING",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "commandSchemaRef": "urn:master-plan:proposal-council:commands:1#/$defs/command",
+        "commandMutation": {
+          "field": "semanticBinding.fundingOptions.0.method",
+          "value": "cash"
+        },
+        "keepOriginalWireValues": true,
+        "registryAfterReload": "empty",
+        "sourceActionType": "call-vote",
+        "mutatedCommandMustRemainSchemaValidForFingerprintMismatchCase": true,
+        "synchronizeRedundantSubjectAndTargetFields": true
+      },
+      "steps": [
+        "commit",
+        "reload",
+        "later-unrelated-action",
+        "replay-original-or-mutated-command"
+      ],
+      "criteria": [
+        "C02",
+        "C11",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-REPLAY-AMOUNT",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "commandSchemaRef": "urn:master-plan:proposal-council:commands:1#/$defs/command",
+        "commandMutation": {
+          "field": "amountK",
+          "value": 100
+        },
+        "keepOriginalWireValues": true,
+        "registryAfterReload": "empty",
+        "sourceActionType": "spend-earmark",
+        "mutatedCommandMustRemainSchemaValidForFingerprintMismatchCase": true,
+        "synchronizeRedundantSubjectAndTargetFields": true
+      },
+      "steps": [
+        "commit",
+        "reload",
+        "later-unrelated-action",
+        "replay-original-or-mutated-command"
+      ],
+      "criteria": [
+        "C02",
+        "C11",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-REPLAY-PRUNED",
+      "family": "F6",
+      "fixture": "town-year1",
+      "given": {
+        "receiptLimit": 256,
+        "advanceToActionSeq": 258,
+        "replaySeq": 1,
+        "sourceActionType": "post-draft",
+        "mutatedCommandMustRemainSchemaValidForFingerprintMismatchCase": true,
+        "synchronizeRedundantSubjectAndTargetFields": true
+      },
+      "steps": [
+        "replay-pruned-sequence"
+      ],
+      "criteria": [
+        "C02",
+        "C15"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-T1",
+      "family": "F6-T",
+      "fixture": "town-year1",
+      "given": {
+        "pages": 2,
+        "sameBrowserContext": true,
+        "sameOrigin": true,
+        "sameStoragePartition": true,
+        "initialStorageGeneration": 1,
+        "initialStateRevision": 0,
+        "gameId": "fixture:mp-v1:2301",
+        "localLock": "masterplan.save-slot.dev.primary",
+        "replicaLock": "masterplan.save-replica.dev.primary",
+        "initialActionHighWater": 0
+      },
+      "steps": [
+        "both-read-G-and-R",
+        "same-next-seq-and-id",
+        "A-prepare-marketHousing",
+        "B-prepare-marketHousingAlternative",
+        "A-lock-reread-write-G+1",
+        "B-lock-reread-attempt"
+      ],
+      "criteria": [
+        "C02",
+        "C14",
+        "C15",
+        "C17",
+        "C21"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-T2",
+      "family": "F6-T",
+      "fixture": "town-year1",
+      "given": {
+        "pages": 2,
+        "sameBrowserContext": true,
+        "sameOrigin": true,
+        "sameStoragePartition": true,
+        "initialStorageGeneration": 1,
+        "initialStateRevision": 0,
+        "gameId": "fixture:mp-v1:2301",
+        "localLock": "masterplan.save-slot.dev.primary",
+        "replicaLock": "masterplan.save-replica.dev.primary",
+        "initialActionHighWater": 0
+      },
+      "steps": [
+        "A-success",
+        "B-exact-replay-A-original-command"
+      ],
+      "criteria": [
+        "C02",
+        "C14",
+        "C15",
+        "C17",
+        "C21"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-T3",
+      "family": "F6-T",
+      "fixture": "town-year1",
+      "given": {
+        "pages": 2,
+        "sameBrowserContext": true,
+        "sameOrigin": true,
+        "sameStoragePartition": true,
+        "initialStorageGeneration": 1,
+        "initialStateRevision": 0,
+        "gameId": "fixture:mp-v1:2301",
+        "localLock": "masterplan.save-slot.dev.primary",
+        "replicaLock": "masterplan.save-replica.dev.primary",
+        "initialActionHighWater": 0
+      },
+      "steps": [
+        "A-lock-new-game-or-import-write-G+1-new-gameId",
+        "B-attempt-old-staged-command"
+      ],
+      "criteria": [
+        "C02",
+        "C14",
+        "C15",
+        "C17",
+        "C21"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-T4",
+      "family": "F6-T",
+      "fixture": "town-year1",
+      "given": {
+        "pages": 2,
+        "sameBrowserContext": true,
+        "sameOrigin": true,
+        "sameStoragePartition": true,
+        "initialStorageGeneration": 1,
+        "initialStateRevision": 0,
+        "gameId": "fixture:mp-v1:2301",
+        "localLock": "masterplan.save-slot.dev.primary",
+        "replicaLock": "masterplan.save-replica.dev.primary",
+        "initialActionHighWater": 0
+      },
+      "steps": [
+        "A-queue-old-whole-S-save",
+        "B-commit-G+1",
+        "A-lock-reread-autosave-attempt"
+      ],
+      "criteria": [
+        "C02",
+        "C14",
+        "C15",
+        "C17",
+        "C21"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-T5",
+      "family": "F6-T",
+      "fixture": "town-year1",
+      "given": {
+        "pages": 2,
+        "sameBrowserContext": true,
+        "sameOrigin": true,
+        "sameStoragePartition": true,
+        "initialStorageGeneration": 1,
+        "initialStateRevision": 0,
+        "gameId": "fixture:mp-v1:2301",
+        "localLock": "masterplan.save-slot.dev.primary",
+        "replicaLock": "masterplan.save-replica.dev.primary",
+        "initialActionHighWater": 0
+      },
+      "steps": [
+        "A-start-remote-read-or-queue-old-replica",
+        "B-commit-G+1",
+        "A-remote-response-or-replica-attempt"
+      ],
+      "criteria": [
+        "C02",
+        "C14",
+        "C15",
+        "C17",
+        "C21"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-T6",
+      "family": "F6-T",
+      "fixture": "town-year1",
+      "given": {
+        "pages": 2,
+        "sameBrowserContext": true,
+        "sameOrigin": true,
+        "sameStoragePartition": true,
+        "initialStorageGeneration": 1,
+        "initialStateRevision": 0,
+        "gameId": "fixture:mp-v1:2301",
+        "localLock": "masterplan.save-slot.dev.primary",
+        "replicaLock": "masterplan.save-replica.dev.primary",
+        "initialActionHighWater": 0
+      },
+      "steps": [
+        "A-write-fails-after-prepare",
+        "B-commits-G+1",
+        "A-lock-reread-prepared-retry"
+      ],
+      "criteria": [
+        "C02",
+        "C14",
+        "C15",
+        "C17",
+        "C21"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-T7",
+      "family": "F6-T",
+      "fixture": "town-year1",
+      "given": {
+        "pages": 2,
+        "sameBrowserContext": true,
+        "sameOrigin": true,
+        "sameStoragePartition": true,
+        "initialStorageGeneration": 1,
+        "initialStateRevision": 0,
+        "gameId": "fixture:mp-v1:2301",
+        "localLock": "masterplan.save-slot.dev.primary",
+        "replicaLock": "masterplan.save-replica.dev.primary",
+        "initialActionHighWater": 0
+      },
+      "steps": [
+        "both-read-workspace-W",
+        "A-intended-edit-W+1",
+        "B-stale-whole-workspace-write"
+      ],
+      "criteria": [
+        "C02",
+        "C14",
+        "C15",
+        "C17",
+        "C21"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F6-T8",
+      "family": "F6-T",
+      "fixture": "town-year1",
+      "given": {
+        "pages": 2,
+        "sameBrowserContext": true,
+        "sameOrigin": true,
+        "sameStoragePartition": true,
+        "initialStorageGeneration": 1,
+        "initialStateRevision": 0,
+        "gameId": "fixture:mp-v1:2301",
+        "localLock": "masterplan.save-slot.dev.primary",
+        "replicaLock": "masterplan.save-replica.dev.primary",
+        "initialActionHighWater": 0
+      },
+      "steps": [
+        "deny-WebLocks-or-secure-storage",
+        "attempt-migration-new-game-gameplay-cloud-write"
+      ],
+      "criteria": [
+        "C02",
+        "C14",
+        "C15",
+        "C17",
+        "C21"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F7-MIXED",
+      "family": "F7",
+      "fixture": "town-year1",
+      "given": {
+        "intent": "Twenty homes above four shops, a farmers market, green space and rain gardens on these selected plots.",
+        "plotsRef": "P6",
+        "planRef": "marketHousing",
+        "expectedVisibleAssumptions": [
+          "Two stories to put homes above the shops.",
+          "Twenty parking spaces is a suggested quantity, subject to player review.",
+          "Green-space level 2 is a suggested quantity, subject to player review."
+        ]
+      },
+      "steps": [
+        "bounded-interpretation",
+        "strict-validation",
+        "engine-preview",
+        "inspect-recovery-and-safe-export"
+      ],
+      "criteria": [
+        "C07",
+        "C18",
+        "C19",
+        "C22"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F7-REDEVELOP",
+      "family": "F7",
+      "fixture": "town-year1",
+      "given": {
+        "intent": "Twenty homes above two shops on these occupied chosen plots.",
+        "plots": [
+          [
+            15,
+            2
+          ],
+          [
+            16,
+            2
+          ]
+        ],
+        "acceptedPlan": {
+          "kind": "initiative",
+          "fields": {
+            "homes": 20,
+            "affordable": false,
+            "shops": 2,
+            "stories": 2,
+            "parking": 0,
+            "green": 0,
+            "plaza": false,
+            "civic": "none",
+            "safety": "none",
+            "stormwater": false,
+            "policy": "none",
+            "quality": 2
+          }
+        }
+      },
+      "steps": [
+        "bounded-interpretation",
+        "strict-validation",
+        "engine-preview",
+        "inspect-recovery-and-safe-export"
+      ],
+      "criteria": [
+        "C07",
+        "C18",
+        "C19",
+        "C22"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F7-PARTIAL",
+      "family": "F7",
+      "fixture": "town-year1",
+      "given": {
+        "intent": "Farmers market and 20 homes plus a truck route ordinance on these plots.",
+        "plotsRef": "P6",
+        "acceptedPlan": {
+          "kind": "initiative",
+          "fields": {
+            "homes": 20,
+            "affordable": false,
+            "shops": 0,
+            "stories": 1,
+            "parking": 0,
+            "green": 0,
+            "plaza": false,
+            "civic": "farmers_market",
+            "safety": "none",
+            "stormwater": false,
+            "policy": "none",
+            "quality": 2
+          }
+        },
+        "omissions": [
+          {
+            "id": "omit-truck-ordinance",
+            "requestedPart": "truck route ordinance",
+            "code": "unsupported_operation"
+          }
+        ]
+      },
+      "steps": [
+        "bounded-interpretation",
+        "strict-validation",
+        "engine-preview",
+        "inspect-recovery-and-safe-export"
+      ],
+      "criteria": [
+        "C07",
+        "C18",
+        "C19",
+        "C22"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F7-UNSUPPORTED",
+      "family": "F7",
+      "fixture": "town-year1",
+      "given": {
+        "intent": "Add a pedestrian walkway to this bridge.",
+        "unsupported": "bridge-walkway"
+      },
+      "steps": [
+        "bounded-interpretation",
+        "strict-validation",
+        "engine-preview",
+        "inspect-recovery-and-safe-export"
+      ],
+      "criteria": [
+        "C07",
+        "C18",
+        "C19",
+        "C22"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F7-INFEASIBLE",
+      "family": "F7",
+      "fixture": "town-year1",
+      "given": {
+        "intent": "Build a farmers market on this road.",
+        "plots": [
+          [
+            14,
+            8
+          ]
+        ],
+        "planRef": "farmStand"
+      },
+      "steps": [
+        "bounded-interpretation",
+        "strict-validation",
+        "engine-preview",
+        "inspect-recovery-and-safe-export"
+      ],
+      "criteria": [
+        "C07",
+        "C18",
+        "C19",
+        "C22"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F7-NARROW",
+      "family": "F7",
+      "fixture": "town-year1",
+      "given": {
+        "intent": "Add only the sidewalk link.",
+        "proposalId": "stripmall",
+        "requestedPatch": {
+          "sidewalk": true
+        }
+      },
+      "steps": [
+        "bounded-interpretation",
+        "strict-validation",
+        "engine-preview",
+        "inspect-recovery-and-safe-export"
+      ],
+      "criteria": [
+        "C07",
+        "C18",
+        "C19",
+        "C22"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F7-UNKNOWN-SITE",
+      "family": "F7",
+      "fixture": "town-year1",
+      "given": {
+        "intent": "Build a market at Foundry Hollow.",
+        "namedSite": "Foundry Hollow",
+        "knownSite": false
+      },
+      "steps": [
+        "bounded-interpretation",
+        "strict-validation",
+        "engine-preview",
+        "inspect-recovery-and-safe-export"
+      ],
+      "criteria": [
+        "C07",
+        "C18",
+        "C19",
+        "C22"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F7-RUNTIME",
+      "family": "F7",
+      "fixture": "town-year1",
+      "given": {
+        "runtimeAvailable": false
+      },
+      "steps": [
+        "bounded-interpretation",
+        "strict-validation",
+        "engine-preview",
+        "inspect-recovery-and-safe-export"
+      ],
+      "criteria": [
+        "C07",
+        "C18",
+        "C19",
+        "C22"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F7-JSON",
+      "family": "F7",
+      "fixture": "town-year1",
+      "given": {
+        "rawPayload": "not JSON"
+      },
+      "steps": [
+        "bounded-interpretation",
+        "strict-validation",
+        "engine-preview",
+        "inspect-recovery-and-safe-export"
+      ],
+      "criteria": [
+        "C07",
+        "C18",
+        "C19",
+        "C22"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F7-UNKNOWN-FIELD",
+      "family": "F7",
+      "fixture": "town-year1",
+      "given": {
+        "payload": {
+          "plan": {
+            "teleport": true
+          }
+        }
+      },
+      "steps": [
+        "bounded-interpretation",
+        "strict-validation",
+        "engine-preview",
+        "inspect-recovery-and-safe-export"
+      ],
+      "criteria": [
+        "C07",
+        "C18",
+        "C19",
+        "C22"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F7-TYPE",
+      "family": "F7",
+      "fixture": "town-year1",
+      "given": {
+        "payload": {
+          "plan": {
+            "homes": "twenty"
+          }
+        }
+      },
+      "steps": [
+        "bounded-interpretation",
+        "strict-validation",
+        "engine-preview",
+        "inspect-recovery-and-safe-export"
+      ],
+      "criteria": [
+        "C07",
+        "C18",
+        "C19",
+        "C22"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F7-RANGE",
+      "family": "F7",
+      "fixture": "town-year1",
+      "given": {
+        "payload": {
+          "plan": {
+            "homes": 210
+          }
+        }
+      },
+      "steps": [
+        "bounded-interpretation",
+        "strict-validation",
+        "engine-preview",
+        "inspect-recovery-and-safe-export"
+      ],
+      "criteria": [
+        "C07",
+        "C18",
+        "C19",
+        "C22"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F7-REPAIR",
+      "family": "F7",
+      "fixture": "town-year1",
+      "given": {
+        "payloads": [
+          "{",
+          "{"
+        ],
+        "repairBudget": 1
+      },
+      "steps": [
+        "bounded-interpretation",
+        "strict-validation",
+        "engine-preview",
+        "inspect-recovery-and-safe-export"
+      ],
+      "criteria": [
+        "C07",
+        "C18",
+        "C19",
+        "C22"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F7-INTENT",
+      "family": "F7",
+      "fixture": "town-year1",
+      "given": {
+        "intent": "Twenty homes and a farmers market.",
+        "payload": {
+          "plan": {
+            "green": 1
+          }
+        },
+        "structureValidIntentWrong": true
+      },
+      "steps": [
+        "bounded-interpretation",
+        "strict-validation",
+        "engine-preview",
+        "inspect-recovery-and-safe-export"
+      ],
+      "criteria": [
+        "C07",
+        "C18",
+        "C19",
+        "C22"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F7-CONTEXT",
+      "family": "F7",
+      "fixture": "town-year1",
+      "given": {
+        "admission": "full-intent-does-not-fit",
+        "mayTruncate": false
+      },
+      "steps": [
+        "bounded-interpretation",
+        "strict-validation",
+        "engine-preview",
+        "inspect-recovery-and-safe-export"
+      ],
+      "criteria": [
+        "C07",
+        "C18",
+        "C19",
+        "C22"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F7-LIMIT",
+      "family": "F7",
+      "fixture": "town-year1",
+      "given": {
+        "logicalIntentCharacterCount": 2001,
+        "mayTruncate": false
+      },
+      "steps": [
+        "bounded-interpretation",
+        "strict-validation",
+        "engine-preview",
+        "inspect-recovery-and-safe-export"
+      ],
+      "criteria": [
+        "C07",
+        "C18",
+        "C19",
+        "C22"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F7-PRIVACY",
+      "family": "F7",
+      "fixture": "town-year1",
+      "given": {
+        "sentinels": [
+          "PRIVATE_PROMPT_DO_NOT_EXPORT",
+          "PRIVATE_REPLY_DO_NOT_EXPORT",
+          "PRIVATE_TITLE_DO_NOT_EXPORT",
+          "PRIVATE_SAVE_DO_NOT_EXPORT"
+        ],
+        "privateCoordinates": [
+          [
+            16,
+            13
+          ],
+          [
+            18,
+            13
+          ],
+          [
+            16,
+            14
+          ],
+          [
+            18,
+            14
+          ],
+          [
+            16,
+            15
+          ],
+          [
+            18,
+            15
+          ]
+        ]
+      },
+      "steps": [
+        "bounded-interpretation",
+        "strict-validation",
+        "engine-preview",
+        "inspect-recovery-and-safe-export"
+      ],
+      "criteria": [
+        "C07",
+        "C18",
+        "C19",
+        "C22"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F8-TRUE-PRYOR",
+      "family": "F8",
+      "fixture": "town-year1",
+      "given": {
+        "planRef": "marketHousing",
+        "memberId": "pryor",
+        "argument": "This proposal includes a farmers market and twenty homes. The borough cost is $940K and upkeep is $38K a year.",
+        "source": "typed",
+        "deriveEvidenceSpansFromExactText": false,
+        "fixtureClaimExtraction": [
+          {
+            "claimId": "claim-market",
+            "factRef": "proposal.plan.civic",
+            "assertion": "farmers_market",
+            "evidence": {
+              "start": 25,
+              "end": 39
+            },
+            "relation": "current-fact"
+          },
+          {
+            "claimId": "claim-homes",
+            "factRef": "proposal.plan.homes",
+            "assertion": 20,
+            "evidence": {
+              "start": 44,
+              "end": 56
+            },
+            "relation": "current-fact"
+          },
+          {
+            "claimId": "claim-cost",
+            "factRef": "proposal.costK",
+            "assertion": 940,
+            "evidence": {
+              "start": 78,
+              "end": 83
+            },
+            "relation": "current-fact"
+          },
+          {
+            "claimId": "claim-upkeep",
+            "factRef": "proposal.annualUpkeepK",
+            "assertion": 38,
+            "evidence": {
+              "start": 98,
+              "end": 102
+            },
+            "relation": "current-fact"
+          }
+        ],
+        "snapshotFacts": [
+          {
+            "factRef": "proposal.plan.civic",
+            "value": "farmers_market"
+          },
+          {
+            "factRef": "proposal.plan.homes",
+            "value": 20
+          },
+          {
+            "factRef": "proposal.costK",
+            "value": 940
+          },
+          {
+            "factRef": "proposal.annualUpkeepK",
+            "value": 38
+          },
+          {
+            "factRef": "proposal.plan.plaza",
+            "value": false
+          }
+        ]
+      },
+      "steps": [
+        "extract-claims-only",
+        "engine-score",
+        "commit-once",
+        "optional-reaction-from-receipt"
+      ],
+      "criteria": [
+        "C11",
+        "C12",
+        "C13",
+        "C24"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F8-FALSE-PRYOR",
+      "family": "F8",
+      "fixture": "town-year1",
+      "given": {
+        "planRef": "marketHousing",
+        "memberId": "pryor",
+        "argument": "This plan includes a public plaza.",
+        "source": "typed",
+        "deriveEvidenceSpansFromExactText": false,
+        "fixtureClaimExtraction": [
+          {
+            "claimId": "claim-plaza",
+            "factRef": "proposal.plan.plaza",
+            "assertion": true,
+            "evidence": {
+              "start": 21,
+              "end": 33
+            },
+            "relation": "current-fact"
+          }
+        ],
+        "snapshotFacts": [
+          {
+            "factRef": "proposal.plan.civic",
+            "value": "farmers_market"
+          },
+          {
+            "factRef": "proposal.plan.homes",
+            "value": 20
+          },
+          {
+            "factRef": "proposal.costK",
+            "value": 940
+          },
+          {
+            "factRef": "proposal.annualUpkeepK",
+            "value": 38
+          },
+          {
+            "factRef": "proposal.plan.plaza",
+            "value": false
+          }
+        ]
+      },
+      "steps": [
+        "extract-claims-only",
+        "engine-score",
+        "commit-once",
+        "optional-reaction-from-receipt"
+      ],
+      "criteria": [
+        "C11",
+        "C12",
+        "C13",
+        "C24"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F8-MIXED-PRYOR",
+      "family": "F8",
+      "fixture": "town-year1",
+      "given": {
+        "planRef": "marketHousing",
+        "memberId": "pryor",
+        "argument": "This proposal includes a farmers market and a public plaza.",
+        "source": "typed",
+        "deriveEvidenceSpansFromExactText": false,
+        "fixtureClaimExtraction": [
+          {
+            "claimId": "claim-market",
+            "factRef": "proposal.plan.civic",
+            "assertion": "farmers_market",
+            "evidence": {
+              "start": 25,
+              "end": 39
+            },
+            "relation": "current-fact"
+          },
+          {
+            "claimId": "claim-plaza",
+            "factRef": "proposal.plan.plaza",
+            "assertion": true,
+            "evidence": {
+              "start": 46,
+              "end": 58
+            },
+            "relation": "current-fact"
+          }
+        ],
+        "snapshotFacts": [
+          {
+            "factRef": "proposal.plan.civic",
+            "value": "farmers_market"
+          },
+          {
+            "factRef": "proposal.plan.homes",
+            "value": 20
+          },
+          {
+            "factRef": "proposal.costK",
+            "value": 940
+          },
+          {
+            "factRef": "proposal.annualUpkeepK",
+            "value": 38
+          },
+          {
+            "factRef": "proposal.plan.plaza",
+            "value": false
+          }
+        ]
+      },
+      "steps": [
+        "extract-claims-only",
+        "engine-score",
+        "commit-once",
+        "optional-reaction-from-receipt"
+      ],
+      "criteria": [
+        "C11",
+        "C12",
+        "C13",
+        "C24"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F8-TRUE-OKAFOR",
+      "family": "F8",
+      "fixture": "town-year1",
+      "given": {
+        "planRef": "marketHousing",
+        "memberId": "okafor",
+        "argument": "This proposal includes a farmers market and twenty homes. The borough cost is $940K and upkeep is $38K a year.",
+        "source": "typed",
+        "deriveEvidenceSpansFromExactText": false,
+        "fixtureClaimExtraction": [
+          {
+            "claimId": "claim-market",
+            "factRef": "proposal.plan.civic",
+            "assertion": "farmers_market",
+            "evidence": {
+              "start": 25,
+              "end": 39
+            },
+            "relation": "current-fact"
+          },
+          {
+            "claimId": "claim-homes",
+            "factRef": "proposal.plan.homes",
+            "assertion": 20,
+            "evidence": {
+              "start": 44,
+              "end": 56
+            },
+            "relation": "current-fact"
+          },
+          {
+            "claimId": "claim-cost",
+            "factRef": "proposal.costK",
+            "assertion": 940,
+            "evidence": {
+              "start": 78,
+              "end": 83
+            },
+            "relation": "current-fact"
+          },
+          {
+            "claimId": "claim-upkeep",
+            "factRef": "proposal.annualUpkeepK",
+            "assertion": 38,
+            "evidence": {
+              "start": 98,
+              "end": 102
+            },
+            "relation": "current-fact"
+          }
+        ],
+        "snapshotFacts": [
+          {
+            "factRef": "proposal.plan.civic",
+            "value": "farmers_market"
+          },
+          {
+            "factRef": "proposal.plan.homes",
+            "value": 20
+          },
+          {
+            "factRef": "proposal.costK",
+            "value": 940
+          },
+          {
+            "factRef": "proposal.annualUpkeepK",
+            "value": 38
+          },
+          {
+            "factRef": "proposal.plan.plaza",
+            "value": false
+          }
+        ]
+      },
+      "steps": [
+        "extract-claims-only",
+        "engine-score",
+        "commit-once",
+        "optional-reaction-from-receipt"
+      ],
+      "criteria": [
+        "C11",
+        "C12",
+        "C13",
+        "C24"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F8-FALSE-OKAFOR",
+      "family": "F8",
+      "fixture": "town-year1",
+      "given": {
+        "planRef": "marketHousing",
+        "memberId": "okafor",
+        "argument": "This plan includes a public plaza.",
+        "source": "typed",
+        "deriveEvidenceSpansFromExactText": false,
+        "fixtureClaimExtraction": [
+          {
+            "claimId": "claim-plaza",
+            "factRef": "proposal.plan.plaza",
+            "assertion": true,
+            "evidence": {
+              "start": 21,
+              "end": 33
+            },
+            "relation": "current-fact"
+          }
+        ],
+        "snapshotFacts": [
+          {
+            "factRef": "proposal.plan.civic",
+            "value": "farmers_market"
+          },
+          {
+            "factRef": "proposal.plan.homes",
+            "value": 20
+          },
+          {
+            "factRef": "proposal.costK",
+            "value": 940
+          },
+          {
+            "factRef": "proposal.annualUpkeepK",
+            "value": 38
+          },
+          {
+            "factRef": "proposal.plan.plaza",
+            "value": false
+          }
+        ]
+      },
+      "steps": [
+        "extract-claims-only",
+        "engine-score",
+        "commit-once",
+        "optional-reaction-from-receipt"
+      ],
+      "criteria": [
+        "C11",
+        "C12",
+        "C13",
+        "C24"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F8-MIXED-OKAFOR",
+      "family": "F8",
+      "fixture": "town-year1",
+      "given": {
+        "planRef": "marketHousing",
+        "memberId": "okafor",
+        "argument": "This proposal includes a farmers market and a public plaza.",
+        "source": "typed",
+        "deriveEvidenceSpansFromExactText": false,
+        "fixtureClaimExtraction": [
+          {
+            "claimId": "claim-market",
+            "factRef": "proposal.plan.civic",
+            "assertion": "farmers_market",
+            "evidence": {
+              "start": 25,
+              "end": 39
+            },
+            "relation": "current-fact"
+          },
+          {
+            "claimId": "claim-plaza",
+            "factRef": "proposal.plan.plaza",
+            "assertion": true,
+            "evidence": {
+              "start": 46,
+              "end": 58
+            },
+            "relation": "current-fact"
+          }
+        ],
+        "snapshotFacts": [
+          {
+            "factRef": "proposal.plan.civic",
+            "value": "farmers_market"
+          },
+          {
+            "factRef": "proposal.plan.homes",
+            "value": 20
+          },
+          {
+            "factRef": "proposal.costK",
+            "value": 940
+          },
+          {
+            "factRef": "proposal.annualUpkeepK",
+            "value": 38
+          },
+          {
+            "factRef": "proposal.plan.plaza",
+            "value": false
+          }
+        ]
+      },
+      "steps": [
+        "extract-claims-only",
+        "engine-score",
+        "commit-once",
+        "optional-reaction-from-receipt"
+      ],
+      "criteria": [
+        "C11",
+        "C12",
+        "C13",
+        "C24"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F8-REACTION-WRONG-MEMBER",
+      "family": "F8",
+      "fixture": "town-year1",
+      "given": {
+        "receiptMemberId": "pryor",
+        "requestedMemberId": "okafor",
+        "realRetainedReceiptAndFingerprint": true
+      },
+      "steps": [
+        "run-declared-stage",
+        "inspect-claim-credit-receipt-quota-and-reaction"
+      ],
+      "criteria": [
+        "C11",
+        "C13",
+        "C18"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F8-WRONG-TYPE",
+      "family": "F8",
+      "fixture": "town-year1",
+      "given": {
+        "receiptType": "spend-favor"
+      },
+      "steps": [
+        "run-declared-stage",
+        "inspect-claim-credit-receipt-quota-and-reaction"
+      ],
+      "criteria": [
+        "C11",
+        "C13",
+        "C18"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F8-WRONG-FINGERPRINT",
+      "family": "F8",
+      "fixture": "town-year1",
+      "given": {
+        "matchingFingerprint": false
+      },
+      "steps": [
+        "run-declared-stage",
+        "inspect-claim-credit-receipt-quota-and-reaction"
+      ],
+      "criteria": [
+        "C11",
+        "C13",
+        "C18"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F8-PRUNED",
+      "family": "F8",
+      "fixture": "town-year1",
+      "given": {
+        "retainedReceipt": false
+      },
+      "steps": [
+        "run-declared-stage",
+        "inspect-claim-credit-receipt-quota-and-reaction"
+      ],
+      "criteria": [
+        "C11",
+        "C13",
+        "C18"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F8-REACTION-FAILURE",
+      "family": "F8",
+      "fixture": "town-year1",
+      "given": {
+        "reactionGeneration": "unavailable"
+      },
+      "steps": [
+        "run-declared-stage",
+        "inspect-claim-credit-receipt-quota-and-reaction"
+      ],
+      "criteria": [
+        "C11",
+        "C13",
+        "C18"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F8-DELAYED-REACTION",
+      "family": "F8",
+      "fixture": "town-year1",
+      "given": {
+        "reactionGeneration": "delayed",
+        "currentStateChanged": true
+      },
+      "steps": [
+        "run-declared-stage",
+        "inspect-claim-credit-receipt-quota-and-reaction"
+      ],
+      "criteria": [
+        "C11",
+        "C13",
+        "C18"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F8-EXTRACT-FAILURE",
+      "family": "F8",
+      "fixture": "town-year1",
+      "given": {
+        "extraction": "invalid",
+        "rawExtractionReplies": [
+          "{",
+          "{"
+        ]
+      },
+      "steps": [
+        "run-declared-stage",
+        "inspect-claim-credit-receipt-quota-and-reaction"
+      ],
+      "criteria": [
+        "C11",
+        "C13",
+        "C18"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F8-EXTRACT-CANCEL",
+      "family": "F8",
+      "fixture": "town-year1",
+      "given": {
+        "extraction": "canceled"
+      },
+      "steps": [
+        "run-declared-stage",
+        "inspect-claim-credit-receipt-quota-and-reaction"
+      ],
+      "criteria": [
+        "C11",
+        "C13",
+        "C18"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F8-EXTRACT-STALE",
+      "family": "F8",
+      "fixture": "town-year1",
+      "given": {
+        "extraction": "stale"
+      },
+      "steps": [
+        "run-declared-stage",
+        "inspect-claim-credit-receipt-quota-and-reaction"
+      ],
+      "criteria": [
+        "C11",
+        "C13",
+        "C18"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F8-QUOTA",
+      "family": "F8",
+      "fixture": "town-year1",
+      "given": {
+        "usedMemberPitchesThisYear": 2
+      },
+      "steps": [
+        "run-declared-stage",
+        "inspect-claim-credit-receipt-quota-and-reaction"
+      ],
+      "criteria": [
+        "C11",
+        "C13",
+        "C18"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F8-NO-CAPITAL",
+      "family": "F8",
+      "fixture": "town-year1",
+      "given": {
+        "capital": 0,
+        "explicitOffer": "favor"
+      },
+      "steps": [
+        "run-declared-stage",
+        "inspect-claim-credit-receipt-quota-and-reaction"
+      ],
+      "criteria": [
+        "C11",
+        "C13",
+        "C18"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F8-NO-CASH",
+      "family": "F8",
+      "fixture": "town-year1",
+      "given": {
+        "cashK": 0,
+        "explicitOffer": "earmark",
+        "amountK": 50
+      },
+      "steps": [
+        "run-declared-stage",
+        "inspect-claim-credit-receipt-quota-and-reaction"
+      ],
+      "criteria": [
+        "C11",
+        "C13",
+        "C18"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F8-PROSE-OFFER",
+      "family": "F8",
+      "fixture": "town-year1",
+      "given": {
+        "argument": "I promise you $50K and a favor.",
+        "explicitOffer": null
+      },
+      "steps": [
+        "run-declared-stage",
+        "inspect-claim-credit-receipt-quota-and-reaction"
+      ],
+      "criteria": [
+        "C11",
+        "C13",
+        "C18"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F8-SATURATION",
+      "family": "F8",
+      "fixture": "town-year1",
+      "given": {
+        "leans": [
+          0,
+          100
+        ]
+      },
+      "steps": [
+        "run-declared-stage",
+        "inspect-claim-credit-receipt-quota-and-reaction"
+      ],
+      "criteria": [
+        "C11",
+        "C13",
+        "C18"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F8-TONE",
+      "family": "F8",
+      "fixture": "town-year1",
+      "given": {
+        "tones": [
+          "respectful",
+          "pushy",
+          "hostile"
+        ]
+      },
+      "steps": [
+        "run-declared-stage",
+        "inspect-claim-credit-receipt-quota-and-reaction"
+      ],
+      "criteria": [
+        "C11",
+        "C13",
+        "C18"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F8-CREDIT",
+      "family": "F8",
+      "fixture": "town-year1",
+      "given": {
+        "specificity": [
+          "strong",
+          "weak",
+          "quick",
+          "none"
+        ],
+        "source": [
+          "typed",
+          "quick"
+        ]
+      },
+      "steps": [
+        "run-declared-stage",
+        "inspect-claim-credit-receipt-quota-and-reaction"
+      ],
+      "criteria": [
+        "C11",
+        "C13",
+        "C18"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F8-SUBDIVISION-CONTRAST",
+      "family": "F8",
+      "fixture": "subdivision-detached",
+      "given": {
+        "seed": 2027,
+        "kind": "subdivision",
+        "detachedNotNormalYearOneAgenda": true,
+        "originalPlan": {
+          "homes": 60,
+          "lotSize": "large",
+          "preserve": false
+        },
+        "candidatePlan": {
+          "homes": 60,
+          "lotSize": "small",
+          "preserve": true
+        },
+        "members": [
+          "pryor",
+          "okafor",
+          "weaver"
+        ]
+      },
+      "steps": [
+        "real-engine-comparison",
+        "same-true-factual-pitch"
+      ],
+      "criteria": [
+        "C12",
+        "C24"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F9-V2",
+      "family": "F9",
+      "fixture": "town-year1",
+      "given": {
+        "sourceFile": "tests/fixtures/millbrooke-v2-save.json",
+        "sourceSha256": "3546793afe2f817ed75c0a5ddd3a41708de2f9c0d8662a67a37e207956501f47",
+        "provenance": "genuine-existing-v2-fixture"
+      },
+      "steps": [
+        "perform-declared-save-or-workspace-case",
+        "inspect-complete-snapshot-backup-input"
+      ],
+      "criteria": [
+        "C02",
+        "C16",
+        "C17",
+        "C21"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F9-V1-SYNTHETIC",
+      "family": "F9",
+      "fixture": "town-year1",
+      "given": {
+        "sourceFile": "tests/fixtures/millbrooke-v2-save.json",
+        "projection": {
+          "setVersion": 1,
+          "removeMeterKeys": [
+            "safety",
+            "afford"
+          ],
+          "removePolicyObject": true,
+          "removeFlagKeys": [
+            "floodRisk"
+          ],
+          "removeHistoryMeterKeys": [
+            "safety",
+            "afford"
+          ]
+        },
+        "provenance": "synthetic-v1-projection, not genuine historical-v1 evidence"
+      },
+      "steps": [
+        "perform-declared-save-or-workspace-case",
+        "inspect-complete-snapshot-backup-input"
+      ],
+      "criteria": [
+        "C02",
+        "C16",
+        "C17",
+        "C21"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F9-V3",
+      "family": "F9",
+      "fixture": "town-year1",
+      "given": {
+        "generateFromBaselineAOnlyAfterDispatch": true,
+        "legacyActionSequence": [
+          "newGame2301",
+          "makeInitiative-marketHousing",
+          "approve-init1-bond",
+          "resolveYear",
+          "makeInitiative-policyOnly",
+          "approve-init2-cash",
+          "applyGrant-park"
+        ],
+        "mustContain": [
+          "used-current-initiative",
+          "built",
+          "pending",
+          "grantPending",
+          "relationships",
+          "finances"
+        ]
+      },
+      "steps": [
+        "perform-declared-save-or-workspace-case",
+        "inspect-complete-snapshot-backup-input"
+      ],
+      "criteria": [
+        "C02",
+        "C16",
+        "C17",
+        "C21"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F9-MIGRATE-TWICE",
+      "family": "F9",
+      "fixture": "town-year1",
+      "given": {
+        "migrationCount": 2
+      },
+      "steps": [
+        "perform-declared-save-or-workspace-case",
+        "inspect-complete-snapshot-backup-input"
+      ],
+      "criteria": [
+        "C02",
+        "C16",
+        "C17",
+        "C21"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F9-FLAG-OFF",
+      "family": "F9",
+      "fixture": "town-year1",
+      "given": {
+        "v4Exists": true,
+        "proposalCouncilV1": false
+      },
+      "steps": [
+        "perform-declared-save-or-workspace-case",
+        "inspect-complete-snapshot-backup-input"
+      ],
+      "criteria": [
+        "C02",
+        "C16",
+        "C17",
+        "C21"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F9-OLD-SHELL",
+      "family": "F9",
+      "fixture": "town-year1",
+      "given": {
+        "baselineShell": "18dded6207f7217021d84b42aad6cc8e00b68f43",
+        "sameOrigin": true,
+        "legacyKey": "masterplan.dev.save",
+        "protectedKey": "masterplan.dev.save.v4"
+      },
+      "steps": [
+        "perform-declared-save-or-workspace-case",
+        "inspect-complete-snapshot-backup-input"
+      ],
+      "criteria": [
+        "C02",
+        "C16",
+        "C17",
+        "C21"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F9-LEGACY-NEWER",
+      "family": "F9",
+      "fixture": "town-year1",
+      "given": {
+        "legacySavedAt": 200,
+        "v4SavedAt": 100
+      },
+      "steps": [
+        "perform-declared-save-or-workspace-case",
+        "inspect-complete-snapshot-backup-input"
+      ],
+      "criteria": [
+        "C02",
+        "C16",
+        "C17",
+        "C21"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F9-CLOUD-NEWER",
+      "family": "F9",
+      "fixture": "town-year1",
+      "given": {
+        "legacyRemoteDoc": "save-dev",
+        "remoteSavedAt": 200,
+        "localV4SavedAt": 100
+      },
+      "steps": [
+        "perform-declared-save-or-workspace-case",
+        "inspect-complete-snapshot-backup-input"
+      ],
+      "criteria": [
+        "C02",
+        "C16",
+        "C17",
+        "C21"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F9-UNKNOWN-FORMAT",
+      "family": "F9",
+      "fixture": "town-year1",
+      "given": {
+        "protectedValue": {
+          "envelopeSchema": "mp.save-envelope/5",
+          "formatFloor": 5,
+          "writerProtocol": "mp.save-writer/2"
+        }
+      },
+      "steps": [
+        "perform-declared-save-or-workspace-case",
+        "inspect-complete-snapshot-backup-input"
+      ],
+      "criteria": [
+        "C02",
+        "C16",
+        "C17",
+        "C21"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F9-CORRUPT",
+      "family": "F9",
+      "fixture": "town-year1",
+      "given": {
+        "protectedRawJson": "{invalid"
+      },
+      "steps": [
+        "perform-declared-save-or-workspace-case",
+        "inspect-complete-snapshot-backup-input"
+      ],
+      "criteria": [
+        "C02",
+        "C16",
+        "C17",
+        "C21"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F9-WRITE-ERROR",
+      "family": "F9",
+      "fixture": "town-year1",
+      "given": {
+        "writeError": "QuotaExceededError"
+      },
+      "steps": [
+        "perform-declared-save-or-workspace-case",
+        "inspect-complete-snapshot-backup-input"
+      ],
+      "criteria": [
+        "C02",
+        "C16",
+        "C17",
+        "C21"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F9-TWO-MIGRATORS",
+      "family": "F9",
+      "fixture": "town-year1",
+      "given": {
+        "sameContextPages": 2,
+        "v4DestinationInitiallyAbsent": true
+      },
+      "steps": [
+        "perform-declared-save-or-workspace-case",
+        "inspect-complete-snapshot-backup-input"
+      ],
+      "criteria": [
+        "C02",
+        "C16",
+        "C17",
+        "C21"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F9-CHANNELS",
+      "family": "F9",
+      "fixture": "town-year1",
+      "given": {
+        "channels": [
+          "dev",
+          "stable"
+        ]
+      },
+      "steps": [
+        "perform-declared-save-or-workspace-case",
+        "inspect-complete-snapshot-backup-input"
+      ],
+      "criteria": [
+        "C02",
+        "C16",
+        "C17",
+        "C21"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F9-RECOVERY-CANCEL",
+      "family": "F9",
+      "fixture": "town-year1",
+      "given": {
+        "cancelKeepsInput": true
+      },
+      "steps": [
+        "perform-declared-save-or-workspace-case",
+        "inspect-complete-snapshot-backup-input"
+      ],
+      "criteria": [
+        "C02",
+        "C16",
+        "C17",
+        "C21"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F9-RECOVERY-COUNT",
+      "family": "F9",
+      "fixture": "town-year1",
+      "given": {
+        "draftCount": 4,
+        "nextWouldExceed": true
+      },
+      "steps": [
+        "perform-declared-save-or-workspace-case",
+        "inspect-complete-snapshot-backup-input"
+      ],
+      "criteria": [
+        "C02",
+        "C16",
+        "C17",
+        "C21"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F9-RECOVERY-VERSIONS",
+      "family": "F9",
+      "fixture": "town-year1",
+      "given": {
+        "versionCount": 8,
+        "nextWouldExceed": true
+      },
+      "steps": [
+        "perform-declared-save-or-workspace-case",
+        "inspect-complete-snapshot-backup-input"
+      ],
+      "criteria": [
+        "C02",
+        "C16",
+        "C17",
+        "C21"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F9-RECOVERY-BYTES",
+      "family": "F9",
+      "fixture": "town-year1",
+      "given": {
+        "utf8Bytes": 131072,
+        "nextWouldExceed": true
+      },
+      "steps": [
+        "perform-declared-save-or-workspace-case",
+        "inspect-complete-snapshot-backup-input"
+      ],
+      "criteria": [
+        "C02",
+        "C16",
+        "C17",
+        "C21"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F9-RECOVERY-NO-EXPIRY",
+      "family": "F9",
+      "fixture": "town-year1",
+      "given": {
+        "elapsedDays": 365
+      },
+      "steps": [
+        "perform-declared-save-or-workspace-case",
+        "inspect-complete-snapshot-backup-input"
+      ],
+      "criteria": [
+        "C02",
+        "C16",
+        "C17",
+        "C21"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F9-RECOVERY-CONFLICT",
+      "family": "F9",
+      "fixture": "town-year1",
+      "given": {
+        "bothReadWorkspaceRevision": 10,
+        "firstWrites": 11
+      },
+      "steps": [
+        "perform-declared-save-or-workspace-case",
+        "inspect-complete-snapshot-backup-input"
+      ],
+      "criteria": [
+        "C02",
+        "C16",
+        "C17",
+        "C21"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F9-RECOVERY-POST-FAIL",
+      "family": "F9",
+      "fixture": "town-year1",
+      "given": {
+        "postWriteFails": true
+      },
+      "steps": [
+        "perform-declared-save-or-workspace-case",
+        "inspect-complete-snapshot-backup-input"
+      ],
+      "criteria": [
+        "C02",
+        "C16",
+        "C17",
+        "C21"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    },
+    {
+      "id": "F9-RECOVERY-REVALIDATE",
+      "family": "F9",
+      "fixture": "town-year1",
+      "given": {
+        "events": [
+          "reload",
+          "turn-change",
+          "scenario-change",
+          "account-replacement"
+        ]
+      },
+      "steps": [
+        "perform-declared-save-or-workspace-case",
+        "inspect-complete-snapshot-backup-input"
+      ],
+      "criteria": [
+        "C02",
+        "C16",
+        "C17",
+        "C21"
+      ],
+      "status": "DECLARATIVE_NOT_EXECUTED"
+    }
+  ]
+}

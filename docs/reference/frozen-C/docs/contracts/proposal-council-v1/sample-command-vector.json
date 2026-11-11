@@ -1,0 +1,15 @@
+{
+  "classification": "normative canonicalization vector; not a runtime execution result",
+  "commandFile": "sample-command.json",
+  "canonicalFile": "sample-command.canonical.json",
+  "canonicalEncoding": "UTF-8, no BOM, no trailing newline",
+  "fingerprintAlgorithm": "SHA-256",
+  "expectedFingerprint": "sha256:7dfc7c5d175af6e36a021cf0482b83ac39d581d927c9a3a6e6fd288c09f0b888",
+  "schemaRef": "commands.schema.json#/$defs/command",
+  "intentDigestInput": "Twenty homes above four shops, a farmers market, green space and rain gardens on these selected plots.",
+  "notes": [
+    "Object keys sorted by UTF-16 units; this vector uses ASCII keys.",
+    "Array order preserved.",
+    "Presence of candidate key is illustrative; this vector does not assert live issuance or executed posting."
+  ]
+}

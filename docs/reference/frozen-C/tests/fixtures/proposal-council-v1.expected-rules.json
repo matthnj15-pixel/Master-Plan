@@ -1,0 +1,1996 @@
+{
+  "contractVersion": "mp.proposals/1",
+  "freezeSource": "approved R1.1",
+  "baselineA": "18dded6207f7217021d84b42aad6cc8e00b68f43",
+  "classification": "STATIC_DECLARATIVE_EXPECTED_RULES",
+  "commandSchemaRef": "urn:master-plan:proposal-council:commands:1#/$defs/command",
+  "implementationEvidence": "UNVERIFIED until D/E after C and dispatch",
+  "predicateLanguage": {
+    "ops": [
+      "eq",
+      "ne",
+      "lt",
+      "lte",
+      "gt",
+      "gte",
+      "in",
+      "all",
+      "any",
+      "factsMissing",
+      "always"
+    ],
+    "order": "first-match; required missing facts preempt material stance as clarify",
+    "arbitraryCode": false
+  },
+  "stancePolicies": {
+    "keystone-route22": {
+      "version": 1,
+      "controller": "keystone",
+      "authority": "own-proposal",
+      "requiredFacts": [
+        "target.kind",
+        "target.site",
+        "candidate.plan.stores",
+        "candidate.plan.parking",
+        "candidate.plan.sidewalk"
+      ],
+      "rules": [
+        {
+          "id": "K-R-REFUSE",
+          "when": {
+            "all": [
+              {
+                "fact": "candidate.plan.stores",
+                "op": "eq",
+                "value": 8
+              },
+              {
+                "fact": "candidate.plan.parking",
+                "op": "eq",
+                "value": 60
+              }
+            ]
+          },
+          "result": {
+            "stance": "refuse",
+            "reasons": [
+              "parking_tradeoff"
+            ],
+            "authorizedChanges": []
+          }
+        },
+        {
+          "id": "K-R-COUNTER",
+          "when": {
+            "fact": "candidate.plan.stores",
+            "op": "eq",
+            "value": 4
+          },
+          "result": {
+            "stance": "counter",
+            "reasons": [
+              "leasable_space"
+            ],
+            "counterPatch": {
+              "stores": 6,
+              "sidewalk": true
+            },
+            "preserveUntouchedFields": true,
+            "authorizeExactlyThisCounter": true
+          }
+        },
+        {
+          "id": "K-R-AGREE-SIDEWALK",
+          "when": {
+            "all": [
+              {
+                "fact": "candidate.plan.stores",
+                "op": "eq",
+                "value": 8
+              },
+              {
+                "fact": "candidate.plan.parking",
+                "op": "eq",
+                "value": 160
+              },
+              {
+                "fact": "candidate.plan.sidewalk",
+                "op": "eq",
+                "value": true
+              }
+            ]
+          },
+          "result": {
+            "stance": "agree",
+            "reasons": [
+              "walking_effect"
+            ],
+            "authorizeExactRequestedPatch": true
+          }
+        },
+        {
+          "id": "K-R-AGREE-CONCESSION",
+          "when": {
+            "all": [
+              {
+                "fact": "candidate.plan.stores",
+                "op": "eq",
+                "value": 6
+              },
+              {
+                "fact": "candidate.plan.parking",
+                "op": "eq",
+                "value": 100
+              },
+              {
+                "fact": "candidate.plan.sidewalk",
+                "op": "eq",
+                "value": true
+              }
+            ]
+          },
+          "result": {
+            "stance": "agree",
+            "reasons": [
+              "leasable_space",
+              "parking_tradeoff"
+            ],
+            "authorizeExactRequestedPatch": true
+          }
+        },
+        {
+          "id": "K-R-DEFAULT",
+          "when": {
+            "always": true
+          },
+          "result": {
+            "stance": "clarify",
+            "reasons": [
+              "facts_missing"
+            ],
+            "authorizedChanges": []
+          }
+        }
+      ]
+    },
+    "bowers-farm": {
+      "version": 1,
+      "controller": "bowers_operator",
+      "authority": "recorded-own-proposal-or-operation",
+      "requiredFacts": [
+        "farm.active",
+        "farm.tenure",
+        "farm.accessLane",
+        "farm.workingFields",
+        "farm.layoutId"
+      ],
+      "rules": [
+        {
+          "id": "B-F-CONSUMED",
+          "when": {
+            "fact": "candidate.layoutId",
+            "op": "eq",
+            "value": "working_site_conversion"
+          },
+          "result": {
+            "stance": "refuse",
+            "reasons": [
+              "working_site_consumed",
+              "farm_succession_priority"
+            ],
+            "authorizedChanges": []
+          }
+        },
+        {
+          "id": "B-F-BLOCKED",
+          "when": {
+            "fact": "candidate.layoutId",
+            "op": "eq",
+            "value": "lane_blocking_stand"
+          },
+          "result": {
+            "stance": "counter",
+            "reasons": [
+              "farm_access_blocked"
+            ],
+            "counterOperatingChange": {
+              "type": "operating-condition",
+              "entityId": "bowers_farm",
+              "field": "layoutId",
+              "value": "pad_stand",
+              "capabilityId": "fixture.farm-layout.v1"
+            },
+            "selectedBoundaryUnchanged": true,
+            "authorizeExactlyThisCounter": true
+          }
+        },
+        {
+          "id": "B-F-RETAINED",
+          "when": {
+            "fact": "candidate.layoutId",
+            "op": "eq",
+            "value": "pad_stand"
+          },
+          "result": {
+            "stance": "agree",
+            "reasons": [
+              "farm_access_retained",
+              "farm_succession_priority"
+            ],
+            "authorizeExactRequestedPatch": true
+          }
+        },
+        {
+          "id": "B-F-DEFAULT",
+          "when": {
+            "always": true
+          },
+          "result": {
+            "stance": "clarify",
+            "reasons": [
+              "facts_missing"
+            ],
+            "authorizedChanges": []
+          }
+        }
+      ]
+    },
+    "college-campus": {
+      "version": 1,
+      "controller": null,
+      "authority": "stakeholder-statement",
+      "requiredFacts": [
+        "distributor.routeId",
+        "distributor.publicSales",
+        "distributor.loadingHours",
+        "distributor.screenedLoading",
+        "route.crossingConflict"
+      ],
+      "rules": [
+        {
+          "id": "C-C-ROUTE",
+          "when": {
+            "fact": "route.crossingConflict",
+            "op": "eq",
+            "value": true
+          },
+          "result": {
+            "stance": "counter",
+            "reasons": [
+              "route_conflict"
+            ],
+            "suggestedPatch": {
+              "routeId": "south_service_route"
+            },
+            "requiredActualController": "keystone",
+            "authorizeChanges": false
+          }
+        },
+        {
+          "id": "C-C-SALES",
+          "when": {
+            "fact": "candidate.publicSales",
+            "op": "eq",
+            "value": true
+          },
+          "result": {
+            "stance": "counter",
+            "reasons": [
+              "public_sales_exposure"
+            ],
+            "suggestedPatch": {
+              "publicSales": false
+            },
+            "requiredActualController": "keystone",
+            "authorizeChanges": false
+          }
+        },
+        {
+          "id": "C-C-HOURS",
+          "when": {
+            "fact": "candidate.loadingHours",
+            "op": "eq",
+            "value": "overnight"
+          },
+          "result": {
+            "stance": "counter",
+            "reasons": [
+              "operating_needs"
+            ],
+            "suggestedPatch": {
+              "loadingHours": "daytime"
+            },
+            "requiredActualController": "keystone",
+            "authorizeChanges": false
+          }
+        },
+        {
+          "id": "C-C-SCREEN",
+          "when": {
+            "fact": "candidate.screenedLoading",
+            "op": "eq",
+            "value": false
+          },
+          "result": {
+            "stance": "counter",
+            "reasons": [
+              "operating_needs"
+            ],
+            "suggestedPatch": {
+              "screenedLoading": true
+            },
+            "requiredActualController": "keystone",
+            "authorizeChanges": false
+          }
+        },
+        {
+          "id": "C-C-FREIGHT",
+          "when": {
+            "all": [
+              {
+                "fact": "route.crossingConflict",
+                "op": "eq",
+                "value": false
+              },
+              {
+                "fact": "candidate.publicSales",
+                "op": "eq",
+                "value": false
+              },
+              {
+                "fact": "candidate.loadingHours",
+                "op": "eq",
+                "value": "daytime"
+              },
+              {
+                "fact": "candidate.screenedLoading",
+                "op": "eq",
+                "value": true
+              }
+            ]
+          },
+          "result": {
+            "stance": "agree",
+            "reasons": [
+              "route_conflict_cleared"
+            ],
+            "authorizeChanges": false,
+            "retailAlcoholConcern": false
+          }
+        },
+        {
+          "id": "C-C-DEFAULT",
+          "when": {
+            "always": true
+          },
+          "result": {
+            "stance": "clarify",
+            "reasons": [
+              "facts_missing"
+            ],
+            "authorizeChanges": false
+          }
+        }
+      ]
+    },
+    "keystone-campus": {
+      "version": 1,
+      "controller": "keystone",
+      "authority": "explicit-fixture-own-operation-delegation",
+      "requiredFacts": [
+        "keystone.delegation",
+        "distributor.routeId",
+        "distributor.publicSales",
+        "distributor.loadingHours",
+        "distributor.screenedLoading"
+      ],
+      "rules": [
+        {
+          "id": "K-C-AGREE",
+          "when": {
+            "all": [
+              {
+                "fact": "candidate.routeId",
+                "op": "eq",
+                "value": "south_service_route"
+              },
+              {
+                "fact": "candidate.publicSales",
+                "op": "eq",
+                "value": false
+              },
+              {
+                "fact": "candidate.loadingHours",
+                "op": "eq",
+                "value": "daytime"
+              },
+              {
+                "fact": "candidate.screenedLoading",
+                "op": "eq",
+                "value": true
+              }
+            ]
+          },
+          "result": {
+            "stance": "agree",
+            "reasons": [
+              "operating_needs"
+            ],
+            "authorizeExactRequestedPatch": true
+          }
+        },
+        {
+          "id": "K-C-COUNTER",
+          "when": {
+            "any": [
+              {
+                "fact": "candidate.routeId",
+                "op": "eq",
+                "value": "campus_crossing"
+              },
+              {
+                "fact": "candidate.publicSales",
+                "op": "eq",
+                "value": true
+              },
+              {
+                "fact": "candidate.loadingHours",
+                "op": "eq",
+                "value": "overnight"
+              },
+              {
+                "fact": "candidate.screenedLoading",
+                "op": "eq",
+                "value": false
+              }
+            ]
+          },
+          "result": {
+            "stance": "counter",
+            "reasons": [
+              "operating_needs"
+            ],
+            "counterOperatingPatch": {
+              "routeId": "south_service_route",
+              "publicSales": false,
+              "loadingHours": "daytime",
+              "screenedLoading": true
+            },
+            "authorizeExactlyThisCounter": true
+          }
+        },
+        {
+          "id": "K-C-DEFAULT",
+          "when": {
+            "always": true
+          },
+          "result": {
+            "stance": "clarify",
+            "reasons": [
+              "facts_missing"
+            ],
+            "authorizedChanges": []
+          }
+        }
+      ]
+    }
+  },
+  "authorityAndGates": {
+    "postController": "mayor",
+    "residentController": "recorded-proposer",
+    "operationController": "recorded-operator",
+    "oneController": true,
+    "stakeholderCanAuthorize": false,
+    "normalExternalConsentGates": [],
+    "requiredConsentCode": "required_consent_unresolved",
+    "conditionCode": "condition_unresolved",
+    "callerOrProseMayMarkSatisfied": false,
+    "noInventedConsentMechanic": true,
+    "createdCommitmentIsNotOwnPrecondition": true,
+    "failureMutatesNeitherStateNorReceipt": true
+  },
+  "previewAndScope": {
+    "requestedFeasiblePreviewBeforeStance": true,
+    "scopeAckBeforeConfirmableSubset": true,
+    "scopeAckIsNotPost": true,
+    "privateDraftReservesNoSite": true,
+    "exactOrderPreserved": true,
+    "fittingExplainsActualQuantityChanges": true,
+    "strictTypesNoSilentCoercion": true,
+    "noSilentParkFallback": true
+  },
+  "persuasion": {
+    "order": [
+      "extract",
+      "engine-validate-score",
+      "commit-once",
+      "optional-receipt-reaction"
+    ],
+    "modelMayClassifyCredit": false,
+    "absentFeatureCode": "claim_absent_feature",
+    "falseClaimCredit": 0,
+    "onlyVerifiedRelevantClaimsEarnCredit": true,
+    "relationshipCreditSeparate": true,
+    "leanCaps": {
+      "strong": 10,
+      "weak": 3,
+      "quick": 3,
+      "favor": 15,
+      "earmark": 8
+    },
+    "rawPointCaps": {
+      "strong": 5,
+      "weak": 1,
+      "quick": 1,
+      "none": 0
+    },
+    "pitchesPerMemberPerYear": 2,
+    "favorCapitalCost": 1,
+    "earmarkKBounds": [
+      1,
+      150
+    ],
+    "proseOfferCanSpend": false,
+    "toneEffects": {
+      "hostile": {
+        "lobbyPoints": -4,
+        "relationship": -6
+      },
+      "pushy": {
+        "lobbyPoints": -1
+      },
+      "respectful": {
+        "relationship": 1
+      }
+    },
+    "failedExtractionSpendsNoQuotaOrRelationship": true,
+    "reactionNeverRescores": true,
+    "legacyInternalClampKBounds": [
+      0,
+      150
+    ],
+    "earmarkBoundaryNote": "explicit command requires integer1..150; legacy internal clamp0 is not an allowed zero-spend action"
+  },
+  "receiptAndReplay": {
+    "schemaRef": "urn:master-plan:proposal-council:commands:1#/$defs/receipt",
+    "receiptLimit": 256,
+    "highWaterNeverPruned": true,
+    "actorIdAlwaysNonNull": true,
+    "memberRequiredFor": [
+      "commit-pitch",
+      "spend-favor",
+      "spend-earmark"
+    ],
+    "fingerprintFormat": "sha256:<64 lowercase hex>",
+    "fullOriginalCommandCanonicalized": true,
+    "semanticBindingNotOnlyEphemeralKey": true,
+    "retainedReplayNeedsLiveKeys": false,
+    "retainedReplayCode": "already_applied",
+    "retainedReplayResult": "stored-original-result, CURRENT-state-unchanged",
+    "changedSameIdCode": "command_mismatch",
+    "prunedSequenceCode": "duplicate_action",
+    "prunedResultGuaranteed": false,
+    "wrongMemberReactionCode": "reaction_member_mismatch"
+  },
+  "saveWriter": {
+    "localLock": "masterplan.save-slot.<channel>.primary",
+    "replicaLock": "masterplan.save-replica.<channel>.primary",
+    "scope": "same origin+channel+slot, never gameId or deployment",
+    "rereadInsideLock": true,
+    "compare": [
+      "storageGeneration",
+      "gameId",
+      "stateRevision",
+      "activation",
+      "dependencySignature"
+    ],
+    "generationNeverResetsOnNewGame": true,
+    "allUpdatedWriters": [
+      "migration",
+      "new-game",
+      "gameplay",
+      "import",
+      "reset",
+      "replace",
+      "autosave",
+      "account-replacement",
+      "save-related-dev-controls"
+    ],
+    "oneEnvelopeBeforePublish": true,
+    "noModelOrNetworkUnderLocalLock": true,
+    "noReplicaLockWhileHoldingLocalLock": true,
+    "unsafeCompareSetLeaseFallback": false,
+    "lockUnavailableCode": "save_lock_unavailable",
+    "safeFallback": "read-only-no-authoritative-write",
+    "sameContextTwoPagesRequired": true,
+    "noAutomaticTimestampRestore": true,
+    "noDistributedCloudCASClaim": true
+  },
+  "formatFence": {
+    "envelopeSchema": "mp.save-envelope/4",
+    "writerProtocol": "mp.save-writer/1",
+    "floor": 4,
+    "browserKeys": {
+      "dev": "masterplan.dev.save.v4",
+      "stable": "masterplan.stable.save.v4"
+    },
+    "accountDocs": {
+      "dev": "save-dev-v4",
+      "stable": "save-v4"
+    },
+    "legacyKeys": {
+      "dev": "masterplan.dev.save",
+      "stable": "millbrook.v1"
+    },
+    "legacyAccountDocs": {
+      "dev": "save-dev",
+      "stable": "save"
+    },
+    "legacyBackupImmutable": true,
+    "probeOutsideFlag": true,
+    "featureOffMode": "protected-read-only",
+    "unknownCorruptCode": "unsupported_storage_format",
+    "noV4MirrorToLegacy": true,
+    "oldShellOnlyTouchesSeparateLegacyBranch": true
+  },
+  "recovery": {
+    "localOnly": true,
+    "drafts": 4,
+    "versionsPerDraft": 8,
+    "utf8BytesPerGame": 131072,
+    "expiry": null,
+    "noSilentEvictionTruncationMerge": true,
+    "slotLockAndWorkspaceRevision": true,
+    "conflictCode": "workspace_conflict",
+    "losingInputPreserved": true,
+    "workspaceWriteBumpsGameGeneration": false,
+    "scratchClearOnlyAfterDurablePost": true,
+    "cachedInputIsNotAuthority": true
+  },
+  "providerBounds": {
+    "inputCharacters": 2000,
+    "fullPlotsEngineLocal": 576,
+    "facts": 32,
+    "historyRecords": 3,
+    "claims": 8,
+    "omissions": 8,
+    "questions": 2,
+    "repairAttempts": 1,
+    "interpretationGenerations": 2,
+    "optionalExpressionGenerations": 1,
+    "qwenMaxTokens": 640,
+    "qwenTemperature": 0.2,
+    "serializedQueueAndInstalledCache": true,
+    "noAssumedContextWindow": true,
+    "noTruncatingFullIntentToFit": true
+  },
+  "provenanceAndEconomics": {
+    "domainCapabilitiesFixtureOnly": [
+      "fixture.farm-layout.v1",
+      "fixture.distributor-operations.v1"
+    ],
+    "fixedPhysicalWrapperOperationOnlyRepresentedDelta": 0,
+    "unmodeledEconomicsLabeled": true,
+    "beliefFlavorMayCreateFacts": false,
+    "onlyPinnedMeasuredReferences": [
+      "B0",
+      "B1"
+    ],
+    "newImplementationOutputsAtC": "MOCK/DECLARATIVE, UNVERIFIED"
+  },
+  "freezeSequence": {
+    "C": [
+      "contract",
+      "static-inputs",
+      "expected-rules",
+      "mock-shapes",
+      "hashes",
+      "B0-B1-references"
+    ],
+    "CRequiresExecutableFactory": false,
+    "DAssertionsOnlyAfterCAndDispatch": true,
+    "newMeasuredEvidenceOnlyAfter": [
+      "D",
+      "W1",
+      "I"
+    ],
+    "separateEvidence": [
+      "static",
+      "engine",
+      "browser-fixture",
+      "live-provider",
+      "physical-Duo"
+    ]
+  },
+  "caseExpectations": [
+    {
+      "caseId": "F1",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "privateActionsUnchanged": [
+        "agenda",
+        "initiativeYear",
+        "money",
+        "relationships",
+        "year",
+        "publicSave"
+      ],
+      "postCount": 1,
+      "postController": "mayor",
+      "postAllowedWhenCostExceedsCash": true,
+      "laterNumbers": "derive actual full-loop outputs after D; B1 no-other-actions is separate",
+      "exactApprovedGeometryAndPlanPersist": true
+    },
+    {
+      "caseId": "F1-USED",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "canDraft": true,
+      "canPost": false,
+      "code": "initiative_used",
+      "privatePreviewSpendsNothing": true
+    },
+    {
+      "caseId": "F2",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "comparisonReadOnly": true,
+      "useRealEngineWinner": true,
+      "expectedOutcome": "one option formally approved, other open group option rejected once",
+      "duplicateResourcesAndPendingWork": false,
+      "newForecastNumbers": "measured after D, not at C"
+    },
+    {
+      "caseId": "F2-PENDING",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "oldPreviewCode": "stale_revision",
+      "pendingOverlapCode": "site_conflict",
+      "freshBuiltRedevelopmentUsesDemolitionAcquisition": true
+    },
+    {
+      "caseId": "F2-GRANT",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "oldPreviewCode": "stale_revision",
+      "pendingOverlapCode": "site_conflict",
+      "freshBuiltRedevelopmentUsesDemolitionAcquisition": true
+    },
+    {
+      "caseId": "F2-OVERLAP",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "oldPreviewCode": "stale_revision",
+      "pendingOverlapCode": "site_conflict",
+      "freshBuiltRedevelopmentUsesDemolitionAcquisition": true
+    },
+    {
+      "caseId": "F2-REDEVELOP",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "oldPreviewCode": "stale_revision",
+      "pendingOverlapCode": "site_conflict",
+      "freshBuiltRedevelopmentUsesDemolitionAcquisition": true
+    },
+    {
+      "caseId": "F3-AGREE",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "stance": "agree",
+      "counterPatch": null,
+      "originalSiteAuthorUntouchedFieldsPreserved": true,
+      "requiresExplicitConfirmation": true,
+      "refusalEnablesConfirm": false
+    },
+    {
+      "caseId": "F3-COUNTER",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "stance": "counter",
+      "counterPatch": {
+        "stores": 6,
+        "sidewalk": true
+      },
+      "originalSiteAuthorUntouchedFieldsPreserved": true,
+      "requiresExplicitConfirmation": true,
+      "refusalEnablesConfirm": false
+    },
+    {
+      "caseId": "F3-REFUSE",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "stance": "refuse",
+      "counterPatch": null,
+      "originalSiteAuthorUntouchedFieldsPreserved": true,
+      "requiresExplicitConfirmation": true,
+      "refusalEnablesConfirm": false
+    },
+    {
+      "caseId": "F3-CONCESSION",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "stance": "agree",
+      "counterPatch": null,
+      "originalSiteAuthorUntouchedFieldsPreserved": true,
+      "requiresExplicitConfirmation": true,
+      "refusalEnablesConfirm": false
+    },
+    {
+      "caseId": "F3-GATE-CONSENT",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "confirmEnabled": false,
+      "code": "required_consent_unresolved",
+      "unchanged": [
+        "plan",
+        "resources",
+        "relationships",
+        "receipts"
+      ],
+      "inventResolutionAction": false,
+      "status": "invalid"
+    },
+    {
+      "caseId": "F3-GATE-CONDITION",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "confirmEnabled": false,
+      "code": "condition_unresolved",
+      "unchanged": [
+        "plan",
+        "resources",
+        "relationships",
+        "receipts"
+      ],
+      "inventResolutionAction": false,
+      "status": "invalid"
+    },
+    {
+      "caseId": "F3-GATE-UNSUPPORTED",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "confirmEnabled": false,
+      "code": "required_consent_unresolved",
+      "unchanged": [
+        "plan",
+        "resources",
+        "relationships",
+        "receipts"
+      ],
+      "inventResolutionAction": false,
+      "status": "invalid"
+    },
+    {
+      "caseId": "F3-GATE-RESOLVED",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "onlyRecognizedCompletedActionSatisfiesPrerequisite": true,
+      "newConsentMechanic": false,
+      "repreviewAtNewRevision": true
+    },
+    {
+      "caseId": "F4-AGREE",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "stance": "agree",
+      "counterLayoutId": null,
+      "selectedBoundaryNeverChanges": true,
+      "operationOnlyRepresentedEconomicDelta": 0
+    },
+    {
+      "caseId": "F4-COUNTER",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "stance": "counter",
+      "counterLayoutId": "pad_stand",
+      "selectedBoundaryNeverChanges": true,
+      "operationOnlyRepresentedEconomicDelta": 0
+    },
+    {
+      "caseId": "F4-REFUSE",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "stance": "refuse",
+      "counterLayoutId": null,
+      "selectedBoundaryNeverChanges": true,
+      "operationOnlyRepresentedEconomicDelta": 0
+    },
+    {
+      "caseId": "F4-MISSING",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "stance": "clarify",
+      "code": "facts_missing",
+      "inventFacts": false
+    },
+    {
+      "caseId": "F4-TENANT-TITLE",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "authority_mismatch",
+      "noOwnerConsentFromProse": true
+    },
+    {
+      "caseId": "F4-NONCIRCULAR",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "ownCreatedCommitmentNotPrecondition": true,
+      "inEffectNotInventedBeforeDecision": true
+    },
+    {
+      "caseId": "F5-FREIGHT",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "collegeStance": "agree",
+      "collegeAuthorizer": null,
+      "actualController": "keystone",
+      "operationOnlyRepresentedEconomicDelta": 0,
+      "freightOnlyInheritsRetailAlcoholConcern": false
+    },
+    {
+      "caseId": "F5-CROSSING",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "collegeStance": "counter",
+      "collegeAuthorizer": null,
+      "actualController": "keystone",
+      "operationOnlyRepresentedEconomicDelta": 0,
+      "freightOnlyInheritsRetailAlcoholConcern": false
+    },
+    {
+      "caseId": "F5-ROUTE-CORRECTED",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "collegeStance": "agree",
+      "collegeAuthorizer": null,
+      "actualController": "keystone",
+      "operationOnlyRepresentedEconomicDelta": 0,
+      "freightOnlyInheritsRetailAlcoholConcern": false
+    },
+    {
+      "caseId": "F5-PUBLIC-SALES",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "collegeStance": "counter",
+      "collegeAuthorizer": null,
+      "actualController": "keystone",
+      "operationOnlyRepresentedEconomicDelta": 0,
+      "freightOnlyInheritsRetailAlcoholConcern": false
+    },
+    {
+      "caseId": "F5-OVERNIGHT",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "collegeStance": "counter",
+      "collegeAuthorizer": null,
+      "actualController": "keystone",
+      "operationOnlyRepresentedEconomicDelta": 0,
+      "freightOnlyInheritsRetailAlcoholConcern": false
+    },
+    {
+      "caseId": "F5-UNSCREENED",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "collegeStance": "counter",
+      "collegeAuthorizer": null,
+      "actualController": "keystone",
+      "operationOnlyRepresentedEconomicDelta": 0,
+      "freightOnlyInheritsRetailAlcoholConcern": false
+    },
+    {
+      "caseId": "F5-CONSUMPTION",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "unsupported_operation",
+      "noInventedLicenseOrConsumption": true
+    },
+    {
+      "caseId": "F5-MISSING",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "stance": "clarify",
+      "code": "facts_missing"
+    },
+    {
+      "caseId": "F5-WRONG-AUTHORIZER",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "authority_mismatch",
+      "partialMutationOrReceipt": false
+    },
+    {
+      "caseId": "F6-STALE-PLAN",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "stale_revision",
+      "applied": false,
+      "partialStateOrReceipt": false
+    },
+    {
+      "caseId": "F6-STALE-PRESENTER-REL",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "stale_revision",
+      "applied": false,
+      "partialStateOrReceipt": false
+    },
+    {
+      "caseId": "F6-STALE-COUNCIL-REL",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "stale_revision",
+      "applied": false,
+      "partialStateOrReceipt": false
+    },
+    {
+      "caseId": "F6-STALE-LOBBY",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "stale_revision",
+      "applied": false,
+      "partialStateOrReceipt": false
+    },
+    {
+      "caseId": "F6-STALE-QUOTA",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "stale_revision",
+      "applied": false,
+      "partialStateOrReceipt": false
+    },
+    {
+      "caseId": "F6-STALE-CASH",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "stale_revision",
+      "applied": false,
+      "partialStateOrReceipt": false
+    },
+    {
+      "caseId": "F6-STALE-CAPITAL",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "stale_revision",
+      "applied": false,
+      "partialStateOrReceipt": false
+    },
+    {
+      "caseId": "F6-STALE-GRANT",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "stale_revision",
+      "applied": false,
+      "partialStateOrReceipt": false
+    },
+    {
+      "caseId": "F6-STALE-OCCUPANCY",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "stale_revision",
+      "applied": false,
+      "partialStateOrReceipt": false
+    },
+    {
+      "caseId": "F6-STALE-BUILT",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "stale_revision",
+      "applied": false,
+      "partialStateOrReceipt": false
+    },
+    {
+      "caseId": "F6-STALE-FACT",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "stale_revision",
+      "applied": false,
+      "partialStateOrReceipt": false
+    },
+    {
+      "caseId": "F6-STALE-PROFILE",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "stale_revision",
+      "applied": false,
+      "partialStateOrReceipt": false
+    },
+    {
+      "caseId": "F6-STALE-CLOSED",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "stale_revision",
+      "applied": false,
+      "partialStateOrReceipt": false
+    },
+    {
+      "caseId": "F6-STALE-TAX",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "stale_revision",
+      "applied": false,
+      "partialStateOrReceipt": false
+    },
+    {
+      "caseId": "F6-STALE-TURN",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "stale_revision",
+      "applied": false,
+      "partialStateOrReceipt": false
+    },
+    {
+      "caseId": "F6-STALE-CONDITION",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "stale_revision",
+      "applied": false,
+      "partialStateOrReceipt": false
+    },
+    {
+      "caseId": "F6-STALE-COMPETITOR",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "stale_revision",
+      "applied": false,
+      "partialStateOrReceipt": false
+    },
+    {
+      "caseId": "F6-REQUEST-LOAD-EQUAL",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "newMutation": false,
+      "oldKeysRevoked": true,
+      "intentPreserved": true,
+      "directOldCommitCode": "stale_revision",
+      "generationCancellationCode": "request_canceled"
+    },
+    {
+      "caseId": "F6-REQUEST-LOAD-OLDER",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "newMutation": false,
+      "oldKeysRevoked": true,
+      "intentPreserved": true,
+      "directOldCommitCode": "stale_revision",
+      "generationCancellationCode": "request_canceled"
+    },
+    {
+      "caseId": "F6-REQUEST-PROVIDER",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "newMutation": false,
+      "oldKeysRevoked": true,
+      "intentPreserved": true,
+      "directOldCommitCode": "stale_revision",
+      "generationCancellationCode": "request_canceled"
+    },
+    {
+      "caseId": "F6-REQUEST-TEXT",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "newMutation": false,
+      "oldKeysRevoked": true,
+      "intentPreserved": true,
+      "directOldCommitCode": "stale_revision",
+      "generationCancellationCode": "request_canceled"
+    },
+    {
+      "caseId": "F6-REQUEST-PLOTS",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "newMutation": false,
+      "oldKeysRevoked": true,
+      "intentPreserved": true,
+      "directOldCommitCode": "stale_revision",
+      "generationCancellationCode": "request_canceled"
+    },
+    {
+      "caseId": "F6-REQUEST-SHEET",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "newMutation": false,
+      "oldKeysRevoked": true,
+      "intentPreserved": true,
+      "directOldCommitCode": "stale_revision",
+      "generationCancellationCode": "request_canceled"
+    },
+    {
+      "caseId": "F6-REQUEST-CANCEL",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "newMutation": false,
+      "oldKeysRevoked": true,
+      "intentPreserved": true,
+      "directOldCommitCode": "stale_revision",
+      "generationCancellationCode": "request_canceled"
+    },
+    {
+      "caseId": "F6-SITE-ROAD",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "exactSelectionNotFilteredOrRelocated": true,
+      "declaredOutcome": "plot_invalid"
+    },
+    {
+      "caseId": "F6-SITE-OOB",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "exactSelectionNotFilteredOrRelocated": true,
+      "declaredOutcome": "plot_invalid"
+    },
+    {
+      "caseId": "F6-SITE-FRACTIONAL",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "exactSelectionNotFilteredOrRelocated": true,
+      "declaredOutcome": "plot_invalid"
+    },
+    {
+      "caseId": "F6-SITE-DUPLICATE",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "exactSelectionNotFilteredOrRelocated": true,
+      "declaredOutcome": "plot_invalid"
+    },
+    {
+      "caseId": "F6-SITE-CONSTRUCTION",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "exactSelectionNotFilteredOrRelocated": true,
+      "declaredOutcome": "plot_invalid"
+    },
+    {
+      "caseId": "F6-SITE-COLLEGE",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "exactSelectionNotFilteredOrRelocated": true,
+      "declaredOutcome": "priced-acquisition-backlash-not-automatic-owner-veto"
+    },
+    {
+      "caseId": "F6-SITE-CAPACITY",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "exactSelectionNotFilteredOrRelocated": true,
+      "declaredOutcome": "explicit-fitting-and-scope-not-silent-relocation"
+    },
+    {
+      "caseId": "F6-SITE-POLICY",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "exactSelectionNotFilteredOrRelocated": true,
+      "declaredOutcome": "valid-no-site"
+    },
+    {
+      "caseId": "F6-SITE-PHYSICAL-TO-POLICY",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "exactSelectionNotFilteredOrRelocated": true,
+      "declaredOutcome": "unsupported-site-mode-crossing"
+    },
+    {
+      "caseId": "F6-SITE-POLICY-TO-PHYSICAL",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "exactSelectionNotFilteredOrRelocated": true,
+      "declaredOutcome": "site-required-no-hidden-relocation"
+    },
+    {
+      "caseId": "F6-SITE-OCCUPIED-HOUSING",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "exactSelectionNotFilteredOrRelocated": true,
+      "declaredOutcome": "real-demolition-displacement-forecast"
+    },
+    {
+      "caseId": "F6-REPLAY-EXACT",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "already_applied",
+      "applied": false,
+      "currentStateUnchanged": true,
+      "originalResultReturned": true
+    },
+    {
+      "caseId": "F6-REPLAY-OBJECT-ORDER",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "already_applied",
+      "applied": false,
+      "currentStateUnchanged": true,
+      "originalResultReturned": true
+    },
+    {
+      "caseId": "F6-REPLAY-TYPE",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "command_mismatch",
+      "applied": false,
+      "currentStateUnchanged": true,
+      "originalResultReturned": false
+    },
+    {
+      "caseId": "F6-REPLAY-MEMBER",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "command_mismatch",
+      "applied": false,
+      "currentStateUnchanged": true,
+      "originalResultReturned": false
+    },
+    {
+      "caseId": "F6-REPLAY-ACTOR",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "command_mismatch",
+      "applied": false,
+      "currentStateUnchanged": true,
+      "originalResultReturned": false
+    },
+    {
+      "caseId": "F6-REPLAY-AUTHORIZER",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "command_mismatch",
+      "applied": false,
+      "currentStateUnchanged": true,
+      "originalResultReturned": false
+    },
+    {
+      "caseId": "F6-REPLAY-TARGET",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "command_mismatch",
+      "applied": false,
+      "currentStateUnchanged": true,
+      "originalResultReturned": false
+    },
+    {
+      "caseId": "F6-REPLAY-PLAN",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "command_mismatch",
+      "applied": false,
+      "currentStateUnchanged": true,
+      "originalResultReturned": false
+    },
+    {
+      "caseId": "F6-REPLAY-PLOT-ORDER",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "command_mismatch",
+      "applied": false,
+      "currentStateUnchanged": true,
+      "originalResultReturned": false
+    },
+    {
+      "caseId": "F6-REPLAY-ROLE",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "command_mismatch",
+      "applied": false,
+      "currentStateUnchanged": true,
+      "originalResultReturned": false
+    },
+    {
+      "caseId": "F6-REPLAY-OPERATING",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "command_mismatch",
+      "applied": false,
+      "currentStateUnchanged": true,
+      "originalResultReturned": false
+    },
+    {
+      "caseId": "F6-REPLAY-SCOPE",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "command_mismatch",
+      "applied": false,
+      "currentStateUnchanged": true,
+      "originalResultReturned": false
+    },
+    {
+      "caseId": "F6-REPLAY-FUNDING",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "command_mismatch",
+      "applied": false,
+      "currentStateUnchanged": true,
+      "originalResultReturned": false
+    },
+    {
+      "caseId": "F6-REPLAY-AMOUNT",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "command_mismatch",
+      "applied": false,
+      "currentStateUnchanged": true,
+      "originalResultReturned": false
+    },
+    {
+      "caseId": "F6-REPLAY-PRUNED",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "duplicate_action",
+      "applied": false,
+      "originalResultGuaranteed": false
+    },
+    {
+      "caseId": "F6-T1",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "sameOriginSerialization": true,
+      "losingInputPreserved": true,
+      "separateBrowserContextsNotEvidence": true,
+      "codeForLosingBody": "command_mismatch",
+      "durablePosts": 1,
+      "initiativeSpends": 1
+    },
+    {
+      "caseId": "F6-T2",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "sameOriginSerialization": true,
+      "losingInputPreserved": true,
+      "separateBrowserContextsNotEvidence": true,
+      "code": "already_applied",
+      "writes": 0
+    },
+    {
+      "caseId": "F6-T3",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "sameOriginSerialization": true,
+      "losingInputPreserved": true,
+      "separateBrowserContextsNotEvidence": true,
+      "obsoleteSnapshotCanReplaceCurrent": false
+    },
+    {
+      "caseId": "F6-T4",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "sameOriginSerialization": true,
+      "losingInputPreserved": true,
+      "separateBrowserContextsNotEvidence": true,
+      "obsoleteSnapshotCanReplaceCurrent": false
+    },
+    {
+      "caseId": "F6-T5",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "sameOriginSerialization": true,
+      "losingInputPreserved": true,
+      "separateBrowserContextsNotEvidence": true,
+      "obsoleteSnapshotCanReplaceCurrent": false
+    },
+    {
+      "caseId": "F6-T6",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "sameOriginSerialization": true,
+      "losingInputPreserved": true,
+      "separateBrowserContextsNotEvidence": true,
+      "obsoleteSnapshotCanReplaceCurrent": false
+    },
+    {
+      "caseId": "F6-T7",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "sameOriginSerialization": true,
+      "losingInputPreserved": true,
+      "separateBrowserContextsNotEvidence": true,
+      "code": "workspace_conflict",
+      "gameGenerationUnchanged": true
+    },
+    {
+      "caseId": "F6-T8",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "sameOriginSerialization": true,
+      "losingInputPreserved": true,
+      "separateBrowserContextsNotEvidence": true,
+      "code": "save_lock_unavailable",
+      "mode": "read-only-no-authoritative-write"
+    },
+    {
+      "caseId": "F7-MIXED",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "none",
+      "originalIntentAndPlotsPreserved": true,
+      "silentUnrelatedFallback": false,
+      "scopeAckBeforeConfirmableSubset": true,
+      "structureAndIntentScoredSeparately": true
+    },
+    {
+      "caseId": "F7-REDEVELOP",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "none",
+      "originalIntentAndPlotsPreserved": true,
+      "silentUnrelatedFallback": false,
+      "scopeAckBeforeConfirmableSubset": true,
+      "structureAndIntentScoredSeparately": true
+    },
+    {
+      "caseId": "F7-PARTIAL",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "scope_ack_required",
+      "originalIntentAndPlotsPreserved": true,
+      "silentUnrelatedFallback": false,
+      "scopeAckBeforeConfirmableSubset": true,
+      "structureAndIntentScoredSeparately": true
+    },
+    {
+      "caseId": "F7-UNSUPPORTED",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "unsupported_operation",
+      "originalIntentAndPlotsPreserved": true,
+      "silentUnrelatedFallback": false,
+      "scopeAckBeforeConfirmableSubset": true,
+      "structureAndIntentScoredSeparately": true
+    },
+    {
+      "caseId": "F7-INFEASIBLE",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "plot_invalid",
+      "originalIntentAndPlotsPreserved": true,
+      "silentUnrelatedFallback": false,
+      "scopeAckBeforeConfirmableSubset": true,
+      "structureAndIntentScoredSeparately": true
+    },
+    {
+      "caseId": "F7-NARROW",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "none",
+      "originalIntentAndPlotsPreserved": true,
+      "silentUnrelatedFallback": false,
+      "scopeAckBeforeConfirmableSubset": true,
+      "structureAndIntentScoredSeparately": true
+    },
+    {
+      "caseId": "F7-UNKNOWN-SITE",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "site_required",
+      "originalIntentAndPlotsPreserved": true,
+      "silentUnrelatedFallback": false,
+      "scopeAckBeforeConfirmableSubset": true,
+      "structureAndIntentScoredSeparately": true
+    },
+    {
+      "caseId": "F7-RUNTIME",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "runtime_unavailable",
+      "originalIntentAndPlotsPreserved": true,
+      "silentUnrelatedFallback": false,
+      "scopeAckBeforeConfirmableSubset": true,
+      "structureAndIntentScoredSeparately": true
+    },
+    {
+      "caseId": "F7-JSON",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "malformed_json",
+      "originalIntentAndPlotsPreserved": true,
+      "silentUnrelatedFallback": false,
+      "scopeAckBeforeConfirmableSubset": true,
+      "structureAndIntentScoredSeparately": true
+    },
+    {
+      "caseId": "F7-UNKNOWN-FIELD",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "unknown_field",
+      "originalIntentAndPlotsPreserved": true,
+      "silentUnrelatedFallback": false,
+      "scopeAckBeforeConfirmableSubset": true,
+      "structureAndIntentScoredSeparately": true
+    },
+    {
+      "caseId": "F7-TYPE",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "wrong_type",
+      "originalIntentAndPlotsPreserved": true,
+      "silentUnrelatedFallback": false,
+      "scopeAckBeforeConfirmableSubset": true,
+      "structureAndIntentScoredSeparately": true
+    },
+    {
+      "caseId": "F7-RANGE",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "value_out_of_range",
+      "originalIntentAndPlotsPreserved": true,
+      "silentUnrelatedFallback": false,
+      "scopeAckBeforeConfirmableSubset": true,
+      "structureAndIntentScoredSeparately": true
+    },
+    {
+      "caseId": "F7-REPAIR",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "malformed_json",
+      "originalIntentAndPlotsPreserved": true,
+      "silentUnrelatedFallback": false,
+      "scopeAckBeforeConfirmableSubset": true,
+      "structureAndIntentScoredSeparately": true
+    },
+    {
+      "caseId": "F7-INTENT",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "unsupported_operation",
+      "originalIntentAndPlotsPreserved": true,
+      "silentUnrelatedFallback": false,
+      "scopeAckBeforeConfirmableSubset": true,
+      "structureAndIntentScoredSeparately": true
+    },
+    {
+      "caseId": "F7-CONTEXT",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "context_limit",
+      "originalIntentAndPlotsPreserved": true,
+      "silentUnrelatedFallback": false,
+      "scopeAckBeforeConfirmableSubset": true,
+      "structureAndIntentScoredSeparately": true
+    },
+    {
+      "caseId": "F7-LIMIT",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "input_limit",
+      "originalIntentAndPlotsPreserved": true,
+      "silentUnrelatedFallback": false,
+      "scopeAckBeforeConfirmableSubset": true,
+      "structureAndIntentScoredSeparately": true
+    },
+    {
+      "caseId": "F7-PRIVACY",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "code": "none",
+      "originalIntentAndPlotsPreserved": true,
+      "silentUnrelatedFallback": false,
+      "scopeAckBeforeConfirmableSubset": true,
+      "structureAndIntentScoredSeparately": true
+    },
+    {
+      "caseId": "F8-TRUE-PRYOR",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "falseClaimCredit": null,
+      "claimCode": null,
+      "onlyVerifiedRelevantClaimsEarnCredit": true,
+      "existingRespectfulRelationshipEffectSeparate": true,
+      "newLeanNumbers": "observe after D, do not invent at C"
+    },
+    {
+      "caseId": "F8-FALSE-PRYOR",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "falseClaimCredit": 0,
+      "claimCode": "claim_absent_feature",
+      "onlyVerifiedRelevantClaimsEarnCredit": true,
+      "existingRespectfulRelationshipEffectSeparate": true,
+      "newLeanNumbers": "observe after D, do not invent at C"
+    },
+    {
+      "caseId": "F8-MIXED-PRYOR",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "falseClaimCredit": 0,
+      "claimCode": "claim_absent_feature",
+      "onlyVerifiedRelevantClaimsEarnCredit": true,
+      "existingRespectfulRelationshipEffectSeparate": true,
+      "newLeanNumbers": "observe after D, do not invent at C"
+    },
+    {
+      "caseId": "F8-TRUE-OKAFOR",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "falseClaimCredit": null,
+      "claimCode": null,
+      "onlyVerifiedRelevantClaimsEarnCredit": true,
+      "existingRespectfulRelationshipEffectSeparate": true,
+      "newLeanNumbers": "observe after D, do not invent at C"
+    },
+    {
+      "caseId": "F8-FALSE-OKAFOR",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "falseClaimCredit": 0,
+      "claimCode": "claim_absent_feature",
+      "onlyVerifiedRelevantClaimsEarnCredit": true,
+      "existingRespectfulRelationshipEffectSeparate": true,
+      "newLeanNumbers": "observe after D, do not invent at C"
+    },
+    {
+      "caseId": "F8-MIXED-OKAFOR",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "falseClaimCredit": 0,
+      "claimCode": "claim_absent_feature",
+      "onlyVerifiedRelevantClaimsEarnCredit": true,
+      "existingRespectfulRelationshipEffectSeparate": true,
+      "newLeanNumbers": "observe after D, do not invent at C"
+    },
+    {
+      "caseId": "F8-REACTION-WRONG-MEMBER",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "wrongMemberCode": "reaction_member_mismatch",
+      "reactionNeverRescores": true,
+      "invalidUnavailableCanceledStaleExtractionSpendsNothing": true,
+      "onlyExplicitOffersMaySpend": true,
+      "code": "reaction_member_mismatch"
+    },
+    {
+      "caseId": "F8-WRONG-TYPE",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "wrongMemberCode": null,
+      "reactionNeverRescores": true,
+      "invalidUnavailableCanceledStaleExtractionSpendsNothing": true,
+      "onlyExplicitOffersMaySpend": true,
+      "code": "receipt_not_found"
+    },
+    {
+      "caseId": "F8-WRONG-FINGERPRINT",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "wrongMemberCode": null,
+      "reactionNeverRescores": true,
+      "invalidUnavailableCanceledStaleExtractionSpendsNothing": true,
+      "onlyExplicitOffersMaySpend": true,
+      "code": "command_mismatch"
+    },
+    {
+      "caseId": "F8-PRUNED",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "wrongMemberCode": null,
+      "reactionNeverRescores": true,
+      "invalidUnavailableCanceledStaleExtractionSpendsNothing": true,
+      "onlyExplicitOffersMaySpend": true,
+      "code": "receipt_not_found"
+    },
+    {
+      "caseId": "F8-REACTION-FAILURE",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "wrongMemberCode": null,
+      "reactionNeverRescores": true,
+      "invalidUnavailableCanceledStaleExtractionSpendsNothing": true,
+      "onlyExplicitOffersMaySpend": true,
+      "expressionCode": "runtime_unavailable",
+      "pitchReceiptRemainsApplied": true,
+      "secondPitchEffect": false
+    },
+    {
+      "caseId": "F8-DELAYED-REACTION",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "wrongMemberCode": null,
+      "reactionNeverRescores": true,
+      "invalidUnavailableCanceledStaleExtractionSpendsNothing": true,
+      "onlyExplicitOffersMaySpend": true
+    },
+    {
+      "caseId": "F8-EXTRACT-FAILURE",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "wrongMemberCode": null,
+      "reactionNeverRescores": true,
+      "invalidUnavailableCanceledStaleExtractionSpendsNothing": true,
+      "onlyExplicitOffersMaySpend": true,
+      "code": "malformed_json",
+      "newQuotaAndRelationshipEffects": 0
+    },
+    {
+      "caseId": "F8-EXTRACT-CANCEL",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "wrongMemberCode": null,
+      "reactionNeverRescores": true,
+      "invalidUnavailableCanceledStaleExtractionSpendsNothing": true,
+      "onlyExplicitOffersMaySpend": true,
+      "code": "request_canceled",
+      "newQuotaAndRelationshipEffects": 0
+    },
+    {
+      "caseId": "F8-EXTRACT-STALE",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "wrongMemberCode": null,
+      "reactionNeverRescores": true,
+      "invalidUnavailableCanceledStaleExtractionSpendsNothing": true,
+      "onlyExplicitOffersMaySpend": true,
+      "code": "stale_revision",
+      "newQuotaAndRelationshipEffects": 0
+    },
+    {
+      "caseId": "F8-QUOTA",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "wrongMemberCode": null,
+      "reactionNeverRescores": true,
+      "invalidUnavailableCanceledStaleExtractionSpendsNothing": true,
+      "onlyExplicitOffersMaySpend": true,
+      "code": "quota_used",
+      "newQuotaAndRelationshipEffects": 0
+    },
+    {
+      "caseId": "F8-NO-CAPITAL",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "wrongMemberCode": null,
+      "reactionNeverRescores": true,
+      "invalidUnavailableCanceledStaleExtractionSpendsNothing": true,
+      "onlyExplicitOffersMaySpend": true,
+      "code": "funding_invalid",
+      "newResourceSpend": 0
+    },
+    {
+      "caseId": "F8-NO-CASH",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "wrongMemberCode": null,
+      "reactionNeverRescores": true,
+      "invalidUnavailableCanceledStaleExtractionSpendsNothing": true,
+      "onlyExplicitOffersMaySpend": true,
+      "code": "funding_invalid",
+      "newResourceSpend": 0
+    },
+    {
+      "caseId": "F8-PROSE-OFFER",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "wrongMemberCode": null,
+      "reactionNeverRescores": true,
+      "invalidUnavailableCanceledStaleExtractionSpendsNothing": true,
+      "onlyExplicitOffersMaySpend": true
+    },
+    {
+      "caseId": "F8-SATURATION",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "wrongMemberCode": null,
+      "reactionNeverRescores": true,
+      "invalidUnavailableCanceledStaleExtractionSpendsNothing": true,
+      "onlyExplicitOffersMaySpend": true
+    },
+    {
+      "caseId": "F8-TONE",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "wrongMemberCode": null,
+      "reactionNeverRescores": true,
+      "invalidUnavailableCanceledStaleExtractionSpendsNothing": true,
+      "onlyExplicitOffersMaySpend": true
+    },
+    {
+      "caseId": "F8-CREDIT",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "wrongMemberCode": null,
+      "reactionNeverRescores": true,
+      "invalidUnavailableCanceledStaleExtractionSpendsNothing": true,
+      "onlyExplicitOffersMaySpend": true
+    },
+    {
+      "caseId": "F8-SUBDIVISION-CONTRAST",
+      "classification": "DECLARATIVE_REPLAY_TARGET_NOT_ADDITIONAL_OBSERVED_REFERENCE",
+      "trueFactsMustBeRecomputedByRealEngine": true,
+      "contrastingGroundedReactions": true
+    },
+    {
+      "caseId": "F9-V2",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "preserveLegacyBackupAndSource": true,
+      "noNewFarmCampusFactsInOldSave": true,
+      "noUnsafeFallbackOrV4Downgrade": true,
+      "noAutomaticTimestampReplacement": true,
+      "recoveryDefaultsUnchanged": true,
+      "noPartialWriteOrEarlyScratchClear": true
+    },
+    {
+      "caseId": "F9-V1-SYNTHETIC",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "preserveLegacyBackupAndSource": true,
+      "noNewFarmCampusFactsInOldSave": true,
+      "noUnsafeFallbackOrV4Downgrade": true,
+      "noAutomaticTimestampReplacement": true,
+      "recoveryDefaultsUnchanged": true,
+      "noPartialWriteOrEarlyScratchClear": true
+    },
+    {
+      "caseId": "F9-V3",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "preserveLegacyBackupAndSource": true,
+      "noNewFarmCampusFactsInOldSave": true,
+      "noUnsafeFallbackOrV4Downgrade": true,
+      "noAutomaticTimestampReplacement": true,
+      "recoveryDefaultsUnchanged": true,
+      "noPartialWriteOrEarlyScratchClear": true
+    },
+    {
+      "caseId": "F9-MIGRATE-TWICE",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "preserveLegacyBackupAndSource": true,
+      "noNewFarmCampusFactsInOldSave": true,
+      "noUnsafeFallbackOrV4Downgrade": true,
+      "noAutomaticTimestampReplacement": true,
+      "recoveryDefaultsUnchanged": true,
+      "noPartialWriteOrEarlyScratchClear": true
+    },
+    {
+      "caseId": "F9-FLAG-OFF",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "preserveLegacyBackupAndSource": true,
+      "noNewFarmCampusFactsInOldSave": true,
+      "noUnsafeFallbackOrV4Downgrade": true,
+      "noAutomaticTimestampReplacement": true,
+      "recoveryDefaultsUnchanged": true,
+      "noPartialWriteOrEarlyScratchClear": true,
+      "mode": "protected-read-only",
+      "v4BytesPreserved": true,
+      "legacyFallbackWrite": false
+    },
+    {
+      "caseId": "F9-OLD-SHELL",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "preserveLegacyBackupAndSource": true,
+      "noNewFarmCampusFactsInOldSave": true,
+      "noUnsafeFallbackOrV4Downgrade": true,
+      "noAutomaticTimestampReplacement": true,
+      "recoveryDefaultsUnchanged": true,
+      "noPartialWriteOrEarlyScratchClear": true,
+      "protectedV4BytesUnchanged": true,
+      "oldShellUnderstandsV4": false
+    },
+    {
+      "caseId": "F9-LEGACY-NEWER",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "preserveLegacyBackupAndSource": true,
+      "noNewFarmCampusFactsInOldSave": true,
+      "noUnsafeFallbackOrV4Downgrade": true,
+      "noAutomaticTimestampReplacement": true,
+      "recoveryDefaultsUnchanged": true,
+      "noPartialWriteOrEarlyScratchClear": true,
+      "automaticReplacement": false,
+      "currentStateUnchanged": true
+    },
+    {
+      "caseId": "F9-CLOUD-NEWER",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "preserveLegacyBackupAndSource": true,
+      "noNewFarmCampusFactsInOldSave": true,
+      "noUnsafeFallbackOrV4Downgrade": true,
+      "noAutomaticTimestampReplacement": true,
+      "recoveryDefaultsUnchanged": true,
+      "noPartialWriteOrEarlyScratchClear": true,
+      "automaticReplacement": false,
+      "currentStateUnchanged": true
+    },
+    {
+      "caseId": "F9-UNKNOWN-FORMAT",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "preserveLegacyBackupAndSource": true,
+      "noNewFarmCampusFactsInOldSave": true,
+      "noUnsafeFallbackOrV4Downgrade": true,
+      "noAutomaticTimestampReplacement": true,
+      "recoveryDefaultsUnchanged": true,
+      "noPartialWriteOrEarlyScratchClear": true,
+      "code": "unsupported_storage_format",
+      "protectedBytesPreserved": true
+    },
+    {
+      "caseId": "F9-CORRUPT",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "preserveLegacyBackupAndSource": true,
+      "noNewFarmCampusFactsInOldSave": true,
+      "noUnsafeFallbackOrV4Downgrade": true,
+      "noAutomaticTimestampReplacement": true,
+      "recoveryDefaultsUnchanged": true,
+      "noPartialWriteOrEarlyScratchClear": true,
+      "code": "unsupported_storage_format",
+      "protectedBytesPreserved": true
+    },
+    {
+      "caseId": "F9-WRITE-ERROR",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "preserveLegacyBackupAndSource": true,
+      "noNewFarmCampusFactsInOldSave": true,
+      "noUnsafeFallbackOrV4Downgrade": true,
+      "noAutomaticTimestampReplacement": true,
+      "recoveryDefaultsUnchanged": true,
+      "noPartialWriteOrEarlyScratchClear": true,
+      "code": "storage_unavailable",
+      "publicStateAndReceiptUnchanged": true
+    },
+    {
+      "caseId": "F9-TWO-MIGRATORS",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "preserveLegacyBackupAndSource": true,
+      "noNewFarmCampusFactsInOldSave": true,
+      "noUnsafeFallbackOrV4Downgrade": true,
+      "noAutomaticTimestampReplacement": true,
+      "recoveryDefaultsUnchanged": true,
+      "noPartialWriteOrEarlyScratchClear": true
+    },
+    {
+      "caseId": "F9-CHANNELS",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "preserveLegacyBackupAndSource": true,
+      "noNewFarmCampusFactsInOldSave": true,
+      "noUnsafeFallbackOrV4Downgrade": true,
+      "noAutomaticTimestampReplacement": true,
+      "recoveryDefaultsUnchanged": true,
+      "noPartialWriteOrEarlyScratchClear": true
+    },
+    {
+      "caseId": "F9-RECOVERY-CANCEL",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "preserveLegacyBackupAndSource": true,
+      "noNewFarmCampusFactsInOldSave": true,
+      "noUnsafeFallbackOrV4Downgrade": true,
+      "noAutomaticTimestampReplacement": true,
+      "recoveryDefaultsUnchanged": true,
+      "noPartialWriteOrEarlyScratchClear": true
+    },
+    {
+      "caseId": "F9-RECOVERY-COUNT",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "preserveLegacyBackupAndSource": true,
+      "noNewFarmCampusFactsInOldSave": true,
+      "noUnsafeFallbackOrV4Downgrade": true,
+      "noAutomaticTimestampReplacement": true,
+      "recoveryDefaultsUnchanged": true,
+      "noPartialWriteOrEarlyScratchClear": true
+    },
+    {
+      "caseId": "F9-RECOVERY-VERSIONS",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "preserveLegacyBackupAndSource": true,
+      "noNewFarmCampusFactsInOldSave": true,
+      "noUnsafeFallbackOrV4Downgrade": true,
+      "noAutomaticTimestampReplacement": true,
+      "recoveryDefaultsUnchanged": true,
+      "noPartialWriteOrEarlyScratchClear": true
+    },
+    {
+      "caseId": "F9-RECOVERY-BYTES",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "preserveLegacyBackupAndSource": true,
+      "noNewFarmCampusFactsInOldSave": true,
+      "noUnsafeFallbackOrV4Downgrade": true,
+      "noAutomaticTimestampReplacement": true,
+      "recoveryDefaultsUnchanged": true,
+      "noPartialWriteOrEarlyScratchClear": true
+    },
+    {
+      "caseId": "F9-RECOVERY-NO-EXPIRY",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "preserveLegacyBackupAndSource": true,
+      "noNewFarmCampusFactsInOldSave": true,
+      "noUnsafeFallbackOrV4Downgrade": true,
+      "noAutomaticTimestampReplacement": true,
+      "recoveryDefaultsUnchanged": true,
+      "noPartialWriteOrEarlyScratchClear": true
+    },
+    {
+      "caseId": "F9-RECOVERY-CONFLICT",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "preserveLegacyBackupAndSource": true,
+      "noNewFarmCampusFactsInOldSave": true,
+      "noUnsafeFallbackOrV4Downgrade": true,
+      "noAutomaticTimestampReplacement": true,
+      "recoveryDefaultsUnchanged": true,
+      "noPartialWriteOrEarlyScratchClear": true,
+      "code": "workspace_conflict",
+      "losingLiveInputPreserved": true
+    },
+    {
+      "caseId": "F9-RECOVERY-POST-FAIL",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "preserveLegacyBackupAndSource": true,
+      "noNewFarmCampusFactsInOldSave": true,
+      "noUnsafeFallbackOrV4Downgrade": true,
+      "noAutomaticTimestampReplacement": true,
+      "recoveryDefaultsUnchanged": true,
+      "noPartialWriteOrEarlyScratchClear": true
+    },
+    {
+      "caseId": "F9-RECOVERY-REVALIDATE",
+      "classification": "DECLARATIVE_EXPECTATION_NOT_OBSERVED",
+      "preserveLegacyBackupAndSource": true,
+      "noNewFarmCampusFactsInOldSave": true,
+      "noUnsafeFallbackOrV4Downgrade": true,
+      "noAutomaticTimestampReplacement": true,
+      "recoveryDefaultsUnchanged": true,
+      "noPartialWriteOrEarlyScratchClear": true
+    }
+  ],
+  "caseResponseCodePolicy": "Exact listed boundary codes are declarative expected outputs. Rule-only numerical/caps cases derive actual engine values after D; no mocked new numeric outcome is observed evidence."
+}

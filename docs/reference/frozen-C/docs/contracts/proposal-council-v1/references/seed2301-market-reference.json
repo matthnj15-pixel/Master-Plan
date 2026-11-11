@@ -1,0 +1,361 @@
+{
+  "baseline": "18dded6207f7217021d84b42aad6cc8e00b68f43",
+  "kind": "existing-engine-reference; not new lifecycle acceptance",
+  "seed": 2301,
+  "initialYear": 1,
+  "beforeResolution": {
+    "cost": 940,
+    "costHigh": 1008,
+    "upkeep": 38,
+    "effects": {
+      "cost": 940,
+      "upkeep": 38,
+      "jobs": 49,
+      "units": 6,
+      "housing": 48,
+      "walk": 5.5,
+      "live": 5.5,
+      "conf": 4,
+      "prop": 0.0075,
+      "approval": 1,
+      "farm": 0,
+      "parking": 20,
+      "safety": 1,
+      "afford": 0.5,
+      "storm": 1,
+      "notes": [
+        "Your proposal, drafted by the borough planner"
+      ],
+      "creek": 0,
+      "costHigh": 1008
+    },
+    "vote": {
+      "votes": [
+        {
+          "member": "marsh",
+          "leans": [
+            {
+              "id": "init1",
+              "lean": 69
+            }
+          ],
+          "vote": "init1"
+        },
+        {
+          "member": "pryor",
+          "leans": [
+            {
+              "id": "init1",
+              "lean": 22
+            }
+          ],
+          "vote": "no"
+        },
+        {
+          "member": "okafor",
+          "leans": [
+            {
+              "id": "init1",
+              "lean": 99
+            }
+          ],
+          "vote": "init1"
+        },
+        {
+          "member": "brandt",
+          "leans": [
+            {
+              "id": "init1",
+              "lean": 95
+            }
+          ],
+          "vote": "init1"
+        },
+        {
+          "member": "weaver",
+          "leans": [
+            {
+              "id": "init1",
+              "lean": 58
+            }
+          ],
+          "vote": "init1"
+        }
+      ],
+      "tally": {
+        "init1": 4,
+        "no": 1
+      },
+      "winner": "init1",
+      "options": [
+        "init1"
+      ]
+    },
+    "fitNotes": [],
+    "plan": {
+      "homes": 20,
+      "affordable": false,
+      "shops": 4,
+      "stories": 2,
+      "parking": 20,
+      "green": 2,
+      "plaza": false,
+      "civic": "farmers_market",
+      "safety": "none",
+      "stormwater": true,
+      "policy": "none",
+      "quality": 2
+    },
+    "plots": [
+      [
+        16,
+        13
+      ],
+      [
+        18,
+        13
+      ],
+      [
+        16,
+        14
+      ],
+      [
+        18,
+        14
+      ],
+      [
+        16,
+        15
+      ],
+      [
+        18,
+        15
+      ]
+    ]
+  },
+  "funding": "bond",
+  "approval": {
+    "ok": true,
+    "reasons": []
+  },
+  "pendingAfterApproval": 1,
+  "afterResolution": {
+    "year": 2,
+    "phase": "agenda",
+    "cash": 998,
+    "pending": 0,
+    "actualPlotRoles": [
+      {
+        "plot": [
+          16,
+          13
+        ],
+        "building": {
+          "type": "initiative",
+          "plan": {
+            "homes": 20,
+            "affordable": false,
+            "shops": 4,
+            "stories": 2,
+            "parking": 20,
+            "green": 2,
+            "plaza": false,
+            "civic": "farmers_market",
+            "safety": "none",
+            "stormwater": true,
+            "policy": "none",
+            "quality": 2
+          },
+          "role": "civic"
+        }
+      },
+      {
+        "plot": [
+          18,
+          13
+        ],
+        "building": {
+          "type": "initiative",
+          "plan": {
+            "homes": 20,
+            "affordable": false,
+            "shops": 4,
+            "stories": 2,
+            "parking": 20,
+            "green": 2,
+            "plaza": false,
+            "civic": "farmers_market",
+            "safety": "none",
+            "stormwater": true,
+            "policy": "none",
+            "quality": 2
+          },
+          "role": "mixed"
+        }
+      },
+      {
+        "plot": [
+          16,
+          14
+        ],
+        "building": {
+          "type": "initiative",
+          "plan": {
+            "homes": 20,
+            "affordable": false,
+            "shops": 4,
+            "stories": 2,
+            "parking": 20,
+            "green": 2,
+            "plaza": false,
+            "civic": "farmers_market",
+            "safety": "none",
+            "stormwater": true,
+            "policy": "none",
+            "quality": 2
+          },
+          "role": "homes"
+        }
+      },
+      {
+        "plot": [
+          18,
+          14
+        ],
+        "building": {
+          "type": "initiative",
+          "plan": {
+            "homes": 20,
+            "affordable": false,
+            "shops": 4,
+            "stories": 2,
+            "parking": 20,
+            "green": 2,
+            "plaza": false,
+            "civic": "farmers_market",
+            "safety": "none",
+            "stormwater": true,
+            "policy": "none",
+            "quality": 2
+          },
+          "role": "parking"
+        }
+      },
+      {
+        "plot": [
+          16,
+          15
+        ],
+        "building": {
+          "type": "initiative",
+          "plan": {
+            "homes": 20,
+            "affordable": false,
+            "shops": 4,
+            "stories": 2,
+            "parking": 20,
+            "green": 2,
+            "plaza": false,
+            "civic": "farmers_market",
+            "safety": "none",
+            "stormwater": true,
+            "policy": "none",
+            "quality": 2
+          },
+          "role": "pond"
+        }
+      },
+      {
+        "plot": [
+          18,
+          15
+        ],
+        "building": {
+          "type": "initiative",
+          "plan": {
+            "homes": 20,
+            "affordable": false,
+            "shops": 4,
+            "stories": 2,
+            "parking": 20,
+            "green": 2,
+            "plaza": false,
+            "civic": "farmers_market",
+            "safety": "none",
+            "stormwater": true,
+            "policy": "none",
+            "quality": 2
+          },
+          "role": "green"
+        }
+      }
+    ],
+    "projectCauses": [
+      {
+        "m": "safety",
+        "v": 0.5,
+        "r": "East End Market and Homes opened"
+      },
+      {
+        "m": "afford",
+        "v": 0.3,
+        "r": "East End Market and Homes opened"
+      },
+      {
+        "m": "walk",
+        "v": 5.5,
+        "r": "East End Market and Homes opened"
+      },
+      {
+        "m": "live",
+        "v": 5.5,
+        "r": "East End Market and Homes opened"
+      },
+      {
+        "m": "conf",
+        "v": 4,
+        "r": "East End Market and Homes opened"
+      },
+      {
+        "m": "approval",
+        "v": 2,
+        "r": "Ribbon cutting: East End Market and Homes"
+      }
+    ],
+    "report": {
+      "year": 1,
+      "before": {
+        "year": 1,
+        "pop": 3200,
+        "cash": 900,
+        "jobs": 64,
+        "walk": 48,
+        "live": 55,
+        "conf": 58,
+        "approval": 52,
+        "safety": 62,
+        "afford": 58
+      },
+      "after": {
+        "year": 1,
+        "pop": 3283,
+        "cash": 998,
+        "jobs": 65,
+        "walk": 53.5,
+        "live": 59.5,
+        "conf": 64.5,
+        "approval": 54.9,
+        "safety": 63.6,
+        "afford": 58.85
+      },
+      "budget": {
+        "propTax": 960,
+        "comTax": 308,
+        "services": 864,
+        "upkeep": 188,
+        "bonds": 118,
+        "net": 98
+      }
+    }
+  }
+}
