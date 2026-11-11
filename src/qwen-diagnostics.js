@@ -12,8 +12,10 @@ const resultCodes=new Set(('none malformed_json unknown_field wrong_type value_o
 const fieldIds=new Set(('program version title intent components id capability label quantity area sharedWith conditions hours deliveries access buffer preserve affordable operations componentId stage loadingRoute publicSales onSiteConsumption assumptions omissions patch upsert remove changes claims argument source programRevision type field operator value evidence start end quote definitionId receipt acknowledgement concernIndexes').split(' '));
 fieldIds.add('plots');
 const ruleIds=new Set(('unsupported_capability program_version site_capacity_exceeded plots_invalid plot_invalid plot_duplicate plot_not_buildable loading_route_unavailable retained_building_cannot_be_split existing_project_partial_demolition quantity_bounds area_capacity shared_reference shared_capacity legacy_plan_out_of_bounds legacy_patch_invalid patch_unknown_field program_unknown_or_missing_field component_unknown_or_missing_field conditions_unknown_or_missing_field claim_revision_stale claim_schema_invalid claim_input_invalid receipt_not_found reaction_reference_invalid reaction_type_mismatch reaction_member_mismatch command_mismatch').split(' '));
+ruleIds.add('policy_capacity_exceeded');
 // Exact store codes only: no caller-provided reason, message or regex escape.
 for(const code of ['persistence_failed','read_only','unsupported_storage_format','workspace_unavailable','workspace_capacity','replica_unavailable','replica_stale','replica_failed'])resultCodes.add(code);
+for(const code of ['claim_evidence_ambiguous','claim_polarity_not_in_argument','save_version_unsupported','save_state_invalid','save_object_invalid','save_numbers_invalid','save_scenario_invalid','save_calendar_invalid','save_grid_invalid','save_grid_entry_invalid','save_council_invalid','save_presenter_invalid','save_collection_invalid','save_collection_entry_invalid','save_command_state_invalid'])resultCodes.add(code);
 for(const rule of ruleIds)resultCodes.add(rule);
 const models=new Set(['Qwen2.5-1.5B-Instruct-q4f16_1-MLC','Qwen2.5-3B-Instruct-q4f16_1-MLC']);
 const errorTypes={

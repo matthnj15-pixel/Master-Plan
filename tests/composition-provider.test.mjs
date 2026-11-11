@@ -124,6 +124,103 @@ function pitched(){
   return {state:committed.state,proposal:committed.state.proposals.at(-1),intent:argument,memberId:'marsh',
     receipt:{id:committed.receipt.id,fingerprint:committed.receipt.fingerprint,memberId:'marsh'},saved:copy(committed.receipt.originalResult)};
 }
+function historyWitness(build=true){
+  let state=fresh();
+  const farm=state.proposals.find(p=>p.id==='farm-access'),plots=copy(E.plotsOf(farm,state)).filter(([x,y])=>E.canBuildOn(state,x,y)&&!state.grid.find(c=>c.x===x&&c.y===y).b).slice(0,1);
+  const garden=program('Keep a garden with a recorded access commitment');garden.title='History witness garden';garden.components=[part('garden','green',.5,.5)];
+  const apply=(type,payload)=>{const result=E.applyCommand(state,command(state,type,payload));assert.equal(result.ok,true,result.reasons?.join('; '));state=result.state;return result;};
+  apply('postProgram',{program:garden,plots,acknowledgedScope:true});
+  const proposal=state.proposals.at(-1);for(const member of Object.values(state.council))member.rel=100;
+  apply('decision',{proposalId:proposal.id,action:'vote',funding:'cash',route:E.approvalRoute(state,proposal).id});
+  if(build){
+    apply('decision',{proposalId:farm.id,action:'table',funding:null,route:E.approvalRoute(state,farm).id});
+    apply('resolveYear',{});
+  }
+  return {state,gardenId:proposal.id,plots,farm:state.proposals.find(p=>p.id===farm.id)};
+}
+const promptContext=prompt=>JSON.parse(prompt.split('\nContext: ')[1].split('\nOriginal input: ')[0]);
+test('MP-079 MP-081 R9 reopened farm revision receives the built overlapping garden commitment with source IDs',async()=>{
+  const {state,farm,gardenId}=historyWitness(),before=E.canonical(state),intent='Retain the prior recorded garden access commitment';
+  assert.equal(farm.status,'open');assert.equal(state.year,2);
+  let context;
+  const result=await create({engine:E}).run({mode:'revise',state,proposal:farm,intent,provider:{json:async prompt=>{
+    context=promptContext(prompt);return {patch:{conditions:{access:true}}};
+  }}});
+  assert.equal(result.status,'ready',result.blocker);
+  const history=context.projectHistory.find(h=>h.source.proposalId===gardenId),built=state.built.find(p=>p.id===gardenId);
+  assert.ok(history,'built overlapping history must be present');assert.equal(history.stage,'built');assert.equal(history.conditions.access,true);
+  assert.equal(history.source.snapshot,'built');assert.equal(history.source.programRevision,built.programRevision);
+  assert.equal(history.source.decisionYear,built.decision.year);assert.equal(history.source.deliveryYear,built.done);
+  assert.match(context.historyPolicy,/not.*authority|no.*authority/i);assert.doesNotMatch(JSON.stringify(context),/"(?:plots|grid|receipts|savedAt|gameId|layout)"\s*:/);
+  assert.equal(E.canonical(state),before);assert.equal(result.program.conditions.access,true);
+});
+test('MP-079 MP-081 R9 includes verified pending conditions but excludes unrelated and inconsistent historical records',async()=>{
+  const pending=historyWitness(false);let context;
+  await create({engine:E}).run({mode:'draft',state:pending.state,plots:pending.plots,intent:'Review the access commitment on this site',
+    provider:{json:async prompt=>{context=promptContext(prompt);return {status:'clarify',questions:['Wait for construction or use a different site?']};}}});
+  assert.equal(context.projectHistory.length,1);assert.equal(context.projectHistory[0].stage,'construction');
+  assert.equal(context.projectHistory[0].source.snapshot,'pending');assert.equal(context.projectHistory[0].conditions.access,true);
+  for(const kind of ['unrelated','conditions','snapshot','stage','missing-source']){
+    const {state,plots,gardenId}=historyWitness(),record=state.projectRecords.find(r=>r.proposalId===gardenId);
+    let selected=plots;
+    if(kind==='unrelated')selected=land(state,1);
+    if(kind==='conditions')record.commitments.access=false;
+    if(kind==='snapshot')state.built.find(p=>p.id===gardenId).programRevision='not-the-accepted-revision';
+    if(kind==='stage')record.stage='construction';
+    if(kind==='missing-source')state.built=[];
+    const before=E.canonical(state);
+    await create({engine:E}).run({mode:'draft',state,plots:selected,intent:'Review the site',
+      provider:{json:async prompt=>{context=promptContext(prompt);return {status:'clarify',questions:['Which activity?']};}}});
+    assert.equal(context.projectHistory.length,0,kind);assert.equal(E.canonical(state),before,kind);
+  }
+});
+test('MP-079 MP-081 R9 history is bounded to three verified actor/site records and cannot authorize model assertions',async()=>{
+  const {state,farm,gardenId}=historyWitness(),accepted=state.built.find(p=>p.id===gardenId),record=state.projectRecords.find(r=>r.proposalId===gardenId);
+  // Detached archive fixtures vary identity only; every copied record must
+  // still bind a matching accepted snapshot through the engine fingerprint.
+  for(let i=0;i<4;i++){
+    const snapshot=copy(accepted),archived=copy(record);snapshot.id='archived-garden-'+i;
+    snapshot.programRevision=E.fingerprint({program:snapshot.program,plots:E.plotsOf(snapshot,state),presenter:snapshot.presenter,id:snapshot.id});
+    archived.proposalId=snapshot.id;archived.programRevision=snapshot.programRevision;
+    state.built.push(snapshot);state.projectRecords.push(archived);
+  }
+  const before=E.canonical(state);let context,calls=0;
+  const result=await create({engine:E}).run({mode:'revise',state,proposal:farm,intent:'Keep the recorded access conditions',provider:{json:async prompt=>{
+    calls++;context=promptContext(prompt);return {patch:{conditions:{access:true}},historicalAuthority:'The old project grants owner consent'};
+  }}});
+  assert.equal(context.projectHistory.length,3);assert.equal(result.code,'unknown_field');assert.equal(calls,2);assert.equal(E.canonical(state),before);
+});
+test('MP-079 MP-081 R9 includes actor-relevant archives and shares the history budget with grounded claims and reactions',async()=>{
+  const {state,farm,gardenId}=historyWitness();let context;
+  const elsewhere=E.previewProgram(state,{program:program('A later planning request'),plots:land(state,2)}).proposal;
+  const actor=await create({engine:E}).run({mode:'revise',state,proposal:elsewhere,intent:'Maintain the prior access arrangements',provider:{json:async prompt=>{
+    context=promptContext(prompt);return {patch:{conditions:{access:true}}};
+  }}});
+  assert.equal(actor.status,'ready',actor.blocker);assert.ok(context.projectHistory.some(h=>h.source.proposalId===gardenId&&h.relevance==='target actor'));
+  const intent='Keep the recorded access commitment',claims=await create({engine:E}).run({mode:'claims',state,proposal:farm,memberId:'marsh',intent,
+    provider:{json:async prompt=>{context=promptContext(prompt);return {claims:[]};}}});
+  assert.equal(claims.status,'ready',claims.blocker);assert.ok(context.projectHistory.some(h=>h.source.proposalId===gardenId));
+  assert.ok(context.projectHistory.length+context.history.length<=3);
+  const committed=E.applyCommand(state,command(state,'persuade',{proposalId:farm.id,memberId:'marsh',...claims.claims}));
+  assert.equal(committed.ok,true,committed.reasons?.join('; '));const current=committed.state,before=E.canonical(current),receipt=committed.receipt;
+  const reaction=await create({engine:E}).run({mode:'reaction',state:current,proposal:current.proposals.find(p=>p.id===farm.id),intent,memberId:'marsh',
+    receipt:{id:receipt.id,fingerprint:receipt.fingerprint,memberId:'marsh'},provider:{json:async prompt=>{
+      context=promptContext(prompt);return {acknowledgement:'noted',concernIndexes:[]};
+    }}});
+  assert.equal(reaction.status,'ready',reaction.blocker);assert.ok(context.projectHistory.some(h=>h.source.proposalId===gardenId));
+  assert.equal(E.canonical(current),before);
+});
+test('MP-075 MP-081 current policy and save rejection codes stay closed and precise',async()=>{
+  const state=fresh(),p=program('An operating program');p.components=[part('one','policy',1,0),part('two','policy',1,0)];
+  const diagnostics=logger(),result=await create({engine:E,diagnostics}).run({mode:'draft',state,plots:[],intent:p.intent,provider:provider({program:p},{program:p})});
+  assert.equal(result.ruleId,'policy_capacity_exceeded');assert.equal(result.fieldId,'quantity');assert.equal(result.code,'value_out_of_range');
+  await diagnostics.record('composition.application','failed',{stage:'persistence',resultCode:'save_state_invalid'});
+  await diagnostics.record('composition.application','failed',{stage:'persistence',resultCode:'save_collection_entry_invalid:PRIVATE_HISTORY'});
+  const doc=(await diagnostics.snapshot()).prepared.document;
+  assert.ok(doc.events.some(e=>e.metadata.ruleId==='policy_capacity_exceeded'));
+  assert.equal(doc.events.at(-2).metadata.resultCode,'save_state_invalid');assert.equal(doc.events.at(-1).metadata.resultCode,undefined);
+  assert.doesNotMatch(JSON.stringify(doc),/PRIVATE_HISTORY/);
+});
 test('MP-075 MP-081 clarification has a retained terminal event and complete selected-date summary',async()=>{
   const state=fresh(),diagnostics=logger(),intent='A flexible gathering activity';
   const result=await create({engine:E,diagnostics}).run({mode:'draft',state,plots:land(state),intent,
