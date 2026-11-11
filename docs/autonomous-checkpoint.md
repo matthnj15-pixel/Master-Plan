@@ -72,3 +72,23 @@ Intermediate preview http://127.0.0.1:4173/ (/tmp/mp-preview, persistent server)
 Provider is absent in this intermediate build; typed flow not ready. Independent
 QA may run actual T1–T8 now, but final withheld corpus/review await one common
 final runnable SHA. Full npm test running, log /tmp/mp-integrated-tests.log.
+
+Engine follow-up 40ce66e integrated as 915ebb7: 23 composition tests passed,
+including normal-rule 3×12-year paths; core/scenario/build checks and both builds
+passed in builder tree. Engine source writes now paused. Independent preflight
+review continues against 40ce66e; no final integrated verdict yet.
+
+Intermediate full run: 171 tests, 168 passed, 3 legacy browser reload failures.
+The new legacy fixture setup accessed/wrote localStorage in addInitScript during
+file-page navigation; synthetic save reloads were disturbed. Replaced with a
+build-metadata flag-off fixture (0acb7a2). All three ORIGINAL failed assertions
+now pass targeted rerun /tmp/mp-legacy-fixture-fix.log; no product rule/assertion
+was weakened. Full suite waits provider integration (MP-081 tests pending).
+
+Current source writers: Provider in mp-provider (composition runner/runtime/
+diagnostics/new provider tests), Frontend in mp-ui (private baseline deltas,
+markup/touch cleanup, explicit generation-bound account imports/new UI tests).
+Frontend instructed to merge current integration first. Engine source paused.
+Coordinator owns integration, evidence, remote/build/flags. Adaptive reuse of
+active space inside existing buildings remains an explicit unmodeled boundary;
+preservation retains assets outside active allocations. Report it accurately.
