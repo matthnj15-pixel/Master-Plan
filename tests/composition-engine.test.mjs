@@ -34,7 +34,7 @@ test('MP-076 closed programs reject unknown fields, nonfinite values, bad refere
   const mutations=[p=>p.price=1,p=>p.conditions.veto=true,p=>p.components[0].quantity=NaN,p=>p.components[0].quantity=Infinity,
     p=>p.components[0].quantity=-1,p=>p.components[0].area=.001,p=>p.components[0].capability='magic',p=>p.components.push(clone(p.components[0])),
     p=>p.components[1].sharedWith='absent',p=>p.components[0].sharedWith='class',p=>p.components[1].area=1.2,
-    p=>p.components.push(component('other','event',15,.7,'work')),p=>p.conditions.deliveries='nighttime'];
+    p=>p.components.push(component('other','event',15,.7,'work')),p=>p.conditions.deliveries='nighttime',p=>p.conditions.operations={},p=>p.conditions.operations=[null],p=>p.conditions.operations=[42]];
   for(const mutate of mutations){const p=clone(valid);mutate(p);assert.equal(E.validateProgram(p).ok,false,JSON.stringify(p));}
 });
 
@@ -114,6 +114,9 @@ test('MP-078 typed evidence verifies exact argument, factual quantity, member re
   const mixed=clone(input);mixed.claims.push({...mixed.claims[0],id:'false',field:'housing',value:999});const result=E.evaluateClaims(s,p,'marsh',mixed);
   assert.equal(result.claims[0].valid,true);assert.equal(result.claims[1].valid,false);assert.equal(result.credit,'strong');
   const stale={...input,programRevision:'old'};assert.equal(E.evaluateClaims(s,p,'marsh',stale).ok,false);
+  const negated=pitch(p,'jobs',e.jobs,`This does not create ${e.jobs} jobs.`);assert.equal(E.evaluateClaims(s,p,'marsh',negated).credit,'none');
+  const operating={...pitch(p,'jobs',e.jobs),argument:'Allow late night loading',claims:[{id:'schedule',type:'condition',field:'deliveries',operator:'eq',value:'daytime',evidence:{start:0,end:24,quote:'Allow late night loading'}}]};
+  const condition=E.evaluateClaims(s,p,'okafor',operating);assert.equal(condition.credit,'none');assert.equal(condition.claims[0].field,'deliveries');assert.equal(condition.claims[0].claimedValue,'daytime');
 });
 
 test('MP-078 MP-079 persuasion enforces quota, repeated claims, tone and historical reaction identity',()=>{
@@ -173,6 +176,7 @@ test('MP-060 MP-079 v4 migration is flag gated, idempotent and preserves old fix
   const old=JSON.parse(readFileSync(new URL('./fixtures/millbrooke-v2-save.json',import.meta.url),'utf8')),before=clone(old),off=engine(false);
   const stable=off.migrate(clone(old));assert.equal(stable.v,3);assert.equal(stable.revision,undefined);assert.equal(off.isSupportedSave({v:4}),false);
   const migrated=E.migrate(clone(old),{gameId:'migrated-test'});assert.equal(migrated.v,4);assert.equal(migrated.gameId,'migrated-test');assert.equal(migrated.revision,0);
+  E.migrate(old,{gameId:'another-migration'});assert.deepEqual(old,before,'v4 migration is pure even with the original fixture object');
   for(const k of ['grid','pending','built','cash','bonds','decided','proposals','chats'])assert.deepEqual(clone(migrated[k]),before[k],k);
   assert.equal(migrated.facts.bowersLeaseValid,undefined);assert.deepEqual(clone(E.migrate(clone(migrated))),clone(migrated));assert.equal(E.isSupportedSave({v:99}),false);
   assert.deepEqual(old,before);assert.equal(E.applyCommand(off.newGame(1),{id:1}).ok,false);
@@ -180,23 +184,92 @@ test('MP-060 MP-079 v4 migration is flag gated, idempotent and preserves old fix
 
 test('MP-079 twelve years of compact, outward and preservation choices diverge with traceable delivery and opportunities',()=>{
   const run=strategy=>{
-    let s=fresh(31),records=[];
+    let s=fresh(31),records=[],elections=[];
+    const election=()=>{const theme=Object.keys(E.THEMES).sort((a,b)=>E.THEMES[b].fit(s)-E.THEMES[a].fit(s))[0],debate=s.meters.approval>=50?2:.5,result=E.electionResult(s,theme,debate);elections.push({year:s.year-1,theme,debate,result});return result;};
     for(let y=1;y<=12;y++){
-      if(s.phase==='election'){s.election={result:E.electionResult(s,'quality',0)};s.phase='agenda';}
+      if(s.phase==='election'){assert.equal(election().won,true,'continue only after an actual election win, as the existing Keep running action does');s.phase='agenda';s.election=null;}
       assert.equal(s.phase,'agenda');const ops=E.programOpportunities(s);assert.ok(ops.length,`choices at year ${y}`);
-      const components=strategy==='compact'?[component('homes','housing',8,.5),component('work','workplace',4,.5)]:strategy==='outward'?[component('shops','shop',2,.5),component('parking','parking',20,.25)]:[component('garden','green',.5,.5),component('water','stormwater',.25,.25)];
+      const components=strategy==='compact'?[component('homes','housing',8,.5),component('work','workplace',4,.5)]:strategy==='outward'?[component('homes','housing',8,.5),component('shops','shop',1,.25),component('screen','green',.2,.2)]:[component('garden','green',.5,.5),component('water','stormwater',.25,.25)];
       const site=strategy==='outward'?s.grid.filter(c=>E.canBuildOn(s,c.x,c.y)&&!c.b&&c.t==='farm').slice(0,2).map(c=>[c.x,c.y]):land(s,2);
-      s=post(s,program(components),site);const p=s.proposals.at(-1);for(const m of Object.values(s.council))m.rel=100;
+      s=post(s,program(components),site);const p=s.proposals.at(-1),vote=E.forecastVote(s,p,p.id);
+      if(!vote.winner&&s.capital>0){const swing=vote.votes.filter(v=>v.vote!==p.id).sort((a,b)=>b.leans.find(l=>l.id===p.id).lean-a.leans.find(l=>l.id===p.id).lean)[0];assert.ok(swing);s=commit(s,'offer',{proposalId:p.id,memberId:swing.member,offer:{type:'favor'}});}
       s=commit(s,'decision',{proposalId:p.id,action:'vote',funding:'cash',route:E.approvalRoute(s,p).id});const pending=clone(s.pending.at(-1));
       const commandYear=command(s,'resolveYear',{}),result=E.applyCommand(s,commandYear);assert.equal(result.ok,true,result.reasons);s=clone(result.state);
       const built=s.built.find(b=>b.id===p.id);assert.deepEqual(built.program,pending.program);assert.deepEqual(built.layout,pending.layout);assert.equal(built.programRevision,pending.programRevision);
       assert.ok(s.reports.at(-1).projects.some(record=>record.proposalId===p.id));assert.ok(s.projectRecords.some(record=>record.proposalId===p.id&&record.stage==='built'));
-      assert.equal(E.applyCommand(s,commandYear).applied,false);records.push(ops.map(o=>o.id));
+      assert.equal(E.applyCommand(s,commandYear).applied,false);records.push(ops.map(o=>({key:o.key,plots:clone(o.plots),reason:o.reason})));
     }
-    assert.equal(s.year,13);assert.equal(s.built.filter(b=>b.program).length,12);assert.equal(s.history.length,13);return {s,records};
+    assert.equal(s.year,13);assert.equal(s.phase,'election');election();assert.equal(elections.length,3);assert.equal(s.built.filter(b=>b.program).length,12);assert.equal(s.history.length,13);return {s,records,elections};
   };
   const compact=run('compact'),outward=run('outward'),preserve=run('preserve');
   assert.notDeepEqual(compact.s.history,outward.s.history);assert.notEqual(E.econ(compact.s).housing,E.econ(preserve.s).housing);
   assert.ok(outward.s.farmLost>preserve.s.farmLost);assert.notDeepEqual(compact.records,outward.records);
   assert.deepEqual(clone(run('compact').s),clone(compact.s),'same choices remain deterministic across reloads and elections');
+});
+
+test('MP-076 MP-079 a trusted scenario definition composes primitives without dispatch branches and survives delivery',()=>{
+  const scenario=clone(E.MILLBROOKE),novel=program([component('garden','green',.5,.5),component('teaching','community',10,.2),component('repair','workplace',3,.2)]);
+  scenario.programDefinitions={'definition-probe':{id:'definition-probe',label:'A trusted content extension',program:novel},invalid:{id:'invalid',label:'Invalid',program:{...novel,price:1}}};
+  let s=E.newGame(31,scenario,{gameId:'definition-extension'});const definition=E.programDefinitions(s).find(d=>d.id==='definition-probe');assert.ok(definition);assert.equal(E.programDefinitions(s).some(d=>d.id==='invalid'),false);
+  const before=E.canonical(s),r=preview(s,definition.program);assert.equal(r.ok,true);assert.equal(E.canonical(s),before);
+  const moved=preview(s,definition.program,land(s).reverse());assert.notEqual(moved.proposal.programRevision,r.proposal.programRevision,'candidate identity binds ordered geometry');
+  s=post(s,definition.program);const p=s.proposals.at(-1);assert.equal(E.evaluateClaims(s,p,'okafor',pitch(p,'live',E.effectsOf(p,s).live,`It adds ${E.effectsOf(p,s).live} livability.`)).credit,'strong');
+  const vote=E.forecastVote(s,p,p.id);if(!vote.winner){const member=vote.votes.filter(v=>v.vote!==p.id).sort((a,b)=>b.leans[0].lean-a.leans[0].lean)[0].member;s=commit(s,'offer',{proposalId:p.id,memberId:member,offer:{type:'favor'}});}
+  s=commit(s,'decision',{proposalId:p.id,action:'vote',funding:'cash',route:E.approvalRoute(s,p).id});assert.equal(s.pending.length,1);s=commit(s,'resolveYear',{});
+  assert.deepEqual(clone(s.built[0].program),clone(novel));assert.deepEqual(clone(E.migrate(clone(s))),clone(s));
+});
+
+test('MP-077 MP-078 legacy bridge and park revisions preserve kind, values and optional forecast quantities',()=>{
+  let s=fresh();const bridge=s.proposals.find(p=>p.id==='bridge'),r=E.previewLegacyRevision(s,bridge,{scope:'patch'});
+  assert.equal(r.ok,true,r.reasons);assert.equal(r.proposal.kind,'bridge');assert.equal(typeof r.forecast.delta.effects.bridgeRisk,'number');
+  assert.equal(E.previewLegacyRevision(s,bridge,{scope:'invented'}).ok,false);assert.equal(E.previewLegacyRevision(s,bridge,{cost:1}).ok,false);
+  s=commit(s,'reviseProposal',{proposalId:bridge.id,plan:r.proposal.plan,confirmed:true});assert.equal(s.proposals.find(p=>p.id==='bridge').plan.scope,'patch');
+  s=commit(s,'resolveYear',{});const park=s.proposals.find(p=>p.id==='park'),candidate=E.reviseProgram(s,park,{changes:{memorial:false}});assert.equal(candidate.ok,true);
+  const stance=E.evaluateResident(s,park,candidate.proposal);assert.equal(stance.stance,'counter');assert.equal(stance.counter.plan.memorial,true);
+  assert.equal(E.applyCommand(s,command(s,'reviseProposal',{proposalId:park.id,plan:candidate.proposal.plan,confirmed:true})).ok,false);
+  const loft={id:'legacy-students',kind:'studenthousing',plan:E.defaultPlan('studenthousing'),presenter:'keystone',site:'campus_s',status:'open',council:true,title:'Existing housing',year:s.year};
+  const students=E.previewLegacyRevision(s,loft,{beds:400});assert.equal(students.ok,true);assert.equal(students.forecast.delta.effects.students,-200);
+});
+
+test('MP-079 a failed formal vote has one durable result and closes the unchanged losing proposal',()=>{
+  let s=post(fresh(),program([component('asphalt','parking',200,2)]),land(fresh(),3)),p=s.proposals.at(-1);assert.equal(E.forecastVote(s,p,p.id).winner,null);
+  const motion=command(s,'decision',{proposalId:p.id,action:'vote',funding:'cash',route:E.approvalRoute(s,p).id}),cash=s.cash,result=E.applyCommand(s,motion);
+  assert.equal(result.ok,true);assert.equal(result.receipt.originalResult.reason,'failed-vote');assert.equal(result.state.proposals.find(q=>q.id===p.id).status,'rejected');assert.equal(result.state.decided[p.id],'rejected');assert.equal(result.state.cash,cash);
+  assert.equal(E.applyCommand(result.state,motion).applied,false);assert.equal(E.applyCommand(result.state,command(result.state,'decision',motion.payload)).ok,false);
+});
+
+test('MP-079 repeated operating reviews cannot stack permanent benefits under new names or years',()=>{
+  let s=post(fresh(),program([component('operations','policy',1,0)]),[]),p=s.proposals.at(-1);const vote=E.forecastVote(s,p,p.id);
+  if(!vote.winner){const swing=vote.votes.filter(v=>v.vote!==p.id).sort((a,b)=>b.leans[0].lean-a.leans[0].lean)[0];s=commit(s,'offer',{proposalId:p.id,memberId:swing.member,offer:{type:'favor'}});}
+  s=commit(s,'decision',{proposalId:p.id,action:'vote',funding:'cash',route:E.approvalRoute(s,p).id});assert.ok(s.pending.some(p=>p.program));s=commit(s,'resolveYear',{});
+  const repeated=program([component('another-name','policy',1,0)]);repeated.title='An entirely new title';assert.equal(preview(s,repeated,[]).ok,false);
+  assert.equal(E.programOpportunities(s).some(o=>o.key==='operations'),false);assert.equal(s.built.filter(p=>p.program?.components.some(c=>c.capability==='policy')).length,1);
+});
+
+test('MP-077 grouped legacy preview votes use the requested candidate rather than the public baseline',()=>{
+  const s=commit(fresh(),'resolveYear',{}),park=s.proposals.find(p=>p.id==='park'),before=E.canonical(s),r=E.previewLegacyRevision(s,park,{amphitheater:true,fountain:true});assert.equal(r.ok,true);
+  const hypothetical=clone(s);hypothetical.proposals[hypothetical.proposals.findIndex(p=>p.id===park.id)]=clone(r.proposal);
+  assert.deepEqual(clone(r.forecast.votes),clone(E.forecastVote(hypothetical,r.proposal,park.id)));assert.equal(E.canonical(s),before);
+  assert.notDeepEqual(clone(r.forecast.votes.votes),clone(E.forecastVote(s,park,park.id).votes));
+});
+
+test('MP-078 empty, absent and repeated factual claims never receive extra persuasion credit',()=>{
+  let s=post(fresh(),program([component('work','workplace',10,1)])),p=s.proposals.at(-1);
+  const absent={argument:'There are 0 work places.',source:'typed',programRevision:p.programRevision,claims:[{id:'absent',type:'component',field:'workplace',operator:'eq',value:0,evidence:{start:0,end:24,quote:'There are 0 work places.'}}]};
+  assert.equal(E.evaluateClaims(s,p,'marsh',absent).credit,'none');
+  const empty={argument:'Please consider the proposal.',source:'typed',programRevision:p.programRevision,claims:[]},result=E.applyCommand(s,command(s,'persuade',{proposalId:p.id,memberId:'marsh',...empty}));
+  assert.equal(result.ok,true);assert.equal(result.receipt.originalResult.points,0);assert.equal(result.receipt.originalResult.credit,'none');assert.equal(result.state.lobbyCount.marsh,1);
+  s=commit(s,'persuade',{proposalId:p.id,memberId:'okafor',...pitch(p,'safety',E.effectsOf(p,s).safety,`It adds ${E.effectsOf(p,s).safety} safety.`)});
+  const changed=pitch(p,'safety',E.effectsOf(p,s).safety,`It adds ${E.effectsOf(p,s).safety} safety.`);changed.claims[0].operator='gte';assert.equal(E.evaluateClaims(s,p,'okafor',changed).credit,'none');
+});
+
+test('MP-076 forecast replacement capacity equals the actual economic change at occupied sites',()=>{
+  const scenario=clone(E.MILLBROOKE);scenario.map.growth.enabled=false;
+  let s=E.newGame(31,scenario,{gameId:'replacement-accounting'}),shop=s.grid.find(c=>c.b?.type==='shop'),plots=[[shop.x,shop.y]],p=program([component('work','workplace',20,1)]),r=preview(s,p,plots);assert.equal(r.ok,true);
+  const before=E.econ(s);assert.equal(r.forecast.effects.jobs,10);assert.equal(r.forecast.effects.units,-2);
+  s=post(s,p,plots);const target=s.proposals.at(-1);let vote=E.forecastVote(s,target,target.id);
+  for(const member of vote.votes.filter(v=>v.vote!==target.id).sort((a,b)=>b.leans[0].lean-a.leans[0].lean).slice(0,2))if(!E.forecastVote(s,target,target.id).winner)s=commit(s,'offer',{proposalId:target.id,memberId:member.member,offer:{type:'favor'}});
+  assert.equal(E.forecastVote(s,target,target.id).winner,target.id,'an explicit limited favor must win an actual majority');
+  s=commit(s,'decision',{proposalId:target.id,action:'vote',funding:'cash',route:E.approvalRoute(s,target).id});s=commit(s,'resolveYear',{});
+  assert.equal(E.econ(s).jobs-before.jobs,r.forecast.effects.jobs);assert.equal(E.econ(s).units-before.units,r.forecast.effects.units);
 });

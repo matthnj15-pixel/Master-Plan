@@ -221,7 +221,7 @@ function memberScore(s,m,p,champion){
   return sc;
 }
 function lean(sc){return Math.round(100/(1+Math.exp(-sc/3)));}
-function hearingOptions(s,p){return p.group?s.proposals.filter(q=>q.group===p.group&&q.status==='open'):[p];}
+function hearingOptions(s,p){const options=p.group?s.proposals.filter(q=>q.group===p.group&&q.status==='open'):[p];return FLAGS.compositionPlans?options.map(q=>q.id===p.id?p:q):options;}
 function forecastVote(s,p,champion){
   const opts=hearingOptions(s,p);
   const votes=councilOf(s).map(m=>{
@@ -588,7 +588,7 @@ function grantInfo(s,p){if(p.grant||p.grantPending||p.grantDenied)return null;le
   if(!agency)return null;if(p.emergency)odds-=0.2;
   return{agency,share,odds:clamp(odds+(s.presenters.planner.rel-50)/200,0.2,0.85)};}
 function applyGrant(s,p){const g=grantInfo(s,p);if(!g)return null;p.grantPending={...g,year:s.year};p.status='tabled';return g;}
-function migrate(s,options={}){if(!s)return s;if(s.v===1){s.meters.safety=62;s.meters.afford=58;s.policies={};s.flags.floodRisk=0.06;
+function migrate(s,options={}){if(!s)return s;if(FLAGS.compositionPlans)s=copy(s);if(s.v===1){s.meters.safety=62;s.meters.afford=58;s.policies={};s.flags.floodRisk=0.06;
   for(const [id,pa] of Object.entries(PARCELS))if(pa.tiles)for(const [x,y] of pa.tiles){const c=s.grid[y*N+x];if(!c.site&&!c.b)c.site=id;}
   for(const h of s.history){if(h.safety===undefined)h.safety=62;if(h.afford===undefined)h.afford=58;}s.v=2;}
   if(s.v===2){const scenario=copy(MILLBROOKE);delete scenario.map.grid;s.scenarioId=MILLBROOKE.id;s.scenario=scenario;s.calendar=copy(MILLBROOKE.calendar);s.facts={};
@@ -899,10 +899,16 @@ function programLayout(program,plots){
 }
 function programDemolition(s,layout){
   const changed=layout.cells.filter(c=>c.usedArea>1e-8).map(c=>c.plot),d=demolitionOf(s,changed);
+  d.lostJobs=0;d.lostHousing=0;d.lostUnits=0;
+  for(const plot of changed){const b=cellAt(s,...plot).b;if(b?.type==='house')d.lostHousing+=62;if(b?.type==='apt')d.lostHousing+=200;if(b?.type==='shop'){d.lostJobs+=10;d.lostUnits+=2;}if(b&&['college','quad'].includes(b.type))d.lostJobs+=30;}
+  const touched=new Set(changed.map(p=>p.join(',')));
+  for(const prior of s.built||[]){if(prior.closed)continue;const footprint=prior.layout?prior.layout.cells.filter(c=>c.usedArea>1e-8).map(c=>c.plot):plotsOf(prior,s);if(!footprint.some(p=>touched.has(p.join(','))))continue;
+    const old=prior.program?programOperatingEffects(prior,s):KINDS[prior.kind].effects(prior.plan);d.lostJobs+=old.jobs;d.lostHousing+=old.housing;d.lostUnits+=old.units;
+  }
   // Working agriculture and landscape management keep the underlying land in service.
   let farmKept=0;for(const cell of layout.cells){if(!cell.usedArea)continue;const c=cellAt(s,...cell.plot);if(c.t==='farm'&&!c.b){const destructive=layout.allocations.filter(a=>a.sharedWith===null&&!['agriculture','green','stormwater','access'].includes(a.capability)).reduce((n,a)=>n+a.segments.filter(t=>t.plot[0]===c.x&&t.plot[1]===c.y).reduce((v,t)=>v+t.area,0),0)+cell.bufferArea;farmKept+=.5*(1-Math.min(1,destructive));}}
   d.farm=precise(Math.max(0,d.farm-farmKept));
-  d.retained=layout.cells.filter(c=>!c.usedArea).map(c=>({plot:c.plot.slice(),building:copy(cellAt(s,...c.plot).b),terrain:cellAt(s,...c.plot).t}));
+  d.retained=layout.cells.filter(c=>!c.usedArea).map(c=>({plot:c.plot.slice(),building:copy(cellAt(s,...c.plot).b||null),terrain:cellAt(s,...c.plot).t}));
   d.changedPlots=changed;return d;
 }
 function programBaseEffects(p,s){
@@ -934,7 +940,7 @@ function programOperatingEffects(p,s){return p.operatingEffects?copy(p.operating
 function compositionEffects(p,s){
   const e=programBaseEffects(p,s),d=p.demo,pr=presentersOf(s)[p.presenter]||PRESENTERS.planner;
   e.cost+=(p.layout?.cells.filter(c=>c.usedArea>1e-8).length||0)*15;
-  if(d){e.cost+=d.cost;e.jobs-=d.untrackedJobs;e.farm+=d.farm;e.live+=d.live;e.conf+=d.conf;e.approval+=d.approval;
+  if(d){e.cost+=d.cost;e.jobs-=d.lostJobs??d.untrackedJobs;e.housing-=d.lostHousing||0;e.units-=d.lostUnits||0;e.farm+=d.farm;e.live+=d.live;e.conf+=d.conf;e.approval+=d.approval;
     if(d.residents)e.notes.push(`Displaces about ${d.residents} residents`);if(d.warning)e.notes.push(d.warning);}
   if(p.grant)e.cost*=1-p.grant;
   e.cost=Math.round(e.cost);e.costHigh=Math.round(e.cost*(1+(100-pr.detail)/250));e.upkeep=r1(e.upkeep);
@@ -1111,7 +1117,7 @@ function claimPriority(type,field,value,e,s){
     return useful?priority:null;
   }
   if(type==='condition')return {access:value?'walk':null,buffer:value>0?'live':null,preserve:value>0?'farm':null,affordable:value?'afford':null,hours:value<=12?'live':null,deliveries:value==='daytime'?'safety':null}[field]||null;
-  if(type==='component')return {housing:'housing',workplace:'jobs',shop:'stores',community:'live',recreation:'live',event:'conf',agriculture:'farm',storage:'jobs',access:'walk',parking:null,green:'live',stormwater:'flood',policy:'safety'}[field]||null;
+  if(type==='component')return value>0?({housing:'housing',workplace:'jobs',shop:'stores',community:'live',recreation:'live',event:'conf',agriculture:'farm',storage:'jobs',access:'walk',parking:null,green:'live',stormwater:'flood',policy:'safety'}[field]||null):null;
   return null;
 }
 function evaluateClaims(s,p,memberId,input){
@@ -1135,10 +1141,12 @@ function evaluateClaims(s,p,memberId,input){
     if(valid){const lower=quote.toLowerCase(),aliases=CLAIM_ALIASES[c.field]||[CAPABILITY_BY_ID[c.field]?.label.toLowerCase()||c.field.toLowerCase()];
       if(!aliases.some(a=>lower.includes(a))){valid=false;code='claim_evidence_unrelated';}
       if(typeof c.value==='number'){const normalized=lower.replaceAll(',',''),number=String(c.value).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');if(!new RegExp('(^|[^0-9.])'+number+'($|[^0-9.])').test(normalized)){valid=false;code='claim_quantity_not_in_argument';}}
-      if((typeof c.value==='number'||c.value===true)&&/\b(no|without|not|never|doesn’t|doesn't|won't|cannot)\b/.test(lower)){valid=false;code='claim_evidence_negated';}
+      if(c.value!==false&&/\b(no|without|not|never|doesn’t|doesn't|won't|cannot)\b/.test(lower)){valid=false;code='claim_evidence_negated';}
+      if(/\b(may|might|could|possibly|unknown|unclear)\b/.test(lower)){valid=false;code='claim_evidence_ambiguous';}
+      if(c.value===false&&!/\b(no|without|not|never|closed|absent|off|false)\b/.test(lower)){valid=false;code='claim_polarity_not_in_argument';}
       if(typeof c.value==='string'&&!lower.includes(c.value.toLowerCase())){valid=false;code='claim_value_not_in_argument';}
     }
-    const key=fingerprint({proposalId:p.id,revision,type:c.type,field:c.field,operator:c.operator,value:c.value}),priority=valid?claimPriority(c.type,c.field,actual,e,s):null,
+    const key=fingerprint({proposalId:p.id,revision,type:c.type,field:c.field,actual:actual??null}),priority=valid?claimPriority(c.type,c.field,actual,e,s):null,
       repeated=(s.persuasionHistory||[]).some(h=>h.memberId===memberId&&h.proposalId===p.id&&h.claimKey===key);
     let creditEligible=valid&&!!priority&&!!m.pri[priority];if(valid&&!creditEligible)code='claim_irrelevant';if(valid&&repeated){creditEligible=false;code='claim_repeated';}
     if(creditEligible)addressed.push(priority);results.push({id:c.id,type:c.type,field:c.field,claimedValue:c.value,valid,code,actual:actual??null,priority,creditEligible,claimKey:key});notes.push(c.id+': '+code);
@@ -1154,6 +1162,7 @@ function readReactionContext(s,ref){
 }
 
 function programEligibility(s,p){
+  if(!record(p.layout)||!record(p.demo))return {ok:false,reasons:['proposal_layout_missing']};
   const r=previewProgram(s,{program:p.program,plots:plotsOf(p,s),id:p.id,presenter:p.presenter});if(!r.ok)return {ok:false,reasons:r.reasons};
   const reasons=[];if(p.programRevision!==r.proposal.programRevision||canonical(p.layout)!==canonical(r.layout)||canonical(p.demo)!==canonical(r.proposal.demo))reasons.push('proposal_changed_repreview_required');
   for(const [fact,value] of Object.entries(scenarioOf(s).proposals.definitions[p.id]?.requires||{}))if(s.facts[fact]!==value)reasons.push('condition_unresolved:'+fact);
