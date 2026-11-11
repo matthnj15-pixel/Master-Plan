@@ -38,7 +38,9 @@ async function open(width=400,setup,{time,timezoneId='UTC'}={}){
  await ctx.addInitScript(()=>Object.defineProperty(navigator,'gpu',{value:{async requestAdapter(){return {features:new Set(['shader-f16'])};}}}));
  if(setup)await ctx.addInitScript(setup);
  const page=await ctx.newPage(),errors=[];page.on('pageerror',e=>errors.push(String(e)));
- if(time)await page.clock.install({time:new Date(time)});
+ // Freeze Date only: navigation and background I/O must not consume the
+ // one-second pre-midnight fixture window; normal timers keep running.
+ if(time)await page.clock.setFixedTime(new Date(time));
  await page.goto(url);
  return {ctx,page,errors};
 }
@@ -74,7 +76,7 @@ test('MP-075 MP-053 MP-054 diagnostics remain reachable with Qwen off and date c
 test('MP-075 untouched date defaults follow local midnight while edited and missing dates survive background writes',async()=>{
  const {ctx,page,errors}=await open(400,undefined,{time:'2026-11-11T04:59:59Z',timezoneId:'America/New_York'});
  async function observedAt(time,date){
-  await page.clock.setSystemTime(new Date(time));
+  await page.clock.setFixedTime(new Date(time));
   await page.evaluate(()=>window.MP_QWEN_DIAGNOSTICS.record('app.launch','observed',{stage:'launch'}));
   await page.waitForFunction(date=>document.querySelector('[data-diagnostics-range]').textContent.includes(`Newest: ${date}`),date);
  }

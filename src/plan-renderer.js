@@ -206,7 +206,7 @@ const PLAN_RENDERER = (() => {
   function renderProgram({state,proposal:p,engine:E,existing=false}){
     if(!p.layout||!p.programRevision)return `<p class="plan-no-site" role="status">The accepted engine layout is unavailable. Re-preview before confirming.</p>`;
     const e=E.effectsOf(p,state),plots=p.layout.plots,map=E.mapSize(state),defs=new Map(E.capabilities().map(d=>[d.id,d]));
-    const quantities=p.program.components.map(c=>pill(`${c.label} · ${defs.get(c.capability)?.unit||c.capability}${c.sharedWith?' · shared with '+c.sharedWith:''}`,c.quantity)).join('');
+    const quantities=p.program.components.map(c=>pill(`${c.label} · ${defs.get(c.capability)?.unit||c.capability}${c.sharedWith?' · shared with '+(p.program.components.find(host=>host.id===c.sharedWith)?.label||'another activity'):''}`,c.quantity)).join('');
     if(!plots.length)return `<section class="plan-no-site" data-program-revision="${esc(p.programRevision)}" data-plan-cost="${e.cost}"><b>${esc(p.title)} · borough-wide program</b><div class="plan-counts">${quantities}</div><p class="plan-caption">No construction footprint. Fictional engine estimate ${fmt(e.cost)}; upkeep ${fmt(e.upkeep)}/year.</p></section>`;
     const xs=plots.map(p=>p[0]),ys=plots.map(p=>p[1]),left=Math.max(0,Math.min(...xs)-1),right=Math.min(map.width-1,Math.max(...xs)+1),top=Math.max(0,Math.min(...ys)-1),bottom=Math.min(map.height-1,Math.max(...ys)+1);
     let context='';

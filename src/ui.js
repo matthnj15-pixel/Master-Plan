@@ -4,6 +4,7 @@ const BUILD=(typeof MP_BUILD!=='undefined'&&MP_BUILD)||{channel:'stable',version
 const DEV=BUILD.channel==='dev';
 // Capture this at startup: changing a flag in the menu requires a reload.
 const COMPOSITION=DEV&&!!BUILD.flags.compositionPlans;
+let pendingCompositionFlag=null;
 const WEB_AI=window.MP_WEB_BUILD && BUILD.flags.offlineAI;
 const diagnostics=window.MP_DIAGNOSTICS?.create({enabled:DEV&&!!window.MP_WEB_BUILD&&!window.claude?.use,build:BUILD});
 if(diagnostics)window.MP_QWEN_DIAGNOSTICS=diagnostics;
@@ -21,11 +22,12 @@ let offlineModel=null,localLoading=false,localStatus='',offlineStartupAttempts=0
 const SAVE_KEY=DEV?'masterplan.dev.save':'millbrook.v1',DB_DOC=DEV?'save-dev':'save';
 const V4_KEY=DEV?'masterplan.dev.save.v4':'masterplan.stable.save.v4',V4_DB_DOC=DEV?'save-dev-v4':'save-v4';
 let workspace=null,workspaceGeneration=null,workspaceMode='legacy',workspaceReason='',storageBusy=false,durableState=null;
-let privateDrafts=[],privateRevision=null,privateGame=null,privateConflict=false,privateTimer=null;
+let privateDrafts=[],privateRevision=null,privateGame=null,privateConflict=false,privateTimer=null,privateReason='';
 const copy=value=>JSON.parse(JSON.stringify(value));
 const compositionRunner=COMPOSITION&&window.COMPOSITION_REQUESTS?.create({engine:E,diagnostics});
 let picking=null,pendingInit=null; // MP-033: plot picking mode on the map
 let S=null,view='iso',rot=0,tab='agenda',sheet=null,AI=null,aiState='checking',DB=null,UID=null,busy=false,selTile=null,lobbyOpen=null,confirmNew=false;
+let accountEpoch=0;
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmtK=k=>{k=Math.round(k);const neg=k<0;k=Math.abs(k);return(neg?'−':'')+(k>=1000?'$'+(k/1000).toFixed(2)+'M':'$'+k+'K');};
@@ -53,13 +55,13 @@ let saveT=null,saving=false,saveAgain=false;
 function workspaceWritable(){return workspace&&workspaceMode==='ready';}
 function storageNotice(){return workspaceReason?`<div class="msg sys storage-notice" role="status">${esc(workspaceReason)}</div>`:'';}
 function adoptStored(result){
-  if(result?.state){S=copy(result.state);durableState=copy(S);}
+  if(result?.state&&E.isSupportedSave(result.state)){S=copy(result.state);durableState=copy(S);}
   if(Number.isSafeInteger(result?.generation))workspaceGeneration=result.generation;
   if(result?.mode)workspaceMode=result.mode;
 }
 async function failStorage(result){
   const current=result?.state?result:workspace?{state:workspace.state,generation:workspace.generation,mode:workspace.mode}:null;
-  if(current?.state)adoptStored(current);else if(durableState)S=copy(durableState);
+  if(current?.state&&E.isSupportedSave(current.state))adoptStored(current);else if(durableState)S=copy(durableState);
   cancelPlanRequest();
   if(sheet?.type==='composition'){sheet.requested=null;sheet.resident=null;}
   workspaceReason=result?.reason||(result?.reasons||[]).join(' ')||'The save could not be written. Your input is kept. Recheck the current town before trying again.';
@@ -88,6 +90,13 @@ async function flush(){if(!DB||!UID)return;
   try{await DB.doc('data/users/'+UID+'/'+DB_DOC).set({json:JSON.stringify(S),year:S.year,savedAt:S.savedAt});}catch(e){}
   saving=false;if(saveAgain){saveAgain=false;flush();}}
 function loadLocal(){try{const t=localStorage.getItem(SAVE_KEY);if(t){const s=JSON.parse(t);if(E.isSupportedSave(s))return s;}}catch(e){}return null;}
+function migratedSave(input){
+  try{
+    if(!input||!E.isSupportedSave(input))return null;
+    const result=E.migrate(copy(input));
+    return E.isSupportedSave(result)?result:null;
+  }catch{return null;}
+}
 async function prepareWorkspace(){
   const api=window.MP_WORKSPACE;
   if(api){
@@ -107,15 +116,29 @@ async function prepareWorkspace(){
   }catch{workspaceMode='read-only';workspaceReason='Save storage cannot be read. Existing save bytes are protected.';}
   return null;
 }
-async function commitComposition(type,payload){
-  if(storageBusy||!workspaceWritable()){toast(workspaceReason||'Safe saving is unavailable. Your input is kept.');return null;}
+function compositionApplication(context,result,started,stage='persistence'){
+  try{
+    if(!diagnostics)return;
+    const allowed=new Set(['persistence_failed','save_conflict','save_lock_unavailable','storage_unavailable','workspace_conflict','command_mismatch','quota_used','stale_revision']);
+    const code=result?.ok?'none':allowed.has(result?.code)?result.code:'engine_rejected',applied=!!result?.ok&&result.applied!==false;
+    const outcome=result?.ok?(applied?'applied':'unchanged'):'not-applied';
+    Promise.resolve(diagnostics.record('composition.application',outcome,{requestId:context?.requestId,action:context?.action||'other',task:context?.action,contractVersion:'C2.1',modelId:context?.modelId,runtimeVersion:context?.runtimeVersion,stage,durationMs:diagnosticDuration(started),applied,resultCode:code})).catch(()=>{});
+  }catch{} // Recording must never change a game action's result.
+}
+function compositionRequest(result,action,provider){
+  return {requestId:result.requestId,action,...(provider?.modelId?{modelId:provider.modelId}:{}),...(provider?.offline?{runtimeVersion:'0.2.87'}:{})};
+}
+async function commitComposition(type,payload,context=null){
+  const started=diagnosticTime();
+  if(storageBusy||!workspaceWritable()){compositionApplication(context,{ok:false,code:'engine_rejected'},started,'application');toast(workspaceReason||'Safe saving is unavailable. Your input is kept.');return null;}
   const command={id:(S.actionHighWater||0)+1,type,gameId:S.gameId,expectedRevision:S.revision,expectedGeneration:workspaceGeneration,payload};
   storageBusy=true;
   try{
     const result=await workspace.commit(command);
+    compositionApplication(context,result,started);
     if(!result?.ok){await failStorage(result);return null;}
     adoptStored(result);workspaceReason='';scheduleReplica();return result;
-  }catch{await failStorage({reason:'The action could not be saved. Your input is kept; review before retrying.'});return null;}
+  }catch{compositionApplication(context,{ok:false,code:'persistence_failed'},started);await failStorage({reason:'The action could not be saved. Your input is kept; review before retrying.'});return null;}
   finally{storageBusy=false;}
 }
 
@@ -139,10 +162,10 @@ async function initCaps(){
   }
   claude.use('sample').then(a=>{AI=a;aiState=a?'on':'off';renderBar();if(sheet?.type==='composition')renderSheet();}).catch(()=>{aiState='off';renderBar();});
   try{const [user,db]=await Promise.all([claude.use('user'),claude.use('db')]);
-    if(user&&db){const id=await user.id();if(id){UID=id;DB=db;
+    if(user&&db){const id=await user.id();if(id){if(UID!==id||DB!==db)accountEpoch++;UID=id;DB=db;
       if(workspaceMode!=='legacy'){workspace?.setAccount(id);if(sheet?.type==='menu')renderSheet();return;}
       const snap=await db.doc('data/users/'+id+'/'+DB_DOC).get();
-      if(snap.exists){const d=snap.data();if(d&&d.json){const st=JSON.parse(d.json);if(E.isSupportedSave(st)&&(st.savedAt||0)>(S.savedAt||0)){S=E.migrate(st);renderAll();}}}
+      if(snap.exists){const d=snap.data();if(d&&d.json){const st=JSON.parse(d.json);if(E.isSupportedSave(st)&&(st.savedAt||0)>(S.savedAt||0)){const migrated=migratedSave(st);if(migrated){S=migrated;renderAll();}}}}
       else save();}}}catch(e){}
 }
 
@@ -378,12 +401,12 @@ function agendaHTML(){
   for(const p of props){
     if(seen.has(p.id))continue;
     if(p.group){const g=props.filter(q=>q.group===p.group);g.forEach(q=>seen.add(q.id));
-      h+=`<div class="group"><div class="gh"><b>Competing plans for the Old Mill lot.</b> The council can approve one, or neither.</div>${g.map(q=>itemHTML(q,i++)).join('')}${BUILD.flags.planDrawings?`<button class="btn" data-compare="${g[0].id}">Compare site plans</button>`:''}${g.some(q=>q.status==='open')?`<button class="btn" data-hear="${p.id}">Open the council hearing</button>`:''}</div>`;}
+      h+=`<div class="group"><div class="gh"><b>Competing plans for the Old Mill lot.</b> The council can approve one, or neither.</div>${g.map(q=>itemHTML(q,i++)).join('')}${BUILD.flags.planDrawings?`<button type="button" class="btn" data-compare="${g[0].id}">Compare site plans</button>`:''}${g.some(q=>q.status==='open')?`<button class="btn" data-hear="${p.id}">Open the council hearing</button>`:''}</div>`;}
     else{seen.add(p.id);h+=itemHTML(p,i++);}
   }
   h+='</div>';
   if(S.phase==='agenda')h+=E.canProposeInitiative(S)?`<button class="item initiative-item" data-act="initiative"><span class="no">+</span><span class="grow"><span class="t">Bring your own idea</span><span class="m">One initiative available this year. Choose plots or describe what to change.</span></span></button>`:`<p class="note">Your initiative for ${calYear(S.year)} is on the agenda.</p>`;
-  if(COMPOSITION)h+=`<div class="chips"><button class="btn" data-comp="workspace">Private workspace</button><button class="btn" data-act="quickInitiative">Legacy quick plan</button></div>`;
+  if(COMPOSITION)h+=`<div class="chips"><button type="button" class="btn" data-comp="workspace">Private workspace</button><button type="button" class="btn" data-act="quickInitiative">Quick plan</button></div>`;
   const pend=S.pending;
   if(pend.length)h+=`<div class="sect"><span>Under construction</span></div><div class="stack">${pend.map(pj=>`<div class="row"><span>${esc(pj.title)}</span><span>${Math.round(pj.odds*100)}% on time</span></div>`).join('')}</div>`;
   const built=S.built;
@@ -412,6 +435,7 @@ function budgetHTML(){
   <div class="note">Parks and good design raise this a little each year, which grows property tax without raising rates. Two straight years below zero in the reserve brings state oversight and ends your career.</div>`;
 }
 function renderBar(){
+  $('#mapinfo').classList.toggle('picking-info',!!picking);
   const open=openProposals().length;
   const review=$('#reviewBtn'),next=S.phase==='agenda'&&!picking?openProposals()[0]:null;
   review.hidden=!next;if(next)review.dataset.open=next.id;else delete review.dataset.open;
@@ -707,8 +731,8 @@ function wireMap(){
   const end=e=>{if(!pts.has(e.pointerId))return;pts.delete(e.pointerId);if(!g)return;
     if(g.mode==='pinch'){if(Math.abs(g.twist)>=35)rotateBy(Math.round(g.twist/90)||Math.sign(g.twist));g={mode:'done'};}
     else if(g.mode==='pan'&&!g.moved&&e.type==='pointerup'){const [x,y]=local({x:e.clientX,y:e.clientY});const now=Date.now();
-      if(lastTap&&now-lastTap.t<320&&Math.hypot(x-lastTap.x,y-lastTap.y)<30){lastTap=null;zoomAt(x,y,zoom<ZMAX-0.01?zoom*1.8:1);}
-      else{lastTap={t:now,x,y};onMapTap(x,y);}}
+      if(!picking&&lastTap&&now-lastTap.t<320&&Math.hypot(x-lastTap.x,y-lastTap.y)<30){lastTap=null;zoomAt(x,y,zoom<ZMAX-0.01?zoom*1.8:1);}
+      else{lastTap=picking?null:{t:now,x,y};onMapTap(x,y);}}
     if(!pts.size)g=null;};
   cv.addEventListener('pointerup',end);cv.addEventListener('pointercancel',end);
   // iOS Safari: keep pinch and double-tap on the map from zooming the whole page.
@@ -807,13 +831,21 @@ const emptyProgram=()=>({version:2,title:'Untitled plan',intent:'',components:[]
 const capabilities=()=>E.capabilities?.()||[];
 const currentPublic=draft=>draft?.targetId?S.proposals.find(p=>p.id===draft.targetId):null;
 let privateWrites=Promise.resolve();
+let privateLive=null;
+function validPrivateUI(draft){
+  const object=v=>v&&typeof v==='object'&&!Array.isArray(v),strings=v=>Array.isArray(v)&&v.every(x=>typeof x==='string');
+  const plots=value=>Array.isArray(value)&&value.every(p=>Array.isArray(p)&&p.length===2&&p.every(Number.isInteger)&&p[0]>=0&&p[1]>=0&&p[0]<E.mapSize(S).width&&p[1]<E.mapSize(S).height);
+  const program=p=>object(p)&&p.version===2&&typeof p.title==='string'&&typeof p.intent==='string'&&Array.isArray(p.components)&&p.components.every(c=>object(c)&&typeof c.id==='string'&&typeof c.capability==='string'&&typeof c.label==='string'&&Number.isFinite(c.quantity)&&Number.isFinite(c.area)&&(c.sharedWith===null||typeof c.sharedWith==='string'))&&object(p.conditions)&&['hours','buffer','preserve'].every(k=>Number.isFinite(p.conditions[k]))&&typeof p.conditions.deliveries==='string'&&typeof p.conditions.access==='boolean'&&typeof p.conditions.affordable==='boolean'&&strings(p.assumptions)&&strings(p.omissions);
+  const details=value=>value===undefined||value===null||object(value)&&strings(value.questions)&&strings(value.omissions);
+  return object(draft)&&typeof draft.id==='string'&&typeof draft.text==='string'&&(draft.editText===undefined||typeof draft.editText==='string')&&plots(draft.plots)&&program(draft.program)&&details(draft.requestDetails)&&(draft.feedback===undefined||typeof draft.feedback==='string')&&Array.isArray(draft.versions)&&draft.versions.every(v=>object(v)&&typeof v.id==='string'&&typeof v.input==='string'&&program(v.program)&&plots(v.plots)&&(v.legacyPlan===undefined||v.legacyPlan===null||object(v.legacyPlan)));
+}
 async function readPrivateDrafts(force=false){
   if(!workspace||(!force&&privateGame===S.gameId))return;
   const gameId=S.gameId,result=await workspace.readDrafts(gameId);
   if(S.gameId!==gameId)return;
   privateGame=gameId;
-  if(result.ok){privateDrafts=result.drafts;privateRevision=result.revision;privateConflict=false;}
-  else{privateConflict=true;toast((result.reasons||[]).join(' ')||'Private recovery is unavailable. Live input is kept.');}
+  if(result.ok&&result.drafts.every(validPrivateUI)){privateDrafts=result.drafts;privateRevision=result.revision;privateConflict=false;privateReason='';}
+  else{privateConflict=true;privateRevision=null;privateDrafts=[];privateReason='Private recovery is unavailable because a saved draft uses an unsupported format. Saved bytes, live text and attempted plots are kept. Continue here without saving recovery, or reopen it in a compatible build.';toast(privateReason);}
 }
 function privateMessage(origin,message){
   if(!origin)return;origin.privateNotice=message;
@@ -841,29 +873,71 @@ function schedulePrivateDraft(){clearTimeout(privateTimer);const origin=sheet;pr
 async function openComposition({draft,targetId,plots=[],text=''}={}){
   if(sheet?.type==='composition')await persistPrivateDraft();
   cancelPlanRequest();await readPrivateDrafts();
-  const target=targetId&&S.proposals.find(p=>p.id===targetId);if(target&&!target.program&&!draft){text=target.blurb||target.title;}
+  const target=targetId&&S.proposals.find(p=>p.id===targetId);if(target&&!draft){text=target.program?.intent||target.blurb||target.title;}
   draft=draft?copy(draft):{id:privateId(),targetId:targetId||null,text,editText:'',plots:copy(target?.plots||plots),program:copy(target?.program||{...emptyProgram(),title:target?.title||'Untitled plan'}),legacyPlan:target&&!target.program?copy(target.plan):null,versions:[],selectedVersion:null};
-  openSheet({type:'composition',gameId:S.gameId,draft,working:copy(draft.program),requested:null,resident:null,privateNotice:'Private · Your annual initiative is available until you choose Put on agenda.'});
+  openSheet({type:'composition',gameId:S.gameId,draft,working:copy(draft.program),requested:null,resident:null,requestDetails:draft.requestDetails||null,feedback:draft.feedback||'',privateNotice:privateReason||'Private · Nothing is posted until you choose Put on agenda.'});
   if(draft.versions.length){const version=draft.versions.find(v=>v.id===draft.selectedVersion)||draft.versions.at(-1);restorePrivateVersion(version);}
   drawMap();
 }
 function privateWorkspaceSheet(){
-  return ['<div class="eyebrow">Private · this device</div><h2>Planning workspace</h2>',`${storageNotice()}<p class="note">Keep four drafts with eight input versions each, up to 128 KiB per town. Drafts stay private and do not use your annual initiative.</p><div class="stack">${privateDrafts.map(d=>`<div class="box"><b>${esc(d.program?.title||'Untitled plan')}</b><p class="note">${d.plots.length} plots · ${d.versions.length}/8 versions${d.targetId?' · revision of a public proposal':''}</p><div class="chips"><button class="btn primary" data-comp-open="${esc(d.id)}">Open draft</button><button class="btn danger" data-comp-delete="${esc(d.id)}">Delete draft</button></div></div>`).join('')||'<p class="note">No saved drafts yet.</p>'}</div><div class="sh-actions"><button class="btn primary" data-comp="new">New private draft</button><button class="btn" data-comp="reloadDrafts">Reload saved drafts</button></div>`];
+  return ['<div class="eyebrow">Private · this device</div><h2>Planning workspace</h2>',`${storageNotice()}${privateLive?.gameId===S.gameId?'<button type="button" class="btn" data-comp="resumeLive">Return to live draft input</button>':''}${privateReason?`<p class="msg sys" role="status">${esc(privateReason)}</p>`:''}<p class="note">Keep four drafts with eight input versions each, up to 128 KiB per town. Drafts stay private and do not use your annual initiative.</p><div class="stack">${privateDrafts.map(d=>`<div class="box"><b>${esc(d.program?.title||'Untitled plan')}</b><p class="note">${d.plots.length} plots · ${d.versions.length}/8 versions${d.targetId?' · revision of a public proposal':''}</p><div class="chips"><button type="button" class="btn primary" data-comp-open="${esc(d.id)}">Open draft</button><button type="button" class="btn danger" data-comp-delete="${esc(d.id)}">Delete draft</button></div></div>`).join('')||(!privateReason?'<p class="note">No saved drafts yet.</p>':'')}</div><div class="sh-actions"><button type="button" class="btn primary" data-comp="new">New private draft</button><button type="button" class="btn" data-comp="reloadDrafts">Reload saved drafts</button></div>`];
 }
-function compositionForecast(candidate,baseline){
+function comparisonBaseline(candidate){
+  if(sheet?.type!=='composition')return null;
+  const draft=sheet.draft,target=currentPublic(draft);
+  if(target)return{proposal:target,label:'Public accepted version'};
+  const index=draft.versions.findIndex(v=>v.id===(draft.baselineVersion||draft.versions[0]?.id)),version=draft.versions[index];
+  if(!version)return null;
+  const label=`Version ${index+1} · comparison baseline`;
+  if(E.canonical(version.plots)!==E.canonical(candidate.proposal.plots))return{label,reason:'The baseline uses a different site. Choose a version on this site to compare.'};
+  const result=E.previewProgram(S,{program:version.program,plots:version.plots});
+  return result.ok?{...result,label}:{label,reason:'The baseline cannot be previewed against the current town. Its saved input is kept.'};
+}
+function compositionChanges(before,after){
+  if(!before)return'';
+  const changes=[],defs=new Map(capabilities().map(d=>[d.id,d])),previous=new Map((before.program?.components||[]).map(c=>[c.id,c])),next=new Map((after.program?.components||[]).map(c=>[c.id,c]));
+  for(const c of next.values()){
+    const old=previous.get(c.id),unit=defs.get(c.capability)?.unit||c.capability;
+    if(!old)changes.push(`Added ${c.label}: ${c.quantity} ${unit}, ${c.area} plots.`);
+    else{
+      const parts=[];if(c.label!==old.label)parts.push(`name ${old.label} → ${c.label}`);
+      if(c.quantity!==old.quantity)parts.push(`${old.quantity} → ${c.quantity} ${unit}`);
+      if(c.area!==old.area)parts.push(`area ${old.area} → ${c.area} plots`);
+      if(c.sharedWith!==old.sharedWith)parts.push(c.sharedWith?`shares floor space with ${next.get(c.sharedWith)?.label||'another activity'}`:'uses separate floor space');
+      if(parts.length)changes.push(`${c.label}: ${parts.join('; ')}.`);
+    }
+  }
+  for(const c of previous.values())if(!next.has(c.id))changes.push(`Removed ${c.label}.`);
+  const names={hours:'Operating hours/day',deliveries:'Delivery period',access:'Farm/service access',buffer:'Buffer area (plots)',preserve:'Retained area (plots)',affordable:'Affordable homes'};
+  const value=v=>typeof v==='boolean'?(v?'yes':'no'):String(v);
+  if(after.program){
+    for(const [field,label] of Object.entries(names)){const from=before.program?.conditions[field],to=after.program.conditions[field];if(from!==to)changes.push(`${label}: ${value(from)} → ${value(to)}.`);}
+    const oldOps=before.program?.conditions.operations||[],ops=after.program.conditions.operations||[];
+    if(E.canonical(oldOps)!==E.canonical(ops))changes.push('Activity loading, sales or on-site operating conditions changed.');
+  }else for(const [field,rule] of Object.entries(E.KINDS[after.kind].params))if(before.plan[field]!==after.plan[field])changes.push(`${rule.label}: ${value(before.plan[field])} → ${value(after.plan[field])}.`);
+  if(before.title!==after.title)changes.push(`Title: ${before.title} → ${after.title}.`);
+  return `<section class="composition-changes" aria-label="Changes from baseline"><b>Changes from baseline</b>${changes.length?`<ul>${changes.map(c=>`<li>${esc(c)}</li>`).join('')}</ul>`:'<p class="note">No component or condition changes.</p>'}</section>`;
+}
+function compositionForecast(candidate){
   if(!candidate)return'';
-  const p=candidate.proposal,e=E.effectsOf(p,S),before=baseline&&E.effectsOf(baseline,S),support=candidate.forecast?.support;
-  const number=(key,label,value,previous,unit='')=>`<div><dt>${esc(label)}</dt><dd>${esc(value)}${unit}${previous!==undefined?` <span class="note">(${sgn(Number(value)-Number(previous))}${unit})</span>`:''}</dd></div>`;
-  return `<section class="box composition-forecast" data-program-revision="${esc(p.programRevision||'legacy')}" aria-label="Engine forecast"><b>Engine forecast</b><dl>${number('cost','Cost ($K)',e.cost,before?.cost)}${number('upkeep','Annual upkeep ($K)',e.upkeep,before?.upkeep)}${forecastRows(p,e).filter(([key])=>key!=='upkeep').map(([,label,value,unit])=>number('',label,Number(value)||0,undefined,unit)).join('')}</dl>${support?`<div class="note">Council support: ${support.map(s=>`${esc(s.memberId||s.member||s.id)} ${esc(s.lean??s.support??s.score)}%`).join(' · ')}</div>`:voteSummary(p)}<p class="note">${(e.notes||[]).map(esc).join('. ')}</p></section>`;
+  const p=candidate.proposal,e=E.effectsOf(p,S),baseline=comparisonBaseline(candidate),before=baseline?.proposal&&E.effectsOf(baseline.proposal,S),oldRows=new Map(before?forecastRows(baseline.proposal,before).map(row=>[row[0],row[2]]):[]);
+  const quantity=n=>Number(Number(n).toFixed(4)).toLocaleString('en-US',{maximumFractionDigits:4});
+  const number=(key,label,value,previous,unit='')=>`<div data-comparison-field="${esc(key)}"><dt>${esc(label)}</dt><dd>${previous!==undefined?`<span data-before>${quantity(previous)}${unit}</span> → `:''}<span data-after>${quantity(value)}${unit}</span>${previous!==undefined?` <span class="note" data-delta="${Number((value-previous).toFixed(6))}">(${sgn(value-previous,4)}${unit})</span>`:''}</dd></div>`;
+  let rows=number('cost','Cost ($K)',e.cost,before?.cost)+number('upkeep','Annual upkeep ($K)',e.upkeep,before?.upkeep);
+  rows+=forecastRows(p,e).filter(([key])=>key!=='upkeep').map(([key,label,value,unit])=>number(key,label,Number(value)||0,before?oldRows.get(key):undefined,unit)).join('');
+  for(const [key,label] of [['parking','Parking spaces'],['activity','Daily activity'],['freight','Freight activity'],['noise','Noise exposure'],['storm','Stormwater capacity'],['students','Student capacity'],['bridgeRisk','Bridge risk']])if(typeof e[key]==='number'||typeof before?.[key]==='number')rows+=number(key,label,e[key]||0,before?before[key]||0:undefined);
+  if(p.layout)for(const [key,label] of [['usedArea','Allocated site (plots)'],['freeArea','Unused site (plots)'],['preservedArea','Retained site (plots)'],['bufferArea','Buffer (plots)']])rows+=number(key,label,p.layout[key],baseline?.proposal?.layout?.[key]);
+  const council=E.councilOf(S),support=council.map(member=>{const lean=E.lean(E.memberScore(S,member,p,p.id)),old=before?E.lean(E.memberScore(S,member,baseline.proposal,p.id)):undefined;return number('support:'+member.id,member.name,lean,old,'%');}).join('');
+  return `<section class="box composition-forecast" data-program-revision="${esc(p.programRevision||'legacy')}" aria-label="Engine forecast"><b>Engine forecast</b>${baseline?`<p class="note" data-comparison-baseline>${esc(baseline.label)}${baseline.reason?': '+esc(baseline.reason):' → requested preview. Both forecasts use the current town and exact site.'}</p>`:''}<dl>${rows}</dl><b>Council support</b><dl>${support}</dl>${compositionChanges(baseline?.proposal,p)}<p class="note">${(e.notes||[]).map(esc).join('. ')}</p></section>`;
 }
 function compositionExhibit(candidate,label){
   if(!candidate)return'';
-  return `<section class="composition-candidate" aria-label="${esc(label)}"><div class="eyebrow">${esc(label)}</div>${PLAN_RENDERER.render({state:S,proposal:candidate.proposal,engine:E})||'<p class="note">A schematic is unavailable for this plan.</p>'}<p class="note revision-identity">Revision ${esc(revisionLabel(candidate.proposal.programRevision))}</p>${compositionForecast(candidate,currentPublic(sheet?.draft))}</section>`;
+  return `<section class="composition-candidate" aria-label="${esc(label)}"><div class="eyebrow">${esc(label)}</div>${PLAN_RENDERER.render({state:S,proposal:candidate.proposal,engine:E})||'<p class="note">A schematic is unavailable for this plan.</p>'}<p class="note revision-identity">Revision ${esc(revisionLabel(candidate.proposal.programRevision))}</p>${compositionForecast(candidate)}</section>`;
 }
 function componentControls(program){
   return `<div class="stack">${program.components.map((c,i)=>{
     const def=capabilities().find(d=>d.id===c.capability);
-    return `<fieldset class="component-control" data-component="${esc(c.id)}"><legend>${esc(def?.label||c.capability)} · ${esc(c.id)}</legend><div class="composition-grid"><label>Activity name<input data-component-field="label" value="${esc(c.label)}"></label><label>Quantity · ${esc(def?.unit||'units')}<input data-component-field="quantity" type="number" step="any" value="${c.quantity}"></label><label>Area · plot equivalents<input data-component-field="area" type="number" step="any" value="${c.area}"></label><label>Shares floor space with<select data-component-field="sharedWith"><option value="">Separate space</option>${program.components.filter(q=>q.id!==c.id&&!q.sharedWith).map(q=>`<option value="${esc(q.id)}" ${q.id===c.sharedWith?'selected':''}>${esc(q.label)}</option>`).join('')}</select></label></div><button type="button" class="btn" data-comp-remove="${i}">Remove activity</button></fieldset>`;
+    return `<fieldset class="component-control" data-component="${esc(c.id)}"><legend>${esc(def?.label||c.capability)} · ${esc(c.label)}</legend><div class="composition-grid"><label>Activity name<input data-component-field="label" value="${esc(c.label)}"></label><label>Quantity · ${esc(def?.unit||'units')}<input data-component-field="quantity" type="number" step="any" value="${c.quantity}"></label><label>Area · plot equivalents<input data-component-field="area" type="number" step="any" value="${c.area}"></label><label>Shares floor space with<select data-component-field="sharedWith"><option value="">Separate space</option>${program.components.filter(q=>q.id!==c.id&&!q.sharedWith).map(q=>`<option value="${esc(q.id)}" ${q.id===c.sharedWith?'selected':''}>${esc(q.label)}</option>`).join('')}</select></label></div><button type="button" class="btn" data-comp-remove="${i}">Remove activity</button></fieldset>`;
   }).join('')}</div><div class="composition-grid"><label>Add an activity<select id="compositionCapability">${capabilities().map(d=>`<option value="${esc(d.id)}">${esc(d.label||d.id)} · ${esc(d.unit)}</option>`).join('')}</select></label><button type="button" class="btn" data-comp="addComponent">Add activity</button></div>`;
 }
 function legacyCompositionControls(target){
@@ -872,34 +946,64 @@ function legacyCompositionControls(target){
     return def.type==='bool'?`<label class="composition-check"><input ${attr} type="checkbox" ${value?'checked':''}>${esc(def.label)}</label>`:`<label>${esc(def.label)}${def.type==='enum'?`<select ${attr}>${def.options.map(v=>`<option value="${esc(v)}" ${v===value?'selected':''}>${esc(def.labels?.[v]||v)}</option>`).join('')}</select>`:`<input ${attr} type="number" min="${def.min}" max="${def.max}" step="${def.step}" value="${value}">`}</label>`;
   }).join('')}</div>`;
 }
+function compositionFeedback(){
+  if(!sheet.feedback)return'';
+  const details=sheet.requestDetails,questions=details?.questions||[],omissions=details?.omissions||[];
+  return `<section class="msg sys request-feedback" role="status"><p>${esc(sheet.feedback)}</p>${questions.length?`<b>Please clarify</b><ul>${questions.map(q=>`<li>${esc(q)}</li>`).join('')}</ul>`:''}${omissions.length?`<b>Details the game cannot represent</b><ul>${omissions.map(o=>`<li>${esc(o)}</li>`).join('')}</ul>`:''}${questions.length||omissions.length?'<p>Your original description and site are kept. Edit your request, then preview again. Any supported subset must be reviewed before you accept its omitted scope.</p><button type="button" class="btn" data-comp="editRequest">Edit your request</button>':''}</section>`;
+}
+function stakeholderViews(resident){
+  if(!resident.stakeholders?.length)return'';
+  return `<section class="box" aria-label="Affected stakeholder views"><b>Affected stakeholder views</b>${resident.stakeholders.map(person=>{
+    const actor=E.presentersOf(S)[person.actorId],profile=S.scenario.composition?.profiles?.[person.actorId];
+    return `<section class="stakeholder-response" data-stakeholder="${esc(person.actorId)}"><h3>${esc(actor?.name||'Affected stakeholder')} · ${esc(person.stance)}</h3>${actor?.role?`<p class="note">${esc(actor.role)}</p>`:''}<ul>${(person.reasons||[]).map(reason=>`<li>${esc(reason.replace(/^[a-z_]+: */,''))}</li>`).join('')}</ul>${person.concession?`<p>Requested concession: ${esc(typeof person.concession==='string'?person.concession:'Review the recorded operating conditions in a new preview.')}</p>`:''}${profile?.authority?`<p class="note">${esc(profile.authority)}</p>`:''}${person.counter?compositionExhibit({proposal:person.counter},'Stakeholder requested concession'):''}</section>`;
+  }).join('')}</section>`;
+}
+function compositionFooter(){
+  const target=currentPublic(sheet.draft),candidate=sheet.requested?.proposal,resident=sheet.resident;
+  const button=(action,label,disabled=false,primary=true)=>`<button type="button" class="btn${primary?' primary':''}" data-comp="${action}" ${primary?'data-primary-action':''} ${disabled?'disabled':''}>${label}</button>`;
+  let actions;
+  if(busy)actions=button('cancel','Cancel request');
+  else if(candidate&&!sheet.previewDirty){
+    if(!target)actions=button('post','Put on agenda',!workspaceWritable()||!E.canProposeInitiative(S)||!!candidate.program?.omissions.length&&!sheet.acknowledgedScope)+button('editRequest','Edit request',false,false);
+    else if(!resident)actions=button('resident','Hear resident response');
+    else if(resident.counter)actions=button('counter','Preview this counter')+button('editRequest','Edit request',false,false);
+    else if(resident.stance==='agree'&&!resident.prerequisites?.some(g=>g.satisfied!==true))actions=button('confirmRevision','Confirm public revision',!workspaceWritable());
+    else actions=button('editRequest','Edit request');
+  }else{
+    const typed=!!aiReady()&&!!compositionRunner,controlsReady=!!target&&!target.program||sheet.working.components.length>0,preferTyped=typed&&!sheet.controlsEdited;
+    const submit=`<button type="submit" form="compositionForm" class="btn${preferTyped?' primary':''}" ${preferTyped?'data-primary-action':''}>${candidate||target?'Preview typed revision':'Draft with Qwen'}</button>`;
+    actions=preferTyped?submit+button('previewControls','Preview controls',!controlsReady,false):button('previewControls','Preview these controls',!controlsReady)+(typed?submit:'');
+  }
+  return `<footer class="sh-actions composition-footer" aria-label="Plan actions">${actions}</footer>`;
+}
+function syncCompositionFooter(){if(sheet?.type==='composition'){const footer=$('.composition-footer');if(footer)footer.outerHTML=compositionFooter();}}
 function compositionSheet(){
   const d=sheet.draft,target=currentPublic(d),program=sheet.working,conditions=program.conditions,preview=sheet.requested,resident=sheet.resident;
   const head=`<div class="eyebrow">Private ${target?'revision':'draft'} · ${d.versions.length}/8 saved versions</div><h2>${esc(program.title)}</h2>`;
   const conditionNumber=(key,label)=>`<label>${label}<input data-condition="${key}" type="number" step="any" value="${conditions[key]}"></label>`;
   let body=`${storageNotice()}<p class="note">${target?`Public accepted plan: ${esc(target.title)} · revision ${esc(revisionLabel(target.programRevision))}. Changes below are private until confirmed.`:'Drafting and comparing alternatives leave the public agenda and annual initiative unchanged.'}</p><p class="note" data-private-status role="status">${esc(sheet.privateNotice||'Private recovery is ready.')}</p>
-    <form class="stack composition-form" data-form="composition"><label>Plan title<input id="compositionTitle" value="${esc(program.title)}"></label><label>Your original idea<textarea id="compositionIntent" rows="4" placeholder="Describe what you want this place to do…">${esc(d.text)}</textarea></label>
-    <div class="chips"><button type="button" class="btn" data-comp="pickPlots" ${target?'disabled':''}>${d.plots.length?'Change':'Choose'} plots on the map</button><span class="note">${d.plots.length} exact plots selected${d.plots.length?`: ${esc(d.plots.map(p=>p.join(',')).join(' · '))}`:' · no site for a policy'}</span></div>
-    ${!target?`<label>Or select a named site<select id="compositionSite"><option value="">Keep selected plots</option>${Object.entries(E.SITES).map(([id,plots])=>`<option value="${esc(id)}">${esc(E.PARCELS[id]?.name||id)} · ${plots.length} plots</option>`).join('')}</select>`:''}
+    <form id="compositionForm" class="stack composition-form" data-form="composition"><label>Plan title<input id="compositionTitle" value="${esc(program.title)}"></label><label>Your original idea<textarea id="compositionIntent" rows="4" placeholder="Describe what you want this place to do…">${esc(d.text)}</textarea></label>
+    <div class="chips"><button type="button" class="btn" data-comp="pickPlots" ${target?'disabled':''}>${d.plots.length?'Change':'Choose'} plots on the map</button><span class="note">${d.plots.length} plots selected${d.plots.length?`: ${esc(plotSummary(d.plots))}`:' · no site for a policy'}</span></div>
+    ${!target?`<label>Or select a named site<select id="compositionSite"><option value="">Keep selected plots</option>${Object.entries(E.SITES).map(([id,plots])=>`<option value="${esc(id)}">${esc(E.PARCELS[id]?.name||id)} · ${plots.length} plots</option>`).join('')}</select></label>`:''}
     ${preview||target?`<label>Requested edit<textarea id="compositionEdit" rows="3" placeholder="Add an activity, reduce a quantity, or change operating conditions…">${esc(d.editText||'')}</textarea></label>`:''}
-    <div class="chips"><button class="btn primary" ${busy||!aiReady()||!compositionRunner?'disabled':''}>${preview||target?'Preview typed revision':'Draft with Qwen'}</button>${busy?'<button type="button" class="btn" data-comp="cancel">Cancel request</button>':''}</div><p class="note">${aiReady()?'Your full text is sent to the interpreter; the engine validates and prices the result.':'Qwen is off. Compose activities and conditions below to make an engine preview.'}</p></form>
-    ${busy?'<p class="thinking" role="status">Preparing the requested plan…</p>':''}${sheet.feedback?`<p class="msg sys request-feedback" role="status">${esc(sheet.feedback)}</p>`:''}
-    <details class="composition-controls"><summary>Activities and operating conditions</summary><div class="stack details-content">${target&&!target.program?legacyCompositionControls(target):`<label>Title<input data-program-title value="${esc(program.title)}"></label>${componentControls(program)}<div class="composition-grid">${conditionNumber('hours','Operating hours per day (0–24)')}<label>Deliveries<select data-condition="deliveries">${['none','daytime','anytime'].map(v=>`<option ${conditions.deliveries===v?'selected':''}>${v}</option>`).join('')}</select>${conditionNumber('buffer','Buffer area · plots')}${conditionNumber('preserve','Retained area · plots')}<label class="composition-check"><input type="checkbox" data-condition="access" ${conditions.access?'checked':''}> Maintain farm/service access</label><label class="composition-check"><input type="checkbox" data-condition="affordable" ${conditions.affordable?'checked':''}> Affordable homes</label></div>`}<button type="button" class="btn primary" data-comp="previewControls">Preview these controls</button></div></details>
+    <p class="note">${aiReady()?'Your full text is sent to the interpreter; the engine validates and prices the result.':'Qwen is off. Compose activities and conditions below to make an engine preview.'}</p></form>
+    ${busy?'<p class="thinking" role="status">Preparing the requested plan…</p>':''}${compositionFeedback()}
+    <details class="composition-controls"><summary>Activities and operating conditions</summary><div class="stack details-content">${target&&!target.program?legacyCompositionControls(target):`<label>Title<input data-program-title value="${esc(program.title)}"></label>${componentControls(program)}<div class="composition-grid">${conditionNumber('hours','Operating hours per day (0–24)')}<label>Deliveries<select data-condition="deliveries">${['none','daytime','anytime'].map(v=>`<option ${conditions.deliveries===v?'selected':''}>${v}</option>`).join('')}</select></label>${conditionNumber('buffer','Buffer area · plots')}${conditionNumber('preserve','Retained area · plots')}<label class="composition-check"><input type="checkbox" data-condition="access" ${conditions.access?'checked':''}> Maintain farm/service access</label><label class="composition-check"><input type="checkbox" data-condition="affordable" ${conditions.affordable?'checked':''}> Affordable homes</label></div>`}</div></details>
     ${preview?compositionExhibit(preview,'Requested preview'):''}`;
   if(preview){
     const p=preview.proposal;
     if(p.program?.assumptions.length)body+=`<div class="box"><b>Assumptions</b><ul>${p.program.assumptions.map(a=>`<li>${esc(a)}</li>`).join('')}</ul></div>`;
     if(p.program?.omissions.length)body+=`<label class="composition-check"><input type="checkbox" id="acknowledgeScope" ${sheet.acknowledgedScope?'checked':''}> I accept this supported scope: ${p.program.omissions.map(esc).join('; ')}</label>`;
     if(target){
-      body+=`<button class="btn" data-comp="resident">${resident?'Recheck':'Hear'} resident response</button>`;
       if(resident){
-        body+=`<section class="box resident-response" data-stance="${esc(resident.stance)}" aria-label="Resident response"><b>${esc(resident.stance)} · controlling authorizer: ${esc(resident.controller)}</b><ul>${(resident.reasons||[]).map(r=>`<li>${esc(r)}</li>`).join('')}</ul>${(resident.prerequisites||[]).some(g=>g.satisfied!==true)?`<p class="note">Outstanding prerequisites: ${resident.prerequisites.filter(g=>g.satisfied!==true).map(r=>esc(typeof r==='string'?r:r.reason||r.fact)).join('; ')}</p>`:''}</section>`;
-        if(resident.counter)body+=compositionExhibit({proposal:resident.counter},'Resident counter')+`<button class="btn" data-comp="counter">Preview this counter</button>`;
-        if(resident.stance==='agree'&&!(resident.prerequisites||[]).some(g=>g.satisfied!==true))body+=`<div class="composition-primary"><button class="btn primary" data-comp="confirmRevision" ${!workspaceWritable()?'disabled':''}>Confirm public revision</button></div>`;
+        body+=`<section class="box resident-response" data-stance="${esc(resident.stance)}" aria-label="Resident response"><b>${esc(resident.stance)} · decision by ${esc(E.presentersOf(S)[resident.controller]?.name||'the proposer')}</b><ul>${(resident.reasons||[]).map(r=>`<li>${esc(r.replace(/^[a-z_]+: */,''))}</li>`).join('')}</ul>${(resident.prerequisites||[]).some(g=>g.satisfied!==true)?`<p class="note">Outstanding prerequisites: ${resident.prerequisites.filter(g=>g.satisfied!==true).map(r=>esc(typeof r==='string'?r:r.reason||r.fact)).join('; ')}</p>`:''}</section>`;
+        body+=stakeholderViews(resident);
+        if(resident.counter)body+=compositionExhibit({proposal:resident.counter},'Resident counter');
       }
-    }else body+=`<div class="composition-primary"><button class="btn primary" data-comp="post" ${!workspaceWritable()||!E.canProposeInitiative(S)||(p.program?.omissions.length&&!sheet.acknowledgedScope)?'disabled':''}>Put on agenda</button></div>`;
-    body+=`<div class="chips"><button class="btn" data-comp="saveDraft">Save private draft</button><button class="btn" data-comp="alternative">Save as alternative on this site</button></div>`;
+    }
+    body+=`<div class="chips"><button type="button" class="btn" data-comp="saveDraft">Save private draft</button><button type="button" class="btn" data-comp="alternative">Save as alternative on this site</button></div>`;
   }
-  body+=`<section class="box"><b>Input versions</b><p class="note">Return to any version on the same site. Forecasts are refreshed against the current town.</p><div class="chips">${d.versions.map((v,i)=>`<button class="btn" data-comp-version="${esc(v.id)}" aria-pressed="${v.id===d.selectedVersion}">Version ${i+1}${i===0?' · baseline':''}</button>`).join('')||'<span class="note">Your first valid preview becomes the baseline.</span>'}</div></section><div class="chips"><button class="btn" data-comp="workspace">Open saved drafts</button><button class="btn" data-comp="recoverDraft">Save recovered input as new draft</button></div>`;
+  body+=`<section class="box"><b>Input versions</b><p class="note">Return to any version on the same site. Forecasts are refreshed against the current town.</p><div class="chips">${d.versions.map((v,i)=>`<button type="button" class="btn" data-comp-version="${esc(v.id)}" aria-pressed="${v.id===d.selectedVersion}">Version ${i+1}${v.id===(d.baselineVersion||d.versions[0]?.id)?' · comparison baseline':''}</button>`).join('')||'<span class="note">Your first valid preview becomes the baseline.</span>'}</div>${!target&&d.versions.length?`<button type="button" class="btn" data-comp="setBaseline" ${sheet.previewDirty?'disabled':''}>Compare against the selected version</button>`:''}</section><div class="chips"><button type="button" class="btn" data-comp="workspace">Open saved drafts</button><button type="button" class="btn" data-comp="recoverDraft">Save recovered input as new draft</button></div>`;
   return[head,body];
 }
 function previewCompositionProgram(program,origin=sheet){
@@ -912,16 +1016,18 @@ function previewCompositionProgram(program,origin=sheet){
   return E.previewProgram(S,{program,plots:origin.draft.plots});
 }
 function acceptCompositionPreview(result,input,record=true){
+  sheet.requestDetails=null;
   if(!result?.ok||!result.proposal){sheet.feedback=(result?.reasons||[]).join(' ')||'This plan could not be previewed. Your input is kept.';renderSheet();return false;}
   const origin=sheet,d=origin.draft;
-  origin.requested={proposal:copy(result.proposal),forecast:result.forecast,layout:result.layout};origin.resident=null;origin.acknowledgedScope=false;
+  d.requestDetails=null;d.feedback='';
+  origin.requested={proposal:copy(result.proposal),forecast:result.forecast,layout:result.layout,request:result.request||null,requestId:result.request?.requestId||null};origin.resident=null;origin.acknowledgedScope=false;
   origin.previewGeneration=workspaceGeneration;origin.previewRevision=S.revision;
   origin.previewDirty=false;
   if(result.proposal.program){origin.working=copy(result.proposal.program);d.program=copy(result.proposal.program);}
   else d.legacyPlan=copy(result.proposal.plan);
   d.plots=copy(result.proposal.plots||d.plots);origin.feedback='Requested preview is private. Review its engine forecast before continuing.';
   if(record){
-    if(d.versions.length<8){const version={id:privateId(),input,program:copy(d.program),legacyPlan:result.proposal.program?null:copy(result.proposal.plan),plots:copy(d.plots)};d.versions.push(version);d.selectedVersion=version.id;}
+    if(d.versions.length<8){const version={id:privateId(),input,program:copy(d.program),legacyPlan:result.proposal.program?null:copy(result.proposal.plan),plots:copy(d.plots),request:result.request||null};d.versions.push(version);d.selectedVersion=version.id;if(!d.baselineVersion)d.baselineVersion=version.id;}
     else origin.privateNotice='Eight input versions are already saved. This new preview is live only; save it as a separate alternative to retain it.';
     void persistPrivateDraft(origin);
   }
@@ -931,43 +1037,59 @@ function restorePrivateVersion(version){
   if(!version)return;
   sheet.draft.selectedVersion=version.id;sheet.draft.program=copy(version.program);sheet.working=copy(version.program);sheet.draft.plots=copy(version.plots);
   if(version.legacyPlan)sheet.draft.legacyPlan=copy(version.legacyPlan);
-  acceptCompositionPreview(version.legacyPlan?E.previewLegacyRevision?.(S,currentPublic(sheet.draft),version.legacyPlan):previewCompositionProgram(version.program),version.input,false);
+  const result=version.legacyPlan?E.previewLegacyRevision?.(S,currentPublic(sheet.draft),version.legacyPlan):previewCompositionProgram(version.program);
+  if(result)result.request=version.request||null;
+  acceptCompositionPreview(result,version.input,false);
 }
 async function runComposition(mode,intent,proposal){
   if(busy||storageBusy||!compositionRunner||!aiReady())return;
   const origin=sheet,townState=S,provider=AI,ticket=new AbortController(),generation=workspaceGeneration;
-  activePlanRequest=ticket;busy=true;origin.feedback='';
+  activePlanRequest=ticket;busy=true;origin.feedback='';origin.requestDetails=null;
   const isCurrent=()=>activePlanRequest===ticket&&sheet===origin&&S===townState&&workspaceGeneration===generation&&AI===provider&&aiReady();
   renderSheet();
   try{
     const result=await compositionRunner.run({mode,state:townState,provider,intent,proposal,plots:copy(origin.draft.plots),isCurrent,signal:ticket.signal});
     if(!isCurrent())return;
     if(result.status==='ready'){
+      origin.lastCompositionRequest=compositionRequest(result,mode,provider);
       // A provider never supplies authoritative prices or geometry.
       const preview=result.program?previewCompositionProgram(result.program,origin):result.proposal?.program?previewCompositionProgram(result.proposal.program,origin):result.proposal?E.previewLegacyRevision?.(S,proposal,result.proposal.plan):null;
+      if(result.forecast?.delta&&preview?.proposal?.programRevision===result.proposal?.programRevision)preview.forecast={...preview.forecast,delta:copy(result.forecast.delta)};
+      if(preview)preview.request=origin.lastCompositionRequest;
       if(preview?.proposal&&!preview.proposal.program)origin.draft.legacyPlan=copy(preview.proposal.plan);
       acceptCompositionPreview(preview,intent);
-    }else origin.feedback=result.blocker||'No changes applied. Your full input and last accepted preview are kept.';
+    }else{
+      origin.feedback=result.blocker||'No changes applied. Your full input and last accepted preview are kept.';
+      origin.requestDetails={questions:(result.questions||[]).filter(q=>typeof q==='string'),omissions:(result.omissions||[]).filter(o=>typeof o==='string')};
+      origin.draft.feedback=origin.feedback;origin.draft.requestDetails=origin.requestDetails;void persistPrivateDraft(origin);
+    }
   }catch{if(isCurrent())origin.feedback='The interpreter did not return a usable plan. Your full input and last accepted preview are kept.';}
   finally{if(activePlanRequest===ticket){activePlanRequest=null;busy=false;renderSheet();}}
 }
 function composedProposalSheet(p){
   const candidate={proposal:p},open=p.status==='open';
-  return [`<div class="eyebrow">${p.mine?'Your initiative':'Resident proposal'} · public accepted plan</div><h2>${esc(p.title)}</h2>`,`${storageNotice()}${compositionExhibit(candidate,'Public accepted version')}<p class="note">${esc(p.program.intent)}</p>${open?`<div class="sh-actions"><button class="btn" data-comp-edit="${esc(p.id)}">Preview a revision</button>${p.council?`<button class="btn primary" data-hear="${esc(p.id)}">Take it to council</button>`:`<button class="btn primary" data-approve="cash" ${!E.fundingOptions(S,p).cash?'disabled':''}>Approve · pay cash</button><button class="btn" data-approve="bond">Approve · bond</button>`}<button class="btn" data-table="${esc(p.id)}">Table</button><button class="btn danger" data-reject="${esc(p.id)}">Reject</button></div>`:`<p class="msg sys">Status: ${esc(p.status)}</p>`}<button class="btn" data-comp="history">View project history</button>`];
+  return [`<div class="eyebrow">${p.mine?'Your initiative':'Resident proposal'} · public accepted plan</div><h2>${esc(p.title)}</h2>`,`${storageNotice()}${compositionExhibit(candidate,'Public accepted version')}<p class="note">${esc(p.program.intent)}</p>${open?`<div class="sh-actions"><button type="button" class="btn" data-comp-edit="${esc(p.id)}">Preview a revision</button>${p.council?`<button class="btn primary" data-hear="${esc(p.id)}">Take it to council</button>`:`<button class="btn primary" data-approve="cash" ${!E.fundingOptions(S,p).cash?'disabled':''}>Approve · pay cash</button><button class="btn" data-approve="bond">Approve · bond</button>`}<button class="btn" data-table="${esc(p.id)}">Table</button><button class="btn danger" data-reject="${esc(p.id)}">Reject</button></div>`:`<p class="msg sys">Status: ${esc(p.status)}</p>`}<button type="button" class="btn" data-comp="history">View project history</button>`];
 }
 function projectHistoryHTML(){
   const records=S.projectRecords||[],items=new Map();
   for(const p of [...S.proposals,...S.pending,...S.built])items.set(p.id,p);
   for(const r of records)if(!items.has(r.proposalId))items.set(r.proposalId,{id:r.proposalId,title:r.title,status:r.stage,programRevision:r.programRevision});
-  return `<p class="note">Follow each plan from its original intent through revisions, decisions and delivery. Fictional estimates and schematic placements are game assumptions.</p><div class="stack">${[...items.values()].map(p=>`<button class="item" data-project="${esc(p.id)}"><span class="grow"><span class="t">${esc(p.title)}</span><span class="m">${esc(p.status||(p.done?'Built':'Under construction'))}${p.programRevision?' · revision '+esc(revisionLabel(p.programRevision)):''}</span></span></button>`).join('')||'<p class="note">Project records appear when plans enter the agenda.</p>'}</div>`;
+  return `<p class="note">Follow each plan from its original intent through revisions, decisions and delivery. Fictional estimates and schematic placements are game assumptions.</p><div class="stack">${[...items.values()].map(p=>`<button type="button" class="item" data-project="${esc(p.id)}"><span class="grow"><span class="t">${esc(p.title)}</span><span class="m">${esc(projectStage(p.id,p.status))}${p.programRevision?' · revision '+esc(revisionLabel(p.programRevision)):''}</span></span></button>`).join('')||'<p class="note">Project records appear when plans enter the agenda.</p>'}</div>`;
+}
+function projectStage(id,fallback){
+  const built=S.built.find(p=>p.id===id);
+  if(built)return built.demolished?'Demolished':built.closed?'Closed':'Built';
+  if(S.pending.some(p=>p.id===id))return'Under construction';
+  return fallback||'On the agenda';
 }
 function projectRecordHTML(record){
   const program=record.program||record.revisions?.at(-1)?.program||record.originalProgram,decision=record.decision,defs=new Map(capabilities().map(c=>[c.id,c]));
-  let body=`<section class="box"><b>${esc(record.title)} · ${esc(record.stage)}</b><p>${esc(record.intent||program?.intent||'')}</p>`;
+  const built=S.built.find(p=>p.id===record.proposalId),deliveryYear=record.deliveryYear??built?.done;
+  let body=`<section class="box"><b>${esc(record.title)} · ${esc(projectStage(record.proposalId,record.stage))}</b><p>${esc(record.intent||program?.intent||'')}</p>`;
   if(program){const c=program.conditions;body+=`<ul>${program.components.map(c=>`<li>${esc(c.label)}: ${c.quantity} ${esc(defs.get(c.capability)?.unit||c.capability)} · ${c.area} plot${c.sharedWith?' · shared with '+esc(program.components.find(q=>q.id===c.sharedWith)?.label||c.sharedWith):''}</li>`).join('')}</ul><p class="note">Operating ${c.hours} hours/day; ${esc(c.deliveries)} deliveries. ${c.access?'Farm/service access maintained. ':''}${c.affordable?'Affordable homes. ':''}${c.buffer} plots of buffer; ${c.preserve} plots retained.</p>`;}
-  if(decision){const vote=decision.votes;body+=`<p class="note"><b>Decision:</b> ${esc(decision.action)} in ${calYear(decision.year)}${decision.funding?' · '+esc(decision.funding)+' funding':''}${vote?.tally?' · '+(vote.tally[record.proposalId]||0)+' council votes in favor':''}.</p>`;}
+  if(decision){const vote=decision.votes,label=decision.action==='approve'?'Mayoral approval':decision.action==='vote'?'Council vote':decision.action;body+=`<p class="note"><b>Decision:</b> ${esc(label)} in ${calYear(decision.year)}${decision.funding?' · '+esc(decision.funding)+' funding':''}${decision.action==='vote'&&vote?.tally?' · '+(vote.tally[record.proposalId]||0)+' council votes in favor':''}.</p>`;}
   body+=`<div class="summary-stats">${[['estimatedCostK','Approved estimate'],['actualCostK','Actual delivery cost'],['annualUpkeepK','Annual upkeep']].filter(([k])=>Number.isFinite(record[k])).map(([k,label])=>`<div><span>${label}</span><b>${fmtK(record[k])}</b></div>`).join('')}</div>`;
-  if(record.deliveryYear)body+=`<p class="note">Delivered in ${calYear(record.deliveryYear)}${record.onBudget===false?` · overrun ${fmtK(record.overrunK)}`:''}.</p>`;
+  if(deliveryYear)body+=`<p class="note">Delivered in ${calYear(deliveryYear)}${record.onBudget===false?` · overrun ${fmtK(record.overrunK)}`:''}.</p>`;
   const revisions=record.revisions||[];
   if(revisions.length)body+=`<h3>Accepted revisions</h3><ol>${revisions.map((r,i)=>`<li>Revision ${i+1}${r.year?' · '+calYear(r.year):''}${r.to?' · '+esc(revisionLabel(r.to)):''}${r.program?': '+esc(r.program.components.map(c=>`${c.label} ${c.quantity}`).join('; ')):r.plan?': '+esc(Object.entries(r.plan).map(([k,v])=>`${k}: ${v}`).join('; ')):''}</li>`).join('')}</ol>`;
   return body+'</section>';
@@ -977,9 +1099,9 @@ function projectSheet(){
   if(!p&&!record)return['<h2>Project history</h2>','<p class="note">This project has no retained record.</p>'];
   return [`<div class="eyebrow">Project history</div><h2>${esc(p?.title||record.title)}</h2>`,`${p?PLAN_RENDERER.render({state:S,proposal:p,engine:E})||'':''}${record?projectRecordHTML(record):`<p class="note">${esc(p.status||'Under construction')} · ${esc(p.blurb||'')}</p>`}`];
 }
-function invalidateCompositionInput(){
+function invalidateCompositionInput(controls=false){
   if(sheet?.type!=='composition')return;
-  cancelPlanRequest();sheet.previewDirty=true;sheet.resident=null;
+  cancelPlanRequest();sheet.previewDirty=true;sheet.resident=null;if(controls)sheet.controlsEdited=true;syncCompositionFooter();
   const button=$('[data-comp="post"], [data-comp="confirmRevision"]');if(button)button.disabled=true;
   schedulePrivateDraft();
 }
@@ -994,22 +1116,25 @@ async function compositionAction(d){
   if(d.compOpen){const draft=privateDrafts.find(q=>q.id===d.compOpen);if(draft)await openComposition({draft});return;}
   if(d.project){openSheet({type:'project',id:d.project});return;}
   if(d.compDelete){
+    if(privateConflict){toast(privateReason||'Saved drafts cannot be changed safely. Your live input is kept.');return;}
     const result=await workspace.writeDrafts(S.gameId,privateDrafts.filter(q=>q.id!==d.compDelete),privateRevision);
     if(result.ok){privateDrafts=result.drafts;privateRevision=result.revision;renderSheet();}else toast((result.reasons||[]).join(' '));return;
   }
   if(d.compVersion){cancelPlanRequest();restorePrivateVersion(sheet.draft.versions.find(v=>v.id===d.compVersion));void persistPrivateDraft();return;}
-  if(d.compRemove!==undefined){sheet.working.components.splice(+d.compRemove,1);sheet.draft.program=copy(sheet.working);invalidateCompositionInput();renderSheet();return;}
+  if(d.compRemove!==undefined){sheet.working.components.splice(+d.compRemove,1);sheet.draft.program=copy(sheet.working);invalidateCompositionInput(true);renderSheet();return;}
   const action=d.comp;
   if(action==='workspace'){
-    if(sheet?.type==='composition')await persistPrivateDraft();
+    if(sheet?.type==='composition'){privateLive=sheet;await persistPrivateDraft();}
     await readPrivateDrafts();openSheet({type:'workspace'});return;
   }
   if(action==='reloadDrafts'){
     await readPrivateDrafts(true);if(sheet?.type==='workspace')renderSheet();return;
   }
   if(action==='new'){await openComposition();return;}
+  if(action==='resumeLive'&&privateLive?.gameId===S.gameId){sheet=privateLive;renderAll();return;}
   if(action==='history'){closeSheet();tab='plans';renderPanel();return;}
   if(sheet?.type!=='composition')return;
+  if(action==='editRequest'){const input=$('#compositionEdit')||$('#compositionIntent');revealSheetElement(input);input?.focus({preventScroll:true});return;}
   if(action==='cancel'){cancelPlanRequest();sheet.feedback='Request canceled. Your full input and last preview are kept.';renderSheet();return;}
   if(action==='pickPlots'){
     const origin=sheet;await persistPrivateDraft(origin);cancelPlanRequest();pendingInit={composition:origin,plots:origin.draft.plots};
@@ -1018,7 +1143,7 @@ async function compositionAction(d){
   if(action==='addComponent'){
     const def=capabilities().find(c=>c.id===$('#compositionCapability')?.value);if(!def)return;
     sheet.working.components.push({id:'activity-'+privateId().slice(0,36),capability:def.id,label:def.label||def.id,quantity:def.quantity.min,area:def.area.min,sharedWith:null});
-    sheet.draft.program=copy(sheet.working);invalidateCompositionInput();renderSheet();return;
+    sheet.draft.program=copy(sheet.working);invalidateCompositionInput(true);renderSheet();return;
   }
   if(action==='previewControls'){
     const program=copy(sheet.working);program.intent=sheet.draft.text;
@@ -1031,20 +1156,21 @@ async function compositionAction(d){
   }
   if(action==='counter'){
     const counter=sheet.resident?.counter;if(!counter)return;
-    acceptCompositionPreview({ok:true,proposal:counter},'Resident counter: '+(sheet.draft.editText||sheet.draft.text));return;
+    acceptCompositionPreview({ok:true,proposal:counter,request:sheet.requested?.request},'Resident counter: '+(sheet.draft.editText||sheet.draft.text));return;
   }
   if(action==='post'||action==='confirmRevision'){
     if(!freshCompositionPreview())return;const origin=sheet,p=origin.requested.proposal,target=currentPublic(origin.draft);
     if(action==='confirmRevision'&&(!target||origin.resident?.stance!=='agree'||origin.resident?.prerequisites?.some(g=>g.satisfied!==true)))return;
-    const result=await commitComposition(action==='post'?'postProgram':'reviseProposal',action==='post'?{program:p.program,plots:p.plots,acknowledgedScope:!!origin.acknowledgedScope}:{proposalId:target.id,...(p.program?{program:p.program}:{plan:p.plan}),confirmed:true});
+    const result=await commitComposition(action==='post'?'postProgram':'reviseProposal',action==='post'?{program:p.program,plots:p.plots,acknowledgedScope:!!origin.acknowledgedScope}:{proposalId:target.id,...(p.program?{program:p.program}:{plan:p.plan}),confirmed:true},origin.requested.request);
     if(result){await persistPrivateDraft(origin);const posted=target?S.proposals.find(q=>q.id===target.id):S.proposals.find(q=>q.mine&&q.programRevision===p.programRevision);openSheet({type:'proposal',id:posted?.id||result.receipt?.proposalId});renderAll();}return;
   }
+  if(action==='setBaseline'){sheet.draft.baselineVersion=sheet.draft.selectedVersion;void persistPrivateDraft();renderSheet();return;}
   if(action==='saveDraft'){await persistPrivateDraft();return;}
   if(action==='alternative'||action==='recoverDraft'){
     const origin=sheet,draft=copy(origin.draft);
     if(action==='recoverDraft')await readPrivateDrafts(true);
     if(privateDrafts.length>=4){privateMessage(origin,'Four private drafts are already saved. Delete a saved draft or continue here without saving.');return;}
-    draft.id=privateId();draft.versions=[{id:privateId(),input:draft.editText||draft.text,program:copy(draft.program),plots:copy(draft.plots)}];draft.selectedVersion=draft.versions[0].id;
+    draft.id=privateId();draft.versions=[{id:privateId(),input:draft.editText||draft.text,program:copy(draft.program),plots:copy(draft.plots),request:origin.requested?.request||null}];draft.selectedVersion=draft.versions[0].id;draft.baselineVersion=draft.selectedVersion;
     origin.draft=draft;await persistPrivateDraft(origin);renderSheet();return;
   }
 }
@@ -1052,7 +1178,7 @@ async function compositionAction(d){
 /* ---------- sheets ---------- */
 function cancelPlanRequest(){if(activePlanRequest){activePlanRequest.abort();activePlanRequest=null;busy=false;}}
 function openSheet(s){cancelPlanRequest();sheet=s;lobbyOpen=null;renderSheet();if(s.type==='menu')void refreshDiagnostics();}
-function closeSheet(){if(sheet?.type==='composition')void persistPrivateDraft();cancelPlanRequest();sheet=null;$('#sheetRoot').innerHTML='';renderAll();}
+function closeSheet(){if(sheet?.type==='composition'){privateLive=sheet;void persistPrivateDraft();}cancelPlanRequest();sheet=null;$('#sheetRoot').innerHTML='';renderAll();}
 function renderSheet(){
   const root=$('#sheetRoot');if(!sheet){root.innerHTML='';return;}
   const key=sheet.type+':'+(sheet.id||''),sameSheet=root.dataset.key===key;
@@ -1069,7 +1195,7 @@ function renderSheet(){
   else if(sheet.type==='composition'){[head,body]=compositionSheet();}
   else if(sheet.type==='workspace'){[head,body]=privateWorkspaceSheet();}
   else if(sheet.type==='project'){[head,body]=projectSheet();}
-  root.innerHTML=`<div class="sheet" role="dialog" aria-modal="true"><div class="pane"><div class="sh-head"><div style="min-width:0">${head}</div>${sheet.type==='report'||sheet.type==='election'||sheet.type==='over'?'':'<button class="iconbtn" data-act="close" aria-label="Close"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>'}</div><div class="sh-body">${body}</div></div></div>`;
+  root.innerHTML=`<div class="sheet" role="dialog" aria-modal="true"><div class="pane"><div class="sh-head"><div style="min-width:0">${head}</div>${sheet.type==='report'||sheet.type==='election'||sheet.type==='over'?'':'<button class="iconbtn" data-act="close" aria-label="Close"><svg width="14" height="14" viewBox="0 0 14 14"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>'}</div><div class="sh-body">${body}</div>${sheet.type==='composition'?compositionFooter():''}</div></div>`;
   root.querySelectorAll('details').forEach((el,i)=>{el.open=openDetails.includes(i);});
   const pane=root.querySelector('.pane');pane.scrollTop=prevScroll;
   root.querySelectorAll('canvas.plan').forEach(cv=>{const p=S.proposals.find(q=>q.id===cv.dataset.p);if(p)drawPlan(cv,p);});
@@ -1191,7 +1317,7 @@ function proposalSheet(p){
     if(p.council)body+=`<div class="sh-actions"><button class="btn primary" data-hear="${p.id}">Take it to council</button><button class="btn" data-table="${p.id}">Table to next year</button><button class="btn danger" data-reject="${p.id}">Reject</button></div>`;
     else body+=`<div class="sh-actions"><button class="btn primary" data-approve="cash" ${fund.cash?'':'disabled'}>Approve · pay ${fmtK(e.cost)}</button><button class="btn" data-approve="bond">Approve · bond ${fmtK(fund.bondAnnual)}/yr</button><button class="btn" data-table="${p.id}">Table</button><button class="btn danger" data-reject="${p.id}">Reject</button></div>`;
   }else body+=`<div class="msg sys">Status: ${esc(p.status)}</div>`;
-  if(COMPOSITION&&open)body=`<button class="btn primary" data-comp-edit="${esc(p.id)}">Preview a revision</button>`+body;
+  if(COMPOSITION&&open)body=`<button type="button" class="btn primary" data-comp-edit="${esc(p.id)}">Preview a revision</button>`+body;
   return[head,body];
 }
 function hearingSheet(){
@@ -1410,6 +1536,7 @@ function menuSheet(){
   const head=`<div class="eyebrow">Game</div><h2>Master Plan</h2>`;
   const body=`<div class="note">Version ${esc(BUILD.version)}${BUILD.commit?' ('+esc(BUILD.commit)+')':''}${DEV?' · dev build':''}. Your town saves automatically${DB?' to your Claude account':' in this browser'}${DEV?' in a separate dev save':''}. AI characters: ${aiState==='on'?'on':'off'}.</div>
   ${offlineAIHTML()}
+  ${accountImportHTML()}
   ${devToolsHTML()}
   <div class="box"><b>How a year works</b><div class="note" style="margin-top:6px">Review the agenda, negotiate plans with whoever brought them, take big items to the council, then end the year. The Courier explains what changed and why. Elections come every four years. Two straight years in deficit ends your career.</div></div>
   ${confirmNew?`<div class="box"><b>Start over?</b><div class="note">This replaces your current town.</div><div class="chips" style="margin-top:8px"><button class="btn danger" data-act="newgameYes">Yes, start a new town</button><button class="btn" data-act="newgameNo">Keep playing</button></div></div>`:`<button class="btn" data-act="newgame">Start a new town</button>`}`;
@@ -1417,10 +1544,59 @@ function menuSheet(){
 }
 function devToolsHTML(){
   if(!DEV)return''; // the flag panel always shows on dev so a flag can be turned back on
-  const flagRows=Object.keys(BUILD.flags).map(k=>`<div class="row"><span><b>${esc(k)}</b><br><span class="note">${esc(BUILD.flagInfo?.[k]||'')}</span></span><span><button class="btn sm" data-flag="${esc(k)}">${BUILD.flags[k]?'On':'Off'}</button></span></div>`).join('');
+  const flagRows=Object.keys(BUILD.flags).map(k=>`<div class="row"><span><b>${esc(k)}</b><br><span class="note">${esc(BUILD.flagInfo?.[k]||'')}</span></span><span><button class="btn sm" data-flag="${esc(k)}">${k==='compositionPlans'&&pendingCompositionFlag!==null?(pendingCompositionFlag?'On':'Off')+' after reload':BUILD.flags[k]?'On':'Off'}</button></span></div>`).join('');
   return `<div class="box"><b>Dev tools</b><div class="note" style="margin:4px 0 10px">Only on the dev build. Changes here affect the dev save only.</div>
   ${BUILD.flags.devTools?`<div class="chips"><button class="btn sm" data-dev="cash">Add $500K</button><button class="btn sm" data-dev="approval">Approval +10</button><button class="btn sm" data-dev="favors">+3 favors</button><button class="btn sm" data-dev="skip">End the year now</button></div>`:''}
   <div class="sect"><span>Feature flags</span><span>reload to apply</span></div>${flagRows}</div>`;
+}
+function accountImportHTML(){
+  if(!COMPOSITION||!DB||!UID)return'';
+  const task=sheet?.accountImport;
+  let preview='';
+  if(task?.status==='ready'){
+    const state=task.state;
+    preview=`<div data-account-preview><b>${esc(E.scenarioMeta(state).town)} · ${E.calendarYear(state,state.year)}</b><p class="note">${state.pop.toLocaleString()} residents · reserve ${fmtK(state.cash)} · ${state.built.length} built projects · ${state.pending.length} under construction.</p><p class="note">${task.source==='legacy'?'Older account copy; the original account copy is preserved.':'Current account copy.'} Importing replaces the local town after confirmation. Local private drafts stay with their original town.</p><button class="btn danger" data-account-import="confirm">Replace local town with this copy</button></div>`;
+  }
+  return `<section class="box account-import" aria-label="Account save import"><h3>Account copies</h3><p class="note">Preview a saved account copy before choosing whether to replace this local town.</p><div class="chips"><button class="btn" data-account-import="current" ${!workspaceWritable()||task?.status==='loading'?'disabled':''}>Preview current account copy</button><button class="btn" data-account-import="legacy" ${!workspaceWritable()||task?.status==='loading'?'disabled':''}>Preview older account copy</button></div>${task?.status==='loading'?'<p class="thinking" role="status">Reading the account copy…</p>':''}${task?.message?`<p class="note" role="status" data-account-status>${esc(task.message)}</p>`:''}${preview}</section>`;
+}
+function parseAccountCopy(data,source){
+  const value=typeof data?.json==='string'?JSON.parse(data.json):null;
+  let input=value;
+  if(source==='current'){
+    if(!value||value.format!=='masterplan-save'||value.formatVersion!==4||value.writerProtocol!==1||value.formatFloor!==4||!Number.isSafeInteger(value.storageGeneration)||value.storageGeneration<1||value.state?.v!==4)throw new Error('This account copy needs a compatible save format. The local town and account copy are preserved.');
+    input=value.state;
+  }else if(!input||![1,2,3].includes(input.v))throw new Error('This older account copy is malformed or uses a protected format. Try the current account copy.');
+  if(!E.isSupportedSave(input))throw new Error('This account town is not supported by the current build.');
+  const state=migratedSave(input);
+  if(!state||!E.isSupportedSave(state)||!Number.isFinite(state.cash)||!Number.isSafeInteger(state.year)||!Number.isFinite(state.pop)||!['grid','proposals','pending','built','bonds','reports','history'].every(k=>Array.isArray(state[k]))||!['scenario','calendar','presenters','council','meters','flags','decided','chats'].every(k=>state[k]&&typeof state[k]==='object'&&!Array.isArray(state[k])))throw new Error('The account town is incomplete. The local town and account copy are preserved.');
+  return state;
+}
+async function accountImport(action){
+  if(!COMPOSITION||!workspaceWritable()||!DB||!UID||sheet?.type!=='menu')return;
+  const origin=sheet;
+  if(action==='confirm'){
+    const task=origin.accountImport;if(task?.status!=='ready')return;
+    if(task.scope!==UID||task.db!==DB||task.accountEpoch!==accountEpoch){task.status='error';task.message='The account changed. Preview the intended account copy again.';renderSheet();return;}
+    // Never refresh this generation after a late account read or a conflict.
+    storageBusy=true;
+    try{
+      const result=await workspace.replace(task.state,task.expectedGeneration);
+      if(!result.ok){task.status='error';task.message='The local town changed or could not be replaced. Preview the account copy again before confirming.';await failStorage(result);return;}
+      adoptStored(result);privateGame=null;privateDrafts=[];privateRevision=null;privateConflict=false;workspaceReason='';scheduleReplica();
+      if(sheet===origin){origin.accountImport={status:'done',message:'Account copy imported. The town is saved locally.'};renderAll();}
+    }catch{task.status='error';task.message='The account copy could not be imported. The local town and account copy are preserved.';renderSheet();}
+    finally{storageBusy=false;}
+    return;
+  }
+  const task={source:action,status:'loading',scope:UID,db:DB,accountEpoch,expectedGeneration:workspaceGeneration};
+  origin.accountImport=task;renderSheet();
+  try{
+    const doc=action==='legacy'?DB_DOC:V4_DB_DOC,snapshot=await task.db.doc('data/users/'+task.scope+'/'+doc).get();
+    if(sheet!==origin||origin.accountImport!==task||UID!==task.scope||DB!==task.db||accountEpoch!==task.accountEpoch)return;
+    if(!snapshot.exists){task.status='error';task.message='No saved account copy was found for this source.';}
+    else{task.state=parseAccountCopy(snapshot.data(),action);task.status='ready';}
+  }catch(error){if(sheet===origin&&origin.accountImport===task){task.status='error';task.message=error instanceof SyntaxError?'The account copy could not be read. The local town and account copy are preserved.':error.message||'The account copy could not be read.';}}
+  finally{if(sheet===origin&&origin.accountImport===task)renderSheet();}
 }
 function overSheet(){return[`<div class="eyebrow">State oversight</div><h2>${esc(town())} went broke</h2>`,`<div class="note">The reserve stayed below zero for two straight years. ${esc(region())} appointed a recovery coordinator, and your career as mayor is over.</div><button class="btn primary" data-act="newgameYes">Start a new town</button>`];}
 
@@ -1494,7 +1670,7 @@ async function compositionLobby(memberId,text,pitchKey){
   const isCurrent=()=>activePlanRequest===ticket&&sheet===origin&&S===townState&&workspaceGeneration===generation&&lobbyOpen===memberId&&AI===provider;
   origin.councilFeedback='';renderSheet();
   try{
-    let claims;
+    let claims,request=null;
     if(pitchKey){
       const field=pitchKey==='stores'?'units':pitchKey,value=E.effectsOf(proposal,S)[field];
       if(typeof value!=='number'){origin.councilFeedback='This talking point has no matching factual quantity in the accepted plan.';return;}
@@ -1505,10 +1681,11 @@ async function compositionLobby(memberId,text,pitchKey){
       const interpretation=await compositionRunner.run({mode:'claims',state:townState,provider,intent:text,proposal,memberId,isCurrent,signal:ticket.signal});
       if(!isCurrent())return;
       if(interpretation.status!=='ready'){origin.councilFeedback=interpretation.blocker||'The pitch could not be interpreted. Your full input is kept.';return;}
+      request=compositionRequest(interpretation,'claims',provider);origin.lastClaimsRequest=request;
       claims=Array.isArray(interpretation.claims)?{argument:text,source:'typed',programRevision:revision,claims:interpretation.claims}:interpretation.claims;
     }
     if(!isCurrent())return;
-    const result=await commitComposition('persuade',{proposalId:proposal.id,memberId,...claims});
+    const result=await commitComposition('persuade',{proposalId:proposal.id,memberId,...claims},request);
     if(!result||sheet!==origin||lobbyOpen!==memberId)return;
     const receipt=result.receipt,committedState=S;
     if(!receipt||receipt.memberId!==memberId){origin.councilFeedback='The saved persuasion receipt could not be matched to this member. No reaction was attached.';return;}
@@ -1610,7 +1787,14 @@ const RESP={get record(){return `Look at the numbers. We fixed what was broken, 
 /* ---------- events ---------- */
 document.addEventListener('click',async ev=>{
   const t=ev.target.closest('button,[data-open]');if(!t)return;const d=t.dataset;
+  if(!Object.keys(d).length)return; // Controls wired directly in wire() own their click.
+  if(!S){
+    if(d.act==='protectedReload')location.reload();
+    else if(d.act==='enableComposition'&&DEV){try{const overrides=JSON.parse(localStorage.getItem('mp.flagOverrides')||'{}');overrides.compositionPlans=true;localStorage.setItem('mp.flagOverrides',JSON.stringify(overrides));location.reload();}catch{toast('The setting could not be saved. Existing save bytes are protected.');}}
+    return;
+  }
   if(storageBusy){toast('Saving this action…');return;}
+  if(d.accountImport){await accountImport(d.accountImport);return;}
   if(COMPOSITION&&(d.comp||d.compEdit||d.compOpen||d.compDelete||d.compVersion||d.compRemove!==undefined||d.project)){await compositionAction(d);return;}
   if(d.offlineModel){void connectOfflineAI(d.offlineModel,true);return;}
   if(d.tab){tab=d.tab;renderPanel();return;}
@@ -1619,7 +1803,15 @@ document.addEventListener('click',async ev=>{
   if(d.pick){cancelPlanRequest();if(!E.canProposeInitiative(S)){toast('You already proposed an initiative this year.');return;}const [x,y]=d.pick.split(',').map(Number);sheet=null;pendingInit={text:'',plots:[]};startPicking([[x,y]]);if(COMPOSITION)pendingInit.newComposition=true;return;}
   if(d.dev&&BUILD.flags.devTools){if(d.dev==='cash')S.cash+=500;if(d.dev==='approval')S.meters.approval=Math.min(100,S.meters.approval+10);if(d.dev==='favors')S.capital+=3;
     if(d.dev==='skip'){sheet=null;$('#sheetRoot').innerHTML='';await endYear();return;}if(await save())toast('Done.');renderAll();return;}
-  if(d.flag&&DEV){let o={};try{o=JSON.parse(localStorage.getItem('mp.flagOverrides')||'{}');}catch(e){}o[d.flag]=!BUILD.flags[d.flag];BUILD.flags[d.flag]=o[d.flag];try{localStorage.setItem('mp.flagOverrides',JSON.stringify(o));}catch(e){}toast(`${d.flag} is now ${o[d.flag]?'on':'off'}. Reload the page to apply it everywhere.`);renderSheet();return;}
+  if(d.flag&&DEV){
+    let overrides={};try{overrides=JSON.parse(localStorage.getItem('mp.flagOverrides')||'{}');}catch{}
+    const value=d.flag==='compositionPlans'?!(pendingCompositionFlag??COMPOSITION):!BUILD.flags[d.flag];
+    overrides[d.flag]=value;
+    try{localStorage.setItem('mp.flagOverrides',JSON.stringify(overrides));}catch{toast('The flag choice could not be saved.');return;}
+    if(d.flag==='compositionPlans'){pendingCompositionFlag=value===COMPOSITION?null:value;toast(`Composition plans ${value?'on':'off'} after reload. The current town keeps its current rules.`);}
+    else{BUILD.flags[d.flag]=value;toast(`${d.flag} is now ${value?'on':'off'}. Reload the page to apply it everywhere.`);}
+    renderSheet();return;
+  }
   if(d.propose!==undefined){if(COMPOSITION)await openComposition({plots:E.SITES[d.propose]||[]});else openSheet({type:'initiative',site:d.propose});return;}
   if(d.parcel!==undefined&&sheet?.type==='initiative'){sheet.text=$('#initDesc')?.value||'';sheet.site=d.parcel||null;if(d.parcel){selTile=null;}renderSheet();return;}
   if(d.example!==undefined){cancelPlanRequest();const t=$('#initDesc');if(t)t.value=EXAMPLES[+d.example];sheet.text=EXAMPLES[+d.example];return;}
@@ -1675,7 +1867,7 @@ document.addEventListener('input',ev=>{
   const input=ev.target;
   if(sheet.type==='composition'){
     const d=sheet.draft;
-    if(input.id==='acknowledgeScope'){sheet.acknowledgedScope=input.checked;const post=$('[data-comp="post"]');if(post)post.disabled=!input.checked||sheet.previewDirty||!workspaceWritable();return;}
+    if(input.id==='acknowledgeScope'){sheet.acknowledgedScope=input.checked;syncCompositionFooter();return;}
     if(input.id==='compositionCapability')return;
     if(input.id==='compositionTitle'||input.hasAttribute('data-program-title')){sheet.working.title=input.value;d.program.title=input.value;}
     if(input.id==='compositionIntent')d.text=input.value;
@@ -1683,7 +1875,7 @@ document.addEventListener('input',ev=>{
     if(input.dataset.componentField){const c=sheet.working.components.find(c=>c.id===input.closest('[data-component]').dataset.component);const field=input.dataset.componentField;c[field]=['quantity','area'].includes(field)?Number(input.value):field==='sharedWith'?(input.value||null):input.value;}
     if(input.dataset.condition){const field=input.dataset.condition;sheet.working.conditions[field]=input.type==='checkbox'?input.checked:input.type==='number'?Number(input.value):input.value;}
     if(input.dataset.legacyField){const field=input.dataset.legacyField;d.legacyPlan[field]=input.type==='checkbox'?input.checked:input.type==='number'?Number(input.value):input.value;}
-    d.program=copy(sheet.working);invalidateCompositionInput();return;
+    d.program=copy(sheet.working);sheet.controlsEdited=!!(input.dataset.componentField||input.dataset.condition||input.dataset.legacyField||input.hasAttribute('data-program-title')||input.id==='compositionTitle'&&sheet.working.components.length);invalidateCompositionInput();return;
   }
   if(ev.target.id==='diagnosticsFrom'||ev.target.id==='diagnosticsThrough'){
     diagnosticsState[ev.target.id==='diagnosticsFrom'?'from':'through']=ev.target.value;diagnosticsState.customDates=true;diagnosticsState.delivery='';void refreshDiagnostics();return;
@@ -1725,10 +1917,27 @@ function wire(){
   let rw=0;new ResizeObserver(()=>{const w=$('#map').clientWidth;if(w!==rw){rw=w;drawMap();}}).observe($('.mapwrap'));
   matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',drawMap);
 }
+function protectedLanding(){
+  let metadata='',compatible=false;
+  try{
+    const raw=localStorage.getItem(V4_KEY),envelope=raw&&JSON.parse(raw),state=envelope?.state;
+    compatible=envelope?.format==='masterplan-save'&&envelope.formatVersion===4;
+    if(state&&typeof state==='object'){
+      const turn=Number.isSafeInteger(state.year)?`Saved turn ${state.year}`:'Protected town';
+      const parts=[turn];if(Number.isFinite(state.pop))parts.push(`${Math.round(state.pop).toLocaleString()} residents`);if(Number.isFinite(state.cash))parts.push(`reserve ${fmtK(state.cash)}`);if(Array.isArray(state.pending))parts.push(`${state.pending.length} projects under construction`);
+      metadata=`<p class="note" data-protected-summary>${esc(parts.join(' · '))}</p>`;
+    }
+  }catch{}
+  $('.wrap').hidden=true;$('.actionbar').hidden=true;
+  $('#sheetRoot').innerHTML=`<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="protectedHeading"><div class="pane"><div class="sh-head"><div><div class="eyebrow">Protected save</div><h2 id="protectedHeading">Your saved town is protected</h2></div></div><div class="sh-body"><p class="msg sys storage-notice" role="status">${esc(workspaceReason||'This town requires a compatible build before it can be opened safely.')}</p>${metadata}<p>Your existing save stays on this device. No replacement town has been started.</p></div><div class="sh-actions protected-actions">${DEV&&!COMPOSITION&&compatible?'<button type="button" class="btn primary" data-act="enableComposition">Enable composition plans and reload</button>':''}<button type="button" class="btn" data-act="protectedReload">Reload compatible build</button></div></div></div>`;
+}
 async function start(data){
-  if(DEV){const h1=document.querySelector('.brand h1');if(h1&&!document.querySelector('.devtag'))h1.insertAdjacentHTML('afterend',`<div class="devtag">Dev build · v${esc(BUILD.version)}${BUILD.commit?' · '+esc(BUILD.commit):''}</div>`);}
+  if(DEV){const h1=document.querySelector('.brand h1');if(h1&&!document.querySelector('.devtag'))h1.insertAdjacentHTML('afterend',`<div class="devtag">Dev build · v${esc(BUILD.version)}${BUILD.commit?' · '+esc(BUILD.commit.slice(0,7)):''}</div>`);}
   const loaded=await prepareWorkspace();
-  S=loaded||(workspaceMode==='legacy'?E.migrate((data&&data.S)||loadLocal()):null)||E.newGame();durableState=copy(S);
+  if(!['ready','legacy'].includes(workspaceMode)){protectedLanding();return;}
+  S=loaded&&E.isSupportedSave(loaded)?loaded:workspaceMode==='legacy'?(migratedSave(data?.S)||migratedSave(loadLocal())||E.newGame()):null;
+  if(!S||!E.isSupportedSave(S)){workspaceReason='This saved town could not be opened safely. Existing save bytes are protected.';protectedLanding();return;}
+  durableState=copy(S);
   if(COMPOSITION&&!document.querySelector('[data-tab="plans"]'))$('.tabs').insertAdjacentHTML('beforeend','<button role="tab" data-tab="plans">Plans</button>');
   wire();renderAll();initCaps();
   if(S.phase==='election'&&S.election)openSheet({type:'election'});
@@ -1736,6 +1945,7 @@ async function start(data){
 addEventListener('storage',async event=>{
   if(!workspace||event.key!==V4_KEY||workspaceMode==='legacy')return;
   const result=await workspace.load();
+  if(!S){workspaceReason=result.reason||workspaceReason;protectedLanding();return;}
   if(result.generation===workspaceGeneration&&result.mode===workspaceMode)return;
   cancelPlanRequest();adoptStored(result);workspaceReason=result.ok?'Another page changed the town. Your live input is kept; preview again before confirming.':result.reason;
   if(sheet?.type==='composition'){sheet.requested=null;sheet.resident=null;sheet.previewDirty=true;}
