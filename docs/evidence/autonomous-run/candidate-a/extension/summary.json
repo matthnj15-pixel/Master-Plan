@@ -1,0 +1,95 @@
+{
+  "candidate": "6da5d9adc51751afb27236bfc27b769848a18d94",
+  "criterion": "G1.6",
+  "disposition": "PASS for data-defined extension through mock interpretation and real engine/store/browser lifecycle",
+  "definition": "lantern-repair-learning-yard",
+  "changedDataFile": "extension-definition.json",
+  "contentDiff": "content.diff",
+  "contentBoundary": "scenario.programDefinitions",
+  "evidenceTypes": {
+    "interpretation": "actual COMPOSITION_REQUESTS with constant definitionId mock; original browser preview plus detached prompt replay",
+    "simulation": "real immutable Candidate A engine",
+    "durability": "real MP_WORKSPACE and local browser storage on loopback",
+    "browser": "Chromium, 669x951 touch emulation, normal UI controls",
+    "equivalentActor": "separate trusted-data engine fixture; three material stances match"
+  },
+  "results": {
+    "interpretationReplayMatchesObservedBrowserRevision": true,
+    "interpretationReplayAttempts": 1,
+    "interpretationReplayAdmission": "unverified",
+    "publicStateUnchangedByInterpretation": true,
+    "genericEditOnlyBenchQuantity": true,
+    "costBefore": 275,
+    "costAfter": 279,
+    "upkeepAfter": 12.3,
+    "postConsumesOnce": true,
+    "explicitFavorSpent": true,
+    "actualVote": 3,
+    "explicitCashFunding": true,
+    "onBudget": true,
+    "actualCostK": 279,
+    "annualBudgetNet": 158,
+    "closingCash": 779,
+    "programPreserved": true,
+    "layoutPreserved": true,
+    "revisionPreserved": true,
+    "mapMatchesAccepted": true,
+    "svgSegmentCount": 18,
+    "mapSegmentCount": 18,
+    "reloadBytesIdentical": true,
+    "definitionSurvivesReload": true
+  },
+  "resourceProvenance": {
+    "initialCash": 900,
+    "initialCapital": 3,
+    "costAfterGenericEdit": 279,
+    "favorSpent": 1,
+    "cashAfterApproval": 621,
+    "capitalAfterApproval": 2,
+    "vote": "3 to 2",
+    "actualCost": 279,
+    "yearEndBudgetNet": 158,
+    "yearEndCash": 779,
+    "yearEndCapital": 4,
+    "yearEndCapitalExplanation": "normal engine annual replenishment; no test resource edits"
+  },
+  "resume": {
+    "candidate": "6da5d9adc51751afb27236bfc27b769848a18d94",
+    "reason": "Browser process/session was lost during registry reset. Reconstructed approved pre-delivery state from the original unchanged initial envelope and three already executed browser commands. No new post, offer or decision is counted.",
+    "checks": [
+      {
+        "commandId": 1,
+        "type": "postProgram",
+        "fingerprintMatches": true,
+        "receiptMatches": true
+      },
+      {
+        "commandId": 2,
+        "type": "offer",
+        "fingerprintMatches": true,
+        "receiptMatches": true
+      },
+      {
+        "commandId": 3,
+        "type": "decision",
+        "fingerprintMatches": true,
+        "receiptMatches": true
+      }
+    ],
+    "approvedPendingMatches": true,
+    "generation": 4,
+    "revision": 3,
+    "cash": 621,
+    "capital": 2
+  },
+  "noProductSourceChanges": true,
+  "knownOverallCandidateADisposition": "needs revision, unchanged",
+  "notClaimed": [
+    "live Qwen",
+    "physical Duo",
+    "G1.7 withheld generalization",
+    "the three independent typed lifecycles",
+    "Candidate B verification",
+    "overall release readiness"
+  ]
+}

@@ -130,3 +130,20 @@ Provider SOURCE PAUSED; R9 scoped built history still pending. Engine RESUMED
 R1–R4/R8 malformed JSON/identities/save entries/repeated claim/policy duplicate
 fixes. Frontend is the other source writer U1–U11/S5/S7. Reviewer full A report
 and initial corpus/race artifacts preserved docs/evidence/autonomous-run/candidate-a.
+
+Engine trust fixes 6e7ff34 integrated as 0b09012: malformed JSON and save entries,
+inherited actor IDs, cosmetic revision repeated-credit bypass, and duplicate
+policy quantities. Builder ran 29 composition, 33 legacy engine and 4 scenario
+tests plus real workspace smoke. Final independent retest pending. Build 29ba262
+now exposes full commitFull and CI fetches the SRI-verified pinned WebLLM source
+for its CPU admission audit; this is not GPU inference.
+
+Current writers: Frontend U1–U11/protected/recovery/history; Provider R9 bounded
+verified project history. Engine paused, preparing legacy delivery-record fix
+after a slot frees. Remote dev/main refreshed and unchanged from baseline.
+Candidate A data-only extension lifecycle passed with actual store/engine/browser:
+3–2 cash approval, $279K on-budget completion, exact geometry/revision reload;
+equivalent-actor agree/counter/refuse probe also passed. Reports retained under
+docs/evidence/autonomous-run/candidate-a/extension. Candidate A's overall failed
+review is preserved. Next: integrate both checkpoints and legacy-record fix,
+freeze Candidate B, run final QA/review and complete Dev PR/CI/deployment.
