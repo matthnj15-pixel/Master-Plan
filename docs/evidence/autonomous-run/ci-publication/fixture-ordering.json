@@ -1,0 +1,27 @@
+{
+  "firstAttempt": {
+    "head": "07b29cf3643e6be8427cf91eb3a50fb8597a7256",
+    "runId": 42956000939,
+    "jobId": 130311131828,
+    "url": "https://github.com/matthnj15-pixel/Master-Plan/actions/runs/42956000939",
+    "passed": 247,
+    "failed": 1,
+    "skipped": 0,
+    "failure": "Two-page private-workspace fixture waited for the second page to win without first completing a pending first-page autosave."
+  },
+  "controlledReproduction": {
+    "firstReadRevision": 2,
+    "afterPendingAutosaveRevision": 3,
+    "secondPageOutcome": "Explicit workspace conflict; live input retained. Product fencing correct."
+  },
+  "fix": {
+    "commit": "113263ae3b79fe56da31c08530c3fba3dcc17f43",
+    "paths": [
+      "tests/composition-ui.test.mjs"
+    ],
+    "method": "Pause the first page clock, observe the explicit save, advance its actual 350ms debounce and observe the durable write before opening the second page. Original assertions, real engine/store/native locks and timeout limits unchanged.",
+    "consecutiveFocusedPasses": 8,
+    "productSourceIdenticalTo": "09f924bb305999932e8b74383f9d3f759f95895c"
+  },
+  "finalCIAndDeployment": "Recorded in PR #17 after completion."
+}
