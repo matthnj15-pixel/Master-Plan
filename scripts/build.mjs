@@ -16,11 +16,11 @@ if (!['stable', 'dev'].includes(channel)) throw new Error(`Unknown channel "${ch
 const out = resolve(root, arg('out', 'dist'));
 
 const { version } = JSON.parse(read('package.json'));
-let commit = 'local';
-try { commit = execSync('git rev-parse --short HEAD', { cwd: root }).toString().trim(); } catch {}
+let commit = 'local', commitFull = 'local';
+try { commitFull = execSync('git rev-parse HEAD', { cwd: root }).toString().trim(); commit = commitFull.slice(0, 7); } catch {}
 const flagDefs = JSON.parse(read('flags.json')).flags;
 const flags = Object.fromEntries(Object.entries(flagDefs).map(([k, v]) => [k, !!v[channel]]));
-const build = { channel, version, commit, flags, flagInfo: Object.fromEntries(Object.entries(flagDefs).map(([k, v]) => [k, v.description])) };
+const build = { channel, version, commit, commitFull, flags, flagInfo: Object.fromEntries(Object.entries(flagDefs).map(([k, v]) => [k, v.description])) };
 
 // Build info runs before the engine. On dev, flags can be overridden from the in-game menu.
 const prelude = `var MP_BUILD=${JSON.stringify(build)};
