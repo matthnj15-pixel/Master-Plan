@@ -134,6 +134,7 @@ const PLAN_RENDERER = (() => {
     return out;
   }
   function render({state,proposal:p,engine:E,existing=false}) {
+    if(p?.program)return renderProgram({state,proposal:p,engine:E,existing});
     if(!E||!p||!['park','commerce','initiative'].includes(p.kind))return null;
     const map=E.mapSize(state),plots=E.plotsOf(p,state),effects=E.effectsOf(p,state);
     const revision=fingerprint({plan:Object.fromEntries(Object.entries(p.plan).sort(([a],[b])=>a.localeCompare(b))),plots,existing});
@@ -173,6 +174,67 @@ const PLAN_RENDERER = (() => {
     const legend=`<span><i style="background:${C.outline}"></i> Site boundary</span><span><i style="background:${C.water}"></i> Water</span><span><i style="background:${C.road}"></i> Road</span><span><i style="background:${C.roof}"></i> Building</span>${!existing?`<span><i style="background:${C.tree}"></i> Green space</span>`:''}`;
     return `<figure class="plan-exhibit"${price} data-plan-id="${esc(p.id)}" data-existing="${!!existing}"><div class="plan-exhibit-head"><b>${existing?'Existing conditions':esc(p.title)}</b><span>North up · plot grid</span></div><svg class="plan-illustration" data-revision="${revision}" xmlns="http://www.w3.org/2000/svg" viewBox="${left*TILE} ${top*TILE} ${width} ${height}" role="img" aria-label="${esc((existing?'Existing conditions at ': 'Site plan for ')+p.title)}" style="display:block;width:100%;height:auto;background:${C.paper}"><title>${esc(existing?'Existing conditions':p.title)}</title><desc>${esc(caption)}</desc>${context}${overlays}<path data-site-outline="true" d="${boundary(plots)}" fill="none" stroke="${C.outline}" stroke-width="3" stroke-dasharray="7 4" stroke-linejoin="round"/>${roads}<g transform="translate(${arrowX} ${arrowY})"><rect x="-17" y="-22" width="34" height="62" rx="5" fill="${C.paper}" fill-opacity=".9"/><text x="0" y="0" text-anchor="middle" font-size="12" font-family="system-ui,sans-serif" font-weight="600" fill="${C.ink}">N</text><path d="m0 7-7 23 7-5 7 5Z" fill="${C.ink}"/></g><g transform="translate(${scaleX} ${scaleY})"><rect x="-9" y="-16" width="78" height="34" rx="4" fill="${C.paper}" fill-opacity=".92"/><path d="M0 0v6h50V0" fill="none" stroke="${C.ink}" stroke-width="2"/><text x="25" y="-3" text-anchor="middle" font-size="12" fill="${C.ink}">1 plot</text></g></svg><figcaption><div class="plan-legend">${legend}</div><div class="plan-counts">${counts(E,p,existing,plots,state)}</div>${locator}${existing?'':`<p class="plan-price">Engine cost <b>${fmt(effects.cost)}</b> · upkeep <b>${fmt(effects.upkeep)}/year</b></p>`}<p class="plan-caption">${esc(caption)}</p></figcaption></figure>`;
   }
-  return {render};
+  const ROLE_COLORS={homes:'#b47e5d',workshop:'#a77555',mixed:'#caad72',civic:'#9ba69a',recreation:'#b6c987',event:'#d5bc89',farm:'#d3be7c',storage:'#969c94',path:'#e2d1a6',parking:'#a6a393',green:'#7f9e68',pond:'#8cb5b3',policy:'#c0b8a5',buffer:'#88a477',retained:'#d5d7b9',unused:'#e3e4ce'};
+  // Both SVG exhibits and the town canvas consume these exact engine strips.
+  // This is a projection only; it never allocates, fits or reconstructs a layout.
+  function layoutShapes(p){
+    if(!p?.layout)return[];
+    const shapes=[];
+    for(const allocation of p.layout.allocations)for(const segment of allocation.segments)shapes.push({...segment,componentId:allocation.componentId,role:allocation.role,label:allocation.label,sharedWith:allocation.sharedWith});
+    for(const [field,role] of [['buffer','buffer'],['preserved','retained'],['unused','unused']])for(const segment of p.layout[field]||[])shapes.push({...segment,componentId:null,role,label:role,sharedWith:null});
+    return shapes;
+  }
+  function programSymbol(shape,x,y,w,h){
+    const role=shape.role,cx=x+w/2,cy=y+h/2;
+    if(w<4)return'';
+    if(['homes','workshop','mixed','civic','storage'].includes(role)){
+      let out=rect(x+Math.min(3,w/5),y+6,Math.max(.5,w-Math.min(6,w/3)),h-12,ROLE_COLORS[role],'stroke="#6e6756" stroke-width=".8"');
+      if(role==='workshop')out+=`<path d="M${x+2} ${y+15}h${Math.max(0,w-4)}m-${Math.max(0,w-4)} 10h${Math.max(0,w-4)}" stroke="#ead9ba" stroke-width="2"/>`;
+      if(role==='homes')out+=`<path d="M${cx} ${y+9}v${h-18}" stroke="#f5dec4" stroke-width="1.5"/>`;
+      if(role==='mixed')out+=rect(x+2,y+h-13,Math.max(0,w-4),5,'#567c6b');
+      if(role==='storage')out+=`<path d="M${x+2} ${y+14}h${Math.max(0,w-4)}m-${Math.max(0,w-4)} 9h${Math.max(0,w-4)}m-${Math.max(0,w-4)} 9h${Math.max(0,w-4)}" stroke="#d9dfd0"/>`;
+      return out;
+    }
+    if(['farm','parking'].includes(role))return Array.from({length:5},(_,i)=>`<path d="M${x+1} ${y+7+i*8}h${Math.max(0,w-2)}" stroke="${role==='farm'?'#9d8c55':'#f4f0dc'}" stroke-width="1"/>`).join('');
+    if(role==='pond')return `<ellipse cx="${cx}" cy="${cy}" rx="${w*.38}" ry="${h*.31}" fill="#a9d1ca" stroke="#5f8e7c"/>`;
+    if(['green','buffer'].includes(role))return [y+12,y+35].map(yy=>tree(cx,yy,Math.min(7,w*.3))).join('');
+    if(role==='path')return `<path d="M${cx} ${y}v${h}" stroke="#f9efd4" stroke-width="${Math.min(w*.6,8)}" stroke-dasharray="4 2"/>`;
+    if(role==='event')return `<ellipse cx="${cx}" cy="${cy}" rx="${w*.36}" ry="${h*.32}" fill="#e9d9af" stroke="#9f8153" stroke-width="2"/>`;
+    if(role==='recreation')return rect(x+2,y+5,Math.max(0,w-4),h-10,'none','stroke="#f2f0d5" stroke-width="1.5"')+`<path d="M${x+2} ${cy}h${Math.max(0,w-4)}" stroke="#f2f0d5"/>`;
+    return'';
+  }
+  function renderProgram({state,proposal:p,engine:E,existing=false}){
+    if(!p.layout||!p.programRevision)return `<p class="plan-no-site" role="status">The accepted engine layout is unavailable. Re-preview before confirming.</p>`;
+    const e=E.effectsOf(p,state),plots=p.layout.plots,map=E.mapSize(state),defs=new Map(E.capabilities().map(d=>[d.id,d]));
+    const quantities=p.program.components.map(c=>pill(`${c.label} · ${defs.get(c.capability)?.unit||c.capability}${c.sharedWith?' · shared with '+c.sharedWith:''}`,c.quantity)).join('');
+    if(!plots.length)return `<section class="plan-no-site" data-program-revision="${esc(p.programRevision)}" data-plan-cost="${e.cost}"><b>${esc(p.title)} · borough-wide program</b><div class="plan-counts">${quantities}</div><p class="plan-caption">No construction footprint. Fictional engine estimate ${fmt(e.cost)}; upkeep ${fmt(e.upkeep)}/year.</p></section>`;
+    const xs=plots.map(p=>p[0]),ys=plots.map(p=>p[1]),left=Math.max(0,Math.min(...xs)-1),right=Math.min(map.width-1,Math.max(...xs)+1),top=Math.max(0,Math.min(...ys)-1),bottom=Math.min(map.height-1,Math.max(...ys)+1);
+    let context='';
+    for(let y=top;y<=bottom;y++)for(let x=left;x<=right;x++){
+      const cell=state.grid[y*map.width+x],allocation=p.layout.cells.find(c=>c.plot[0]===x&&c.plot[1]===y);
+      if(cell)context+=contextTile(cell,!existing&&allocation?.usedArea>0);
+    }
+    const shapes=existing?[]:layoutShapes(p);
+    const strips=shapes.map(shape=>{
+      const x=(shape.plot[0]+shape.offset)*TILE,y=shape.plot[1]*TILE,w=shape.area*TILE,h=TILE,color=ROLE_COLORS[shape.role]||'#c1b8a1';
+      return `<g data-layout-segment="true" data-plot="${shape.plot.join(',')}" data-component-id="${esc(shape.componentId||'')}" data-role="${esc(shape.role)}" data-shared-with="${esc(shape.sharedWith||'')}" data-offset="${shape.offset}" data-area="${shape.area}"><title>${esc(shape.label)} · ${shape.area} plot${shape.sharedWith?' · shared floor space':''}</title>${rect(x,y,w,h,color,`fill-opacity="${shape.sharedWith?.28:shape.role==='retained'?.1:.85}" stroke="#626e55" stroke-width=".7" ${shape.sharedWith?'stroke-dasharray="3 2"':''}`)}${shape.sharedWith?rect(x,y+1,w,4,color):programSymbol(shape,x,y,w,h)}</g>`;
+    }).join('');
+    const caption='Engine allocations on the exact selected boundary. Strips preserve plot-equivalent areas; shared activities overlap their named host. Interior symbols and fractional plot use are schematic game assumptions.';
+    return `<figure class="plan-exhibit" data-plan-id="${esc(p.id)}" data-program-revision="${esc(p.programRevision)}" data-plan-cost="${e.cost}"><div class="plan-exhibit-head"><b>${existing?'Existing conditions':esc(p.title)}</b><span>North up · exact plot grid</span></div><svg class="plan-illustration" data-revision="${esc(p.programRevision)}" xmlns="http://www.w3.org/2000/svg" viewBox="${left*TILE} ${top*TILE} ${(right-left+1)*TILE} ${(bottom-top+1)*TILE}" role="img" aria-label="${esc((existing?'Existing conditions: ':'Site plan: ')+p.title)}"><title>${esc(p.title)}</title><desc>${caption}</desc>${context}${strips}<path data-site-outline="true" d="${boundary(plots)}" fill="none" stroke="${C.outline}" stroke-width="2.5" stroke-dasharray="6 3"/></svg><figcaption><div class="plan-counts">${quantities}${pill('allocated plots',p.layout.usedArea)}${pill('retained plots',p.layout.preservedArea)}${pill('unused plots',p.layout.freeArea)}</div><p class="plan-price">Engine cost <b>${fmt(e.cost)}</b> · upkeep <b>${fmt(e.upkeep)}/year</b></p><p class="plan-caption">${caption}</p></figcaption></figure>`;
+  }
+  function drawLayout(ctx,p,project){
+    for(const s of layoutShapes(p)){
+      if(s.role==='retained'||s.role==='unused')continue;
+      const [x,y]=s.plot,points=[[x+s.offset,y],[x+s.offset+s.area,y],[x+s.offset+s.area,y+1],[x+s.offset,y+1]].map(v=>project(...v));
+      ctx.save();ctx.globalAlpha=s.sharedWith?.4:.9;ctx.fillStyle=ROLE_COLORS[s.role]||'#c1b8a1';ctx.beginPath();points.forEach(([a,b],i)=>i?ctx.lineTo(a,b):ctx.moveTo(a,b));ctx.closePath();ctx.fill();ctx.strokeStyle='#40533d';ctx.lineWidth=.8;if(s.sharedWith)ctx.setLineDash([2,2]);ctx.stroke();
+      if(['farm','parking','workshop','storage'].includes(s.role)){
+        ctx.strokeStyle=s.role==='parking'?'#f4efdd':'#75684b';
+        for(let i=1;i<5;i++){const a=project(x+s.offset,y+i/5),b=project(x+s.offset+s.area,y+i/5);ctx.beginPath();ctx.moveTo(...a);ctx.lineTo(...b);ctx.stroke();}
+      }
+      if(['green','buffer','pond','recreation','event'].includes(s.role)){const a=project(x+s.offset+s.area/2,y+.5);ctx.fillStyle=s.role==='pond'?'#b1ddd6':s.role==='event'?'#f0dcb3':'#446f45';ctx.beginPath();ctx.arc(...a,Math.max(1,Math.min(5,Math.abs(points[1][0]-points[0][0])*.3)),0,Math.PI*2);ctx.fill();}
+      ctx.restore();
+    }
+  }
+  return {render,layoutShapes,drawLayout};
 })();
 if(typeof module!=='undefined')module.exports=PLAN_RENDERER;
