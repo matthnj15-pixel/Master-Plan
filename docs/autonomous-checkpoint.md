@@ -92,3 +92,11 @@ Frontend instructed to merge current integration first. Engine source paused.
 Coordinator owns integration, evidence, remote/build/flags. Adaptive reuse of
 active space inside existing buildings remains an explicit unmodeled boundary;
 preservation retains assets outside active allocations. Report it accurately.
+
+Full integrated c652bee verification: npm test passed 184/184 and traceability.
+Hosted transport fix f37b6e7 integrated as 6da5d9a; provider suite now seven
+passing tests. Both Dev and Stable builds pass 6da5d9a. Independent Candidate A
+QA and Reviewer assigned SAME SHA 6da5d9adc51751afb27236bfc27b769848a18d94,
+builds /tmp/mp-candidate-a and /tmp/mp-candidate-a-stable. QA freezes source/
+catalog before withheld initial corpus. This is candidate evidence, not final
+acceptance; UI baseline/delta/account-import follow-up remains in its worktree.
