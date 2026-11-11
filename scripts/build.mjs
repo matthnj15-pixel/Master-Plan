@@ -35,7 +35,7 @@ for (const marker of ['/*ENGINE*/', '/*UI*/', '/*HOST_GROTESK*/', '/*HOST_GROTES
 const font = readFileSync(join(root, 'src/fonts/host-grotesk-latin.woff2')).toString('base64');
 let html = template.replace('/*HOST_GROTESK_LICENSE*/', () => '/*\n' + read('src/fonts/OFL.txt') + '\n*/')
   .replace('/*HOST_GROTESK*/', () => font)
-  .replace('/*ENGINE*/', () => prelude + read('src/engine.js')).replace('/*UI*/', () => ['src/plan-requests.js', 'src/plan-renderer.js', 'src/ui.js'].map(read).join('\n'));
+  .replace('/*ENGINE*/', () => prelude + read('src/engine.js')).replace('/*UI*/', () => ['src/workspace.js', 'src/plan-requests.js', 'src/plan-renderer.js', 'src/ui.js'].map(read).join('\n'));
 if (channel === 'dev') html = html.replace('<title>Master Plan</title>', '<title>Master Plan Dev</title>');
 
 mkdirSync(out, { recursive: true });
