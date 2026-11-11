@@ -18,7 +18,7 @@ final acceptance pass until its affected checks run on the integrated target.
 | E2 | Numeric negation/string claim values could earn unsupported credit; false finding lacked field identity. | Engine | Fixed 40ce66e; per-claim semantic fields persist in actual receipt. Reviewer checking remaining cases. |
 | E3 | Failed votes remained open; grouped winner/funding behavior needed explicit binding. | Engine | Fixed 5aafe88/40ce66e; preserve actual rejection/tabling and require reviewed winner funding. |
 | E4 | Inherited `__proto__` / `constructor` loading routes were accepted. | Engine | Confirmed on A; fixed aeaae2c / integrated 88a0900. One trusted route helper, 24 composition +33 legacy engine +4 scenario tests pass. |
-| E5 | Repeated operating review could stack identical policy benefits. | Engine | Follow-up included in 40ce66e; verify substantive policy/condition behavior and causal opportunities in independent long-run review. |
+| E5 | Repeated operating review could stack identical policy benefits. | Engine / Reviewer | Cross-project repeat blocked in 40ce66e. New confirmed probe: two policy components in one first program bypass the one-active-program restriction and double benefits; reviewer assessing required per-program limit. |
 | T1 | Three legacy browser reload assertions failed after a new storage-writing init script. | Coordinator | Fixture setup fixed 0acb7a2: set legacy flag in build metadata. All three original assertions pass; full c652bee suite 184/184 plus trace passes. |
 | U1 | Private alternatives lacked an identifiable baseline and synchronized physical/member support deltas. | Frontend | Active: current-state same-site baseline, changed components/conditions, money/upkeep/capacity/effect/support deltas. |
 | U2 | Deliveries label markup and full coordinate dump impaired mobile controls. | Frontend | Active: close label; show count/plot summary with exact geometry retained in engine. |
@@ -27,6 +27,9 @@ final acceptance pass until its affected checks run on the integrated target.
 | U5 | Menu mutated composition engine flag immediately while UI captured startup flag. | Frontend | Active: persist next-launch override; keep loaded runtime internally consistent until reload. |
 | U6 | Preview success and failed persistence lacked linked diagnostics. | Frontend / Provider | Active: retain opaque request ID; sanitized application/persistence event/result code and applied outcome. Diagnostics failure cannot affect play. |
 | U7 | Clarification questions/omissions were dropped by UI in favor of generic blocker. | Frontend | Active: display bounded validated questions/omissions, preserve input/site and explicit subset acknowledgment. |
+| U8 | First corpus run timed out in rapid adjacent plot selection; normal double-tap threshold also runs while picking. | Frontend / QA | Reproduce gesture classification; picking must retain exact ordered taps. Preserve outside-picking zoom gestures. Most first-pass cases stopped before inference. |
+| U9 | Typed-revision submit selector also matches agenda action in the form. | Frontend / QA | Explicit intended submit and type=button for non-submit actions; inspect actual DOM/form ownership. Preserve the initial failure and use uniquely meaningful controls. |
+| U10 | Composition stages do not always pin the primary action while body scrolls. | Frontend / Sustained QA | Actual 400px screenshot shows long legacy controls with no review/confirm footer. Verify required primary region bounds in each stage at both widths, beyond target-size checks. |
 | P1 | Hosted JSON-only transport was rejected for absent local admission API. | Provider | Fixed f37b6e7 / integrated 6da5d9a. Hosted context remains explicitly unverified; server rejection is recoverable. |
 | P2 | Clarify final diagnostic outcome was dropped. | Provider | Active follow-up. |
 | P3 | Definition reductions required unpatched template to fit first. | Provider | Active follow-up: apply bounded patch before final site preview. |
@@ -38,7 +41,10 @@ final acceptance pass until its affected checks run on the integrated target.
 
 Independent A evidence: actual two-page T1–T8 all pass (real engine, storage and
 Web Locks; controlled account callback). First withheld twelve-case evaluation
-and three typed browser lifecycles are owned by Socrates. Sustained first-term,
+recorded 1 pass / 11 fail at unchanged source/catalog; most stopped before
+inference at plot selection. Preserve original artifacts and retest same cases
+after general control/feedback fixes. Three typed browser lifecycles are owned
+by Socrates. Sustained first-term,
 real election and later opportunity browser coverage is owned by Pasteur.
 
 External gates remain explicit: no configured Qwen q4f16 inference without
